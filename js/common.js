@@ -81,7 +81,8 @@ function initImageFallback() {
 function initGlobalMenu() {
   var toggleButton = document.querySelector("[data-menu-toggle]");
   var panel = document.querySelector("[data-menu-panel]");
-  var closeButton = document.querySelector("[data-menu-close]");
+  var header = document.querySelector(".site_header");
+  var toggleLabel = document.querySelector("[data-menu-toggle-label]");
 
   if (!toggleButton || !panel) {
     return;
@@ -90,10 +91,60 @@ function initGlobalMenu() {
   var isMenuOpen = false;
   var previousBodyOverflow = "";
 
+  /* 스크롤 잠금.
+     overflow: hidden 으로 스크롤바가 사라지면 뷰포트 폭이 넓어져
+     오른쪽 정렬된 토글 버튼이 그만큼 밀립니다.
+     실제로 늘어난 폭을 재서 --scrollbar_gap 으로 보정합니다.
+     (scrollbar-gutter: stable 을 지원하면 폭이 변하지 않아 보정값은 0 입니다.) */
+  function lockBodyScroll() {
+    // 기준은 뷰포트가 아니라 실제 본문 흐름 요소여야 합니다.
+    // documentElement.clientWidth 는 스크롤바가 사라지면 항상 늘어나서
+    // scrollbar-gutter 가 이미 폭을 잡아준 경우에도 중복 보정하게 됩니다.
+    var sensor = document.querySelector(".site_wrapper") || document.body;
+    var widthBefore = sensor.getBoundingClientRect().width;
+
+    previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    var gap = Math.round(sensor.getBoundingClientRect().width - widthBefore);
+    if (gap > 0) {
+      document.documentElement.style.setProperty("--scrollbar_gap", gap + "px");
+    }
+  }
+
+  function unlockBodyScroll() {
+    document.body.style.overflow = previousBodyOverflow;
+    document.documentElement.style.removeProperty("--scrollbar_gap");
+  }
+
   function renderMenuState() {
     toggleButton.setAttribute("aria-expanded", String(isMenuOpen));
+    // 햄버거 ↔ X 변형은 CSS(stroke-dasharray / rotate)가 담당합니다.
+    toggleButton.classList.toggle("is_open", isMenuOpen);
     panel.classList.toggle("is_open", isMenuOpen);
-    document.body.style.overflow = isMenuOpen ? "hidden" : previousBodyOverflow;
+
+    if (header) {
+      header.classList.toggle("is_menu_open", isMenuOpen);
+    }
+    if (toggleLabel) {
+      toggleLabel.textContent = isMenuOpen ? "Close menu" : "Open menu";
+    }
+  }
+
+  /* 토글 버튼은 오버레이 위에 남아 닫기 버튼을 겸하므로 포커스 순환에 포함합니다.
+     시각 순서(언어 선택 → 토글 → 메뉴 본문)에 맞춰 언어 영역 다음에 끼워 넣습니다. */
+  function getMenuFocusables() {
+    var focusables = getFocusableElements(panel);
+    var lastLanguageIndex = -1;
+
+    focusables.forEach(function (element, index) {
+      if (element.closest(".language_selector")) {
+        lastLanguageIndex = index;
+      }
+    });
+
+    focusables.splice(lastLanguageIndex + 1, 0, toggleButton);
+    return focusables;
   }
 
   function openMenu() {
@@ -101,17 +152,27 @@ function initGlobalMenu() {
       return;
     }
     isMenuOpen = true;
-    previousBodyOverflow = document.body.style.overflow;
+    // 폭 보정을 먼저 적용해 오버레이가 그려지는 순간 위치가 어긋나지 않게 합니다.
+    lockBodyScroll();
     panel.removeAttribute("hidden");
 
-    // 표시 전환 후 다음 프레임에 클래스를 붙여 페이드 전환이 실제로 실행되게 합니다.
-    window.requestAnimationFrame(function () {
-      renderMenuState();
-      var focusables = getFocusableElements(panel);
-      if (focusables.length > 0) {
-        focusables[0].focus();
-      }
-    });
+    // 표시 전환 직후 강제 리플로우로 전환 시작점을 확보한 뒤 클래스를 붙입니다.
+    // (requestAnimationFrame 은 탭이 비활성일 때 실행되지 않아 상태가 멈출 수 있습니다.)
+    void panel.offsetWidth;
+    renderMenuState();
+
+    var focusables = getFocusableElements(panel);
+    if (focusables.length > 0) {
+      focusables[0].focus();
+    }
+  }
+
+  function handleMenuToggle() {
+    if (isMenuOpen) {
+      closeMenu(true);
+      return;
+    }
+    openMenu();
   }
 
   function closeMenu(shouldRestoreFocus) {
@@ -121,6 +182,7 @@ function initGlobalMenu() {
     isMenuOpen = false;
     closeLanguageMenu();
     renderMenuState();
+    unlockBodyScroll();
 
     // 트랜지션이 끝난 뒤 숨김 처리해 포커스 대상에서 제외 (AGENTS 10.1)
     window.setTimeout(
@@ -152,7 +214,7 @@ function initGlobalMenu() {
       return;
     }
 
-    var focusables = getFocusableElements(panel);
+    var focusables = getMenuFocusables();
     if (focusables.length === 0) {
       return;
     }
@@ -255,15 +317,10 @@ function initGlobalMenu() {
     renderSelectedLanguage(readStoredLanguage() || "en");
   }
 
-  toggleButton.addEventListener("click", openMenu);
-
-  if (closeButton) {
-    closeButton.addEventListener("click", function () {
-      closeMenu(true);
-    });
-  }
+  toggleButton.addEventListener("click", handleMenuToggle);
 
   panel.addEventListener("keydown", handleMenuKeydown);
+  toggleButton.addEventListener("keydown", handleMenuKeydown);
 
   panel.addEventListener("click", function handleOutsideClick(event) {
     if (event.target === panel) {

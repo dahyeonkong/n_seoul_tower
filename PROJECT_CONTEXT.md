@@ -26,6 +26,28 @@ N SEOUL TOWER 메인 페이지 1종을 HTML / CSS / Vanilla JavaScript 로 구�
 10. 푸터 (`645:4572`)
 11. 섹션 이동 페이저 (`737:2667`, PRD 8.4 / 10.5)
 
+## 헤더 토글 버튼 (2026-08-05 변경)
+
+`assets/menu_icon.svg` 정적 이미지 대신 **인라인 SVG 1개 path 를 `stroke-dasharray` 구간으로 잘라 햄버거 ↔ X 로 변형**하는 방식으로 교체했습니다. (참고: https://survedaa.com 헤더 토글)
+
+- 닫힘: `stroke-dasharray: 12 63`, `stroke-dashoffset: 0`, 회전 없음 → 가로 3줄
+- 열림: `stroke-dasharray: 20 300`, `stroke-dashoffset: -32.42px`, `rotate(-45deg)` → X
+- 전환 500ms `ease-in-out`, `prefers-reduced-motion` 에서는 공통 규칙으로 즉시 전환
+- 색상은 우리 토큰 유지: 닫힘 `--color_text`(#212121), 열림 `--color_gray_300`(#d4d4d4)
+- 버튼 크기(44px), 아이콘 32/40px, 위치, 테두리 없음 등 기존 스타일은 그대로입니다.
+
+### 스크롤바 폭 보정
+
+메뉴를 열 때 `body { overflow: hidden }` 으로 스크롤바가 사라지면 뷰포트 폭이 ~15px 넓어져 오른쪽 정렬 요소(토글 버튼, 스크롤 페이저)가 밀렸습니다. 아래로 해결했습니다.
+
+- `html { scrollbar-gutter: stable }` — 스크롤바 자리를 항상 확보
+- 미지원 브라우저 대비: 잠글 때 `.site_wrapper` 의 실제 폭 변화를 재서 `--scrollbar_gap` 에 넣고 `body` 의 `padding-right`, `.global_menu` 의 `padding-right`, `.scroll_pager` 의 `right` 에 적용
+- 기준을 `documentElement.clientWidth` 로 잡으면 `scrollbar-gutter` 가 이미 잡아준 경우에도 중복 보정되므로 반드시 본문 흐름 요소를 기준으로 측정해야 합니다.
+
+### 닫기 버튼
+
+이에 따라 오버레이 안의 별도 닫기(X) 버튼은 제거했습니다. Figma 에서도 header 의 `menu_icon`(1720~1760, 41.5~81.5)과 menu 프레임의 `x`(1724~1760, 43.5~79.5)가 같은 좌표라 하나의 컨트롤입니다. 토글이 오버레이 위에 남도록 `.site_header` 의 `z-index` 를 120 으로 올렸고(구조는 기존 `position: absolute` 유지), 메뉴가 열리면 로고는 숨깁니다.
+
 ## 파일 구조
 
 ```text
