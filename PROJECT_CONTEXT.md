@@ -60,8 +60,21 @@ n_seoul_tower/
 ├── js/
 │   ├── common.js    # 메뉴, 언어, family site, 섹션 페이저, 공통 상태
 │   └── main.js      # 목업 데이터 + renderXxx + 섹션 인터랙션
-└── assets/          # 기존 에셋 + Figma 에서 추가 다운로드한 에셋
+└── assets/
+    ├── back_img.png / turn_tower.png / footer_tower.png / hero_title_mask.svg
+    ├── nst_logo_defalut.svg   # 헤더·푸터 로고 (620x620)
+    ├── nst_logo_gray.svg      # 메뉴 오버레이 로고 (219x136)
+    ├── icon/                  # 화살표, 티켓, chevron, 커서 + sns/ weather/
+    ├── event/                 # 이벤트 카드, 곤돌라, 곡선
+    ├── guide_course/          # course1~4, walk_bg, walk_nbear (+ 서브페이지용 course/ guide/)
+    ├── npass/                 # ticket, ticket_bg
+    ├── n_gift_shop/           # gift1~8
+    ├── custom_goods/          # candle1~6, goods1~4, arc svg
+    └── restaurant/            # restaurant_bg, restaurant_dining (+ 서브페이지용 menu/ bg_title/)
 ```
+
+JS 는 `ASSET_PATH = "./assets/"` 를 접두로 두고 데이터에 하위 경로를 포함합니다
+(예: `image: "event/event1.png"`). 새 폴더가 생기면 데이터 값만 바꾸면 됩니다.
 
 ## 디자인 토큰 (Figma 실측)
 

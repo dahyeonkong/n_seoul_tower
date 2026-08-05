@@ -631,7 +631,7 @@
   padding: 40px 24px;
   border-radius: var(--radius_2xl);
   background-color: var(--color_surface_card);
-  background-image: url("../assets/ticket_bg.png");
+  background-image: url("../assets/npass/ticket_bg.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -1080,7 +1080,7 @@
   .gift_card {
     width: 285px;
     padding: 16px;
-    cursor: url("../assets/arrow_cursor.png") 22 20, pointer;
+    cursor: url("../assets/icon/arrow_cursor.png") 22 20, pointer;
   }
 
   .gift_card:nth-child(8n + 1) {
