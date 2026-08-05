@@ -9,7 +9,7 @@
   <meta property="og:title" content="N Seoul Tower | Seoul's Landmark Observatory">
   <meta property="og:description" content="Discover N Seoul Tower — events, recommended courses, N Pass, the N Gift Shop and custom goods, all in one place.">
   <meta property="og:image" content="./assets/back_img.png">
-  <link rel="icon" href="./assets/nst_logo.svg" type="image/svg+xml">
+  <link rel="icon" href="./assets/nst_logo_defalut.svg" type="image/svg+xml">
   <link rel="preload" as="image" href="./assets/turn_tower.png">
   <link rel="stylesheet" href="./css/reset.css">
   <link rel="stylesheet" href="./css/common.css">
@@ -23,7 +23,7 @@
     <header class="site_header">
       <div class="page_container site_header_inner">
         <a class="brand_logo" href="#top" aria-label="N Seoul Tower home">
-          <img src="./assets/nst_logo.svg" alt="" width="43" height="43">
+          <img src="./assets/nst_logo_defalut.svg" alt="" width="43" height="43">
         </a>
         <button
           class="menu_toggle"
@@ -32,7 +32,7 @@
           aria-expanded="false"
           aria-controls="global_menu"
         >
-          <!-- assets/menu_icon.svg 원본 path 를 그대로 인라인한 것 (fill 만 currentColor) -->
+          <!-- assets/icon/menu_icon.svg 원본 path 를 그대로 인라인한 것 (fill 만 currentColor) -->
           <svg
             class="menu_toggle_icon"
             viewBox="0 0 40 40"
@@ -70,7 +70,7 @@
             aria-controls="language_menu"
           >
             <span data-language-current>English</span>
-            <img src="./assets/icon_chevron_down.svg" alt="" width="20" height="20">
+            <img src="./assets/icon/icon_chevron_down.svg" alt="" width="20" height="20">
             <span class="visually_hidden">Change language</span>
           </button>
           <ul class="language_menu" id="language_menu" data-language-menu hidden>
@@ -87,11 +87,11 @@
       <div class="page_container global_menu_body">
         <div class="menu_brand">
           <div class="menu_brand_logo">
-            <img src="./assets/nst_logo_full.svg" alt="" width="219" height="136">
+            <img src="./assets/nst_logo_gray.svg" alt="" width="219" height="136">
             <p class="menu_brand_name"><span>N</span> SEOUL TOWER</p>
           </div>
           <button class="book_btn" type="button" data-pending-link aria-disabled="true">
-            <img src="./assets/icon_ticket.svg" alt="" width="24" height="24">
+            <img src="./assets/icon/icon_ticket.svg" alt="" width="24" height="24">
             buy ticket
           </button>
         </div>
@@ -166,7 +166,7 @@
                 <p>Sunny</p>
                 <p>Sunset Time 07:25 PM</p>
               </div>
-              <img class="hero_weather_icon" src="./assets/weather_cloudsun.png" alt="Sunny with some clouds" width="96" height="60">
+              <img class="hero_weather_icon" src="./assets/icon/weather/weather_cloudsun.png" alt="Sunny with some clouds" width="96" height="60">
             </div>
             <div class="hero_info_row">
               <p class="hero_info_value">45min</p>
@@ -196,7 +196,7 @@
 
       <!-- ===================== 2. events ===================== -->
       <section class="events_section" id="events_section" aria-labelledby="events_title">
-        <img class="events_curve" src="./assets/events_curve.svg" alt="" aria-hidden="true" width="2549" height="1241" loading="lazy">
+        <img class="events_curve" src="./assets/event/events_curve.svg" alt="" aria-hidden="true" width="2549" height="1241" loading="lazy">
 
         <div class="page_container events_head">
           <h2 class="section_title" id="events_title">Events</h2>
@@ -215,8 +215,8 @@
         </div>
 
         <div class="course_scene">
-          <img class="course_scene_bg" src="./assets/walk_bg.png" alt="" aria-hidden="true" width="2010" height="711" loading="lazy">
-          <img class="course_scene_char" src="./assets/walk_nbear.png" alt="" aria-hidden="true" width="262" height="283" loading="lazy">
+          <img class="course_scene_bg" src="./assets/guide_course/walk_bg.png" alt="" aria-hidden="true" width="2010" height="711" loading="lazy">
+          <img class="course_scene_char" src="./assets/guide_course/walk_nbear.png" alt="" aria-hidden="true" width="262" height="283" loading="lazy">
           <ul class="course_list" data-course-list>
             <!-- renderCourses() -->
           </ul>
@@ -225,7 +225,7 @@
 
       <!-- ===================== 4. n pass ===================== -->
       <section class="pass_section" id="pass_section" aria-labelledby="pass_title">
-        <img class="pass_ticket_deco" src="./assets/ticket.png" alt="" aria-hidden="true" width="829" height="552" loading="lazy">
+        <img class="pass_ticket_deco" src="./assets/npass/ticket.png" alt="" aria-hidden="true" width="829" height="552" loading="lazy">
 
         <div class="page_container">
           <div class="pass_ticket">
@@ -248,7 +248,7 @@
 
       <!-- ===================== 5. restaurant ===================== -->
       <section class="restaurant_section" id="restaurant_section" aria-labelledby="restaurant_title">
-        <img class="restaurant_bg" src="./assets/restaurant_bg.png" alt="" aria-hidden="true" width="3168" height="1344" loading="lazy">
+        <img class="restaurant_bg" src="./assets/restaurant/restaurant_bg.png" alt="" aria-hidden="true" width="3168" height="1344" loading="lazy">
 
         <div class="page_container restaurant_inner">
           <div class="restaurant_texts">
@@ -270,18 +270,18 @@
 
             <div class="restaurant_slides" data-restaurant-slides>
               <div class="restaurant_slide is_active" data-restaurant-slide>
-                <img src="./assets/restaurant_dining.png" alt="Dining tables by the observatory window at The Place Dining" width="396" height="168" loading="lazy">
+                <img src="./assets/restaurant/restaurant_dining.png" alt="Dining tables by the observatory window at The Place Dining" width="396" height="168" loading="lazy">
               </div>
             </div>
 
             <div class="restaurant_controls">
               <button class="restaurant_nav restaurant_nav_prev" type="button" data-restaurant-prev>
-                <img src="./assets/icon_arrow_right.svg" alt="" width="24" height="24">
+                <img src="./assets/icon/icon_arrow_right.svg" alt="" width="24" height="24">
                 <span class="visually_hidden">Previous photo</span>
               </button>
               <div class="restaurant_dots" data-restaurant-dots role="tablist" aria-label="Restaurant photos"></div>
               <button class="restaurant_nav" type="button" data-restaurant-next>
-                <img src="./assets/icon_arrow_right.svg" alt="" width="24" height="24">
+                <img src="./assets/icon/icon_arrow_right.svg" alt="" width="24" height="24">
                 <span class="visually_hidden">Next photo</span>
               </button>
             </div>
@@ -317,7 +317,7 @@
             <!-- renderGiftItems() -->
           </ul>
           <button class="btn_circle gift_more" type="button" data-pending-link aria-disabled="true">
-            <img src="./assets/arrow_cursor.png" alt="" width="44" height="39">
+            <img src="./assets/icon/arrow_cursor.png" alt="" width="44" height="39">
             <span class="visually_hidden">See all gift shop products</span>
           </button>
         </div>
@@ -343,13 +343,13 @@
           <p class="section_desc">From candles to love locks, keycaps, and fans, personalize iconic souvenirs inspired by N Seoul Tower.</p>
           <button class="btn btn_light_olive" type="button" data-pending-link aria-disabled="true">
             view more
-            <img class="btn_icon" src="./assets/arrow_right.png" alt="" width="19" height="19">
+            <img class="btn_icon" src="./assets/icon/arrow_right.png" alt="" width="19" height="19">
           </button>
         </div>
 
         <div class="goods_hero">
-          <img class="goods_hero_arc" src="./assets/goods_arc.svg" alt="" aria-hidden="true" width="428" height="214" loading="lazy">
-          <img class="goods_hero_img" src="./assets/goods1.png" alt="Completed Seoul Glow Candle stacked into a tower" width="280" height="317" loading="lazy">
+          <img class="goods_hero_arc" src="./assets/custom_goods/goods_arc.svg" alt="" aria-hidden="true" width="428" height="214" loading="lazy">
+          <img class="goods_hero_img" src="./assets/custom_goods/goods1.png" alt="Completed Seoul Glow Candle stacked into a tower" width="280" height="317" loading="lazy">
         </div>
 
         <ul
@@ -372,10 +372,10 @@
       <div class="page_container site_footer_inner">
         <div class="footer_top">
           <p class="footer_logo">
-            <img src="./assets/nst_logo.svg" alt="N Seoul Tower" width="80" height="107" loading="lazy">
+            <img src="./assets/nst_logo_defalut.svg" alt="N Seoul Tower" width="80" height="107" loading="lazy">
           </p>
           <a class="top_button" href="#top">
-            <img src="./assets/arrow_up.png" alt="" width="24" height="24" loading="lazy">
+            <img src="./assets/icon/arrow_up.png" alt="" width="24" height="24" loading="lazy">
             top
           </a>
         </div>
@@ -406,7 +406,7 @@
                 aria-controls="family_site_menu"
               >
                 family site
-                <img src="./assets/icon_chevron_down.svg" alt="" width="24" height="24" loading="lazy">
+                <img src="./assets/icon/icon_chevron_down.svg" alt="" width="24" height="24" loading="lazy">
               </button>
               <div class="family_site_menu" id="family_site_menu" data-family-menu hidden>
                 <div class="family_site_group">
@@ -455,19 +455,19 @@
             <ul class="footer_sns">
               <li>
                 <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
-                  <img src="./assets/sns1.png" alt="" width="24" height="24" loading="lazy">
+                  <img src="./assets/icon/sns/sns1.png" alt="" width="24" height="24" loading="lazy">
                   <span class="visually_hidden">Facebook</span>
                 </button>
               </li>
               <li>
                 <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
-                  <img src="./assets/sns2.png" alt="" width="24" height="24" loading="lazy">
+                  <img src="./assets/icon/sns/sns2.png" alt="" width="24" height="24" loading="lazy">
                   <span class="visually_hidden">Instagram</span>
                 </button>
               </li>
               <li>
                 <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
-                  <img src="./assets/sns3.png" alt="" width="24" height="24" loading="lazy">
+                  <img src="./assets/icon/sns/sns3.png" alt="" width="24" height="24" loading="lazy">
                   <span class="visually_hidden">YouTube</span>
                 </button>
               </li>

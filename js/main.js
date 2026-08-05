@@ -16,7 +16,7 @@ var mainPageData = {
       label: "Korea's official tourism website",
       title: "Visit Korea",
       description: "Find Everything You Need for Your Trip to Korea",
-      image: "event3.png",
+      image: "event/event3.png",
       imageAlt: "Visit Korea campaign artwork with Seoul landmarks"
     },
     {
@@ -25,7 +25,7 @@ var mainPageData = {
       label: "Namsan Cable Car",
       title: "SNS Follow Event",
       description: "Follow the official Namsan Cable Car account and get a special prize!",
-      image: "event2.png",
+      image: "event/event2.png",
       imageAlt: "Namsan cable car social media follow event artwork"
     },
     {
@@ -34,7 +34,7 @@ var mainPageData = {
       label: "2026 NAMSAN",
       title: "view-Mac festival",
       description: "You Can Enjoy Seoul's Views and Beer to the Fullest",
-      image: "event1.png",
+      image: "event/event1.png",
       imageAlt: "View-Mac Festival artwork with a beer glass and Namsan park"
     }
   ],
@@ -44,28 +44,28 @@ var mainPageData = {
       id: "speed_course",
       title: "Speed Course",
       description: "See More, Spend Less Time.",
-      image: "course1.png",
+      image: "guide_course/course1.png",
       imageAlt: "N Seoul Tower observatory against a clear daytime sky"
     },
     {
       id: "date_course",
       title: "Date Course",
       description: "A Romantic Journey Above Seoul",
-      image: "course2.png",
+      image: "guide_course/course2.png",
       imageAlt: "A couple watching the sunset over Seoul from Namsan"
     },
     {
       id: "food_course",
       title: "Food Course",
       description: "Taste Seoul with a View",
-      image: "course3.png",
+      image: "guide_course/course3.png",
       imageAlt: "Korean dishes served on a table"
     },
     {
       id: "running_course",
       title: "Running course",
       description: "Run Through Nature and City Views",
-      image: "course4.png",
+      image: "guide_course/course4.png",
       imageAlt: "A runner on the tree lined Namsan trail"
     }
   ],
@@ -73,14 +73,14 @@ var mainPageData = {
   /* 디자인의 기프트숍 카드는 상품 이미지만 노출합니다.
      상품명·가격·재고는 확정되지 않아 만들지 않고, 이미지 설명만 alt 로 제공합니다. */
   giftShopItems: [
-    { id: "gift_01", image: "gift1.png", imageAlt: "Olive green spring notebook with an N Seoul Tower illustration" },
-    { id: "gift_02", image: "gift2.png", imageAlt: "N Bear plush doll wearing an olive hoodie" },
-    { id: "gift_03", image: "gift3.png", imageAlt: "Ceramic mug printed with N Bear and Namsan" },
-    { id: "gift_04", image: "gift4.png", imageAlt: "N Bear rubber key ring with a tower name tag" },
-    { id: "gift_05", image: "gift5.png", imageAlt: "Olive green insulated tumbler with a tower emblem" },
-    { id: "gift_06", image: "gift6.png", imageAlt: "Round hand mirror with an N Bear face" },
-    { id: "gift_07", image: "gift7.png", imageAlt: "Greeting card illustrated with N Bear and Namsan" },
-    { id: "gift_08", image: "gift8.png", imageAlt: "Cotton eco bag printed with N Bear and Namsan" }
+    { id: "gift_01", image: "n_gift_shop/gift1.png", imageAlt: "Olive green spring notebook with an N Seoul Tower illustration" },
+    { id: "gift_02", image: "n_gift_shop/gift2.png", imageAlt: "N Bear plush doll wearing an olive hoodie" },
+    { id: "gift_03", image: "n_gift_shop/gift3.png", imageAlt: "Ceramic mug printed with N Bear and Namsan" },
+    { id: "gift_04", image: "n_gift_shop/gift4.png", imageAlt: "N Bear rubber key ring with a tower name tag" },
+    { id: "gift_05", image: "n_gift_shop/gift5.png", imageAlt: "Olive green insulated tumbler with a tower emblem" },
+    { id: "gift_06", image: "n_gift_shop/gift6.png", imageAlt: "Round hand mirror with an N Bear face" },
+    { id: "gift_07", image: "n_gift_shop/gift7.png", imageAlt: "Greeting card illustrated with N Bear and Namsan" },
+    { id: "gift_08", image: "n_gift_shop/gift8.png", imageAlt: "Cotton eco bag printed with N Bear and Namsan" }
   ],
 
   customGoodsItems: [
@@ -89,7 +89,7 @@ var mainPageData = {
       title: "Seoul Glow Candle",
       description: "Build Your Own Tower Candle",
       tags: ["DIY", "Custom", "Object"],
-      image: "goods1.png",
+      image: "custom_goods/goods1.png",
       imageAlt: "Seoul Glow Candle stacked like N Seoul Tower"
     },
     {
@@ -97,7 +97,7 @@ var mainPageData = {
       title: "Seoul Love Lock",
       description: "Create Your Own Love Lock",
       tags: ["LoveLock", "Memory", "Custom"],
-      image: "goods2.png",
+      image: "custom_goods/goods2.png",
       imageAlt: "Olive green Seoul Love Lock padlock"
     },
     {
@@ -105,7 +105,7 @@ var mainPageData = {
       title: "Seoul Click Keycap",
       description: "Design Every Keystroke",
       tags: ["Keycap", "DeskSetup", "DIY"],
-      image: "goods3.png",
+      image: "custom_goods/goods3.png",
       imageAlt: "Keyboard keycap engraved with N Seoul Tower"
     },
     {
@@ -113,26 +113,26 @@ var mainPageData = {
       title: "Seoul Breeze Fan",
       description: "Carry Your Summer Breeze",
       tags: ["Fan", "Summer", "Lifestyle"],
-      image: "goods4.png",
+      image: "custom_goods/goods4.png",
       imageAlt: "Folding fan printed with N Seoul Tower"
     }
   ],
 
   /* 아래에서 위로 쌓이는 6개 파츠. 단계마다 파츠가 하나씩 늘어납니다. */
   towerParts: [
-    { file: "candle1.png", step: 1 },
-    { file: "candle2.png", step: 2 },
-    { file: "candle3.png", step: 3 },
-    { file: "candle4.png", step: 4 },
-    { file: "candle5.png", step: 5 },
-    { file: "candle6.png", step: 6 }
+    { file: "custom_goods/candle1.png", step: 1 },
+    { file: "custom_goods/candle2.png", step: 2 },
+    { file: "custom_goods/candle3.png", step: 3 },
+    { file: "custom_goods/candle4.png", step: 4 },
+    { file: "custom_goods/candle5.png", step: 5 },
+    { file: "custom_goods/candle6.png", step: 6 }
   ],
 
   /* Figma restaurant_wrap 에 실제로 포함된 사진만 사용합니다. */
   restaurantPhotos: [
     {
       id: "the_place_dining",
-      image: "restaurant_dining.png",
+      image: "restaurant/restaurant_dining.png",
       alt: "Dining tables by the observatory window at The Place Dining"
     }
   ]
@@ -205,7 +205,7 @@ function renderEvents(events) {
     item.setAttribute("data-event-slot", String(event.slot));
 
     var gondola = createElement("img", "event_gondola");
-    gondola.src = ASSET_PATH + "cablecar_nbear.png";
+    gondola.src = ASSET_PATH + "event/cablecar_nbear.png";
     gondola.alt = "";
     gondola.width = 258;
     gondola.height = 301;
@@ -261,7 +261,7 @@ function renderCourses(courses) {
 
     var button = createPendingButton("btn btn_green", "Learn more", "about " + course.title);
     var icon = createElement("img", "btn_icon");
-    icon.src = ASSET_PATH + "arrow_right.png";
+    icon.src = ASSET_PATH + "icon/arrow_right.png";
     icon.alt = "";
     icon.width = 19;
     icon.height = 19;
@@ -402,7 +402,7 @@ function renderCustomGoods(items) {
 
     if (index === 0) {
       var arc = createElement("img", "goods_card_arc");
-      arc.src = ASSET_PATH + "goods_card_arc.svg";
+      arc.src = ASSET_PATH + "custom_goods/goods_card_arc.svg";
       arc.alt = "";
       arc.width = 695;
       arc.height = 695;
