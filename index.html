@@ -40,7 +40,7 @@
   <meta name="twitter:image" content="https://dahyeonkong.github.io/n_seoul_tower/assets/og-image.png">
   <meta name="twitter:image:alt" content="서울의 야경과 N서울타워">
 
-  <link rel="preload" as="video" href="./assets/main_hero_vid.mp4" type="video/mp4">
+  <link rel="preload" as="image" href="./assets/turn_tower.png">
   <link rel="stylesheet" href="./css/reset.css">
   <link rel="stylesheet" href="./css/common.css">
   <link rel="stylesheet" href="./css/main.css">
@@ -181,17 +181,14 @@
       <!-- ===================== 1. hero ===================== -->
       <section class="hero_section" id="hero_section" aria-labelledby="hero_title">
         <div class="page_container hero_inner">
-          <video
+          <img
             class="hero_tower"
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="auto"
-            aria-label="N Seoul Tower seen from below"
+            src="./assets/turn_tower.png"
+            alt="N Seoul Tower seen from below"
+            width="389"
+            height="904"
+            fetchpriority="high"
           >
-            <source src="./assets/main_hero_vid.mp4" type="video/mp4">
-          </video>
           <!-- 우측 상단: 날씨 / 대기 시간 -->
           <div class="hero_info hero_info_weather">
             <div class="hero_info_row">

@@ -34,17 +34,15 @@
   height: 100%;
 }
 
-/* 히어로 타워 비디오 — 기존 이미지 크기 제한 없이 뷰포트 높이를 채웁니다. */
+/* 타워 — 실사 이미지, 원본 비율 유지.
+   모바일에서는 흐름 안에서 제목 아래 중앙 배치해 텍스트를 가리지 않게 합니다. */
 .hero_tower {
-  display: none;
   order: 4;
   align-self: center;
   width: auto;
-  max-width: none;
-  height: 100vh;
+  height: min(50svh, 420px);
   margin-top: 4px;
   margin-bottom: -40px;
-  object-fit: contain;
   pointer-events: none;
 }
 
@@ -136,6 +134,10 @@
 }
 
 @media (min-width: 834px) {
+  .hero_tower {
+    height: min(52svh, 560px);
+  }
+
   .hero_info_row {
     gap: 19px;
   }
@@ -145,8 +147,8 @@
   .hero_tower {
     position: absolute;
     order: 0;
-    width: auto;
-    height: 100vh;
+    width: 20.24%;
+    height: auto;
     margin: 0;
   }
 }
