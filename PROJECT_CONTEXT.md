@@ -150,8 +150,9 @@ GNB 11개 항목 중 **Figma `(develope) 개발 시안 5개 페이지` 에 시�
 - **딥링크 처리**: `#speed_course` 처럼 숨은 패널 안의 앵커로 진입하면 해당 탭을 먼저 열고
   `requestAnimationFrame` 뒤에 스크롤합니다. 패널이 `hidden` 이면 브라우저가 앵커로 이동하지 못하고,
   방금 펼친 패널은 아직 레이아웃 전이라 한 프레임 미뤄야 위치가 맞습니다.
-- **`pages/custom_course.html` 은 삭제하지 않고 그대로 뒀습니다.** 이제 어디서도 링크하지 않는
-  고아 파일이며 코스 내용이 두 곳에 중복됩니다. 삭제 여부는 확인이 필요합니다.
+- **`pages/custom_course.html` 은 삭제했습니다.** 내용이 전부 탭 패널로 옮겨져 어디서도 링크하지
+  않는 고아 파일이 됐고, 두 곳에 같은 코스 내용을 두면 한쪽만 고치는 사고가 나기 때문입니다.
+  `css/course.css` 와 `js/course.js` 는 탭 패널에서 계속 쓰므로 그대로 둡니다.
 
 ## 파일 구조
 
@@ -159,7 +160,6 @@ GNB 11개 항목 중 **Figma `(develope) 개발 시안 5개 페이지` 에 시�
 n_seoul_tower/
 ├── index.html
 ├── pages/                       # 서브 페이지 (공통 리소스는 ../ 로 참조)
-│   ├── custom_course.html       # 고아 파일 — 내용은 visitor_guide 탭으로 이동됨
 │   ├── restaurant_n_burger.html
 │   └── visitor_guide.html       # Getting Here + Recommended Courses 탭
 ├── css/
@@ -224,8 +224,8 @@ JS 는 `ASSET_PATH = "./assets/"` 를 접두로 두고 데이터에 하위 경�
     서브 페이지가 더 늘어나면 `common.css` 로 승격을 검토하세요(이번엔 기존 파일 수정을 피해 중복 유지).
   - `visitor_guide.css` 의 `.guide_tabs` / `.guide_tab` 규칙(`:target` 기반)은 탭이 공통
     `.subpage_tab` 으로 통일되면서 쓰이지 않는 죽은 코드입니다. 정리 여부 확인 필요.
-  - `pages/custom_course.html` 은 코스 내용이 `visitor_guide.html` 탭으로 옮겨진 뒤
-    어디서도 링크되지 않습니다. 두 파일에 같은 코스 내용이 중복돼 있으므로 삭제 여부 결정이 필요합니다.
+  - `pages/custom_course.html` 은 내용이 `visitor_guide.html` 탭으로 옮겨져 삭제했습니다.
+    외부에서 이 주소를 공유했다면 `pages/visitor_guide.html#panel_recommended_courses` 로 안내해야 합니다.
 
 ## 마지막 검증 결과
 
