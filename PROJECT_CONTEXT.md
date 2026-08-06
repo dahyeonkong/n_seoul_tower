@@ -65,7 +65,7 @@ GNB 11개 항목 중 **Figma `(develope) 개발 시안 5개 페이지` 에 시�
 | amenities | — | pending 버튼 | — |
 | floor guide | 790:7008 | `pages/floor_guide.html` | 미구현 |
 | Hours & Tickets | — | pending 버튼 | — |
-| visitor guide | 645:3216 | `pages/visitor_guide.html` | 미구현 |
+| visitor guide | 645:3216 | `pages/visitor_guide.html` | ✅ |
 | notice & news / FAQ | — | pending 버튼 | — |
 
 **주의: 미구현 3개(`brand_story` / `floor_guide` / `visitor_guide`)는 파일을 만들기 전까지 클릭 시 404 입니다.** 해당 파일을 `pages/` 에 추가하면 링크 수정 없이 바로 연결됩니다.
@@ -139,10 +139,15 @@ n_seoul_tower/
 │   └── n_gift_shop.html
 ├── css/
 │   ├── reset.css
-│   ├── common.css   # 디자인 토큰, 폰트, 공통 버튼/카드/헤더/메뉴/푸터/페이저
-│   └── main.css     # 섹션별 레이아웃과 반응형
+│   ├── common.css   # 디자인 토큰, 폰트, 공통 버튼/카드/헤더/메뉴/푸터/페이저 + subpage hero·tabs
+│   ├── main.css     # 섹션별 레이아웃과 반응형
+│   ├── course.css   # .course_page 스코프 — visitor_guide 의 코스 탭에서 재사용
+│   ├── restaurant_n_burger.css
+│   └── visitor_guide.css
 ├── js/
 │   ├── common.js    # 메뉴, 언어, family site, 섹션 페이저, 공통 상태
+│   ├── course.js    # 코스 카테고리 IntersectionObserver
+│   ├── visitor_guide.js  # 탭 전환 + 케이블카 안내 패널
 │   └── main.js      # 목업 데이터 + renderXxx + 섹션 인터랙션
 └── assets/
     ├── back_img.png / turn_tower.png / footer_tower.png / hero_title_mask.svg
@@ -170,7 +175,7 @@ JS 는 `ASSET_PATH = "./assets/"` 를 접두로 두고 데이터에 하위 경�
 
 ## 남은 문제 / 확인 필요
 
-- GNB 는 시안이 있는 5개만 `<a>` 로 연결했고 그중 4개(`brand_story` / `n_gift_shop` / `floor_guide` / `visitor_guide`)는 **HTML 파일이 아직 없어 404** 입니다. 나머지 CTA·메뉴는 `data-pending-link` + `aria-disabled="true"` 버튼으로 두고 안내 메시지만 노출합니다.
+- GNB 는 시안이 있는 5개만 `<a>` 로 연결했고 그중 3개(`brand_story` / `n_gift_shop` / `floor_guide`)는 **HTML 파일이 아직 없어 404** 입니다. 나머지 CTA·메뉴는 `data-pending-link` + `aria-disabled="true"` 버튼으로 두고 안내 메시지만 노출합니다.
 - Restaurant 슬라이더는 Figma 에 3개 인디케이터가 있으나 실제 사진 에셋은 1장(`restaurant_dining.png`)만 존재합니다. 나머지 2장을 받으면 `mainPageData.restaurantPhotos` 에 추가하면 됩니다.
 - 메인 페이지 기프트숍 섹션은 상품명·가격 데이터 없이 이미지 + alt 만 사용합니다.
   (서브 페이지 `pages/n_gift_shop.html` 는 시안 986:6586 에 표기된 실제 상품명·가격·태그를 사용합니다.)
@@ -195,6 +200,18 @@ JS 는 `ASSET_PATH = "./assets/"` 를 접두로 두고 데이터에 하위 경�
   - (기프트숍) 미선택 페이지 번호 `rgba(59,67,43,0.4)` on `#f7f4e8` → **2.07:1** (3:1 미달)
   - 위 2건은 Figma 값 그대로이며 hover / focus-visible 에서는 불투명 색으로 전환됩니다.
 - 폰트는 Google Fonts + jsDelivr(Pretendard) CDN 으로 로드합니다. 로컬 폰트 파일 사용이 필요하면 `assets/fonts` 로 전환해야 합니다.
+- **교통안내 페이지 확인 필요 항목**
+  - `Cable Car Website` / `Cable Car Information` 버튼의 실제 주소. 현재는 시안의 주차 안내에 적힌
+    `namsancablecar.com` 도메인을 임시로 씁니다.
+  - `City Tour Bus Website` 버튼의 실제 주소. 시안에 표기가 없어 임시 주소를 넣고 주석으로 표시했습니다.
+  - Figma `cable_info` 컴포넌트는 `베리언트3` 만 배치되어 있고 chevron-down 을 달고 있습니다.
+    펼침 패널이 있는 컴포넌트인지 확인이 필요해, 지금은 링크 형태로만 구현했습니다.
+  - 히어로/탭 스타일이 `restaurant_n_burger.css` 의 `rest_hero` / `rest_tab` 과 사실상 동일합니다.
+    서브 페이지가 더 늘어나면 `common.css` 로 승격을 검토하세요(이번엔 기존 파일 수정을 피해 중복 유지).
+  - `visitor_guide.css` 의 `.guide_tabs` / `.guide_tab` 규칙(`:target` 기반)은 탭이 공통
+    `.subpage_tab` 으로 통일되면서 쓰이지 않는 죽은 코드입니다. 정리 여부 확인 필요.
+  - `pages/custom_course.html` 은 내용이 `visitor_guide.html` 탭으로 옮겨져 삭제했습니다.
+    외부에서 이 주소를 공유했다면 `pages/visitor_guide.html#panel_recommended_courses` 로 안내해야 합니다.
 
 ## 마지막 검증 결과
 
