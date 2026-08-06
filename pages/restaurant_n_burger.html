@@ -8,12 +8,12 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="N Burger | N Seoul Restaurant">
   <meta property="og:description" content="N Burger at N Seoul Tower — the most Seoul-like handmade burger house met at the top of Namsan.">
-  <meta property="og:image" content="./assets/restaurant/n_burger_thum.png">
-  <link rel="icon" href="./assets/nst_logo_defalut.svg" type="image/svg+xml">
-  <link rel="preload" as="image" href="./assets/restaurant/restaurant_visual_img.png">
-  <link rel="stylesheet" href="./css/reset.css">
-  <link rel="stylesheet" href="./css/common.css">
-  <link rel="stylesheet" href="./css/restaurant_n_burger.css">
+  <meta property="og:image" content="../assets/restaurant/n_burger_thum.png">
+  <link rel="icon" href="../assets/nst_logo_defalut.svg" type="image/svg+xml">
+  <link rel="preload" as="image" href="../assets/restaurant/restaurant_visual_img.png">
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/restaurant_n_burger.css">
 </head>
 <body>
   <div class="site_wrapper" id="top">
@@ -22,8 +22,8 @@
     <!-- ===================== global header (공통 컴포넌트 재사용) ===================== -->
     <header class="site_header">
       <div class="page_container site_header_inner">
-        <a class="brand_logo" href="./index.html" aria-label="N Seoul Tower home">
-          <img src="./assets/nst_logo_defalut.svg" alt="" width="43" height="43">
+        <a class="brand_logo" href="../index.html" aria-label="N Seoul Tower home">
+          <img src="../assets/nst_logo_defalut.svg" alt="" width="43" height="43">
         </a>
         <button
           class="menu_toggle"
@@ -69,7 +69,7 @@
             aria-controls="language_menu"
           >
             <span data-language-current>English</span>
-            <img src="./assets/icon/icon_chevron_down.svg" alt="" width="20" height="20">
+            <img src="../assets/icon/icon_chevron_down.svg" alt="" width="20" height="20">
             <span class="visually_hidden">Change language</span>
           </button>
           <ul class="language_menu" id="language_menu" data-language-menu hidden>
@@ -84,11 +84,11 @@
       <div class="page_container global_menu_body">
         <div class="menu_brand">
           <div class="menu_brand_logo">
-            <img src="./assets/nst_logo_gray.svg" alt="" width="219" height="136">
+            <img src="../assets/nst_logo_gray.svg" alt="" width="219" height="136">
             <p class="menu_brand_name"><span>N</span> SEOUL TOWER</p>
           </div>
           <button class="book_btn" type="button" data-pending-link aria-disabled="true">
-            <img src="./assets/icon/icon_ticket.svg" alt="" width="24" height="24">
+            <img src="../assets/icon/icon_ticket.svg" alt="" width="24" height="24">
             buy ticket
           </button>
         </div>
@@ -97,7 +97,7 @@
           <div class="gnb_group">
             <p class="gnb_title">tower story</p>
             <ul class="gnb_lnb">
-              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">brand story</button></li>
+              <li><a class="gnb_link" href="./brand_story.html">brand story</a></li>
               <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">history</button></li>
             </ul>
           </div>
@@ -105,16 +105,16 @@
             <p class="gnb_title">explore</p>
             <ul class="gnb_lnb">
               <li><a class="gnb_link" href="./restaurant_n_burger.html" aria-current="page">restaurants</a></li>
-              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">N gift shop</button></li>
+              <li><a class="gnb_link" href="./n_gift_shop.html">N gift shop</a></li>
               <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">amenities</button></li>
-              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">floor guide</button></li>
+              <li><a class="gnb_link" href="./floor_guide.html">floor guide</a></li>
             </ul>
           </div>
           <div class="gnb_group">
             <p class="gnb_title">visit</p>
             <ul class="gnb_lnb">
               <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">Hours &amp; Tickets</button></li>
-              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">visitor guide</button></li>
+              <li><a class="gnb_link" href="./visitor_guide.html">visitor guide</a></li>
             </ul>
           </div>
           <div class="gnb_group">
@@ -137,7 +137,7 @@
       <section class="rest_hero" aria-labelledby="rest_hero_title">
         <img
           class="rest_hero_object"
-          src="./assets/restaurant/restaurant_visual_img.png"
+          src="../assets/restaurant/restaurant_visual_img.png"
           alt="Illustrated 3D scene of the N Seoul Tower restaurant floor"
           width="1334"
           height="1334"
@@ -152,7 +152,7 @@
           <li>
             <a class="rest_tab is_selected" href="./restaurant_n_burger.html" aria-current="page">
               <span class="rest_tab_icon">
-                <img src="./assets/icon/restaurant/hamburger.svg" alt="" width="24" height="24">
+                <img src="../assets/icon/restaurant/hamburger.svg" alt="" width="24" height="24">
               </span>
               N Burger
             </a>
@@ -160,7 +160,7 @@
           <li>
             <button class="rest_tab" type="button" data-pending-link aria-disabled="true">
               <span class="rest_tab_icon">
-                <img src="./assets/icon/restaurant/beef.svg" alt="" width="24" height="24">
+                <img src="../assets/icon/restaurant/beef.svg" alt="" width="24" height="24">
               </span>
               n.grill
             </button>
@@ -168,7 +168,7 @@
           <li>
             <button class="rest_tab" type="button" data-pending-link aria-disabled="true">
               <span class="rest_tab_icon">
-                <img src="./assets/icon/restaurant/cooking-pot.svg" alt="" width="24" height="24">
+                <img src="../assets/icon/restaurant/cooking-pot.svg" alt="" width="24" height="24">
               </span>
               HanCook
             </button>
@@ -176,7 +176,7 @@
           <li>
             <button class="rest_tab" type="button" data-pending-link aria-disabled="true">
               <span class="rest_tab_icon">
-                <img src="./assets/icon/restaurant/ham.svg" alt="" width="24" height="24">
+                <img src="../assets/icon/restaurant/ham.svg" alt="" width="24" height="24">
               </span>
               The Place Dining
             </button>
@@ -184,7 +184,7 @@
           <li>
             <button class="rest_tab" type="button" data-pending-link aria-disabled="true">
               <span class="rest_tab_icon">
-                <img src="./assets/icon/restaurant/soup.svg" alt="" width="24" height="24">
+                <img src="../assets/icon/restaurant/soup.svg" alt="" width="24" height="24">
               </span>
               Durumi Bunsik
             </button>
@@ -192,7 +192,7 @@
           <li>
             <button class="rest_tab" type="button" data-pending-link aria-disabled="true">
               <span class="rest_tab_icon">
-                <img src="./assets/icon/restaurant/coffee.svg" alt="" width="24" height="24">
+                <img src="../assets/icon/restaurant/coffee.svg" alt="" width="24" height="24">
               </span>
               N Terrace
             </button>
@@ -200,7 +200,7 @@
           <li>
             <button class="rest_tab" type="button" data-pending-link aria-disabled="true">
               <span class="rest_tab_icon">
-                <img src="./assets/icon/restaurant/lollipop.svg" alt="" width="24" height="24">
+                <img src="../assets/icon/restaurant/lollipop.svg" alt="" width="24" height="24">
               </span>
               N Sweet Bar
             </button>
@@ -213,7 +213,7 @@
         <div class="page_container burger_info_inner">
           <figure class="burger_info_thumb">
             <img
-              src="./assets/restaurant/n_burger_thum.png"
+              src="../assets/restaurant/n_burger_thum.png"
               alt="N Burger signature burger served with fries and a drink"
               width="1346"
               height="1012"
@@ -258,7 +258,7 @@
         <div class="burger_gallery_inner">
           <figure class="burger_gallery_stage">
             <img
-              src="./assets/restaurant/restaurant_slide_banner.png"
+              src="../assets/restaurant/restaurant_slide_banner.png"
               alt="Interior of N Burger with counter seating and a large N BURGER wall graphic"
               width="1600"
               height="673"
@@ -268,11 +268,11 @@
           <!-- Figma slide_banner 에 이미지가 1장만 있어 실제 슬라이드는 만들지 않고
                디자인의 화살표만 비활성 상태로 유지합니다. -->
           <button class="burger_gallery_nav burger_gallery_nav_prev" type="button" disabled>
-            <img src="./assets/icon/chevron_left.svg" alt="" width="42" height="42">
+            <img src="../assets/icon/chevron_left.svg" alt="" width="42" height="42">
             <span class="visually_hidden">Previous photo</span>
           </button>
           <button class="burger_gallery_nav burger_gallery_nav_next" type="button" disabled>
-            <img src="./assets/icon/chevron_left.svg" alt="" width="42" height="42">
+            <img src="../assets/icon/chevron_left.svg" alt="" width="42" height="42">
             <span class="visually_hidden">Next photo</span>
           </button>
         </div>
@@ -281,24 +281,24 @@
       <!-- ===================== 5. best menu ===================== -->
       <section class="burger_best" aria-labelledby="burger_best_title">
         <h2 class="visually_hidden" id="burger_best_title">N Burger best menu</h2>
-        <img class="burger_best_type burger_best_type_top" src="./assets/restaurant/bg_title/top.png" alt="" aria-hidden="true" width="940" height="158" loading="lazy">
-        <img class="burger_best_type burger_best_type_bottom" src="./assets/restaurant/bg_title/bottom.png" alt="" aria-hidden="true" width="1002" height="155" loading="lazy">
+        <img class="burger_best_type burger_best_type_top" src="../assets/restaurant/bg_title/top.png" alt="" aria-hidden="true" width="940" height="158" loading="lazy">
+        <img class="burger_best_type burger_best_type_bottom" src="../assets/restaurant/bg_title/bottom.png" alt="" aria-hidden="true" width="1002" height="155" loading="lazy">
 
         <ul class="burger_best_list" tabindex="0" role="group" aria-label="Best menu images, scrollable list">
           <li class="burger_best_card">
-            <img src="./assets/restaurant/burger_image5.png" alt="Seoul Bulgogi Burger" width="396" height="683" loading="lazy">
+            <img src="../assets/restaurant/burger_image5.png" alt="Seoul Bulgogi Burger" width="396" height="683" loading="lazy">
           </li>
           <li class="burger_best_card">
-            <img src="./assets/restaurant/burger_image4.png" alt="Classic Cheese Burger" width="396" height="683" loading="lazy">
+            <img src="../assets/restaurant/burger_image4.png" alt="Classic Cheese Burger" width="396" height="683" loading="lazy">
           </li>
           <li class="burger_best_card">
-            <img src="./assets/restaurant/burger_image3.png" alt="Bacon Deluxe Burger" width="397" height="683" loading="lazy">
+            <img src="../assets/restaurant/burger_image3.png" alt="Bacon Deluxe Burger" width="397" height="683" loading="lazy">
           </li>
           <li class="burger_best_card">
-            <img src="./assets/restaurant/burger_image2.png" alt="Fresh Craft Beer" width="399" height="683" loading="lazy">
+            <img src="../assets/restaurant/burger_image2.png" alt="Fresh Craft Beer" width="399" height="683" loading="lazy">
           </li>
           <li class="burger_best_card">
-            <img src="./assets/restaurant/burger_image1.png" alt="Namsan Tower Cup, a to-go only beer and chicken set" width="426" height="683" loading="lazy">
+            <img src="../assets/restaurant/burger_image1.png" alt="Namsan Tower Cup, a to-go only beer and chicken set" width="426" height="683" loading="lazy">
           </li>
         </ul>
       </section>
@@ -309,8 +309,8 @@
         <div class="page_container burger_menu_inner">
           <figure class="burger_menu_board">
             <img
-              src="./assets/restaurant/menu/n_burger_full_menu.png"
-              srcset="./assets/restaurant/menu/n_burger_full_menu.png 1600w, ./assets/restaurant/menu/n_burger_full_menu@2x.png 3200w"
+              src="../assets/restaurant/menu/n_burger_full_menu.png"
+              srcset="../assets/restaurant/menu/n_burger_full_menu.png 1600w, ../assets/restaurant/menu/n_burger_full_menu@2x.png 3200w"
               sizes="(min-width: 1920px) 1600px, calc(100vw - var(--page_pad) * 2)"
               alt="N Burger full menu board listing signature sets, burgers, chicken, sides, sauces and drinks with prices"
               width="1600"
@@ -329,10 +329,10 @@
       <div class="page_container site_footer_inner">
         <div class="footer_top">
           <p class="footer_logo">
-            <img src="./assets/nst_logo_defalut.svg" alt="N Seoul Tower" width="80" height="107" loading="lazy">
+            <img src="../assets/nst_logo_defalut.svg" alt="N Seoul Tower" width="80" height="107" loading="lazy">
           </p>
           <a class="top_button" href="#top">
-            <img src="./assets/icon/arrow_up.png" alt="" width="24" height="24" loading="lazy">
+            <img src="../assets/icon/arrow_up.png" alt="" width="24" height="24" loading="lazy">
             top
           </a>
         </div>
@@ -363,7 +363,7 @@
                 aria-controls="family_site_menu"
               >
                 family site
-                <img src="./assets/icon/icon_chevron_down.svg" alt="" width="24" height="24" loading="lazy">
+                <img src="../assets/icon/icon_chevron_down.svg" alt="" width="24" height="24" loading="lazy">
               </button>
               <div class="family_site_menu" id="family_site_menu" data-family-menu hidden>
                 <div class="family_site_group">
@@ -412,19 +412,19 @@
             <ul class="footer_sns">
               <li>
                 <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
-                  <img src="./assets/icon/sns/sns1.png" alt="" width="24" height="24" loading="lazy">
+                  <img src="../assets/icon/sns/sns1.png" alt="" width="24" height="24" loading="lazy">
                   <span class="visually_hidden">Facebook</span>
                 </button>
               </li>
               <li>
                 <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
-                  <img src="./assets/icon/sns/sns2.png" alt="" width="24" height="24" loading="lazy">
+                  <img src="../assets/icon/sns/sns2.png" alt="" width="24" height="24" loading="lazy">
                   <span class="visually_hidden">Instagram</span>
                 </button>
               </li>
               <li>
                 <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
-                  <img src="./assets/icon/sns/sns3.png" alt="" width="24" height="24" loading="lazy">
+                  <img src="../assets/icon/sns/sns3.png" alt="" width="24" height="24" loading="lazy">
                   <span class="visually_hidden">YouTube</span>
                 </button>
               </li>
@@ -432,13 +432,13 @@
           </div>
         </div>
 
-        <img class="footer_deco" src="./assets/footer_tower.png" alt="" aria-hidden="true" width="418" height="417" loading="lazy">
+        <img class="footer_deco" src="../assets/footer_tower.png" alt="" aria-hidden="true" width="418" height="417" loading="lazy">
       </div>
     </footer>
 
     <p class="link_status" data-link-status role="status" aria-live="polite"></p>
   </div>
 
-  <script src="./js/common.js"></script>
+  <script src="../js/common.js"></script>
 </body>
 </html>
