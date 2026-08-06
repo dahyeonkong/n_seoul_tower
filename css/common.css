@@ -1174,6 +1174,7 @@ html .course_page .course_description {
   --quick_ring_inset: calc(var(--quick_btn) * 0.0125);
   /* 10.8 / 96 = 0.1125 */
   --quick_ring_font: calc(var(--quick_btn) * 0.1125);
+  --quick_ring_ink: var(--color_new_primary_800);
 
   position: fixed;
   right: calc(var(--quick_gap) + var(--scrollbar_gap, 0px));
@@ -1309,12 +1310,19 @@ html .course_page .course_description {
   display: flex;
   justify-content: center;
   padding-top: var(--quick_ring_inset);
-  color: var(--color_new_primary_800);
+  color: var(--quick_ring_ink);
   font-family: var(--font_body);
   font-size: var(--quick_ring_font);
   font-weight: 500;
   line-height: 1;
   transform: rotate(var(--quick_char_angle, 0deg));
+  transition: color var(--duration) var(--ease_out);
+}
+
+/* 어두운 영역(푸터, restaurant 섹션) 위에서는 기본 잉크색이 묻혀 밝은 크림으로 바꿉니다.
+   겹침 판정은 common.js 의 initQuickMenuContrast() 가 담당합니다. */
+.quick_menu.is_on_dark {
+  --quick_ring_ink: #fcdea7;
 }
 
 @keyframes quick_ring_spin {

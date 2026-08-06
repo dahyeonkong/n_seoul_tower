@@ -518,6 +518,69 @@ function renderQuickMenuRing(ring) {
   ring.appendChild(fragment);
 }
 
+/* 어두운 영역 위에서는 CLICK ME 글자가 묻히므로 밝은 색으로 바꿉니다.
+   스크롤마다 위치를 재지 않도록, 관찰 영역을 토글 버튼이 놓인 가로 띠로 좁힌
+   IntersectionObserver 로 겹침을 판정합니다 (AGENTS 7.2). */
+function initQuickMenuContrast(quickMenu, toggleButton) {
+  var darkAreas = Array.prototype.slice.call(document.querySelectorAll("[data-quick-dark]"));
+
+  if (darkAreas.length === 0 || !("IntersectionObserver" in window)) {
+    return;
+  }
+
+  var overlappingAreas = [];
+  var observer = null;
+  var resizeTimer = null;
+
+  function renderContrastState() {
+    quickMenu.classList.toggle("is_on_dark", overlappingAreas.length > 0);
+  }
+
+  function handleDarkIntersect(entries) {
+    entries.forEach(function (entry) {
+      var index = overlappingAreas.indexOf(entry.target);
+
+      if (entry.isIntersecting && index === -1) {
+        overlappingAreas.push(entry.target);
+      } else if (!entry.isIntersecting && index !== -1) {
+        overlappingAreas.splice(index, 1);
+      }
+    });
+
+    renderContrastState();
+  }
+
+  /* 관찰 기준은 메뉴 전체가 아니라 토글 버튼입니다.
+     펼치면 메뉴 높이가 커지지만 CLICK ME 링은 항상 토글 안에 있습니다. */
+  function observeDarkAreas() {
+    if (observer) {
+      observer.disconnect();
+    }
+
+    var rect = toggleButton.getBoundingClientRect();
+    var topInset = Math.round(rect.top);
+    var bottomInset = Math.round(window.innerHeight - rect.bottom);
+
+    overlappingAreas = [];
+    observer = new IntersectionObserver(handleDarkIntersect, {
+      rootMargin: -topInset + "px 0px " + -bottomInset + "px 0px",
+      threshold: 0
+    });
+
+    darkAreas.forEach(function (area) {
+      observer.observe(area);
+    });
+  }
+
+  function handleContrastResize() {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(observeDarkAreas, 200);
+  }
+
+  observeDarkAreas();
+  window.addEventListener("resize", handleContrastResize);
+}
+
 function initQuickMenu() {
   var quickMenu = document.querySelector("[data-quick-menu]");
   if (!quickMenu) {
@@ -540,6 +603,7 @@ function initQuickMenu() {
 
   if (ring) {
     renderQuickMenuRing(ring);
+    initQuickMenuContrast(quickMenu, toggleButton);
   }
 
   /* 이동할 섹션이 없는 페이지에서는 버튼을 남기지 않습니다 (AGENTS 10.4). */
