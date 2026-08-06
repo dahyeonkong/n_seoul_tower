@@ -959,7 +959,7 @@ body {
 .subpage_hero {
   position: relative;
   display: flex;
-  min-height: var(--subpage_hero_min_height_mobile, 100svh);
+  /* min-height: var(--subpage_hero_min_height_mobile, 100svh); */
   padding: var(
     --subpage_hero_padding_mobile,
     calc(var(--header_height) + 32px) var(--page_pad) 56px
@@ -970,6 +970,7 @@ body {
   gap: var(--subpage_hero_gap_mobile, 24px);
   overflow: hidden;
   background-color: var(--subpage_hero_bg, #b6c384);
+  height:100vh;
 }
 
 .subpage_hero_image {
