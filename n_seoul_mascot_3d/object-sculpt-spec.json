@@ -56,8 +56,8 @@
     "licenseNotice": "./vendor/THREE-LICENSE.txt"
   },
   "optimization": {
-    "measuredMeshCount": 43,
-    "measuredTriangleCount": 59292,
+    "measuredMeshCount": 41,
+    "measuredTriangleCount": 58140,
     "shadowMap": "2048px desktop, 1024px below 834px",
     "microDetailShadows": false,
     "pixelRatioCap": 2,
