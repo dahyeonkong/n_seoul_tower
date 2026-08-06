@@ -48,9 +48,31 @@ N SEOUL TOWER 메인 페이지 1종을 HTML / CSS / Vanilla JavaScript 로 구�
 
 이에 따라 오버레이 안의 별도 닫기(X) 버튼은 제거했습니다. Figma 에서도 header 의 `menu_icon`(1720~1760, 41.5~81.5)과 menu 프레임의 `x`(1724~1760, 43.5~79.5)가 같은 좌표라 하나의 컨트롤입니다. 토글이 오버레이 위에 남도록 `.site_header` 의 `z-index` 를 120 으로 올렸고(구조는 기존 `position: absolute` 유지), 메뉴가 열리면 로고는 숨깁니다.
 
+## 페이지 구조 / GNB 링크 (2026-08-06)
+
+서브 페이지는 `pages/` 폴더에 둡니다. 루트에는 `index.html` 만 남습니다.
+`pages/` 안의 문서는 `../css/`, `../js/`, `../assets/` 로 공통 리소스를 참조합니다.
+
+GNB 11개 항목 중 **Figma `(develope) 개발 시안 5개 페이지` 에 시안이 있는 5개만 `<a>` 링크**이고,
+시안이 없는 나머지는 기존 `data-pending-link` 버튼을 유지합니다.
+
+| GNB 항목 | Figma node | 링크 | HTML |
+|---|---|---|---|
+| brand story | 880:6605 | `pages/brand_story.html` | 미구현 |
+| history | — | pending 버튼 | — |
+| restaurants | 645:1375 | `pages/restaurant_n_burger.html` | ✅ |
+| N gift shop | 667:4906 | `pages/n_gift_shop.html` | 미구현 |
+| amenities | — | pending 버튼 | — |
+| floor guide | 790:7008 | `pages/floor_guide.html` | 미구현 |
+| Hours & Tickets | — | pending 버튼 | — |
+| visitor guide | 645:3216 | `pages/visitor_guide.html` | 미구현 |
+| notice & news / FAQ | — | pending 버튼 | — |
+
+**주의: 미구현 4개는 파일을 만들기 전까지 클릭 시 404 입니다.** 해당 파일을 `pages/` 에 추가하면 링크 수정 없이 바로 연결됩니다.
+
 ## Restaurant > N Burger 상세 페이지 (2026-08-06 추가)
 
-`restaurant_n_burger.html` — Figma `restaurant_n버거` (**645:1375**, 1920 × 7431) 기준.
+`pages/restaurant_n_burger.html` — Figma `restaurant_n버거` (**645:1375**, 1920 × 7431) 기준.
 
 | 섹션 | Figma node | 비고 |
 |---|---|---|
@@ -63,7 +85,7 @@ N SEOUL TOWER 메인 페이지 1종을 HTML / CSS / Vanilla JavaScript 로 구�
 | full menu | 645:1557 | menu_wrap 을 PNG 로 export 해 사용 |
 | footer | 793:10410 | 기존 공통 푸터 재사용 |
 
-- 페이지 전용 CSS: `css/restaurant_n_burger.css` (전용 토큰도 이 파일의 `:root` 에 정의)
+- 페이지 전용 CSS: `css/restaurant_n_burger.css` (위치 그대로, 서브페이지에서 `../css/` 로 참조) (전용 토큰도 이 파일의 `:root` 에 정의)
 - **페이지 전용 JS 없음** — 탭·갤러리 모두 CSS 로 처리, 공통 동작만 `js/common.js` 사용
 - 신규 에셋: `assets/icon/chevron_left.svg`, `assets/restaurant/menu/n_burger_full_menu.png` (1600×2170) 및 `@2x` (3200×4340)
 - 주의: `<img>` 의 `width`/`height` 속성은 CSS `aspect-ratio` 를 무력화하므로 비율 제어가 필요한 이미지에는 `height: auto` 를 함께 지정해야 합니다.
@@ -73,6 +95,8 @@ N SEOUL TOWER 메인 페이지 1종을 HTML / CSS / Vanilla JavaScript 로 구�
 ```text
 n_seoul_tower/
 ├── index.html
+├── pages/                       # 서브 페이지 (공통 리소스는 ../ 로 참조)
+│   └── restaurant_n_burger.html
 ├── css/
 │   ├── reset.css
 │   ├── common.css   # 디자인 토큰, 폰트, 공통 버튼/카드/헤더/메뉴/푸터/페이저
@@ -106,7 +130,7 @@ JS 는 `ASSET_PATH = "./assets/"` 를 접두로 두고 데이터에 하위 경�
 
 ## 남은 문제 / 확인 필요
 
-- 모든 상세 페이지 URL 미확정 → CTA·메뉴는 `data-pending-link` + `aria-disabled="true"` 버튼으로 두고 안내 메시지만 노출합니다. URL 확정 시 `<a href>` 로 교체해야 합니다.
+- GNB 는 시안이 있는 5개만 `<a>` 로 연결했고 그중 4개(`brand_story` / `n_gift_shop` / `floor_guide` / `visitor_guide`)는 **HTML 파일이 아직 없어 404** 입니다. 나머지 CTA·메뉴는 `data-pending-link` + `aria-disabled="true"` 버튼으로 두고 안내 메시지만 노출합니다.
 - Restaurant 슬라이더는 Figma 에 3개 인디케이터가 있으나 실제 사진 에셋은 1장(`restaurant_dining.png`)만 존재합니다. 나머지 2장을 받으면 `mainPageData.restaurantPhotos` 에 추가하면 됩니다.
 - 기프트숍 상품명·가격·재고 데이터 없음 (디자인에도 없음). 현재는 이미지 + alt 만 사용합니다.
 - 날씨·대기시간·티켓가격은 Figma 표기값을 그대로 넣은 정적 값입니다. 실제 API 미연동.
