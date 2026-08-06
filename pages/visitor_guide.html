@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visitor Guide | N Seoul Tower</title>
+  <meta name="description" content="How to get to N Seoul Tower — Namsan shuttle bus, cable car, Seoul City Tour Bus and nearby parking information.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Visitor Guide | N Seoul Tower">
+  <meta property="og:description" content="How to get to N Seoul Tower — Namsan shuttle bus, cable car, Seoul City Tour Bus and nearby parking information.">
+  <meta property="og:image" content="../assets/guide_course/guide/visit_cablecar.png">
+  <link rel="icon" href="../assets/nst_logo_defalut.svg" type="image/svg+xml">
+  <link rel="preload" as="image" href="../assets/guide_course/guide/visit_cablecar.png">
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/visitor_guide.css">
+</head>
+<body>
+  <div class="site_wrapper" id="top">
+    <a class="skip_link" href="#main_content">Skip to main content</a>
+
+    <!-- ===================== global header (공통 컴포넌트 재사용) ===================== -->
+    <header class="site_header">
+      <div class="page_container site_header_inner">
+        <a class="brand_logo" href="../index.html" aria-label="N Seoul Tower home">
+          <img src="../assets/nst_logo_defalut.svg" alt="" width="43" height="43">
+        </a>
+        <button
+          class="menu_toggle"
+          type="button"
+          data-menu-toggle
+          aria-expanded="false"
+          aria-controls="global_menu"
+        >
+          <svg
+            class="menu_toggle_icon"
+            viewBox="0 0 40 40"
+            fill="currentColor"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              class="menu_toggle_bar menu_toggle_bar_top"
+              d="M13.2201 8.75786C13.6122 8.73215 14.1638 8.74854 14.5647 8.74873L16.9757 8.74952L24.5234 8.74926L31.5781 8.74912L33.8633 8.74911C34.2621 8.74909 34.6754 8.74368 35.0736 8.75739C35.3029 8.76528 35.5551 8.86073 35.7406 8.99694C36.01 9.19463 36.1879 9.49307 36.2334 9.82411C36.3334 10.5386 35.8289 11.1569 35.1219 11.2444C34.7602 11.2726 34.2127 11.257 33.8383 11.2568L31.6121 11.2562L24.559 11.2562L17.0156 11.2564L14.5868 11.2574C14.1572 11.2576 13.7295 11.266 13.2985 11.2496C12.2629 11.2101 11.721 10.0355 12.3559 9.2183C12.5929 8.91332 12.8454 8.81067 13.2201 8.75786Z"
+            />
+            <path
+              class="menu_toggle_bar menu_toggle_bar_middle"
+              d="M4.90152 18.7566C5.49424 18.73 6.21084 18.749 6.81463 18.749L10.3771 18.7491L21.2264 18.7491H30.4393L33.4262 18.7486C33.8725 18.7486 34.3191 18.7468 34.7652 18.7493C35.1607 18.7515 35.4463 18.768 35.7652 19.0166C36.0264 19.2187 36.1963 19.5166 36.2373 19.8443C36.2785 20.1705 36.1883 20.4994 35.9865 20.7588C35.7564 21.0515 35.474 21.1994 35.1086 21.2465C34.5719 21.275 33.873 21.2566 33.3254 21.2566L30.1414 21.2568L20.3223 21.2564H10.1164L6.78197 21.2572C6.1999 21.2574 5.61889 21.2572 5.03681 21.2521C4.40519 21.2469 3.85435 20.8263 3.7642 20.1877C3.71644 19.8447 3.80783 19.497 4.01799 19.2218C4.25316 18.9169 4.53303 18.8044 4.90152 18.7566Z"
+            />
+            <path
+              class="menu_toggle_bar menu_toggle_bar_bottom"
+              d="M19.9016 28.7567C20.8455 28.7163 22.0254 28.7493 22.9889 28.7493L28.8801 28.7491H33.0131L34.3523 28.7493C34.8449 28.7497 35.3227 28.6895 35.7408 28.9969C36.0098 29.1948 36.1873 29.493 36.233 29.8237C36.335 30.5538 35.8231 31.1549 35.1086 31.2465C34.7658 31.2649 34.3643 31.2565 34.018 31.2565L32.2586 31.2567L26.791 31.2565L22.2465 31.2569L20.8231 31.2571C20.7117 31.2571 20.5988 31.2588 20.4885 31.2577C20.0619 31.253 19.6234 31.2895 19.2668 31.0106C18.9881 30.7926 18.8093 30.5295 18.7622 30.1764C18.7166 29.8344 18.8107 29.4887 19.0231 29.217C19.2588 28.9129 19.5313 28.8063 19.9016 28.7567Z"
+            />
+          </svg>
+          <span class="visually_hidden" data-menu-toggle-label>Open menu</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ===================== global menu overlay (공통 컴포넌트 재사용) ===================== -->
+    <div class="global_menu" id="global_menu" data-menu-panel hidden>
+      <div class="page_container global_menu_head">
+        <div class="language_selector">
+          <button
+            class="language_button"
+            type="button"
+            data-language-button
+            aria-expanded="false"
+            aria-controls="language_menu"
+          >
+            <span data-language-current>English</span>
+            <img src="../assets/icon/icon_chevron_down.svg" alt="" width="20" height="20">
+            <span class="visually_hidden">Change language</span>
+          </button>
+          <ul class="language_menu" id="language_menu" data-language-menu hidden>
+            <li><button class="language_option" type="button" data-language="en" aria-current="true">English</button></li>
+            <li><button class="language_option" type="button" data-language="ko">Korean</button></li>
+            <li><button class="language_option" type="button" data-language="ja">Japanese</button></li>
+            <li><button class="language_option" type="button" data-language="zh">Chinese</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="page_container global_menu_body">
+        <div class="menu_brand">
+          <div class="menu_brand_logo">
+            <img src="../assets/nst_logo_gray.svg" alt="" width="219" height="136">
+            <p class="menu_brand_name"><span>N</span> SEOUL TOWER</p>
+          </div>
+          <button class="book_btn" type="button" data-pending-link aria-disabled="true">
+            <img src="../assets/icon/icon_ticket.svg" alt="" width="24" height="24">
+            buy ticket
+          </button>
+        </div>
+
+        <nav class="gnb" aria-label="Main menu">
+          <div class="gnb_group">
+            <p class="gnb_title">tower story</p>
+            <ul class="gnb_lnb">
+              <li><a class="gnb_link" href="./brand_story.html">brand story</a></li>
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">history</button></li>
+            </ul>
+          </div>
+          <div class="gnb_group">
+            <p class="gnb_title">explore</p>
+            <ul class="gnb_lnb">
+              <li><a class="gnb_link" href="./restaurant_n_burger.html">restaurants</a></li>
+              <li><a class="gnb_link" href="./n_gift_shop.html">N gift shop</a></li>
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">amenities</button></li>
+              <li><a class="gnb_link" href="./floor_guide.html">floor guide</a></li>
+            </ul>
+          </div>
+          <div class="gnb_group">
+            <p class="gnb_title">visit</p>
+            <ul class="gnb_lnb">
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">Hours &amp; Tickets</button></li>
+              <li><a class="gnb_link" href="./visitor_guide.html" aria-current="page">visitor guide</a></li>
+            </ul>
+          </div>
+          <div class="gnb_group">
+            <p class="gnb_title">events</p>
+          </div>
+          <div class="gnb_group">
+            <p class="gnb_title">support</p>
+            <ul class="gnb_lnb">
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">notice &amp; news</button></li>
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">FAQ / contact us</button></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </div>
+
+    <main class="sub_content" id="main_content">
+
+      <!-- ===================== 1. visit hero (973:6166) ===================== -->
+      <section class="guide_hero" aria-labelledby="guide_hero_title">
+        <img
+          class="guide_hero_object"
+          src="../assets/guide_course/guide/visit_cablecar.png"
+          alt="N Seoul Tower cable car cabin with the tower bear character waving from inside"
+          width="626"
+          height="626"
+          fetchpriority="high"
+        >
+        <h1 class="guide_hero_title" id="guide_hero_title">visit</h1>
+      </section>
+
+      <!-- ===================== 2. 교통수단 바로가기 (837:9104) =====================
+           JavaScript 없이 앵커 이동만 사용합니다.
+           현재 위치 표시는 visitor_guide.css 의 :target 규칙이 담당합니다. -->
+      <nav class="guide_tabs" aria-label="Transportation shortcuts">
+        <ul class="guide_tabs_list">
+          <li>
+            <a class="guide_tab" href="#by_bus">
+              <span class="guide_tab_icon">
+                <img src="../assets/icon/guide_course/bus.svg" alt="" width="24" height="24">
+              </span>
+              Bus
+            </a>
+          </li>
+          <li>
+            <a class="guide_tab" href="#by_cable_car">
+              <span class="guide_tab_icon">
+                <img src="../assets/icon/guide_course/cablecar.svg" alt="" width="24" height="24">
+              </span>
+              Cable Car
+            </a>
+          </li>
+          <li>
+            <a class="guide_tab" href="#by_city_tour_bus">
+              <span class="guide_tab_icon">
+                <img src="../assets/icon/guide_course/citytour_bus.svg" alt="" width="24" height="24">
+              </span>
+              Citytour Bus
+            </a>
+          </li>
+          <li>
+            <a class="guide_tab" href="#by_cars">
+              <span class="guide_tab_icon">
+                <img src="../assets/icon/guide_course/car.svg" alt="" width="24" height="24">
+              </span>
+              Cars
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="page_container guide_sections">
+
+        <!-- ===================== 3. by bus (945:3716) ===================== -->
+        <section class="guide_section guide_section_media_first" id="by_bus" aria-labelledby="by_bus_title">
+          <h2 class="guide_title" id="by_bus_title">By Bus</h2>
+
+          <!-- 줄바꿈 위치는 Figma 원문(945:3722)의 문장 구분을 그대로 따릅니다. -->
+          <p class="guide_lead">
+            Private vehicles are restricted in Namsan Park,<br>
+            so please use public transportation when visiting N Seoul Tower.
+          </p>
+
+          <figure class="guide_media_wrap">
+            <span class="guide_media guide_media_bus">
+              <img
+                src="../assets/guide_course/guide/visit_bus.png"
+                alt="Namsan shuttle bus in pink livery with the tower bear character at the wheel"
+                width="1672"
+                height="941"
+                loading="lazy"
+              >
+            </span>
+          </figure>
+
+          <div class="guide_detail">
+            <div class="guide_columns">
+              <article class="guide_route">
+                <h3 class="guide_route_title">01A</h3>
+                <dl class="guide_facts">
+                  <div class="guide_fact">
+                    <dt>Usage Fees</dt>
+                    <dd>1,500 won (Cash Not Accepted)</dd>
+                  </div>
+                  <div class="guide_fact">
+                    <dt>Service Frequency</dt>
+                    <dd>9 minutes every day</dd>
+                  </div>
+                  <div class="guide_fact">
+                    <dt>Hours of Operation</dt>
+                    <dd>6:30 a.m. to 11:00 p.m.</dd>
+                  </div>
+                  <div class="guide_fact">
+                    <dt>Bus Stop (Alighting)</dt>
+                    <dd>Namsan Seoul Tower</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="guide_route">
+                <h3 class="guide_route_title">01B</h3>
+                <dl class="guide_facts">
+                  <div class="guide_fact">
+                    <dt>Usage Fees</dt>
+                    <dd>1,500 won (Cash Not Accepted)</dd>
+                  </div>
+                  <div class="guide_fact">
+                    <dt>Service Frequency</dt>
+                    <dd>14 minutes every day</dd>
+                  </div>
+                  <div class="guide_fact">
+                    <dt>Hours of Operation</dt>
+                    <dd>6:30 a.m. to 11:00 p.m.</dd>
+                  </div>
+                  <div class="guide_fact">
+                    <dt>Bus Stop (Alighting)</dt>
+                    <dd>Namsan Seoul Tower</dd>
+                  </div>
+                </dl>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== 4. by cable car area (945:3755) ===================== -->
+        <section class="guide_section guide_section_text_first" id="by_cable_car" aria-labelledby="by_cable_car_title">
+          <h2 class="guide_title" id="by_cable_car_title">By cable car area</h2>
+
+          <!-- TODO: Figma 의 cable_info 컴포넌트(945:4145)는 이동 대상이 표기되어 있지 않습니다.
+               아래 주소는 디자인의 주차 안내(945:3956)에 적힌 도메인에서 가져온 임시 값이며 운영 확인이 필요합니다. -->
+          <p class="guide_pill_row">
+            <a
+              class="guide_pill"
+              href="https://namsancablecar.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Cable Car Information
+              <img src="../assets/icon/icon_chevron_down.svg" alt="" width="24" height="24">
+              <span class="visually_hidden">(opens in a new tab)</span>
+            </a>
+          </p>
+
+          <p class="guide_lead">
+            Take in the beauty of Namsan all at once!<br>
+            As you ride the cable car up Namsan, the mountain’s beautiful natural scenery unfolds right before your eyes.
+          </p>
+
+          <figure class="guide_media_wrap">
+            <span class="guide_media">
+              <img
+                src="../assets/guide_course/guide/visit_cablecar.png"
+                alt="Namsan cable car cabin carrying the tower bear character"
+                width="1448"
+                height="1086"
+                loading="lazy"
+              >
+            </span>
+            <!-- TODO: 공식 케이블카 사이트 주소는 미확정입니다. 디자인의 주차 안내에 적힌 도메인을 임시 사용했습니다. -->
+            <a
+              class="guide_media_link"
+              href="https://namsancablecar.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Cable Car Website
+              <img src="../assets/icon/chevron_right.svg" alt="" width="24" height="24">
+              <span class="visually_hidden">(opens in a new tab)</span>
+            </a>
+          </figure>
+
+          <div class="guide_detail">
+            <div class="guide_columns">
+              <article class="guide_route">
+                <h3 class="guide_route_title">on foot</h3>
+                <ol class="guide_steps">
+                  <li>Get off at Myeongdong Station (Exit 3)</li>
+                  <li>It takes 10 minutes to walk along the road to the right of the Pacific Hotel to the cable car boarding area.</li>
+                </ol>
+              </article>
+
+              <article class="guide_route">
+                <h3 class="guide_route_title">Namsan Oreumi</h3>
+                <ol class="guide_steps">
+                  <li>Get off at Myeongdong Station (Exit 4)</li>
+                  <li>It takes 2 minutes to get to the cable car boarding area</li>
+                </ol>
+                <dl class="guide_facts">
+                  <div class="guide_fact">
+                    <dt>Usage Fees</dt>
+                    <dd>Free</dd>
+                  </div>
+                  <div class="guide_fact">
+                    <dt>Hours of Operation</dt>
+                    <dd>9:00 a.m.–11:00 p.m.</dd>
+                  </div>
+                </dl>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== 5. by seoul city tour bus (945:3893) ===================== -->
+        <section class="guide_section guide_section_media_first" id="by_city_tour_bus" aria-labelledby="by_city_tour_bus_title">
+          <h2 class="guide_title" id="by_city_tour_bus_title">By Seoul City Tour Bus</h2>
+
+          <p class="guide_lead">
+            Take a day tour with the Seoul City Tour Bus.<br>
+            Seoul City Tour Bus allows you to enjoy courses of Seoul city and ancient palaces,<br>
+            as well as a night panorama routes.
+          </p>
+
+          <figure class="guide_media_wrap">
+            <span class="guide_media guide_media_citytourbus">
+              <img
+                src="../assets/guide_course/guide/visit_citytourbus.png"
+                alt="Red double-decker Seoul City Tour Bus"
+                width="1672"
+                height="941"
+                loading="lazy"
+              >
+            </span>
+            <!-- TODO: 공식 시티투어버스 사이트 주소가 Figma 에 없습니다. 아래 주소는 미확정 임시 값입니다. -->
+            <a
+              class="guide_media_link"
+              href="https://www.seoulcitybus.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              City Tour Bus Website
+              <img src="../assets/icon/chevron_right.svg" alt="" width="24" height="24">
+              <span class="visually_hidden">(opens in a new tab)</span>
+            </a>
+          </figure>
+
+          <div class="guide_detail">
+            <div class="guide_columns">
+              <article class="guide_route">
+                <h3 class="guide_route_title">Downtown, Palaces &amp; Namsan Course</h3>
+                <dl class="guide_facts">
+                  <div class="guide_fact">
+                    <dt>Departure Location</dt>
+                    <dd>In front of Donghwa Duty Free Shop in Gwanghwamun(Exit 6)</dd>
+                  </div>
+                  <div class="guide_fact">
+                    <dt>Operating hours</dt>
+                    <dd>9:20 a.m. to 4:50 p.m.</dd>
+                  </div>
+                  <div class="guide_fact">
+                    <dt>Service Interval</dt>
+                    <dd>
+                      Departs every 30 minutes
+                      <span class="guide_fact_note">(unlimited boarding and alighting)</span>
+                    </dd>
+                  </div>
+                  <div class="guide_fact">
+                    <dt>Duration</dt>
+                    <dd>1 hour and 30 minutes</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="guide_route">
+                <h3 class="guide_route_title">Han River Namsan Night Tour</h3>
+                <dl class="guide_facts">
+                  <div class="guide_fact">
+                    <dt>Departure Location</dt>
+                    <dd>In front of Donghwa Duty Free Shop in Gwanghwamun(Exit 6)</dd>
+                  </div>
+                  <div class="guide_fact">
+                    <dt>Service Interval</dt>
+                    <dd>
+                      Operates once a day
+                      <span class="guide_fact_note">(7:00 p.m. / non-stop route)</span>
+                    </dd>
+                  </div>
+                  <div class="guide_fact">
+                    <dt>Departure Time</dt>
+                    <dd>
+                      7:00 p.m.
+                      <span class="guide_fact_note">(May–August): 7:30 p.m.</span>
+                    </dd>
+                  </div>
+                  <div class="guide_fact">
+                    <dt>Duration</dt>
+                    <dd>1 hour and 30 minutes</dd>
+                  </div>
+                </dl>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== 6. by cars (945:3942) ===================== -->
+        <section class="guide_section guide_section_text_first" id="by_cars" aria-labelledby="by_cars_title">
+          <h2 class="guide_title" id="by_cars_title">By cars</h2>
+
+          <p class="guide_lead">
+            Since May 1, 2005, general vehicle access to Namsan has been restricted.<br>
+            Visitors arriving by car are advised to use nearby parking lots.
+          </p>
+
+          <figure class="guide_media_wrap">
+            <span class="guide_media guide_media_car">
+              <img
+                src="../assets/guide_course/guide/visit_car.png"
+                alt="Red passenger car seen from the front"
+                width="1448"
+                height="1086"
+                loading="lazy"
+              >
+            </span>
+          </figure>
+
+          <div class="guide_detail">
+            <div class="guide_columns guide_columns_single">
+              <article class="guide_route">
+                <h3 class="guide_route_title">Nearby parking lots</h3>
+                <dl class="guide_facts">
+                  <div class="guide_fact">
+                    <dt>Namsan Cable Car</dt>
+                    <dd>
+                      <a href="tel:+8227532403">02-753-2403</a>
+                      <a class="guide_fact_url" href="https://namsancablecar.com/usage.html" target="_blank" rel="noopener noreferrer">https://namsancablecar.com/usage.html</a>
+                    </dd>
+                  </div>
+                  <div class="guide_fact">
+                    <dt>Seoul Square</dt>
+                    <dd>
+                      <a href="tel:+82264560100">02-6456-0100</a>
+                      <a class="guide_fact_url" href="https://www.seoulsquare.com/introduction/location.asp" target="_blank" rel="noopener noreferrer">https://www.seoulsquare.com/introduction/location.asp</a>
+                    </dd>
+                  </div>
+                  <div class="guide_fact">
+                    <dt>National Theatre</dt>
+                    <dd>
+                      <a href="tel:+8222804114">02-2280-4114</a>
+                      <a class="guide_fact_url" href="https://www.ntok.go.kr/ntok/cm/cntnts/cntntsView.do?mi=21041&amp;cntntsId=2500" target="_blank" rel="noopener noreferrer">https://www.ntok.go.kr/ntok/cm/cntnts/cntntsView.do?mi=21041&amp;cntntsId=2500</a>
+                    </dd>
+                  </div>
+                  <div class="guide_fact">
+                    <dt>Namsan Park</dt>
+                    <dd>
+                      <a href="tel:+82237835900">02-3783-5900</a>
+                      <a class="guide_fact_url" href="https://parks.seoul.go.kr/content.do?key=2604300012" target="_blank" rel="noopener noreferrer">https://parks.seoul.go.kr/content.do?key=2604300012</a>
+                    </dd>
+                  </div>
+                </dl>
+              </article>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- ===================== footer (공통 컴포넌트 재사용) ===================== -->
+    <footer class="site_footer">
+      <div class="page_container site_footer_inner">
+        <div class="footer_top">
+          <p class="footer_logo">
+            <img src="../assets/nst_logo_defalut.svg" alt="N Seoul Tower" width="80" height="107" loading="lazy">
+          </p>
+          <a class="top_button" href="#top">
+            <img src="../assets/icon/arrow_up.png" alt="" width="24" height="24" loading="lazy">
+            top
+          </a>
+        </div>
+
+        <div class="footer_body">
+          <div class="footer_info">
+            <address class="footer_info_list">
+              <p class="footer_info_row">Business Registration Number: 312-81-42519</p>
+              <p class="footer_info_row">
+                <span>CEO: Lee Geon-il</span>
+                <span class="footer_divider" aria-hidden="true"></span>
+                <span>Chief Privacy Officer: Kim Jae-wan</span>
+              </p>
+              <p class="footer_info_row">Address: N Seoul Tower, 105, Namsangongwon-gil, Yongsan-gu, Seoul</p>
+              <p class="footer_info_row">
+                <a href="tel:+82234559277">Tel : 02) 3455 - 9277, 9288</a>
+                <span class="footer_divider" aria-hidden="true"></span>
+                <a href="mailto:helpmaster@cj.net">Email : helpmaster@cj.net</a>
+              </p>
+            </address>
+
+            <div class="family_site">
+              <button
+                class="family_site_button"
+                type="button"
+                data-family-button
+                aria-expanded="false"
+                aria-controls="family_site_menu"
+              >
+                family site
+                <img src="../assets/icon/icon_chevron_down.svg" alt="" width="24" height="24" loading="lazy">
+              </button>
+              <div class="family_site_menu" id="family_site_menu" data-family-menu hidden>
+                <div class="family_site_group">
+                  <p class="family_site_group_title">CJ그룹</p>
+                  <a class="family_site_link" href="https://www.cj.net" target="_blank" rel="noopener noreferrer">CJ주식회사</a>
+                </div>
+                <div class="family_site_group">
+                  <p class="family_site_group_title">식품&amp;식품서비스</p>
+                  <a class="family_site_link" href="https://www.cj.co.kr" target="_blank" rel="noopener noreferrer">CJ제일제당</a>
+                  <a class="family_site_link" href="https://www.cjfoodville.co.kr" target="_blank" rel="noopener noreferrer">CJ푸드빌</a>
+                  <a class="family_site_link" href="https://www.cjfreshway.com" target="_blank" rel="noopener noreferrer">CJ프레시웨이</a>
+                </div>
+                <div class="family_site_group">
+                  <p class="family_site_group_title">생명공학</p>
+                  <a class="family_site_link" href="https://www.cj.co.kr" target="_blank" rel="noopener noreferrer">CJ제일제당 BIO사업부문</a>
+                  <a class="family_site_link" href="https://www.cjfeedncare.co.kr" target="_blank" rel="noopener noreferrer">CJ Feed&amp;Care</a>
+                </div>
+                <div class="family_site_group">
+                  <p class="family_site_group_title">물류 &amp; 신유통</p>
+                  <a class="family_site_link" href="https://www.cjlogistics.com" target="_blank" rel="noopener noreferrer">CJ대한통운</a>
+                  <a class="family_site_link" href="https://www.cjlogistics.com" target="_blank" rel="noopener noreferrer">CJ대한통운 건설부문</a>
+                  <a class="family_site_link" href="https://www.oliveyoung.co.kr" target="_blank" rel="noopener noreferrer">CJ올리브영</a>
+                  <a class="family_site_link" href="https://www.cjolivenetworks.co.kr" target="_blank" rel="noopener noreferrer">CJ올리브네트웍스</a>
+                  <a class="family_site_link" href="https://www.cjenm.com" target="_blank" rel="noopener noreferrer">CJ ENM 커머스부문</a>
+                </div>
+                <div class="family_site_group">
+                  <p class="family_site_group_title">엔터테인먼트&amp;미디어</p>
+                  <a class="family_site_link" href="https://www.cjenm.com" target="_blank" rel="noopener noreferrer">CJ ENM 엔터테인먼트부문</a>
+                  <a class="family_site_link" href="https://www.cgv.co.kr" target="_blank" rel="noopener noreferrer">CJ CGV</a>
+                  <a class="family_site_link" href="https://www.cjpowercast.com" target="_blank" rel="noopener noreferrer">CJ파워캐스트</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer_service">
+            <h2 class="footer_service_title">customer service</h2>
+            <button class="footer_service_btn" type="button" data-pending-link aria-disabled="true">FAQ</button>
+            <button class="footer_service_btn" type="button" data-pending-link aria-disabled="true">Contact Us</button>
+          </div>
+        </div>
+
+        <div class="footer_bottom">
+          <div class="footer_bottom_row">
+            <p class="footer_copyright">© 2026. ALL RIGHTS RESERVED BY SEOUL TOWER</p>
+            <ul class="footer_sns">
+              <li>
+                <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
+                  <img src="../assets/icon/sns/sns1.png" alt="" width="24" height="24" loading="lazy">
+                  <span class="visually_hidden">Facebook</span>
+                </button>
+              </li>
+              <li>
+                <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
+                  <img src="../assets/icon/sns/sns2.png" alt="" width="24" height="24" loading="lazy">
+                  <span class="visually_hidden">Instagram</span>
+                </button>
+              </li>
+              <li>
+                <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
+                  <img src="../assets/icon/sns/sns3.png" alt="" width="24" height="24" loading="lazy">
+                  <span class="visually_hidden">YouTube</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <img class="footer_deco" src="../assets/footer_tower.png" alt="" aria-hidden="true" width="418" height="417" loading="lazy">
+      </div>
+    </footer>
+
+    <p class="link_status" data-link-status role="status" aria-live="polite"></p>
+  </div>
+
+  <script src="../js/common.js"></script>
+</body>
+</html>
