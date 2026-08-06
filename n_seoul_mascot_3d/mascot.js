@@ -296,19 +296,6 @@ function createArm(side, materials) {
   return pivot;
 }
 
-function createShoulderGusset(side, materials) {
-  const gusset = createCapsule(
-    side < 0 ? "left_shoulder_gusset" : "right_shoulder_gusset",
-    0.32,
-    0.34,
-    materials.shirt,
-  );
-  gusset.position.set(side * 1.46, 0.27, 0.22);
-  gusset.scale.set(1, 1, 0.88);
-  gusset.rotation.z = side * 0.52;
-  return gusset;
-}
-
 function createLeg(side, materials) {
   const pivot = new THREE.Group();
   pivot.name = side < 0 ? "left_hip_pivot" : "right_hip_pivot";
@@ -355,18 +342,19 @@ function createMascot() {
   body.position.y = 0.1;
 
   const shirt = createEllipticalBand("shirt_body", [
-    { y: 0.61, radiusX: 1.5, radiusZ: 1.26 },
-    { y: 0.5, radiusX: 1.58, radiusZ: 1.3 },
+    { y: 0.61, radiusX: 1.55, radiusZ: 1.245 },
+    { y: 0.5, radiusX: 1.62, radiusZ: 1.3 },
+    { y: 0.28, radiusX: 1.66, radiusZ: 1.34 },
     { y: 0.08, radiusX: 1.66, radiusZ: 1.35 },
     { y: -0.34, radiusX: 1.64, radiusZ: 1.33 },
     { y: -0.66, radiusX: 1.6, radiusZ: 1.28 },
     { y: -0.88, radiusX: 1.54, radiusZ: 1.23 }
   ], materials.shirt);
 
-  const collar = createEllipseSeam("shirt_collar", 1.5, 1.27, materials.shirtDark, 0.018);
+  const collar = createEllipseSeam("shirt_collar", 1.55, 1.25, materials.shirtDark, 0.018);
   collar.castShadow = false;
   collar.position.set(0, 0.615, 0.012);
-  const collarStitches = createStitchRing("shirt_collar_stitches", 1.505, 1.275, 0.62, materials.shirtDark, 48);
+  const collarStitches = createStitchRing("shirt_collar_stitches", 1.555, 1.255, 0.62, materials.shirtDark, 48);
 
   const hem = createEllipseSeam("shirt_hem", 1.54, 1.23, materials.shirtDark, 0.02);
   hem.castShadow = false;
@@ -386,8 +374,6 @@ function createMascot() {
 
   const leftArmPivot = createArm(-1, materials);
   const rightArmPivot = createArm(1, materials);
-  const leftShoulderGusset = createShoulderGusset(-1, materials);
-  const rightShoulderGusset = createShoulderGusset(1, materials);
   const leftLegPivot = createLeg(-1, materials);
   const rightLegPivot = createLeg(1, materials);
 
@@ -415,8 +401,6 @@ function createMascot() {
     nose,
     leftArmPivot,
     rightArmPivot,
-    leftShoulderGusset,
-    rightShoulderGusset,
     leftLegPivot,
     rightLegPivot,
     tailPivot,
