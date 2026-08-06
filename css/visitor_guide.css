@@ -54,6 +54,12 @@
     --fs_guide_lead: 28px;
     --fs_guide_route: 28px;
   }
+
+  .sub_content > .subpage_hero {
+    height: calc(100vh - 100px);
+    min-height: 0;
+    max-height: none;
+  }
 }
 
 /* img 의 width/height 속성은 CSS 지정값으로 취급되어 aspect-ratio 를 무력화합니다.

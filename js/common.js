@@ -24,6 +24,53 @@ function isReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+/* --------------------------------------------------------------------------
+   스크롤 방향 반응형 고정 헤더
+   아래로 이동하면 숨기고, 위로 이동하는 즉시 다시 표시합니다.
+   -------------------------------------------------------------------------- */
+function initStickyHeader() {
+  var header = document.querySelector(".site_header");
+  if (!header) {
+    return;
+  }
+
+  var lastScrollPosition = Math.max(window.scrollY, 0);
+  var isFrameRequested = false;
+
+  function renderHeaderScrollState() {
+    var currentScrollPosition = Math.max(window.scrollY, 0);
+    var isAtTop = currentScrollPosition <= 1;
+    var isMenuOpen = header.classList.contains("is_menu_open");
+
+    header.classList.toggle("is_scrolled", !isAtTop);
+
+    if (isAtTop || isMenuOpen) {
+      header.classList.remove("is_hidden");
+    } else if (
+      currentScrollPosition > lastScrollPosition &&
+      currentScrollPosition > header.offsetHeight
+    ) {
+      header.classList.add("is_hidden");
+    } else if (currentScrollPosition < lastScrollPosition) {
+      header.classList.remove("is_hidden");
+    }
+
+    lastScrollPosition = currentScrollPosition;
+    isFrameRequested = false;
+  }
+
+  function handleHeaderScroll() {
+    if (isFrameRequested) {
+      return;
+    }
+    isFrameRequested = true;
+    window.requestAnimationFrame(renderHeaderScrollState);
+  }
+
+  renderHeaderScrollState();
+  window.addEventListener("scroll", handleHeaderScroll, { passive: true });
+}
+
 function readStoredLanguage() {
   var stored = null;
   try {
@@ -261,6 +308,9 @@ function initGlobalMenu() {
 
     if (header) {
       header.classList.toggle("is_menu_open", isMenuOpen);
+      if (isMenuOpen) {
+        header.classList.remove("is_hidden");
+      }
     }
     if (toggleLabel) {
       toggleLabel.textContent = isMenuOpen ? "Close menu" : "Open menu";
@@ -434,64 +484,6 @@ function initFamilySite() {
 }
 
 /* --------------------------------------------------------------------------
-   섹션 페이저 (PRD 8.4 / 10.5)
-   -------------------------------------------------------------------------- */
-function initScrollPager() {
-  var pager = document.querySelector("[data-scroll-pager]");
-  if (!pager) {
-    return;
-  }
-
-  var items = Array.prototype.slice.call(pager.querySelectorAll("[data-pager-item]"));
-  var sections = items
-    .map(function (item) {
-      var id = item.getAttribute("href");
-      return id ? document.querySelector(id) : null;
-    })
-    .filter(Boolean);
-
-  if (sections.length === 0) {
-    pager.remove();
-    return;
-  }
-
-  function renderActiveSection(activeSection) {
-    items.forEach(function (item, index) {
-      var isActive = sections[index] === activeSection;
-      item.classList.toggle("is_active", isActive);
-      if (isActive) {
-        item.setAttribute("aria-current", "true");
-      } else {
-        item.removeAttribute("aria-current");
-      }
-    });
-  }
-
-  var observer = new IntersectionObserver(
-    function handleSectionIntersect(entries) {
-      var visible = entries
-        .filter(function (entry) {
-          return entry.isIntersecting;
-        })
-        .sort(function (a, b) {
-          return b.intersectionRatio - a.intersectionRatio;
-        });
-
-      if (visible.length > 0) {
-        renderActiveSection(visible[0].target);
-      }
-    },
-    { rootMargin: "-45% 0px -45% 0px", threshold: [0, 0.2, 0.5, 1] }
-  );
-
-  sections.forEach(function (section) {
-    observer.observe(section);
-  });
-
-  renderActiveSection(sections[0]);
-}
-
-/* --------------------------------------------------------------------------
    플로팅 퀵 메뉴 (Figma 987:7708)
    -------------------------------------------------------------------------- */
 /* 시안의 링은 10도 간격 36칸이고 "CLICK ME" 8글자 뒤에 빈칸 4개가 붙어 3번 반복됩니다. */
@@ -651,9 +643,9 @@ function initCommon() {
   initPendingLinks();
   initImageFallback();
   initLanguageSelectors();
+  initStickyHeader();
   initGlobalMenu();
   initFamilySite();
-  initScrollPager();
   initQuickMenu();
 }
 
