@@ -449,11 +449,16 @@
 
 .course_scene_char {
   position: absolute;
-  left: 50%;
   bottom: 0;
+  left: 50%;
   z-index: 1;
+  display: block;
   width: 26%;
+  height: auto;
+  aspect-ratio: 262 / 283;
   max-width: 220px;
+  border: 0;
+  background: transparent;
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -559,7 +564,6 @@
   }
 
   .course_scene_char {
-    left: 61.7%;
     width: 19.64%;
     max-width: none;
   }
