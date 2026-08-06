@@ -1,6 +1,6 @@
 # PROJECT_CONTEXT
 
-마지막 갱신: 2026-08-05
+마지막 갱신: 2026-08-06
 
 ## 완료 내용
 
@@ -65,10 +65,10 @@ GNB 11개 항목 중 **Figma `(develope) 개발 시안 5개 페이지` 에 시�
 | amenities | — | pending 버튼 | — |
 | floor guide | 790:7008 | `pages/floor_guide.html` | 미구현 |
 | Hours & Tickets | — | pending 버튼 | — |
-| visitor guide | 645:3216 | `pages/visitor_guide.html` | 미구현 |
+| visitor guide | 645:3216 | `pages/visitor_guide.html` | ✅ |
 | notice & news / FAQ | — | pending 버튼 | — |
 
-**주의: 미구현 4개는 파일을 만들기 전까지 클릭 시 404 입니다.** 해당 파일을 `pages/` 에 추가하면 링크 수정 없이 바로 연결됩니다.
+**주의: 미구현 3개(`brand_story` / `n_gift_shop` / `floor_guide`)는 파일을 만들기 전까지 클릭 시 404 입니다.** 해당 파일을 `pages/` 에 추가하면 링크 수정 없이 바로 연결됩니다.
 
 ## Restaurant > N Burger 상세 페이지 (2026-08-06 추가)
 
@@ -90,17 +90,60 @@ GNB 11개 항목 중 **Figma `(develope) 개발 시안 5개 페이지` 에 시�
 - 신규 에셋: `assets/icon/chevron_left.svg`, `assets/restaurant/menu/n_burger_full_menu.png` (1600×2170) 및 `@2x` (3200×4340)
 - 주의: `<img>` 의 `width`/`height` 속성은 CSS `aspect-ratio` 를 무력화하므로 비율 제어가 필요한 이미지에는 `height: auto` 를 함께 지정해야 합니다.
 
+## Visit > 교통안내 페이지 (2026-08-06 추가)
+
+`pages/visitor_guide.html` — Figma `sub_guide` (**645:3216**, 1920 × 6434) 기준.
+`index.html` 과 다른 서브 페이지의 GNB `visitor guide` 링크가 이 파일을 가리키고 있었으므로,
+파일을 추가한 것만으로 기존 404 가 해소됩니다. **기존 파일은 하나도 수정하지 않았습니다.**
+
+| 섹션 | Figma node | 비고 |
+|---|---|---|
+| header / menu | — | 기존 공통 헤더·오버레이 재사용 |
+| visit hero | 973:6166 | bg `#b6c384`, 오브젝트 626 정사각(cover) + gap 47 + 제목 Poppins SemiBold 120 |
+| 교통수단 탭 | 837:9104 | bg `#c8d2a3`, 높이 100, 칩 64 / radius 52 / gap 24 |
+| by bus | 945:3716 | 이미지 왼쪽 + 본문 오른쪽, `justify-content: flex-end` |
+| by cable car area | 945:3755 | 본문 왼쪽 + 이미지 오른쪽, 안내 칩(945:4145) + 사이트 버튼 |
+| by seoul city tour bus | 945:3893 | 이미지 왼쪽 + 본문 오른쪽, 사이트 버튼 |
+| by cars | 945:3942 | 본문 왼쪽 + 이미지 오른쪽, 정보 1열 |
+| footer | 793:10513 | 기존 공통 푸터 재사용 |
+
+- 페이지 전용 CSS: `css/visitor_guide.css` (전용 토큰도 이 파일의 `:root` 에 정의)
+- **페이지 전용 JS 없음** — 탭은 앵커 링크 + `:target` 만 사용, 공통 동작만 `js/common.js`
+- 섹션 레이아웃은 **평평한 DOM + CSS Grid** 입니다. 모바일은 제목 → 설명 → 이미지 → 상세 1열,
+  데스크톱(1280+)은 이미지를 `grid-row: 1 / -1` 로 세로 전체에 걸칩니다.
+  - **`grid-row: 1 / -1` 은 명시적 행이 없으면 1행만 차지합니다.** 그래서
+    `grid-template-rows: repeat(3, auto)` 를 선언하고, 안내 칩이 있는 케이블카 섹션만
+    `:has(.guide_pill_row)` 로 4행을 씁니다. 이 선언을 빼면 섹션 높이가 300px 이상 커집니다.
+- **`reset.css` 의 `img { max-width: 100% }` 때문에** 원형 이미지의 지름 기준 확대(최대 225%)가
+  막힙니다. `.guide_media img` 에 `max-width: none` 이 필요합니다.
+- 원형 배경은 Figma 의 흰 바탕 + `rgba(27,92,78,.4)` 를 미리 합성한 `#a4beb8` 한 값으로 씁니다.
+- 리드 문단의 줄바꿈은 Figma 원문의 문장 구분이라 `<br>` 로 유지합니다. 빼면 줄 수가 달라져
+  섹션 높이가 최대 35px 어긋납니다.
+- 신규 에셋
+  - `assets/icon/chevron_right.svg` (Figma export, 24×24)
+  - `assets/guide_course/guide/visit_bus.png` (1672×941)
+  - `assets/guide_course/guide/visit_cablecar.png` (1448×1086) — **히어로와 케이블카 섹션이 같은 파일**
+  - `assets/guide_course/guide/visit_citytourbus.png` (1672×941)
+  - `assets/guide_course/guide/visit_car.png` (1448×1086)
+- **주의: 같은 폴더의 기존 `bus/cablecar/car/citytourbus/guide_hero_img.png` 는 이 시안과 다릅니다.**
+  `cablecar.png` 는 연두색 다른 컬러웨이, `guide_hero_img.png` 는 3D 렌더가 아니라 남산 실사진입니다.
+  `bus/citytourbus` 는 같은 렌더의 좁은 크롭본입니다. 어느 쪽도 참조하는 코드가 없으므로
+  삭제하지 않고 두었습니다. 정리 여부는 디자인 확인 후 결정이 필요합니다.
+
 ## 파일 구조
 
 ```text
 n_seoul_tower/
 ├── index.html
 ├── pages/                       # 서브 페이지 (공통 리소스는 ../ 로 참조)
-│   └── restaurant_n_burger.html
+│   ├── restaurant_n_burger.html
+│   └── visitor_guide.html
 ├── css/
 │   ├── reset.css
 │   ├── common.css   # 디자인 토큰, 폰트, 공통 버튼/카드/헤더/메뉴/푸터/페이저
-│   └── main.css     # 섹션별 레이아웃과 반응형
+│   ├── main.css     # 섹션별 레이아웃과 반응형
+│   ├── restaurant_n_burger.css
+│   └── visitor_guide.css
 ├── js/
 │   ├── common.js    # 메뉴, 언어, family site, 섹션 페이저, 공통 상태
 │   └── main.js      # 목업 데이터 + renderXxx + 섹션 인터랙션
@@ -130,7 +173,7 @@ JS 는 `ASSET_PATH = "./assets/"` 를 접두로 두고 데이터에 하위 경�
 
 ## 남은 문제 / 확인 필요
 
-- GNB 는 시안이 있는 5개만 `<a>` 로 연결했고 그중 4개(`brand_story` / `n_gift_shop` / `floor_guide` / `visitor_guide`)는 **HTML 파일이 아직 없어 404** 입니다. 나머지 CTA·메뉴는 `data-pending-link` + `aria-disabled="true"` 버튼으로 두고 안내 메시지만 노출합니다.
+- GNB 는 시안이 있는 5개만 `<a>` 로 연결했고 그중 3개(`brand_story` / `n_gift_shop` / `floor_guide`)는 **HTML 파일이 아직 없어 404** 입니다. 나머지 CTA·메뉴는 `data-pending-link` + `aria-disabled="true"` 버튼으로 두고 안내 메시지만 노출합니다.
 - Restaurant 슬라이더는 Figma 에 3개 인디케이터가 있으나 실제 사진 에셋은 1장(`restaurant_dining.png`)만 존재합니다. 나머지 2장을 받으면 `mainPageData.restaurantPhotos` 에 추가하면 됩니다.
 - 기프트숍 상품명·가격·재고 데이터 없음 (디자인에도 없음). 현재는 이미지 + alt 만 사용합니다.
 - 날씨·대기시간·티켓가격은 Figma 표기값을 그대로 넣은 정적 값입니다. 실제 API 미연동.
@@ -144,6 +187,14 @@ JS 는 `ASSET_PATH = "./assets/"` 를 접두로 두고 데이터에 하위 경�
   - Custom Goods 버튼 `#ffffff` on `#839051` → 3.46:1
   - 메뉴 LNB `#e4e4e4` on `#626f47` → 4.25:1
 - 폰트는 Google Fonts + jsDelivr(Pretendard) CDN 으로 로드합니다. 로컬 폰트 파일 사용이 필요하면 `assets/fonts` 로 전환해야 합니다.
+- **교통안내 페이지 확인 필요 항목**
+  - `Cable Car Website` / `Cable Car Information` 버튼의 실제 주소. 현재는 시안의 주차 안내에 적힌
+    `namsancablecar.com` 도메인을 임시로 씁니다.
+  - `City Tour Bus Website` 버튼의 실제 주소. 시안에 표기가 없어 임시 주소를 넣고 주석으로 표시했습니다.
+  - Figma `cable_info` 컴포넌트는 `베리언트3` 만 배치되어 있고 chevron-down 을 달고 있습니다.
+    펼침 패널이 있는 컴포넌트인지 확인이 필요해, 지금은 링크 형태로만 구현했습니다.
+  - 히어로/탭 스타일이 `restaurant_n_burger.css` 의 `rest_hero` / `rest_tab` 과 사실상 동일합니다.
+    서브 페이지가 더 늘어나면 `common.css` 로 승격을 검토하세요(이번엔 기존 파일 수정을 피해 중복 유지).
 
 ## 마지막 검증 결과
 

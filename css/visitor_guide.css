@@ -1,0 +1,595 @@
+@charset "utf-8";
+
+/* ==========================================================================
+   visitor_guide — Visit > 교통안내 서브 페이지 전용 스타일
+   기준: Figma (develope) 개발 시안 5개 페이지 > sub_guide (645:3216, 1920 x 6434)
+   공통 토큰·헤더·메뉴·푸터는 common.css 를 그대로 사용합니다.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   이 페이지에서만 쓰는 디자인 토큰 (Figma 실측값)
+   -------------------------------------------------------------------------- */
+:root {
+  --color_guide_hero_bg: #b6c384; /* color/new_primary/400 */
+  --color_guide_tab_bg: #c8d2a3; /* color/new_primary/300 */
+  --color_guide_tab_icon: #dbe1c1; /* color/new_primary/200 */
+  --color_guide_tab_icon_on: #fff1ca; /* color/point/150 */
+  --color_guide_ink: #3b432b; /* color/new_secondary/700 */
+  /* 원형 배경: 흰 바탕 위 rgba(27, 92, 78, 0.4) 를 미리 합성한 값 */
+  --color_guide_media_bg: #a4beb8;
+
+  /* Figma 데스크톱 값 (1920): 섹션 상하 여백 180, 이미지 400, 본문 620, 사이 간격 64 */
+  --guide_section_pad: 72px;
+  --guide_media_size: min(76vw, 320px);
+  --guide_stack_gap: 20px;
+
+  --fs_guide_lead: 18px;
+  --fs_guide_route: 20px;
+}
+
+@media (min-width: 834px) {
+  :root {
+    --guide_section_pad: 100px;
+    --guide_media_size: 360px;
+    --guide_stack_gap: 24px;
+
+    --fs_guide_lead: 22px;
+    --fs_guide_route: 24px;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --guide_section_pad: 180px;
+    --guide_media_size: 400px;
+
+    --fs_guide_lead: 28px;
+    --fs_guide_route: 28px;
+  }
+}
+
+/* img 의 width/height 속성은 CSS 지정값으로 취급되어 aspect-ratio 를 무력화합니다.
+   비율은 CSS 로 제어하되 속성값은 CLS 방지용으로 남겨 두기 위해 되돌립니다.
+   (restaurant_n_burger.css 와 동일한 이슈) */
+.guide_media img {
+  height: auto;
+}
+
+.sub_content {
+  position: relative;
+}
+
+/* 앵커 이동 시 섹션 상단이 화면에 딱 붙지 않도록 여유를 둡니다. */
+.guide_section {
+  scroll-margin-top: 24px;
+}
+
+/* ==========================================================================
+   1. visit hero (973:6166)
+   1920 x 1080, bg #b6c384, 오브젝트 626 + gap 47 + 제목 120 을 세로 중앙 정렬
+   ========================================================================== */
+.guide_hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  min-height: 100svh;
+  padding: calc(var(--header_height) + 32px) var(--page_pad) 56px;
+  background-color: var(--color_guide_hero_bg);
+  overflow: hidden;
+}
+
+/* Figma 973:6167 — 626 x 626 정사각 프레임에 이미지를 cover 로 채웁니다. */
+.guide_hero_object {
+  width: min(78%, 380px);
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.guide_hero_title {
+  font-family: var(--font_title);
+  font-size: clamp(56px, 16vw, 96px);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--color_text_white);
+  text-align: center;
+}
+
+@media (min-width: 834px) {
+  .guide_hero {
+    gap: 32px;
+  }
+
+  .guide_hero_object {
+    width: min(62%, 480px);
+  }
+}
+
+/* 데스크톱: 1920 x 1080 프레임 값을 비율로 환산 (626/1920 = 32.6%, gap 47) */
+@media (min-width: 1280px) {
+  .guide_hero {
+    gap: 2.45vw;
+    height: calc(100vw * 1080 / 1920);
+    min-height: 760px;
+    max-height: 1080px;
+    padding: var(--header_height) var(--page_pad) 0;
+  }
+
+  .guide_hero_object {
+    width: 32.6%;
+    max-width: 626px;
+  }
+
+  .guide_hero_title {
+    font-size: clamp(72px, 6.25vw, 120px);
+  }
+}
+
+/* ==========================================================================
+   2. 교통수단 바로가기 (837:9104)
+   bg #c8d2a3, 높이 100, 칩 높이 64 / radius 52 / gap 24
+   ========================================================================== */
+.guide_tabs {
+  background-color: var(--color_guide_tab_bg);
+}
+
+.guide_tabs_list {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  width: min(100% - var(--page_pad) * 2, var(--content_max));
+  margin-inline: auto;
+  padding-block: 18px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+  /* 모바일에서 스크롤바는 감추되 터치·키보드 스크롤은 유지 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.guide_tabs_list::-webkit-scrollbar {
+  display: none;
+}
+
+.guide_tabs_list > li {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+.guide_tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  height: 52px;
+  padding: 8px 16px;
+  border: 1px solid var(--color_guide_ink);
+  border-radius: 52px;
+  background-color: var(--color_surface);
+  color: var(--color_guide_ink);
+  font-family: var(--font_body);
+  font-size: var(--fs_sm);
+  line-height: 1.3;
+  white-space: nowrap;
+  transition: background-color var(--duration) var(--ease_out),
+    color var(--duration) var(--ease_out), border-color var(--duration) var(--ease_out);
+}
+
+.guide_tab_icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 30px;
+  background-color: var(--color_guide_tab_icon);
+}
+
+.guide_tab_icon img {
+  width: 20px;
+  height: 20px;
+}
+
+.guide_tab:hover {
+  background-color: var(--color_guide_tab_icon);
+}
+
+/* 현재 보고 있는 섹션 표시 — JavaScript 없이 :target 만 사용합니다.
+   색상만이 아니라 글자 굵기와 아이콘 배경으로도 구분합니다.
+   :has() 미지원 브라우저에서는 모든 칩이 기본 상태로 보이며 이동 기능은 그대로입니다. */
+.guide_tab.is_selected,
+body:has(#by_bus:target) .guide_tab[href="#by_bus"],
+body:has(#by_cable_car:target) .guide_tab[href="#by_cable_car"],
+body:has(#by_city_tour_bus:target) .guide_tab[href="#by_city_tour_bus"],
+body:has(#by_cars:target) .guide_tab[href="#by_cars"] {
+  background-color: var(--color_guide_ink);
+  border-color: var(--color_guide_ink);
+  color: var(--color_text_white);
+  font-weight: 700;
+}
+
+.guide_tab.is_selected .guide_tab_icon,
+body:has(#by_bus:target) .guide_tab[href="#by_bus"] .guide_tab_icon,
+body:has(#by_cable_car:target) .guide_tab[href="#by_cable_car"] .guide_tab_icon,
+body:has(#by_city_tour_bus:target) .guide_tab[href="#by_city_tour_bus"] .guide_tab_icon,
+body:has(#by_cars:target) .guide_tab[href="#by_cars"] .guide_tab_icon {
+  background-color: var(--color_guide_tab_icon_on);
+}
+
+/* 아무 섹션도 선택하지 않은 최초 상태는 Figma 기본값(Bus 활성)을 따릅니다. */
+body:not(:has(:target)) .guide_tab[href="#by_bus"] {
+  background-color: var(--color_guide_ink);
+  border-color: var(--color_guide_ink);
+  color: var(--color_text_white);
+  font-weight: 700;
+}
+
+body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
+  background-color: var(--color_guide_tab_icon_on);
+}
+
+@media (min-width: 834px) {
+  .guide_tabs_list {
+    justify-content: center;
+  }
+}
+
+@media (min-width: 1280px) {
+  .guide_tabs_list {
+    gap: 24px;
+  }
+
+  .guide_tab {
+    height: 64px;
+    gap: 12px;
+    padding: 12px 20px;
+    font-size: 20px;
+  }
+
+  .guide_tab_icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .guide_tab_icon img {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* ==========================================================================
+   3. 교통수단 섹션 공통 (945:3715 con_wrap)
+   모바일: 제목 → 설명 → 이미지 → 상세 정보 1열
+   데스크톱: 이미지와 본문을 좌우로 배치하고 섹션마다 순서를 교차
+   ========================================================================== */
+.guide_section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--guide_stack_gap);
+  padding-block: var(--guide_section_pad);
+}
+
+.guide_title {
+  font-family: var(--font_title);
+  font-size: var(--fs_h2);
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color_text);
+  text-transform: uppercase;
+}
+
+/* 620px 는 데스크톱 본문 폭입니다. 그 아래에서는 컨테이너를 채웁니다. */
+.guide_lead {
+  width: 100%;
+  font-size: var(--fs_guide_lead);
+  line-height: 1.18;
+  color: var(--color_text);
+}
+
+/* --- 원형 이미지 (945:3717 등) — 400 원, 흰 바탕 + rgba(27,92,78,.4) --- */
+.guide_media_wrap {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.guide_media {
+  position: relative;
+  display: block;
+  width: var(--guide_media_size);
+  height: var(--guide_media_size);
+  border-radius: 50%;
+  background-color: var(--color_guide_media_bg);
+  overflow: hidden;
+}
+
+/* 원 안에서의 이미지 크기·위치는 Figma 의 이미지 fill 값을 원 지름(400) 기준 %로 옮긴 것입니다.
+   기본(케이블카 945:3785): 533 / 400 = 133.3% 폭으로 가운데 정렬 */
+.guide_media img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 133.3%;
+  height: auto;
+  /* reset.css 의 img { max-width: 100% } 가 원 지름 기준 확대를 막으므로 해제합니다. */
+  max-width: none;
+  transform: translate(-50%, -50%);
+}
+
+/* 버스(945:3718): fill 왼쪽 끝이 원의 왼쪽 끝에 맞춰져 뒷부분이 잘립니다. 711 / 400 = 177.7% */
+.guide_media_bus img {
+  left: 0;
+  width: 177.7%;
+  transform: translate(0, -50%);
+}
+
+/* 시티투어버스(945:3895): 같은 크기에서 왼쪽으로 27px(-6.7%) 더 밀려 있습니다. */
+.guide_media_citytourbus img {
+  left: -6.7%;
+  width: 177.7%;
+  transform: translate(0, -50%);
+}
+
+/* 자동차(945:3992): fill 이 900px(225%)로 확대되고 프레임이 -5.7도 회전해 있습니다. */
+.guide_media_car img {
+  top: 44.1%;
+  left: 27.9%;
+  width: 225%;
+  transform: translate(-50%, -50%) rotate(-5.7deg);
+}
+
+/* --- 외부 사이트 이동 버튼 (945:3786 / 945:3896) --- */
+.guide_media_link,
+.guide_pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: var(--radius_round);
+  background-color: var(--color_primary_600);
+  color: var(--color_text_white);
+  font-family: var(--font_body);
+  font-size: var(--fs_body);
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  transition: background-color var(--duration) var(--ease_out);
+}
+
+.guide_media_link {
+  margin-top: 16px;
+  /* Figma 와 동일하게 한 줄로 유지합니다. 가장 긴 문구도 360px 화면에 들어갑니다. */
+  white-space: nowrap;
+}
+
+.guide_media_link img,
+.guide_pill img {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.guide_media_link:hover,
+.guide_pill:hover {
+  background-color: var(--color_primary_800);
+}
+
+/* --- Cable Car Information 칩 (945:4145) --- */
+.guide_pill_row {
+  display: flex;
+}
+
+.guide_pill {
+  gap: 14px;
+  padding: 8px 18px;
+  font-weight: 400;
+}
+
+/* --- 구분선 + 상세 정보 (945:3723 / 945:3724) --- */
+.guide_detail {
+  width: 100%;
+  padding-top: var(--guide_stack_gap);
+  border-top: 1px solid var(--color_text);
+}
+
+.guide_columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+
+.guide_route_title {
+  margin-bottom: var(--guide_stack_gap);
+  font-family: var(--font_body);
+  font-size: var(--fs_guide_route);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color_text);
+}
+
+.guide_facts {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.guide_fact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.guide_fact dt {
+  font-size: var(--fs_body);
+  line-height: 1.18;
+  color: var(--color_text);
+}
+
+.guide_fact dd {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--fs_sm);
+  font-weight: 300;
+  line-height: 1.35;
+  color: var(--color_text);
+}
+
+.guide_fact_note {
+  font-size: var(--fs_xs);
+}
+
+/* 긴 주소가 레이아웃 밖으로 넘치지 않게 합니다. */
+.guide_fact_url {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* 디자인에는 일반 텍스트지만 전화번호와 주소는 실제로 연결합니다.
+   터치 환경에서는 최소 44px 높이를 확보하고, 마우스 환경(834 이상)에서는
+   Figma 의 촘촘한 줄간격을 그대로 씁니다. */
+.guide_fact a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.guide_fact a:hover {
+  color: var(--color_primary_600);
+}
+
+/* --- 순서가 있는 안내 (945:3770 등) --- */
+.guide_steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: var(--guide_stack_gap);
+  padding-left: 27px;
+  list-style: decimal;
+  font-size: var(--fs_body);
+  line-height: 1.18;
+  color: var(--color_text);
+}
+
+.guide_steps:last-child {
+  margin-bottom: 0;
+}
+
+/* --------------------------------------------------------------------------
+   태블릿 — 정보 표만 2열로 되돌립니다.
+   -------------------------------------------------------------------------- */
+@media (min-width: 834px) {
+  .guide_columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 40px;
+  }
+
+  .guide_columns_single {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .guide_fact a {
+    display: inline;
+    min-height: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   데스크톱 — Figma 배치 (이미지 400 + gap 64 + 본문 620 = 1084)
+   bus·citytour 는 오른쪽 끝, cable car·cars 는 왼쪽 끝에 붙습니다.
+   -------------------------------------------------------------------------- */
+@media (min-width: 1280px) {
+  .guide_section {
+    display: grid;
+    align-content: center;
+    column-gap: 64px;
+    row-gap: 24px;
+    /* 본문 행 수를 명시해야 이미지의 grid-row: 1 / -1 이 전체를 세로로 덮습니다.
+       기본 3행(제목·설명·상세) + 안내 칩이 있는 섹션만 4행 */
+    grid-template-rows: repeat(3, auto);
+  }
+
+  .guide_section:has(.guide_pill_row) {
+    grid-template-rows: repeat(4, auto);
+  }
+
+  .guide_section_media_first {
+    grid-template-columns: var(--guide_media_size) minmax(0, 620px);
+    justify-content: flex-end;
+  }
+
+  .guide_section_text_first {
+    grid-template-columns: minmax(0, 620px) var(--guide_media_size);
+    justify-content: flex-start;
+  }
+
+  .guide_section_media_first > .guide_media_wrap {
+    grid-column: 1;
+  }
+
+  .guide_section_media_first > :not(.guide_media_wrap) {
+    grid-column: 2;
+  }
+
+  .guide_section_text_first > .guide_media_wrap {
+    grid-column: 2;
+  }
+
+  .guide_section_text_first > :not(.guide_media_wrap) {
+    grid-column: 1;
+  }
+
+  /* 이미지는 본문 전체 높이를 기준으로 세로 가운데에 둡니다. */
+  .guide_media_wrap {
+    position: relative;
+    grid-row: 1 / -1;
+    align-self: center;
+  }
+
+  /* 버튼은 원의 아래쪽에 살짝 걸치며, 원의 세로 중앙 정렬에는 영향을 주지 않습니다. */
+  .guide_media_link {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-top: 0;
+    transform: translate(-50%, -8px);
+    font-size: 18px;
+  }
+
+  .guide_pill {
+    min-height: 40px;
+    font-size: 18px;
+  }
+
+  .guide_lead,
+  .guide_detail {
+    max-width: 620px;
+  }
+
+  .guide_detail {
+    padding-top: 24px;
+  }
+
+  /* 620 = 261 + 98 + 261 (945:3724) */
+  .guide_columns {
+    gap: 98px;
+  }
+
+  .guide_route_title {
+    margin-bottom: 24px;
+  }
+
+  .guide_steps {
+    margin-bottom: 24px;
+  }
+}
