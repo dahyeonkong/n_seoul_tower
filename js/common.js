@@ -492,6 +492,159 @@ function initScrollPager() {
 }
 
 /* --------------------------------------------------------------------------
+   플로팅 퀵 메뉴 (Figma 987:7708)
+   -------------------------------------------------------------------------- */
+/* 시안의 링은 10도 간격 36칸이고 "CLICK ME" 8글자 뒤에 빈칸 4개가 붙어 3번 반복됩니다. */
+var QUICK_RING_UNIT = "CLICK ME    ";
+var QUICK_RING_REPEAT = 3;
+var QUICK_RING_STEP = 10;
+/* 첫 글자가 9시 방향에서 시작해 시계 방향으로 돕니다 (987:6688 이 -90도). */
+var QUICK_RING_START = -90;
+
+function renderQuickMenuRing(ring) {
+  var text = "";
+  var fragment = document.createDocumentFragment();
+  var index;
+
+  for (index = 0; index < QUICK_RING_REPEAT; index += 1) {
+    text += QUICK_RING_UNIT;
+  }
+
+  for (index = 0; index < text.length; index += 1) {
+    var letter = text.charAt(index);
+    if (letter === " ") {
+      continue;
+    }
+
+    var char = document.createElement("span");
+    char.className = "quick_toggle_char";
+    char.style.setProperty("--quick_char_angle", QUICK_RING_START + index * QUICK_RING_STEP + "deg");
+    char.textContent = letter;
+    fragment.appendChild(char);
+  }
+
+  ring.appendChild(fragment);
+}
+
+function initQuickMenu() {
+  var quickMenu = document.querySelector("[data-quick-menu]");
+  if (!quickMenu) {
+    return;
+  }
+
+  var toggleButton = quickMenu.querySelector("[data-quick-toggle]");
+  var actions = quickMenu.querySelector("[data-quick-actions]");
+  var toggleLabel = quickMenu.querySelector("[data-quick-toggle-label]");
+  var ring = quickMenu.querySelector("[data-quick-ring]");
+  var sectionButton = quickMenu.querySelector("[data-quick-section-button]");
+  var sectionMenu = quickMenu.querySelector("[data-quick-section-menu]");
+
+  if (!toggleButton || !actions) {
+    return;
+  }
+
+  var isQuickMenuOpen = false;
+  var isSectionMenuOpen = false;
+
+  if (ring) {
+    renderQuickMenuRing(ring);
+  }
+
+  /* 이동할 섹션이 없는 페이지에서는 버튼을 남기지 않습니다 (AGENTS 10.4). */
+  if (sectionButton && sectionMenu && sectionMenu.querySelectorAll("[href]").length === 0) {
+    sectionButton.parentElement.remove();
+    sectionButton = null;
+    sectionMenu = null;
+  }
+
+  function renderSectionMenuState() {
+    if (!sectionButton || !sectionMenu) {
+      return;
+    }
+    sectionButton.setAttribute("aria-expanded", String(isSectionMenuOpen));
+    sectionMenu.hidden = !isSectionMenuOpen;
+  }
+
+  function closeSectionMenu() {
+    if (!isSectionMenuOpen) {
+      return;
+    }
+    isSectionMenuOpen = false;
+    renderSectionMenuState();
+  }
+
+  function renderQuickMenuState() {
+    toggleButton.setAttribute("aria-expanded", String(isQuickMenuOpen));
+    actions.hidden = !isQuickMenuOpen;
+    if (toggleLabel) {
+      toggleLabel.textContent = isQuickMenuOpen ? "Close quick menu" : "Open quick menu";
+    }
+  }
+
+  function closeQuickMenu(shouldRestoreFocus) {
+    if (!isQuickMenuOpen) {
+      return;
+    }
+    isQuickMenuOpen = false;
+    closeSectionMenu();
+    renderQuickMenuState();
+
+    if (shouldRestoreFocus) {
+      toggleButton.focus();
+    }
+  }
+
+  function handleQuickMenuToggle() {
+    if (isQuickMenuOpen) {
+      closeQuickMenu(false);
+      return;
+    }
+    isQuickMenuOpen = true;
+    renderQuickMenuState();
+  }
+
+  function handleSectionMenuToggle() {
+    isSectionMenuOpen = !isSectionMenuOpen;
+    renderSectionMenuState();
+  }
+
+  toggleButton.addEventListener("click", handleQuickMenuToggle);
+
+  if (sectionButton) {
+    sectionButton.addEventListener("click", handleSectionMenuToggle);
+  }
+
+  /* 섹션으로 이동한 뒤에는 패널이 화면을 가리지 않게 함께 닫습니다. */
+  if (sectionMenu) {
+    sectionMenu.addEventListener("click", function handleSectionLinkClick(event) {
+      if (event.target.closest("[href]")) {
+        closeQuickMenu(false);
+      }
+    });
+  }
+
+  document.addEventListener("click", function handleQuickOutsideClick(event) {
+    if (!quickMenu.contains(event.target)) {
+      closeQuickMenu(false);
+    }
+  });
+
+  document.addEventListener("keydown", function handleQuickEscape(event) {
+    if (event.key !== "Escape") {
+      return;
+    }
+    if (isSectionMenuOpen) {
+      closeSectionMenu();
+      if (sectionButton) {
+        sectionButton.focus();
+      }
+      return;
+    }
+    closeQuickMenu(true);
+  });
+}
+
+/* --------------------------------------------------------------------------
    init
    -------------------------------------------------------------------------- */
 function initCommon() {
@@ -501,6 +654,7 @@ function initCommon() {
   initGlobalMenu();
   initFamilySite();
   initScrollPager();
+  initQuickMenu();
 }
 
 if (document.readyState === "loading") {

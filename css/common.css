@@ -62,8 +62,10 @@
   --color_new_primary_100: #edf0e0;
   --color_new_primary_500: #a4b465;
   --color_new_primary_600: #839051;
+  --color_new_primary_800: #424828;
   --color_new_secondary_500: #626f47;
   --color_new_secondary_600: #4e5939;
+  --color_new_secondary_700: #3b432b;
 
   /* color — accent */
   --color_secondary_400: #f9bd4e;
@@ -1208,6 +1210,191 @@ html .course_page .course_description {
 @media (min-width: 1280px) {
   .scroll_pager {
     display: flex;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   floating quick menu (Figma 987:7708 chatbot, 속성1 off/on)
+   모든 페이지 우측 하단에 공통으로 붙습니다.
+   시안 실측: 버튼 96 원형 / 아이콘 36 / 액션 사이 30 / 액션블록과 토글 사이 24
+             CLICK ME 링 박스 133.2, 글자 반지름 60, 10.8px
+   링 크기는 모두 --quick_btn 비율로 계산해 해상도별로 함께 줄어듭니다.
+   -------------------------------------------------------------------------- */
+.quick_menu {
+  --quick_btn: 64px;
+  --quick_gap: 20px;
+  /* 133.2 / 96 = 1.3875 */
+  --quick_ring_box: calc(var(--quick_btn) * 1.3875);
+  /* 글자 중심이 반지름 60 에 오도록 하는 위쪽 여백.
+     박스 반지름 66.6 - (inset + 폰트높이 10.8 / 2) = 60 → inset 1.2 → 1.2 / 96 */
+  --quick_ring_inset: calc(var(--quick_btn) * 0.0125);
+  /* 10.8 / 96 = 0.1125 */
+  --quick_ring_font: calc(var(--quick_btn) * 0.1125);
+
+  position: fixed;
+  right: calc(var(--quick_gap) + var(--scrollbar_gap, 0px));
+  bottom: var(--quick_gap);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* 시안 987:7707 의 바깥 gap 24 (96 기준 0.25) */
+  gap: calc(var(--quick_btn) * 0.25);
+}
+
+/* --- 펼침 액션 목록 (987:8606 top_con) --- */
+.quick_menu_actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* 시안 gap 30 (96 기준 0.3125) */
+  gap: calc(var(--quick_btn) * 0.3125);
+}
+
+.quick_menu_actions[hidden] {
+  display: none;
+}
+
+/* --- 액션 버튼 (977:5207 search / 977:5201 top) --- */
+.quick_action {
+  display: flex;
+  width: var(--quick_btn);
+  height: var(--quick_btn);
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--color_new_secondary_700);
+  box-shadow: 0 0 7.86px 0.6px rgba(0, 0, 0, 0.1);
+  transition: background-color var(--duration) var(--ease_out);
+}
+
+.quick_action img {
+  /* 시안 아이콘 36 (96 기준 0.375) */
+  width: calc(var(--quick_btn) * 0.375);
+  height: calc(var(--quick_btn) * 0.375);
+}
+
+.quick_action:hover {
+  background-color: var(--color_new_secondary_600);
+}
+
+/* --- 섹션 이동 패널 --- */
+.quick_section {
+  position: relative;
+  display: flex;
+}
+
+.quick_section_menu {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 16px);
+  width: 220px;
+  padding: 20px 24px;
+  border-radius: var(--radius_lg);
+  background-color: var(--color_surface);
+  box-shadow: 0 8px 24px rgba(33, 33, 33, 0.12);
+  transform: translateY(-50%);
+}
+
+.quick_section_menu[hidden] {
+  display: none;
+}
+
+.quick_section_title {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color_line_goods);
+  color: var(--color_new_secondary_700);
+  font-family: var(--font_body);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.quick_section_link {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  border-bottom: 1px solid var(--color_line_goods);
+  color: var(--color_text);
+  font-family: var(--font_body);
+  font-size: 16px;
+  line-height: 1.3;
+  text-transform: capitalize;
+  transition: color var(--duration) var(--ease_out);
+}
+
+.quick_section_list > li:last-child .quick_section_link {
+  border-bottom: 0;
+}
+
+.quick_section_link:hover {
+  color: var(--color_new_secondary_600);
+}
+
+/* --- 토글 (987:7706 속성1=off) ---
+   곰 + 원형 배경이 합쳐진 최종 이미지를 그대로 씁니다.
+   CSS 로 원형 배경을 다시 그리지 않습니다. */
+.quick_toggle {
+  position: relative;
+  display: flex;
+  width: var(--quick_ring_box);
+  height: var(--quick_ring_box);
+  align-items: center;
+  justify-content: center;
+}
+
+.quick_toggle_image {
+  width: var(--quick_btn);
+  height: var(--quick_btn);
+  object-fit: contain;
+}
+
+/* --- CLICK ME 링 (987:7672 Group) ---
+   글자는 renderQuickMenuRing() 이 10도 간격으로 채웁니다. */
+.quick_toggle_ring {
+  position: absolute;
+  inset: 0;
+  animation: quick_ring_spin 7s linear infinite;
+  pointer-events: none;
+}
+
+.quick_toggle_char {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  padding-top: var(--quick_ring_inset);
+  color: var(--color_new_primary_800);
+  font-family: var(--font_body);
+  font-size: var(--quick_ring_font);
+  font-weight: 500;
+  line-height: 1;
+  transform: rotate(var(--quick_char_angle, 0deg));
+}
+
+@keyframes quick_ring_spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (min-width: 834px) {
+  .quick_menu {
+    --quick_btn: 68px;
+    --quick_gap: 28px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .quick_menu {
+    /* 시안 실측값 */
+    --quick_btn: 80px;
+    --quick_gap: 40px;
   }
 }
 
