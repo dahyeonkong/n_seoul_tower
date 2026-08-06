@@ -92,7 +92,10 @@ function initGiftShopSidebar() {
     return;
   }
 
+  var footer = document.querySelector(".site_footer");
   var isSidebarOpen = false;
+  var isBoundFrameQueued = false;
+  var lastSidebarTop = null;
 
   function renderSidebarState() {
     toggleButton.setAttribute("aria-expanded", String(isSidebarOpen));
@@ -102,12 +105,46 @@ function initGiftShopSidebar() {
     }
   }
 
+  /* 아래로 스크롤해 푸터를 만나면 사이드바가 푸터를 덮지 않도록 위로 밀어 멈춰 세웁니다.
+     transform 은 여닫는 데 쓰고 있으므로 top 으로만 조정합니다.
+     같은 값이면 다시 쓰지 않아 불필요한 스타일 재계산을 피합니다. */
+  function renderSidebarFooterBound() {
+    if (!footer) {
+      return;
+    }
+
+    var nextTop = "";
+    if (isSidebarOpen) {
+      var footerTop = footer.getBoundingClientRect().top;
+      nextTop = Math.min(0, Math.round(footerTop - sidebar.offsetHeight)) + "px";
+    }
+
+    if (nextTop === lastSidebarTop) {
+      return;
+    }
+    lastSidebarTop = nextTop;
+    sidebar.style.top = nextTop;
+  }
+
+  /* 스크롤 이벤트에서 직접 계산하지 않고 프레임당 한 번만 처리합니다 (AGENTS 7.2). */
+  function requestSidebarFooterBound() {
+    if (isBoundFrameQueued) {
+      return;
+    }
+    isBoundFrameQueued = true;
+    window.requestAnimationFrame(function () {
+      isBoundFrameQueued = false;
+      renderSidebarFooterBound();
+    });
+  }
+
   function openSidebar() {
     if (isSidebarOpen) {
       return;
     }
     isSidebarOpen = true;
     renderSidebarState();
+    renderSidebarFooterBound();
 
     var firstItem = sidebar.querySelector("[data-category-filter]");
     if (firstItem) {
@@ -121,6 +158,7 @@ function initGiftShopSidebar() {
     }
     isSidebarOpen = false;
     renderSidebarState();
+    renderSidebarFooterBound();
 
     if (shouldRestoreFocus) {
       toggleButton.focus();
@@ -136,6 +174,9 @@ function initGiftShopSidebar() {
   }
 
   toggleButton.addEventListener("click", handleSidebarToggle);
+
+  window.addEventListener("scroll", requestSidebarFooterBound, { passive: true });
+  window.addEventListener("resize", requestSidebarFooterBound);
 
   document.addEventListener("keydown", function handleSidebarEscape(event) {
     if (event.key === "Escape") {
@@ -154,6 +195,7 @@ function initGiftShopSidebar() {
   });
 
   renderSidebarState();
+  renderSidebarFooterBound();
 }
 
 /* --------------------------------------------------------------------------
