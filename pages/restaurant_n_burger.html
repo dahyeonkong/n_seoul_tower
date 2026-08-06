@@ -56,11 +56,77 @@
     <a class="skip_link" href="#main_content">Skip to main content</a>
 
     <!-- ===================== global header (공통 컴포넌트 재사용) ===================== -->
-    <header class="site_header">
+    <header class="site_header site_header_sub">
       <div class="page_container site_header_inner">
         <a class="brand_logo" href="../index.html" aria-label="N Seoul Tower home">
           <img src="../assets/nst_logo_defalut.svg" alt="" width="43" height="43">
         </a>
+
+        <!-- ===================== sub page GNB (645:2903) =====================
+             1280 이상에서만 보이고, 그 아래에서는 기존 토글 + 오버레이를 씁니다.
+             LNB 는 hover 와 focus 로 열립니다 (common.css). -->
+        <nav class="site_gnb" aria-label="Main menu">
+          <ul class="site_gnb_list">
+            <li class="site_gnb_group">
+              <p class="site_gnb_title">tower story</p>
+              <ul class="site_gnb_lnb">
+                <li><a class="site_gnb_link" href="./brand_story.html">brand story</a></li>
+                <li><button class="site_gnb_link" type="button" data-pending-link
+                    aria-disabled="true">history</button></li>
+              </ul>
+            </li>
+            <li class="site_gnb_group">
+              <p class="site_gnb_title">explore</p>
+              <ul class="site_gnb_lnb">
+                <li><a class="site_gnb_link" href="./restaurant_n_burger.html"
+                    aria-current="page">restaurants</a></li>
+                <li><a class="site_gnb_link" href="./n_gift_shop.html">N gift shop</a></li>
+                <li><button class="site_gnb_link" type="button" data-pending-link
+                    aria-disabled="true">amenities</button></li>
+                <li><a class="site_gnb_link" href="./floor_guide.html">floor guide</a></li>
+              </ul>
+            </li>
+            <li class="site_gnb_group">
+              <p class="site_gnb_title">visit</p>
+              <ul class="site_gnb_lnb">
+                <li><button class="site_gnb_link" type="button" data-pending-link aria-disabled="true">Hours &amp;
+                    Tickets</button></li>
+                <li><a class="site_gnb_link" href="./visitor_guide.html">visitor guide</a></li>
+              </ul>
+            </li>
+            <li class="site_gnb_group">
+              <p class="site_gnb_title">events</p>
+            </li>
+            <li class="site_gnb_group">
+              <p class="site_gnb_title">support</p>
+              <ul class="site_gnb_lnb">
+                <li><button class="site_gnb_link" type="button" data-pending-link aria-disabled="true">notice &amp;
+                    news</button></li>
+                <li><button class="site_gnb_link" type="button" data-pending-link aria-disabled="true">FAQ / contact
+                    us</button></li>
+              </ul>
+            </li>
+          </ul>
+
+          <!-- TODO: 예매 페이지 주소가 확정되지 않아 안내 메시지만 노출합니다. -->
+          <button class="book_now_btn" type="button" data-pending-link aria-disabled="true">Book Now</button>
+
+          <div class="site_gnb_language">
+            <button class="site_gnb_language_button" type="button" data-language-button aria-expanded="false"
+              aria-controls="header_language_menu">
+              <span data-language-current>English</span>
+              <img src="../assets/icon/icon_chevron_down_dark.svg" alt="" width="20" height="20">
+              <span class="visually_hidden">Change language</span>
+            </button>
+            <ul class="site_gnb_language_menu" id="header_language_menu" data-language-menu hidden>
+              <li><button class="site_gnb_language_option" type="button" data-language="en"
+                  aria-current="true">English</button></li>
+              <li><button class="site_gnb_language_option" type="button" data-language="ko">Korean</button></li>
+              <li><button class="site_gnb_language_option" type="button" data-language="ja">Japanese</button></li>
+              <li><button class="site_gnb_language_option" type="button" data-language="zh">Chinese</button></li>
+            </ul>
+          </div>
+        </nav>
         <button class="menu_toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="global_menu">
           <svg class="menu_toggle_icon" viewBox="0 0 40 40" fill="currentColor" aria-hidden="true" focusable="false">
             <path class="menu_toggle_bar menu_toggle_bar_top"
