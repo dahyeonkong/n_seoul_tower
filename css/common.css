@@ -605,6 +605,7 @@ body {
   z-index: 100;
   display: flex;
   flex-direction: column;
+  align-items: center;
   padding-right: var(--scrollbar_gap);
   background-color: var(--color_new_secondary_500);
   opacity: 0;
