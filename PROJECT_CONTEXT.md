@@ -108,7 +108,7 @@ GNB 11개 항목 중 **Figma `(develope) 개발 시안 5개 페이지` 에 시�
 | footer | 793:10513 | 기존 공통 푸터 재사용 |
 
 - 페이지 전용 CSS: `css/visitor_guide.css` (전용 토큰도 이 파일의 `:root` 에 정의)
-- **페이지 전용 JS 없음** — 탭은 앵커 링크 + `:target` 만 사용, 공통 동작만 `js/common.js`
+- 페이지 전용 JS: `js/visitor_guide.js` (탭 전환, 케이블카 안내 패널) + 공통 `js/common.js`
 - 섹션 레이아웃은 **평평한 DOM + CSS Grid** 입니다. 모바일은 제목 → 설명 → 이미지 → 상세 1열,
   데스크톱(1280+)은 이미지를 `grid-row: 1 / -1` 로 세로 전체에 걸칩니다.
   - **`grid-row: 1 / -1` 은 명시적 행이 없으면 1행만 차지합니다.** 그래서
@@ -130,22 +130,49 @@ GNB 11개 항목 중 **Figma `(develope) 개발 시안 5개 페이지` 에 시�
   `bus/citytourbus` 는 같은 렌더의 좁은 크롭본입니다. 어느 쪽도 참조하는 코드가 없으므로
   삭제하지 않고 두었습니다. 정리 여부는 디자인 확인 후 결정이 필요합니다.
 
+## Recommended Courses 를 visitor_guide 탭으로 병합 (2026-08-06)
+
+`Getting Here` / `Recommended Courses` 는 서브 페이지 탭 UI 인데 서로 다른 파일(`visitor_guide.html`,
+`custom_course.html`)로 나뉘어 있어 탭을 누를 때마다 페이지가 새로 로드됐습니다.
+**두 내용을 `pages/visitor_guide.html` 한 파일 안의 탭 패널로 합쳤습니다.**
+
+- 탭 마크업: `<a href="...">` 2개 → `role="tablist"` + `role="tab"` 버튼 2개
+  (`tab_getting_here` / `tab_recommended_courses`). 프로젝트에 이미 있는
+  `cable_info_labels` 탭 패턴과 같은 구조입니다.
+- 패널 2개
+  - `#panel_getting_here` — 기존 `.page_container.guide_sections` 에 `role="tabpanel"` 만 추가
+  - `#panel_recommended_courses` — `custom_course.html` 의 카테고리 내비 + 코스 7개를 그대로 이동
+- **`course.css` 는 한 줄도 고치지 않았습니다.** 모든 선택자가 `.course_page` 하위로 스코프되어 있어
+  패널 `<div>` 에 `class="course_page"` 를 주고 안쪽에 `.course_content` 를 두면 그대로 적용됩니다.
+  `.course_page` 가 선언하는 `--subpage_hero_*` 변수는 히어로가 패널 바깥이라 영향이 없습니다.
+- `js/course.js`(카테고리 IntersectionObserver)를 그대로 재사용하고,
+  탭 전환은 `js/visitor_guide.js` 의 `initGuideTabs()` 가 담당합니다.
+- **딥링크 처리**: `#speed_course` 처럼 숨은 패널 안의 앵커로 진입하면 해당 탭을 먼저 열고
+  `requestAnimationFrame` 뒤에 스크롤합니다. 패널이 `hidden` 이면 브라우저가 앵커로 이동하지 못하고,
+  방금 펼친 패널은 아직 레이아웃 전이라 한 프레임 미뤄야 위치가 맞습니다.
+- **`pages/custom_course.html` 은 삭제하지 않고 그대로 뒀습니다.** 이제 어디서도 링크하지 않는
+  고아 파일이며 코스 내용이 두 곳에 중복됩니다. 삭제 여부는 확인이 필요합니다.
+
 ## 파일 구조
 
 ```text
 n_seoul_tower/
 ├── index.html
 ├── pages/                       # 서브 페이지 (공통 리소스는 ../ 로 참조)
+│   ├── custom_course.html       # 고아 파일 — 내용은 visitor_guide 탭으로 이동됨
 │   ├── restaurant_n_burger.html
-│   └── visitor_guide.html
+│   └── visitor_guide.html       # Getting Here + Recommended Courses 탭
 ├── css/
 │   ├── reset.css
-│   ├── common.css   # 디자인 토큰, 폰트, 공통 버튼/카드/헤더/메뉴/푸터/페이저
+│   ├── common.css   # 디자인 토큰, 폰트, 공통 버튼/카드/헤더/메뉴/푸터/페이저 + subpage hero·tabs
 │   ├── main.css     # 섹션별 레이아웃과 반응형
+│   ├── course.css   # .course_page 스코프 — visitor_guide 의 코스 탭에서 재사용
 │   ├── restaurant_n_burger.css
 │   └── visitor_guide.css
 ├── js/
 │   ├── common.js    # 메뉴, 언어, family site, 섹션 페이저, 공통 상태
+│   ├── course.js    # 코스 카테고리 IntersectionObserver
+│   ├── visitor_guide.js  # 탭 전환 + 케이블카 안내 패널
 │   └── main.js      # 목업 데이터 + renderXxx + 섹션 인터랙션
 └── assets/
     ├── back_img.png / turn_tower.png / footer_tower.png / hero_title_mask.svg
@@ -195,6 +222,10 @@ JS 는 `ASSET_PATH = "./assets/"` 를 접두로 두고 데이터에 하위 경�
     펼침 패널이 있는 컴포넌트인지 확인이 필요해, 지금은 링크 형태로만 구현했습니다.
   - 히어로/탭 스타일이 `restaurant_n_burger.css` 의 `rest_hero` / `rest_tab` 과 사실상 동일합니다.
     서브 페이지가 더 늘어나면 `common.css` 로 승격을 검토하세요(이번엔 기존 파일 수정을 피해 중복 유지).
+  - `visitor_guide.css` 의 `.guide_tabs` / `.guide_tab` 규칙(`:target` 기반)은 탭이 공통
+    `.subpage_tab` 으로 통일되면서 쓰이지 않는 죽은 코드입니다. 정리 여부 확인 필요.
+  - `pages/custom_course.html` 은 코스 내용이 `visitor_guide.html` 탭으로 옮겨진 뒤
+    어디서도 링크되지 않습니다. 두 파일에 같은 코스 내용이 중복돼 있으므로 삭제 여부 결정이 필요합니다.
 
 ## 마지막 검증 결과
 
@@ -207,3 +238,19 @@ JS 는 `ASSET_PATH = "./assets/"` 를 접두로 두고 데이터에 하위 경�
 - 콘솔 오류 없음, 404 에셋 없음, 깨진 이미지 없음
 - `h1` 1개, 중복 id 없음, `alt` 누락 없음, 제목 계층 h1 → h2 → h3
 - 메뉴 열기/닫기, ESC 닫기, 포커스 복귀, 언어 선택 + localStorage 저장, family site 토글, 확정되지 않은 링크 안내 동작 확인
+
+### visitor_guide 탭 병합 검증 (2026-08-06)
+
+로컬 정적 서버(PowerShell HttpListener, `http://localhost:8123`)에서 확인했습니다.
+
+- 탭 클릭 전환: `aria-selected` / `tabindex` / `is_active` / 패널 `hidden` 모두 정상 전환
+- 키보드 `ArrowLeft` / `ArrowRight` 로 탭 이동 + 포커스 이동 정상
+- 숨긴 패널의 링크·버튼 13개는 `offsetParent === null` — 포커스 대상에서 제외됨
+- 딥링크 `#speed_course` / `#history_culture_course` 진입 시 Recommended Courses 탭이 열림
+- 케이블카 안내 패널 토글은 기존과 동일하게 동작 (회귀 없음)
+- 360 / 834 / 1280 / 1920 두 탭 모두 페이지 전체 가로 스크롤 없음
+  - 코스 섹션 그리드: 1280 `300px 390px`, 1920 `564px 620px` — `custom_course.html` 과 동일
+  - 교통안내 섹션 그리드: 1280+ `400px 620px` — 기존과 동일
+- 콘솔 오류 없음, 404 에셋 없음, 중복 id 없음, `h1` 1개, `alt` 누락 없음
+- **미검증**: 딥링크 진입 후의 자동 스크롤 위치. 검증에 쓴 브라우저 패널이 프로그래밍 방식
+  스크롤(`window.scrollTo` 포함)을 반영하지 않아 탭이 열리는 것까지만 확인했습니다.

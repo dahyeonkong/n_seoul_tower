@@ -6,7 +6,7 @@
   <!-- 기본 SEO -->
   <title>Visitor Guide | N Seoul Tower</title>
   <meta name="description"
-    content="How to get to N Seoul Tower by Namsan shuttle bus, cable car, Seoul City Tour Bus and nearby parking information.">
+    content="How to get to N Seoul Tower by Namsan shuttle bus, cable car, Seoul City Tour Bus and nearby parking, plus seven recommended courses.">
   <meta name="keywords"
     content="N SEOUL TOWER, Namsan Seoul Tower, Seoul landmark, Seoul observatory, Namsan, Seoul travel, Seoul attractions, visitor guide">
   <meta name="author" content="Kbrand N SEOUL TOWER Renewal Team">
@@ -30,7 +30,7 @@
   <meta property="og:site_name" content="N서울타워">
   <meta property="og:title" content="Visitor Guide | N Seoul Tower">
   <meta property="og:description"
-    content="How to get to N Seoul Tower by Namsan shuttle bus, cable car, Seoul City Tour Bus and nearby parking information.">
+    content="How to get to N Seoul Tower by Namsan shuttle bus, cable car, Seoul City Tour Bus and nearby parking, plus seven recommended courses.">
   <meta property="og:url" content="https://dahyeonkong.github.io/n_seoul_tower/pages/visitor_guide.html">
   <meta property="og:image"
     content="https://dahyeonkong.github.io/n_seoul_tower/assets/guide_course/guide/visit_cablecar.png">
@@ -42,7 +42,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Visitor Guide | N Seoul Tower">
   <meta name="twitter:description"
-    content="How to get to N Seoul Tower by Namsan shuttle bus, cable car, Seoul City Tour Bus and nearby parking information.">
+    content="How to get to N Seoul Tower by Namsan shuttle bus, cable car, Seoul City Tour Bus and nearby parking, plus seven recommended courses.">
   <meta name="twitter:image"
     content="https://dahyeonkong.github.io/n_seoul_tower/assets/guide_course/guide/visit_cablecar.png">
   <meta name="twitter:image:alt" content="N서울타워 케이블카 방문 안내">
@@ -50,6 +50,8 @@
   <link rel="preload" as="image" href="../assets/guide_course/guide/visit_cablecar.png">
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/common.css">
+  <!-- Recommended Courses 탭은 course.css 의 .course_page 스코프 스타일을 그대로 재사용합니다. -->
+  <link rel="stylesheet" href="../css/course.css">
   <link rel="stylesheet" href="../css/visitor_guide.css">
 </head>
 
@@ -160,22 +162,33 @@
         <h1 class="subpage_hero_title" id="guide_hero_title">visit</h1>
       </section>
 
-      <!-- ===================== 2. 교통수단 바로가기 (837:9104) =====================
-           JavaScript 없이 앵커 이동만 사용합니다.
-           현재 위치 표시는 visitor_guide.css 의 :target 규칙이 담당합니다. -->
-      <nav class="subpage_tabs" aria-label="Visit guide pages">
-        <ul class="subpage_tabs_list">
-          <li><a class="subpage_tab is_active" href="./visitor_guide.html" aria-current="page"><span
-                class="subpage_tab_icon"><img src="../assets/icon/guide_course/bus.svg" alt="" width="24"
-                  height="24"></span>Getting Here</a></li>
-          <li><a class="subpage_tab" href="./custom_course.html"><span class="subpage_tab_icon"><img
-                  src="../assets/icon/guide_course/speed.svg" alt="" width="24" height="24"></span>Recommended
-              Courses</a></li>
+      <!-- ===================== 2. 방문 안내 탭 (837:9104) =====================
+           Getting Here 와 Recommended Courses 는 별도 페이지가 아니라
+           같은 페이지 안에서 전환되는 탭입니다. 전환은 visitor_guide.js 가 담당합니다. -->
+      <div class="subpage_tabs">
+        <ul class="subpage_tabs_list" role="tablist" aria-label="Visit guide sections">
+          <li role="presentation">
+            <button class="subpage_tab is_active" id="tab_getting_here" type="button" role="tab" data-guide-tab
+              aria-selected="true" aria-controls="panel_getting_here">
+              <span class="subpage_tab_icon"><img src="../assets/icon/guide_course/bus.svg" alt="" width="24"
+                  height="24"></span>Getting Here
+            </button>
+          </li>
+          <li role="presentation">
+            <button class="subpage_tab" id="tab_recommended_courses" type="button" role="tab" data-guide-tab
+              aria-selected="false" aria-controls="panel_recommended_courses" tabindex="-1">
+              <span class="subpage_tab_icon"><img src="../assets/icon/guide_course/speed.svg" alt="" width="24"
+                  height="24"></span>Recommended Courses
+            </button>
+          </li>
         </ul>
-      </nav>
-      <div class="page_container guide_sections">
+      </div>
 
-        <!-- ===================== 3. by bus (945:3716) ===================== -->
+      <!-- ===================== 3. Getting Here 패널 ===================== -->
+      <div class="page_container guide_sections guide_tabpanel" id="panel_getting_here" role="tabpanel" data-guide-panel
+        aria-labelledby="tab_getting_here">
+
+        <!-- ===================== 3-1. by bus (945:3716) ===================== -->
         <section class="guide_section guide_section_media_first" id="by_bus" aria-labelledby="by_bus_title">
           <h2 class="guide_title" id="by_bus_title">By Bus</h2>
 
@@ -242,7 +255,7 @@
           </div>
         </section>
 
-        <!-- ===================== 4. by cable car area (945:3755) ===================== -->
+        <!-- ===================== 3-2. by cable car area (945:3755) ===================== -->
         <section class="guide_section guide_section_text_first" id="by_cable_car" aria-labelledby="by_cable_car_title">
           <h2 class="guide_title" id="by_cable_car_title">By cable car area</h2>
 
@@ -387,7 +400,7 @@
           </div>
         </section>
 
-        <!-- ===================== 5. by seoul city tour bus (945:3893) ===================== -->
+        <!-- ===================== 3-3. by seoul city tour bus (945:3893) ===================== -->
         <section class="guide_section guide_section_media_first" id="by_city_tour_bus"
           aria-labelledby="by_city_tour_bus_title">
           <h2 class="guide_title" id="by_city_tour_bus_title">By Seoul City Tour Bus</h2>
@@ -469,7 +482,7 @@
           </div>
         </section>
 
-        <!-- ===================== 6. by cars (945:3942) ===================== -->
+        <!-- ===================== 3-4. by cars (945:3942) ===================== -->
         <section class="guide_section guide_section_text_first" id="by_cars" aria-labelledby="by_cars_title">
           <h2 class="guide_title" id="by_cars_title">By cars</h2>
 
@@ -532,6 +545,210 @@
           </div>
         </section>
 
+      </div>
+
+      <!-- ===================== 4. Recommended Courses 패널 =====================
+           course.css 는 .course_page 하위로만 적용되므로 패널에 그대로 붙여 재사용합니다. -->
+      <div class="course_page guide_tabpanel" id="panel_recommended_courses" role="tabpanel" data-guide-panel
+        aria-labelledby="tab_recommended_courses" hidden>
+        <div class="course_content">
+
+          <nav class="course_category_nav" aria-label="Course categories" data-course-nav>
+            <ul class="course_category_list">
+              <li><a class="course_category_link is_active" href="#speed_course" data-course-link
+                  aria-current="true"><img src="../assets/icon/guide_course/speed.svg" alt="" width="24"
+                    height="24">Speed</a></li>
+              <li><a class="course_category_link" href="#date_course" data-course-link><img
+                    src="../assets/icon/guide_course/date.svg" alt="" width="24" height="24">Date</a></li>
+              <li><a class="course_category_link" href="#family_course" data-course-link><img
+                    src="../assets/icon/guide_course/family.svg" alt="" width="24" height="24">Family</a></li>
+              <li><a class="course_category_link" href="#food_course" data-course-link><img
+                    src="../assets/icon/guide_course/food.svg" alt="" width="24" height="24">Food</a></li>
+              <li><a class="course_category_link" href="#photo_spot_course" data-course-link><img
+                    src="../assets/icon/guide_course/photo.svg" alt="" width="24" height="24">Photo Spot</a></li>
+              <li><a class="course_category_link" href="#running_course" data-course-link><img
+                    src="../assets/icon/guide_course/run.svg" alt="" width="24" height="24">Running</a></li>
+              <li><a class="course_category_link" href="#history_culture_course" data-course-link><img
+                    src="../assets/icon/guide_course/history.svg" alt="" width="24" height="24">History &amp; Culture</a>
+              </li>
+            </ul>
+          </nav>
+
+          <div class="course_sections">
+            <section class="course_section" id="speed_course" data-course-section aria-labelledby="speed_course_title">
+              <div class="course_image_circle"><img src="../assets/guide_course/course/course_speed.png"
+                  alt="Illustrated shuttle bus for the speed course" width="1086" height="1448" loading="lazy"></div>
+              <div class="course_text">
+                <header>
+                  <h2 id="speed_course_title">SPEED COURSE</h2>
+                  <p class="course_subtitle">See the Highlights in Less Time</p>
+                </header>
+                <p class="course_description">Perfect for first-time visitors with a limited schedule.</p>
+                <ul class="course_info" aria-label="Speed course information">
+                  <li class="course_info_item"><img src="../assets/guide_course/course/Duration.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Duration</span><span
+                      class="course_info_value">60min</span></li>
+                  <li class="course_info_item"><img src="../assets/guide_course/course/stops.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Stops</span><span
+                      class="course_info_value">5 Highlights</span></li>
+                  <li class="course_info_item"><img src="../assets/guide_course/course/waking.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Walking</span><span
+                      class="course_info_value">Easy</span></li>
+                </ul>
+              </div>
+            </section>
+
+            <section class="course_section" id="date_course" data-course-section aria-labelledby="date_course_title">
+              <div class="course_image_circle"><img src="../assets/guide_course/course/course_date.png"
+                  alt="Illustrated pink cable car for the date course" width="1086" height="1448" loading="lazy"></div>
+              <div class="course_text">
+                <header>
+                  <h2 id="date_course_title">DATE COURSE</h2>
+                  <p class="course_subtitle">A Romantic Journey Above Seoul</p>
+                </header>
+                <p class="course_description">A romantic course for couples to enjoy the Locks of Love, panoramic views,
+                  and Seoul’s sparkling skyline.</p>
+                <ul class="course_info" aria-label="Date course information">
+                  <li class="course_info_item"><img src="../assets/guide_course/course/Duration.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Duration</span><span
+                      class="course_info_value">60min</span></li>
+                  <li class="course_info_item"><img src="../assets/guide_course/course/stops.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Stops</span><span
+                      class="course_info_value">5 Highlights</span></li>
+                  <li class="course_info_item"><img src="../assets/guide_course/course/waking.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Walking</span><span
+                      class="course_info_value">Easy</span></li>
+                </ul>
+              </div>
+            </section>
+
+            <section class="course_section" id="family_course" data-course-section
+              aria-labelledby="family_course_title">
+              <div class="course_image_circle"><img src="../assets/guide_course/course/course_family.png"
+                  alt="Illustrated N Seoul Tower for the family course" width="1086" height="1448" loading="lazy"></div>
+              <div class="course_text">
+                <header>
+                  <h2 id="family_course_title">FAMILY COURSE</h2>
+                  <p class="course_subtitle">Fun for the Whole Family</p>
+                </header>
+                <p class="course_description">A fun family course featuring the observatory, exhibitions, and
+                  interactive spaces for all ages.</p>
+                <ul class="course_info" aria-label="Family course information">
+                  <li class="course_info_item"><img src="../assets/guide_course/course/Duration.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Duration</span><span
+                      class="course_info_value">60min</span></li>
+                  <li class="course_info_item"><img src="../assets/guide_course/course/stops.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Stops</span><span
+                      class="course_info_value">5 Highlights</span></li>
+                  <li class="course_info_item"><img src="../assets/guide_course/course/waking.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Walking</span><span
+                      class="course_info_value">Easy</span></li>
+                </ul>
+              </div>
+            </section>
+
+            <section class="course_section" id="food_course" data-course-section aria-labelledby="food_course_title">
+              <div class="course_image_circle"><img src="../assets/guide_course/course/course_food.png"
+                  alt="Illustrated Korean meal for the food course" width="1086" height="1448" loading="lazy"></div>
+              <div class="course_text">
+                <header>
+                  <h2 id="food_course_title">FOOD COURSE</h2>
+                  <p class="course_subtitle">Taste Seoul with a View</p>
+                </header>
+                <p class="course_description">A food course offering scenic restaurants, snacks, and desserts with
+                  beautiful views of Seoul.</p>
+                <ul class="course_info" aria-label="Food course information">
+                  <li class="course_info_item"><img src="../assets/guide_course/course/Duration.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Duration</span><span
+                      class="course_info_value">60min</span></li>
+                  <li class="course_info_item"><img src="../assets/guide_course/course/stops.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Stops</span><span
+                      class="course_info_value">5 Highlights</span></li>
+                  <li class="course_info_item"><img src="../assets/guide_course/course/waking.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Walking</span><span
+                      class="course_info_value">Easy</span></li>
+                </ul>
+              </div>
+            </section>
+
+            <section class="course_section" id="photo_spot_course" data-course-section
+              aria-labelledby="photo_spot_course_title">
+              <div class="course_image_circle"><img src="../assets/guide_course/course/course_photo.png"
+                  alt="Illustrated camera and photo spot objects" width="1086" height="1448" loading="lazy"></div>
+              <div class="course_text">
+                <header>
+                  <h2 id="photo_spot_course_title">PHOTO SPOT COURSE</h2>
+                  <p class="course_subtitle">Capture Your Best Moments</p>
+                </header>
+                <p class="course_description">A photo course featuring the best spots to capture N SEOUL TOWER and the
+                  Seoul skyline.</p>
+                <ul class="course_info" aria-label="Photo spot course information">
+                  <li class="course_info_item"><img src="../assets/guide_course/course/Duration.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Duration</span><span
+                      class="course_info_value">60min</span></li>
+                  <li class="course_info_item"><img src="../assets/guide_course/course/stops.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Stops</span><span
+                      class="course_info_value">5 Highlights</span></li>
+                  <li class="course_info_item"><img src="../assets/guide_course/course/waking.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Walking</span><span
+                      class="course_info_value">Easy</span></li>
+                </ul>
+              </div>
+            </section>
+
+            <section class="course_section" id="running_course" data-course-section
+              aria-labelledby="running_course_title">
+              <div class="course_image_circle"><img src="../assets/guide_course/course/course_run.png"
+                  alt="Illustrated Namsan running route" width="1086" height="1448" loading="lazy"></div>
+              <div class="course_text">
+                <header>
+                  <h2 id="running_course_title">RUNNING COURSE</h2>
+                  <p class="course_subtitle">Run Through Nature and City Views</p>
+                </header>
+                <p class="course_description">A scenic running course through Namsan’s trails, nature, and panoramic
+                  viewpoints.</p>
+                <ul class="course_info" aria-label="Running course information">
+                  <li class="course_info_item"><img src="../assets/guide_course/course/Duration.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Duration</span><span
+                      class="course_info_value">60min</span></li>
+                  <li class="course_info_item"><img src="../assets/guide_course/course/stops.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Stops</span><span
+                      class="course_info_value">5 Highlights</span></li>
+                  <li class="course_info_item"><img src="../assets/guide_course/course/waking.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Walking</span><span
+                      class="course_info_value">Easy</span></li>
+                </ul>
+              </div>
+            </section>
+
+            <section class="course_section" id="history_culture_course" data-course-section
+              aria-labelledby="history_culture_course_title">
+              <div class="course_image_circle"><img src="../assets/guide_course/course/course_history.png"
+                  alt="Illustrated N Seoul Tower and traditional pavilion" width="1086" height="1448" loading="lazy">
+              </div>
+              <div class="course_text">
+                <header>
+                  <h2 id="history_culture_course_title">HISTORY &amp; CULTURE COURSE</h2>
+                  <p class="course_subtitle">Walk Through the Stories of Namsan and Seoul</p>
+                </header>
+                <p class="course_description">A cultural course exploring the history, heritage, and exhibitions of N
+                  SEOUL TOWER and Namsan.</p>
+                <ul class="course_info" aria-label="History and culture course information">
+                  <li class="course_info_item"><img src="../assets/guide_course/course/Duration.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Duration</span><span
+                      class="course_info_value">60min</span></li>
+                  <li class="course_info_item"><img src="../assets/guide_course/course/stops.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Stops</span><span
+                      class="course_info_value">5 Highlights</span></li>
+                  <li class="course_info_item"><img src="../assets/guide_course/course/waking.png" alt="" width="76"
+                      height="76" loading="lazy"><span class="course_info_label">Walking</span><span
+                      class="course_info_value">Easy</span></li>
+                </ul>
+              </div>
+            </section>
+          </div>
+
+        </div>
       </div>
     </main>
 
@@ -661,6 +878,7 @@
   </div>
 
   <script src="../js/common.js"></script>
+  <script src="../js/course.js"></script>
   <script src="../js/visitor_guide.js"></script>
 </body>
 
