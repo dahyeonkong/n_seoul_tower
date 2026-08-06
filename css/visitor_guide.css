@@ -15,6 +15,14 @@
   --color_guide_tab_icon: #dbe1c1; /* color/new_primary/200 */
   --color_guide_tab_icon_on: #fff1ca; /* color/point/150 */
   --color_guide_ink: #3b432b; /* color/new_secondary/700 */
+  --subpage_hero_bg: var(--color_guide_hero_bg);
+  --subpage_hero_image_fit: cover;
+  --subpage_hero_title_mobile: clamp(56px, 16vw, 96px);
+  --subpage_hero_title_desktop: clamp(72px, 6.25vw, 120px);
+  --subpage_tab_bg: var(--color_guide_tab_bg);
+  --subpage_tab_ink: var(--color_guide_ink);
+  --subpage_tab_icon: var(--color_guide_tab_icon);
+  --subpage_tab_icon_active: var(--color_guide_tab_icon_on);
   /* 원형 배경: 흰 바탕 위 rgba(27, 92, 78, 0.4) 를 미리 합성한 값 */
   --color_guide_media_bg: #a4beb8;
 
@@ -62,69 +70,6 @@
 /* 앵커 이동 시 섹션 상단이 화면에 딱 붙지 않도록 여유를 둡니다. */
 .guide_section {
   scroll-margin-top: 24px;
-}
-
-/* ==========================================================================
-   1. visit hero (973:6166)
-   1920 x 1080, bg #b6c384, 오브젝트 626 + gap 47 + 제목 120 을 세로 중앙 정렬
-   ========================================================================== */
-.guide_hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  min-height: 100svh;
-  padding: calc(var(--header_height) + 32px) var(--page_pad) 56px;
-  background-color: var(--color_guide_hero_bg);
-  overflow: hidden;
-}
-
-/* Figma 973:6167 — 626 x 626 정사각 프레임에 이미지를 cover 로 채웁니다. */
-.guide_hero_object {
-  width: min(78%, 380px);
-  height: auto;
-  aspect-ratio: 1;
-  object-fit: cover;
-}
-
-.guide_hero_title {
-  font-family: var(--font_title);
-  font-size: clamp(56px, 16vw, 96px);
-  font-weight: 600;
-  line-height: 1;
-  color: var(--color_text_white);
-  text-align: center;
-}
-
-@media (min-width: 834px) {
-  .guide_hero {
-    gap: 32px;
-  }
-
-  .guide_hero_object {
-    width: min(62%, 480px);
-  }
-}
-
-/* 데스크톱: 1920 x 1080 프레임 값을 비율로 환산 (626/1920 = 32.6%, gap 47) */
-@media (min-width: 1280px) {
-  .guide_hero {
-    gap: 2.45vw;
-    height: calc(100vw * 1080 / 1920);
-    min-height: 760px;
-    max-height: 1080px;
-    padding: var(--header_height) var(--page_pad) 0;
-  }
-
-  .guide_hero_object {
-    width: 32.6%;
-    max-width: 626px;
-  }
-
-  .guide_hero_title {
-    font-size: clamp(72px, 6.25vw, 120px);
-  }
 }
 
 /* ==========================================================================
@@ -277,7 +222,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 
 .guide_title {
   font-family: var(--font_title);
-  font-size: var(--fs_h2);
+  font-size: var(--fs_card_title);
   font-weight: 600;
   line-height: 1.5;
   color: var(--color_text);
@@ -287,7 +232,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 /* 620px 는 데스크톱 본문 폭입니다. 그 아래에서는 컨테이너를 채웁니다. */
 .guide_lead {
   width: 100%;
-  font-size: var(--fs_guide_lead);
+  font-size: var(--fs_body);
   line-height: 1.18;
   color: var(--color_text);
 }
@@ -382,16 +327,173 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 .guide_pill:hover {
   background-color: var(--color_primary_800);
 }
-
+.guide_detail{
+  position:relative;
+}
 /* --- Cable Car Information 칩 (945:4145) --- */
 .guide_pill_row {
   display: flex;
 }
 
 .guide_pill {
+  border: 0;
   gap: 14px;
   padding: 8px 18px;
   font-weight: 400;
+  cursor: pointer;
+}
+
+.guide_pill[aria-expanded="true"] img {
+  transform: rotate(180deg);
+}
+
+/* --- Cable Car Information panel (945:4065) --- */
+.cable_info {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 620px;
+  padding: 24px;
+  border-radius: var(--radius_2xl);
+  overflow: hidden;
+  background-color: var(--color_primary_600);
+  color: var(--color_text_white);
+  position:absolute;
+  top:110%;
+  z-index:1;
+  box-sizing:border-box;
+}
+
+.cable_info_title {
+  font-family: var(--font_body);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.cable_info_hours {
+  margin-top: 6px;
+  font-size: 18px;
+  line-height: normal;
+}
+
+.cable_info_notice,
+.cable_info_footnote {
+  font-size: 14px;
+  font-weight: 300;
+  line-height: normal;
+}
+
+.cable_info_labels {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.cable_info_label {
+  position: relative;
+  padding: 4px 12px;
+  border: 1px solid var(--color_text_white);
+  border-radius: var(--radius_round);
+  background-color: transparent;
+  color: var(--color_text_white);
+  font-family: var(--font_body);
+  font-size: 14px;
+  line-height: normal;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.cable_info_label[aria-selected="true"] {
+  background-color: var(--color_text_white);
+  color: var(--color_primary_600);
+}
+
+.cable_info_label:focus-visible {
+  outline-color: var(--color_text_white);
+}
+
+.cable_info_tables {
+  margin-top: 24px;
+}
+
+.cable_info_table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  color: inherit;
+}
+
+.cable_info_table th,
+.cable_info_table td {
+  height: 59px;
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.85);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.cable_info_table thead th {
+  padding-block: 18px;
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.cable_info_table tbody tr {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.cable_info_table tbody th {
+  font-size: 16px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.cable_info_table tbody td {
+  font-size: 14px;
+  font-weight: 300;
+  white-space: nowrap;
+}
+
+.cable_info_table_group th,
+.cable_info_table_group td {
+  width: 33.333%;
+}
+
+.cable_info_footnote {
+  margin-top: 24px;
+}
+
+@media (max-width: 479px) {
+  .cable_info {
+    padding: 20px;
+  }
+
+  .cable_info_table th,
+  .cable_info_table td {
+    height: 52px;
+    padding: 8px 4px;
+    text-align: center;
+  }
+
+  .cable_info_table th:first-child,
+  .cable_info_table td:first-child {
+    text-align: left;
+  }
+
+  .cable_info_table thead th {
+    font-size: 14px;
+  }
+
+  .cable_info_table tbody th {
+    font-size: 13px;
+    line-height: 1.2;
+    white-space: normal;
+  }
+
+  .cable_info_table tbody td {
+    font-size: 12px;
+  }
 }
 
 /* --- 구분선 + 상세 정보 (945:3723 / 945:3724) --- */
@@ -410,7 +512,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 .guide_route_title {
   margin-bottom: var(--guide_stack_gap);
   font-family: var(--font_body);
-  font-size: var(--fs_guide_route);
+  font-size: var(--fs_body);
   font-weight: 600;
   line-height: 1.25;
   color: var(--color_text);
@@ -438,7 +540,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   display: flex;
   flex-direction: column;
   font-size: var(--fs_sm);
-  font-weight: 300;
+  font-weight: 200;
   line-height: 1.35;
   color: var(--color_text);
 }
@@ -521,6 +623,10 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 
   .guide_section:has(.guide_pill_row) {
     grid-template-rows: repeat(4, auto);
+  }
+
+  .guide_section:has(.cable_info:not([hidden])) {
+    grid-template-rows: repeat(5, auto);
   }
 
   .guide_section_media_first {

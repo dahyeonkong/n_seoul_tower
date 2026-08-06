@@ -954,6 +954,173 @@ body {
 }
 
 /* --------------------------------------------------------------------------
+   shared subpage hero and tabs
+   -------------------------------------------------------------------------- */
+.subpage_hero {
+  position: relative;
+  display: flex;
+  min-height: var(--subpage_hero_min_height_mobile, 100svh);
+  padding: var(
+    --subpage_hero_padding_mobile,
+    calc(var(--header_height) + 32px) var(--page_pad) 56px
+  );
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--subpage_hero_gap_mobile, 24px);
+  overflow: hidden;
+  background-color: var(--subpage_hero_bg, #b6c384);
+}
+
+.subpage_hero_image {
+  width: var(--subpage_hero_image_mobile, min(78%, 380px));
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: var(--subpage_hero_image_fit, contain);
+}
+
+.subpage_hero_title {
+  width: 100%;
+  color: var(--color_text_white);
+  font-family: var(--font_title);
+  font-size: var(--subpage_hero_title_mobile, clamp(52px, 11vw, 96px));
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+}
+
+.subpage_tabs {
+  min-height: 100px;
+  background-color: var(--subpage_tab_bg, #c8d2a3);
+}
+
+.subpage_tabs_list {
+  display: flex;
+  width: min(100% - var(--page_pad) * 2, var(--content_max));
+  min-height: 100px;
+  margin-inline: auto;
+  padding-block: 18px;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.subpage_tabs_list::-webkit-scrollbar {
+  display: none;
+}
+
+.subpage_tabs_list > li {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+.subpage_tab {
+  display: inline-flex;
+  min-height: 64px;
+  padding: 12px 20px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid var(--subpage_tab_ink, #3b432b);
+  border-radius: 999px;
+  background-color: var(--color_surface);
+  color: var(--subpage_tab_ink, #3b432b);
+  font-family: var(--font_body);
+  font-size: 16px;
+  line-height: 1.3;
+  white-space: nowrap;
+  transition: background-color var(--duration) var(--ease_out),
+    color var(--duration) var(--ease_out), border-color var(--duration) var(--ease_out);
+}
+
+.subpage_tab_icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  place-items: center;
+  background-color: var(--subpage_tab_icon, #dbe1c1);
+}
+
+.subpage_tab_icon img {
+  width: 24px;
+  height: 24px;
+}
+
+.subpage_tab:hover {
+  background-color: var(--subpage_tab_icon, #dbe1c1);
+}
+
+.subpage_tab.is_active,
+.subpage_tab.is_selected,
+.subpage_tab[aria-current="page"] {
+  border-color: var(--subpage_tab_ink, #3b432b);
+  background-color: var(--subpage_tab_ink, #3b432b);
+  color: var(--color_text_white);
+  font-weight: 700;
+}
+
+.subpage_tab.is_active .subpage_tab_icon,
+.subpage_tab.is_selected .subpage_tab_icon,
+.subpage_tab[aria-current="page"] .subpage_tab_icon {
+  background-color: var(--subpage_tab_icon_active, #fff1ca);
+}
+
+@media (min-width: 834px) {
+  .subpage_hero {
+    min-height: var(--subpage_hero_min_height_tablet, var(--subpage_hero_min_height_mobile, 100svh));
+    gap: var(--subpage_hero_gap_tablet, 32px);
+  }
+
+  .subpage_hero_image {
+    width: var(--subpage_hero_image_tablet, min(62%, 480px));
+  }
+
+  .subpage_hero_title {
+    font-size: var(--subpage_hero_title_tablet, var(--subpage_hero_title_mobile, clamp(52px, 11vw, 96px)));
+  }
+
+  .subpage_tabs_list {
+    gap: 24px;
+  }
+
+  .subpage_tab {
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .subpage_hero {
+    height: calc(100vw * 1080 / 1920);
+    min-height: 760px;
+    max-height: 1080px;
+    padding: var(--header_height) var(--page_pad) 0;
+    gap: 2.45vw;
+  }
+
+  .subpage_hero_image {
+    width: 32.6%;
+    max-width: 626px;
+  }
+
+  .subpage_hero_title {
+    font-size: var(--subpage_hero_title_desktop, clamp(72px, 6.25vw, 120px));
+  }
+}
+
+@media (max-width: 480px) {
+  .subpage_tabs_list {
+    justify-content: flex-start;
+  }
+}
+
+/* --------------------------------------------------------------------------
    site footer
    -------------------------------------------------------------------------- */
 .site_footer {
