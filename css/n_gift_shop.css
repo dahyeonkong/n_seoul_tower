@@ -327,22 +327,28 @@
   font-size: var(--giftshop_fs_toolbar);
   line-height: 1.2;
   text-transform: capitalize;
-  transition: background-color var(--duration) var(--ease_out);
+  background-color: transparent;
+  transition: background-color var(--duration) var(--ease_out),
+    color var(--duration) var(--ease_out);
 }
 
-.giftshop_filter_btn:hover {
-  background-color: #55613c;
+/* hover 와 열림(aria-expanded="true") 모두 올리브로 채웁니다.
+   다시 눌러 닫히면 aria-expanded 가 false 로 돌아가 색이 빠집니다. */
+.giftshop_filter_btn:hover,
+.giftshop_filter_btn[aria-expanded="true"] {
+  background-color: var(--giftshop_olive);
   color: var(--color_text_white);
 }
 
-.giftshop_filter_btn img {
+/* list.svg 는 stroke 가 흰색으로 고정돼 있어 <img> 로는 색을 바꿀 수 없습니다.
+   같은 파일을 마스크로 써서 버튼의 currentColor 를 그대로 따르게 합니다. */
+.giftshop_filter_icon {
   width: 28px;
   height: 28px;
-  color:var(--giftshop_olive);
-}
-
-.giftshop_filter_btn img:hover {
-  color: var(--color_text_white);
+  flex-shrink: 0;
+  background-color: currentColor;
+  -webkit-mask: url("../assets/icon/gift_shop/list.svg") no-repeat center / contain;
+  mask: url("../assets/icon/gift_shop/list.svg") no-repeat center / contain;
 }
 
 .giftshop_price_notice {
@@ -523,7 +529,7 @@
 }
 
 .giftshop_page_nav:disabled {
-  opacity: 0.3;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 

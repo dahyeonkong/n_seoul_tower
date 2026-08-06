@@ -117,6 +117,14 @@ GNB 11개 항목 중 **Figma `(develope) 개발 시안 5개 페이지` 에 시�
   - ESC / 바깥 클릭으로 닫히고, 열면 첫 카테고리로 포커스 이동, 닫으면 버튼으로 복귀합니다.
   - `visibility: hidden` 이라 닫힘 상태에서는 사이드바 내부가 탭 순서에서 제외됩니다.
   - 태그(#) 필터 패널은 제거했습니다. 카드의 `data-tags` 속성도 함께 삭제했습니다.
+- **Filters 버튼 상태 (2026-08-06 수정)** — 기본은 올리브 외곽선 + 올리브 글자/아이콘,
+  hover 와 열림(`[aria-expanded="true"]`)에서 `--giftshop_olive`(#626c3d) 로 채우고 글자/아이콘은 흰색입니다.
+  다시 누르거나 ESC / 바깥 클릭으로 닫으면 `aria-expanded` 가 false 로 돌아가 색이 빠집니다.
+  - `assets/icon/gift_shop/list.svg` 는 `stroke="white"` 가 하드코딩돼 있어 `<img>` 로는
+    CSS 색 제어가 되지 않았습니다(기본 상태에서 크림 배경 위 흰 아이콘이라 보이지 않았음).
+    같은 파일을 `mask` 로 쓰는 `<span class="giftshop_filter_icon">` 으로 바꿔
+    `background-color: currentColor` 가 버튼 색을 그대로 따르게 했습니다.
+    에셋 파일은 그대로 재사용하며 새로 만들지 않았습니다.
 - 신규 에셋
   - `assets/n_gift_shop/` — `namsan_yakgwa` / `love_lock_package` / `monami_pen` / `snow_globe` /
     `hand_mirror` / `metal_pins` / `tower_365_bear` / `map_postcard` (Figma MCP 로 내려받음)
