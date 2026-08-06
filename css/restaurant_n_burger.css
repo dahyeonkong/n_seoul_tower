@@ -1,0 +1,630 @@
+@charset "utf-8";
+
+/* ==========================================================================
+   restaurant_n_burger — Restaurant > N Burger 상세 페이지 전용 스타일
+   기준: Figma (develope) 개발 시안 5개 페이지 > restaurant_n버거 (645:1375, 1920 x 7431)
+   공통 토큰·헤더·메뉴·푸터는 common.css 를 그대로 사용합니다.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   이 페이지에서만 쓰는 디자인 토큰 (Figma 실측값)
+   -------------------------------------------------------------------------- */
+:root {
+  --color_rest_hero_bg: #b6c384; /* color/new_primary/400 */
+  --color_rest_tab_bg: #c8d2a3; /* color/new_primary/300 */
+  --color_rest_tab_icon: #dbe1c1; /* color/new_primary/200 */
+  --color_rest_tab_icon_on: #fff1ca; /* color/point/150 */
+  --color_rest_ink: #3b432b; /* color/new_secondary/700 */
+  --color_rest_ink_soft: #4e5939; /* color/new_secondary/600 */
+  --color_rest_box_bg: #fbf1cc; /* color/light/bg2 */
+  --color_rest_cta: #424828; /* color/new_primary/800 */
+  --color_rest_arrow_bg: rgba(30, 76, 67, 0.5);
+  --color_rest_note: #d32f2f;
+
+  --rest_section_gap: 88px;
+}
+
+@media (min-width: 834px) {
+  :root {
+    --rest_section_gap: 120px;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --rest_section_gap: 180px;
+  }
+}
+
+.sub_content {
+  position: relative;
+}
+
+/* img 의 width/height 속성은 CSS 에서 지정한 값으로 취급되어 aspect-ratio 를 무력화합니다.
+   비율은 CSS 로 제어하되 속성값은 CLS 방지용으로 그대로 두기 위해 height 를 auto 로 되돌립니다. */
+.rest_hero_object,
+.burger_info_thumb img,
+.burger_gallery_stage img,
+.burger_best_card img,
+.burger_best_type,
+.burger_menu_board img {
+  height: auto;
+}
+
+/* ==========================================================================
+   1. restaurant hero
+   ========================================================================== */
+.rest_hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  min-height: 100svh;
+  padding: calc(var(--header_height) + 32px) var(--page_pad) 56px;
+  background-color: var(--color_rest_hero_bg);
+  overflow: hidden;
+}
+
+.rest_hero_object {
+  width: min(78%, 420px);
+  height: auto;
+}
+
+.rest_hero_title {
+  width: 100%;
+  font-family: var(--font_title);
+  font-size: clamp(38px, 11vw, 72px);
+  font-weight: 600;
+  line-height: 1.05;
+  color: var(--color_text_white);
+  text-align: center;
+}
+
+@media (min-width: 834px) {
+  .rest_hero_object {
+    width: min(58%, 520px);
+  }
+}
+
+/* 데스크톱: 1920 x 1080 프레임 좌표를 비율로 환산 */
+@media (min-width: 1280px) {
+  .rest_hero {
+    display: block;
+    height: calc(100vw * 1080 / 1920);
+    min-height: 760px;
+    max-height: 1080px;
+    padding: 0;
+  }
+
+  .rest_hero_object {
+    position: absolute;
+    left: 33.7%;
+    top: 14.26%;
+    width: 32.6%;
+  }
+
+  .rest_hero_title {
+    position: absolute;
+    left: 19.38%;
+    top: 76.57%;
+    width: 61.25%;
+    font-size: clamp(72px, 6.25vw, 120px);
+    line-height: 1;
+    text-align: left;
+  }
+}
+
+/* ==========================================================================
+   2. restaurant category tabs
+   ========================================================================== */
+.rest_tabs {
+  background-color: var(--color_rest_tab_bg);
+}
+
+.rest_tabs_list {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(100%, 1388px);
+  margin-inline: auto;
+  padding: 18px var(--page_pad);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+  /* 모바일에서 스크롤바는 감추되 터치·키보드 스크롤은 유지 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.rest_tabs_list::-webkit-scrollbar {
+  display: none;
+}
+
+.rest_tabs_list > li {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+.rest_tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding: 8px 16px;
+  border: 1px solid var(--color_rest_ink);
+  border-radius: 52px;
+  background-color: var(--color_surface);
+  color: var(--color_rest_ink);
+  font-family: var(--font_body);
+  font-size: var(--fs_sm);
+  line-height: 1.3;
+  white-space: nowrap;
+  transition: background-color var(--duration) var(--ease_out),
+    color var(--duration) var(--ease_out), border-color var(--duration) var(--ease_out);
+}
+
+.rest_tab_icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 30px;
+  background-color: var(--color_rest_tab_icon);
+}
+
+.rest_tab_icon img {
+  width: 20px;
+  height: 20px;
+}
+
+.rest_tab:hover {
+  background-color: var(--color_rest_tab_icon);
+}
+
+/* 활성 탭 — 색상만이 아니라 글자 굵기와 아이콘 배경으로도 구분 */
+.rest_tab.is_selected,
+.rest_tab[aria-current="page"] {
+  background-color: var(--color_rest_ink);
+  border-color: var(--color_rest_ink);
+  color: var(--color_text_white);
+  font-weight: 700;
+}
+
+.rest_tab.is_selected .rest_tab_icon,
+.rest_tab[aria-current="page"] .rest_tab_icon {
+  background-color: var(--color_rest_tab_icon_on);
+}
+
+@media (min-width: 1280px) {
+  .rest_tabs_list {
+    gap: 24px;
+    padding: 18px 24px 18px 0;
+  }
+
+  .rest_tab {
+    height: 64px;
+    gap: 12px;
+    padding: 12px 20px;
+    font-size: 20px;
+  }
+
+  .rest_tab_icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .rest_tab_icon img {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* ==========================================================================
+   3. n burger information
+   ========================================================================== */
+.burger_info {
+  padding-top: var(--rest_section_gap);
+}
+
+.burger_info_inner {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.burger_info_thumb {
+  width: 100%;
+  border-radius: 10px;
+  background-color: var(--color_surface);
+  overflow: hidden;
+}
+
+.burger_info_thumb img {
+  width: 100%;
+  aspect-ratio: 673 / 506;
+  object-fit: cover;
+}
+
+.burger_info_body {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.burger_info_head {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.burger_info_meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font_title);
+  font-size: clamp(22px, 5vw, 32px);
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--color_rest_ink_soft);
+}
+
+.burger_info_divider {
+  font-family: var(--font_body);
+  font-size: var(--fs_card_label);
+  font-weight: 400;
+  color: var(--color_secondary_500);
+}
+
+.burger_info_title {
+  font-family: var(--font_title);
+  font-size: var(--fs_h2);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color_rest_ink);
+}
+
+.burger_info_desc {
+  font-size: var(--fs_body_lg);
+  line-height: 1.4;
+  color: #000000;
+}
+
+.burger_info_boxes {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.burger_info_box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1 1 0;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: var(--color_rest_box_bg);
+}
+
+.burger_info_box dt {
+  font-family: var(--font_title);
+  font-size: var(--fs_card_label);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color_rest_ink_soft);
+  text-transform: capitalize;
+}
+
+.burger_info_box dd {
+  font-size: var(--fs_sm);
+  line-height: 1.3;
+  color: #000000;
+}
+
+.burger_info_box a:hover {
+  text-decoration: underline;
+}
+
+.burger_reserve_btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 4px 24px;
+  border-radius: 30px;
+  background-color: var(--color_rest_cta);
+  color: var(--color_text_white);
+  font-size: var(--fs_sm);
+  line-height: 1.3;
+  transition: background-color var(--duration) var(--ease_out);
+}
+
+.burger_reserve_btn:hover {
+  background-color: #353a1f;
+}
+
+@media (min-width: 834px) {
+  .burger_info_boxes {
+    flex-direction: row;
+  }
+}
+
+@media (min-width: 1280px) {
+  .burger_info_inner {
+    flex-direction: row;
+    gap: 64px;
+  }
+
+  .burger_info_thumb {
+    flex: 0 0 42.06%; /* 673 / 1600 */
+  }
+
+  .burger_info_body {
+    flex: 1 1 auto;
+    gap: 64px;
+  }
+
+  .burger_info_head {
+    gap: 24px;
+    max-width: 566px;
+  }
+
+  .burger_info_desc {
+    font-size: 24px;
+  }
+
+  .burger_info_boxes {
+    gap: 24px;
+  }
+
+  .burger_info_box {
+    min-height: 110px;
+    gap: 24px;
+    padding: 24px;
+  }
+
+  .burger_info_box dt {
+    font-size: 18px;
+  }
+
+  .burger_info_box dd {
+    font-size: 20px;
+  }
+
+  .burger_reserve_btn {
+    min-width: 275px;
+    height: 59px;
+    font-size: 20px;
+  }
+}
+
+/* ==========================================================================
+   4. interior gallery
+   ========================================================================== */
+.burger_gallery {
+  padding-top: var(--rest_section_gap);
+}
+
+.burger_gallery_inner {
+  position: relative;
+  width: min(100% - var(--page_pad) * 2, var(--content_max));
+  margin-inline: auto;
+}
+
+.burger_gallery_stage {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.burger_gallery_stage img {
+  width: 100%;
+  aspect-ratio: 1600 / 673;
+  object-fit: cover;
+}
+
+.burger_gallery_nav {
+  position: absolute;
+  top: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 9px;
+  border-radius: 50px;
+  background-color: var(--color_rest_arrow_bg);
+  transform: translateY(-50%);
+  transition: background-color var(--duration) var(--ease_out), opacity var(--duration) var(--ease_out);
+}
+
+.burger_gallery_nav img {
+  width: 100%;
+  height: 100%;
+}
+
+.burger_gallery_nav_prev {
+  left: 8px;
+}
+
+.burger_gallery_nav_next {
+  right: 8px;
+}
+
+.burger_gallery_nav_next img {
+  transform: rotate(180deg);
+}
+
+.burger_gallery_nav:hover:not(:disabled) {
+  background-color: rgba(30, 76, 67, 0.75);
+}
+
+.burger_gallery_nav:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (min-width: 1280px) {
+  .burger_gallery_nav {
+    width: 68px;
+    height: 68px;
+    padding: 13px;
+  }
+
+  /* Figma 기준 화살표는 이미지 좌우로 34px 씩 걸쳐 나옵니다 */
+  .burger_gallery_nav_prev {
+    left: -34px;
+  }
+
+  .burger_gallery_nav_next {
+    right: -34px;
+  }
+}
+
+/* ==========================================================================
+   5. best menu
+   ========================================================================== */
+.burger_best {
+  position: relative;
+  padding-top: var(--rest_section_gap);
+  overflow: hidden;
+}
+
+.burger_best_type {
+  display: block;
+  height: auto;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.burger_best_type_top {
+  width: min(78%, 940px);
+  margin-left: var(--page_pad);
+}
+
+.burger_best_type_bottom {
+  width: min(84%, 1002px);
+  margin-left: auto;
+  margin-right: var(--page_pad);
+}
+
+.burger_best_list {
+  display: flex;
+  gap: 12px;
+  margin: 8px 0;
+  padding: 0 var(--page_pad);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+}
+
+.burger_best_card {
+  flex: 0 0 auto;
+  width: 190px;
+  border-radius: 10px;
+  overflow: hidden;
+  scroll-snap-align: center;
+}
+
+.burger_best_card img {
+  width: 100%;
+  aspect-ratio: 396 / 683;
+  object-fit: cover;
+}
+
+.burger_best_card:last-child img {
+  aspect-ratio: 426 / 683;
+}
+
+@media (min-width: 834px) {
+  .burger_best_card {
+    width: 240px;
+  }
+}
+
+/* 데스크톱: 1760 폭 안에서 5장이 이어지고 마지막 카드가 잘리는 Figma 구성을 유지 */
+@media (min-width: 1280px) {
+  .burger_best {
+    padding-top: var(--rest_section_gap);
+  }
+
+  .burger_best_type_top {
+    width: 48.96%;
+    margin-left: 4.17%;
+  }
+
+  .burger_best_type_bottom {
+    width: 52.19%;
+    margin-right: 4.17%;
+  }
+
+  .burger_best_list {
+    gap: 24px;
+    margin: -14px 0 -18px;
+    padding: 0 0 0 4.17%;
+  }
+
+  .burger_best_card {
+    width: 396px;
+  }
+
+  .burger_best_card:nth-child(3) {
+    width: 397px;
+  }
+
+  .burger_best_card:nth-child(4) {
+    width: 399px;
+  }
+
+  .burger_best_card:last-child {
+    width: 426px;
+  }
+}
+
+/* ==========================================================================
+   6. full menu
+   ========================================================================== */
+.burger_menu {
+  padding-block: var(--rest_section_gap);
+}
+
+.burger_menu_inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.burger_menu_board {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.burger_menu_board img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1600 / 2170;
+}
+
+.burger_menu_note {
+  font-size: var(--fs_sm);
+  line-height: 1.3;
+  color: var(--color_rest_note);
+  text-align: right;
+}
+
+@media (min-width: 1280px) {
+  .burger_menu_inner {
+    gap: 10px;
+  }
+
+  .burger_menu_note {
+    font-size: 20px;
+  }
+}

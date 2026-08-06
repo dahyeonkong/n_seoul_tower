@@ -48,6 +48,26 @@ N SEOUL TOWER 메인 페이지 1종을 HTML / CSS / Vanilla JavaScript 로 구�
 
 이에 따라 오버레이 안의 별도 닫기(X) 버튼은 제거했습니다. Figma 에서도 header 의 `menu_icon`(1720~1760, 41.5~81.5)과 menu 프레임의 `x`(1724~1760, 43.5~79.5)가 같은 좌표라 하나의 컨트롤입니다. 토글이 오버레이 위에 남도록 `.site_header` 의 `z-index` 를 120 으로 올렸고(구조는 기존 `position: absolute` 유지), 메뉴가 열리면 로고는 숨깁니다.
 
+## Restaurant > N Burger 상세 페이지 (2026-08-06 추가)
+
+`restaurant_n_burger.html` — Figma `restaurant_n버거` (**645:1375**, 1920 × 7431) 기준.
+
+| 섹션 | Figma node | 비고 |
+|---|---|---|
+| header | 645:1506 | **시안 대신 기존 공통 헤더 재사용** (시안은 가로 GNB, 우리는 로고 + 토글 + 오버레이) |
+| hero | 645:1376 | bg `#b6c384`, 오브젝트 626, 제목 Poppins SemiBold 120 |
+| tabs | 645:1938 | bg `#c8d2a3`, 7개, 가로 스크롤, 활성 `#3b432b` |
+| info | 647:1422 | 썸네일 673×506 + 정보 863 |
+| gallery | 647:1424 | **이미지 1장** → 화살표는 비활성 유지, 슬라이드 미구현 |
+| best menu | 647:1427 | 타이포 2장 + 카드 5장 (burger_image5→1) |
+| full menu | 645:1557 | menu_wrap 을 PNG 로 export 해 사용 |
+| footer | 793:10410 | 기존 공통 푸터 재사용 |
+
+- 페이지 전용 CSS: `css/restaurant_n_burger.css` (전용 토큰도 이 파일의 `:root` 에 정의)
+- **페이지 전용 JS 없음** — 탭·갤러리 모두 CSS 로 처리, 공통 동작만 `js/common.js` 사용
+- 신규 에셋: `assets/icon/chevron_left.svg`, `assets/restaurant/menu/n_burger_full_menu.png` (1600×2170) 및 `@2x` (3200×4340)
+- 주의: `<img>` 의 `width`/`height` 속성은 CSS `aspect-ratio` 를 무력화하므로 비율 제어가 필요한 이미지에는 `height: auto` 를 함께 지정해야 합니다.
+
 ## 파일 구조
 
 ```text
