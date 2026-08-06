@@ -20,6 +20,16 @@
   --color_rest_cta: #424828; /* color/new_primary/800 */
   --color_rest_arrow_bg: rgba(30, 76, 67, 0.5);
   --color_rest_note: #d32f2f;
+  --subpage_hero_bg: var(--color_rest_hero_bg);
+  --subpage_hero_image_mobile: min(78%, 420px);
+  --subpage_hero_image_tablet: min(58%, 520px);
+  --subpage_hero_image_fit: contain;
+  --subpage_hero_title_mobile: clamp(38px, 11vw, 72px);
+  --subpage_hero_title_desktop: clamp(72px, 6.25vw, 120px);
+  --subpage_tab_bg: var(--color_rest_tab_bg);
+  --subpage_tab_ink: var(--color_rest_ink);
+  --subpage_tab_icon: var(--color_rest_tab_icon);
+  --subpage_tab_icon_active: var(--color_rest_tab_icon_on);
 
   --rest_section_gap: 88px;
 }
@@ -42,7 +52,6 @@
 
 /* img 의 width/height 속성은 CSS 에서 지정한 값으로 취급되어 aspect-ratio 를 무력화합니다.
    비율은 CSS 로 제어하되 속성값은 CLS 방지용으로 그대로 두기 위해 height 를 auto 로 되돌립니다. */
-.rest_hero_object,
 .burger_info_thumb img,
 .burger_gallery_stage img,
 .burger_best_card img,
@@ -51,179 +60,7 @@
   height: auto;
 }
 
-/* ==========================================================================
-   1. restaurant hero
-   ========================================================================== */
-.rest_hero {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  min-height: 100svh;
-  padding: calc(var(--header_height) + 32px) var(--page_pad) 56px;
-  background-color: var(--color_rest_hero_bg);
-  overflow: hidden;
-}
-
-.rest_hero_object {
-  width: min(78%, 420px);
-  height: auto;
-}
-
-.rest_hero_title {
-  width: 100%;
-  font-family: var(--font_title);
-  font-size: clamp(38px, 11vw, 72px);
-  font-weight: 600;
-  line-height: 1.05;
-  color: var(--color_text_white);
-  text-align: center;
-}
-
-@media (min-width: 834px) {
-  .rest_hero_object {
-    width: min(58%, 520px);
-  }
-}
-
-/* 데스크톱: 1920 x 1080 프레임 좌표를 비율로 환산 */
-@media (min-width: 1280px) {
-  .rest_hero {
-    display: block;
-    height: calc(100vw * 1080 / 1920);
-    min-height: 760px;
-    max-height: 1080px;
-    padding: 0;
-  }
-
-  .rest_hero_object {
-    position: absolute;
-    left: 33.7%;
-    top: 14.26%;
-    width: 32.6%;
-  }
-
-  .rest_hero_title {
-    position: absolute;
-    left: 19.38%;
-    top: 76.57%;
-    width: 61.25%;
-    font-size: clamp(72px, 6.25vw, 120px);
-    line-height: 1;
-    text-align: left;
-  }
-}
-
-/* ==========================================================================
-   2. restaurant category tabs
-   ========================================================================== */
-.rest_tabs {
-  background-color: var(--color_rest_tab_bg);
-}
-
-.rest_tabs_list {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: min(100%, 1388px);
-  margin-inline: auto;
-  padding: 18px var(--page_pad);
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  overscroll-behavior-x: contain;
-  /* 모바일에서 스크롤바는 감추되 터치·키보드 스크롤은 유지 */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.rest_tabs_list::-webkit-scrollbar {
-  display: none;
-}
-
-.rest_tabs_list > li {
-  flex: 0 0 auto;
-  scroll-snap-align: start;
-}
-
-.rest_tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  height: 52px;
-  padding: 8px 16px;
-  border: 1px solid var(--color_rest_ink);
-  border-radius: 52px;
-  background-color: var(--color_surface);
-  color: var(--color_rest_ink);
-  font-family: var(--font_body);
-  font-size: var(--fs_sm);
-  line-height: 1.3;
-  white-space: nowrap;
-  transition: background-color var(--duration) var(--ease_out),
-    color var(--duration) var(--ease_out), border-color var(--duration) var(--ease_out);
-}
-
-.rest_tab_icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  flex-shrink: 0;
-  border-radius: 30px;
-  background-color: var(--color_rest_tab_icon);
-}
-
-.rest_tab_icon img {
-  width: 20px;
-  height: 20px;
-}
-
-.rest_tab:hover {
-  background-color: var(--color_rest_tab_icon);
-}
-
-/* 활성 탭 — 색상만이 아니라 글자 굵기와 아이콘 배경으로도 구분 */
-.rest_tab.is_selected,
-.rest_tab[aria-current="page"] {
-  background-color: var(--color_rest_ink);
-  border-color: var(--color_rest_ink);
-  color: var(--color_text_white);
-  font-weight: 700;
-}
-
-.rest_tab.is_selected .rest_tab_icon,
-.rest_tab[aria-current="page"] .rest_tab_icon {
-  background-color: var(--color_rest_tab_icon_on);
-}
-
-@media (min-width: 1280px) {
-  .rest_tabs_list {
-    gap: 24px;
-    padding: 18px 24px 18px 0;
-  }
-
-  .rest_tab {
-    height: 64px;
-    gap: 12px;
-    padding: 12px 20px;
-    font-size: 20px;
-  }
-
-  .rest_tab_icon {
-    width: 40px;
-    height: 40px;
-  }
-
-  .rest_tab_icon img {
-    width: 24px;
-    height: 24px;
-  }
-}
-
-/* ==========================================================================
+/* ========================================================================== 
    3. n burger information
    ========================================================================== */
 .burger_info {
