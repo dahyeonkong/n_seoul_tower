@@ -71,7 +71,7 @@
 
 @media (min-width: 1280px) {
   .giftshop {
-    padding-top: 84px;
+    padding-top: var(--header_height);
     /* 사이드바가 열리면 본문을 그만큼 오른쪽으로 밉니다. */
     transition: padding-left var(--duration) var(--ease_out);
   }
@@ -251,7 +251,19 @@
 @media (min-width: 1280px) {
   .giftshop_content {
     max-width: 1406px;
-    padding: 68px 0 120px;
+    padding: 0 0 120px;
+  }
+
+  .giftshop_intro {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: calc(100vh - var(--header_height));
+    padding-top: 68px;
+  }
+
+  .giftshop_intro .giftshop_toolbar {
+    margin-top: auto;
   }
 
   /* 사이드바가 열린 상태는 시안 배치(사이드바 340 + 여백 80 + 콘텐츠 1406)를 따릅니다. */
@@ -385,7 +397,7 @@
 @media (min-width: 1280px) {
   .giftshop_grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    margin-top: 60px;
+    margin-top: 0;
   }
 }
 
