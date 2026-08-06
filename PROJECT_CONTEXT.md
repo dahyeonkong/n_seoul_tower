@@ -128,15 +128,64 @@ GNB 11개 항목 중 **Figma `(develope) 개발 시안 5개 페이지` 에 시�
 - 시안의 `Gmarket Sans TTF`(가격 일부)와 `Inter`(Filters 라벨)는 프로젝트에 없는 폰트라
   임의로 CDN 을 추가하지 않고 `--font_body`(Pretendard) 로 통일했습니다.
 
+## 서브 페이지 전용 가로 헤더 (2026-08-06 추가)
+
+Figma `header` (**645:2903**, 1920 × 84) 기준. **메인(`index.html`)은 기존 로고 + 햄버거 헤더를
+그대로 두고, `pages/` 안의 4개 서브 페이지만** `.site_header_sub` 로 가로 GNB 를 씁니다.
+
+| 요소 | Figma node | 값 |
+|---|---|---|
+| header | 645:2903 | 높이 84, bg `rgba(255,255,255,.2)`, 좌우 160 |
+| nst_logo | 645:2905 | 43 × 43 — 기존 `nst_logo_defalut.svg` 재사용 |
+| gnb 항목 | 645:2908 | 5개, 각 폭 130.042, 20px Pretendard Medium `#212121` |
+| lnb | 645:2912 등 | 폭 105.037, gap 14, 16px Regular `#212121` |
+| Book Now | 645:2948 | bg `#ffaf04`, radius 30, padding 10/20, 20px white |
+| 언어 | 645:2950 | 밑줄 `#4e5939`, 20px `#4e5939`, chevron 20 |
+
+- 스타일은 `common.css` 의 `site page header` 블록에 있습니다. 페이지 전용 CSS 가 아니라
+  4개 페이지가 공유하므로 공통 파일에 두었습니다.
+- **1280 미만에서는 가로 GNB 를 `display: none` 으로 두고 기존 토글 + 오버레이를 그대로 씁니다.**
+  모바일·태블릿 시안이 없고 가로 GNB 가 1000px 이상 필요합니다 (AGENTS 6.4).
+- **1280–1439 구간만 gap 을 30 → 20 으로 좁혔습니다.** 시안 값 30 을 그대로 쓰면 1280 에서
+  메뉴가 로고에 붙습니다(여백 1px). 1440 이상은 시안 값 30 그대로입니다.
+- LNB 는 `:hover` 와 `:focus-within` 으로만 엽니다. 시안에서 LNB 가 `height: 46` 으로 잘려 있어
+  hover 노출이 의도로 보입니다. 닫힌 동안에도 키보드 포커스를 받아야 `:focus-within` 이 걸리므로
+  `visibility: hidden` 대신 `opacity` + `pointer-events` 를 씁니다.
+- **LNB 배경면은 시안에 없지만 추가했습니다.** `floor_guide` 는 LNB 가 층 일러스트 위로 떨어져
+  글자만으로는 읽기 어렵습니다. 같은 헤더의 언어 드롭다운과 맞춰 흰 패널 + radius 16 +
+  `0 8px 24px rgba(33,33,33,.12)` 를 씁니다.
+  - **제목 바로 아래(`top: 100%`)에 붙여야 합니다.** 시안의 `gap: 14` 를 그대로 두면
+    제목과 패널 사이 빈 틈에서 hover 가 끊겨 패널에 마우스가 닿지 못합니다.
+    대신 패널 안쪽 `padding: 14px 16px` 로 시안의 간격 리듬(제목 padding 10 + gap 14)을 맞췄습니다.
+  - 시안의 `width: 105` 는 `min-width` 로 바꿨습니다. 배경면이 생긴 뒤에도 고정 폭을 쓰면
+    `FAQ / contact us`(146px) 같은 항목이 패널 밖으로 삐져나옵니다.
+  - `.site_gnb_link` 의 `width: 100%` 는 제거했습니다. 이 값이 있으면 패널이 가장 긴 항목 기준으로
+    넓어지지 않습니다. 기본 stretch 로 두면 패널 폭이 내용에 맞게 늘어납니다.
+- **메뉴 라벨은 기존 오버레이 메뉴(645:5527) 기준으로 통일했습니다.** 새 헤더 시안(645:2903)의
+  `restaurant` / `pricing & Hours` 대신 `restaurants` / `Hours & Tickets` 를 씁니다.
+  1280 을 넘나들 때 같은 항목의 이름이 바뀌지 않아야 하기 때문입니다.
+- **언어 선택기가 한 페이지에 둘(헤더 GNB, 오버레이 메뉴)이 되어** `common.js` 의 언어 로직을
+  `initGlobalMenu` 안에서 `initLanguageSelector(button)` 로 분리했습니다.
+  - 기준 컨테이너는 `button.parentElement` 입니다. 오버레이(`.language_selector`)와
+    헤더(`.site_gnb_language`) 의 class 가 달라도 같은 함수를 씁니다.
+  - 한쪽에서 언어를 고르면 `applySelectedLanguage()` 가 **양쪽 표시를 함께 갱신**합니다.
+    이걸 빼면 헤더는 Korean, 오버레이는 English 로 갈립니다.
+- 신규 에셋: `assets/icon/icon_chevron_down_dark.svg` — 기존 `icon_chevron_down.svg` 는
+  어두운 오버레이용 `stroke="white"` 라 밝은 헤더에서 보이지 않습니다.
+- 신규 토큰: `--color_point_800: #ffaf04`, `--color_new_secondary_600: #4e5939`
+
 ## 파일 구조
 
 ```text
 n_seoul_tower/
-├── index.html
+├── index.html                   # 메인 — 로고 + 햄버거 헤더 (서브와 다름)
 ├── default.html                 # 메타/파비콘/OG 만 있는 빈 템플릿 (헤더·푸터 없음)
 ├── pages/                       # 서브 페이지 (공통 리소스는 ../ 로 참조)
+│   │                            # 4개 모두 .site_header_sub 가로 GNB 사용
+│   ├── floor_guide.html
+│   ├── n_gift_shop.html
 │   ├── restaurant_n_burger.html
-│   └── n_gift_shop.html
+│   └── visitor_guide.html
 ├── css/
 │   ├── reset.css
 │   ├── common.css   # 디자인 토큰, 폰트, 공통 버튼/카드/헤더/메뉴/푸터/페이저 + subpage hero·tabs
@@ -212,6 +261,15 @@ JS 는 `ASSET_PATH = "./assets/"` 를 접두로 두고 데이터에 하위 경�
     `.subpage_tab` 으로 통일되면서 쓰이지 않는 죽은 코드입니다. 정리 여부 확인 필요.
   - `pages/custom_course.html` 은 내용이 `visitor_guide.html` 탭으로 옮겨져 삭제했습니다.
     외부에서 이 주소를 공유했다면 `pages/visitor_guide.html#panel_recommended_courses` 로 안내해야 합니다.
+- **서브 페이지 가로 헤더(645:2903) 확인 필요 항목**
+  - **LNB 배경면(흰 패널 + radius 16 + 그림자)은 시안에 없는 요소입니다.** 가독성 때문에
+    넣기로 결정했으니 디자인 확인 후 값 조정이 필요할 수 있습니다.
+  - **라벨은 기존 오버레이 메뉴(645:5527) 기준으로 통일했습니다.** 새 헤더 시안의
+    `restaurant` / `pricing & Hours` 는 쓰지 않습니다. 두 시안 중 어느 쪽이 최종인지 확인이 필요합니다.
+  - `Book Now` 의 목적지가 시안에 없어 `data-pending-link` 로 두었습니다.
+  - `tower story` / `explore` / `visit` / `support` 상단 라벨은 시안에 링크 표시가 없어
+    클릭 대상이 아닌 텍스트(`<p>`)로 두고 LNB 만 이동하게 했습니다.
+  - 1280–1439 구간은 시안이 없어 gap 만 20 으로 좁혔습니다. 이 구간 시안이 나오면 교체해야 합니다.
 
 ## 마지막 검증 결과
 
@@ -240,3 +298,30 @@ JS 는 `ASSET_PATH = "./assets/"` 를 접두로 두고 데이터에 하위 경�
   태그 다중 선택(OR), 카테고리+태그 조합, Reset, 패널 열기·닫기·ESC·바깥 클릭 모두 정상
 - 공통 파일 미수정 확인: `git status` 기준 `common.css` / `reset.css` / `common.js` / `main.*` / `index.html` /
   `default.html` / restaurant 페이지 변경 0건 (신규 파일만 추가)
+
+### 서브 페이지 가로 헤더 (2026-08-06)
+
+로컬 정적 서버(PowerShell HttpListener, `http://localhost:8123`)에서 확인했습니다.
+
+- 1920 실측 — 헤더 높이 84, bg `rgba(255,255,255,.2)`, inner `x=160`, 로고 43×43 `x=160`,
+  gnb 항목 폭 130 × 5, 라벨 20px/500, Book Now bg `rgb(255,175,4)` 높이 46,
+  언어 색 `rgb(78,89,57)` → 시안(645:2903) 값과 일치
+- 로고와 GNB 사이 여백: 1280 = 46px, 1440 = 146px, 1920 = 여유. 네 폭 모두 가로 스크롤 없음
+- LNB 는 `:hover` / `:focus-within` 에서 `opacity 0 → 1`, `pointer-events none → auto` 동작 확인
+  (검증 패널이 프레임을 그리지 않아 transition 은 끄고 규칙만 확인)
+- LNB 패널 실측 — 흰 배경 `rgb(255,255,255)`, radius 16, 그림자 적용, 제목과의 간격 0(붙임).
+  폭은 내용에 맞춰 tower story 137 / explore 138 / visit 164 / support 178 이고
+  **모든 항목이 패널 안에 들어옵니다**(1줄 유지, 삐져나옴 0건)
+- 1280 에서도 네 패널 모두 뷰포트 안에 들어옴 (support 패널 오른쪽 끝 924 < 1265)
+- 헤더 GNB 라벨과 오버레이 메뉴 라벨이 4개 페이지 모두 **완전히 일치**함을 문자열 비교로 확인
+- 헤더 탭 순서: 로고 → tower story LNB → explore → visit → support → Book Now → 언어.
+  1280 이상에서 햄버거 토글은 포커스 대상에서 제외됨
+- 언어 선택: 헤더에서 고르면 오버레이 라벨도 함께 바뀌고 그 반대도 동일, localStorage 저장 확인.
+  바깥 클릭 / ESC 로 닫힘
+- 360 실측 — 가로 GNB `display: none`, 토글 노출, 헤더 배경 투명 + `padding-top: 20px` +
+  inner 높이 43px 로 **기존 모바일 헤더 그대로**. 오버레이 열기 / ESC 닫기 / 포커스 복귀 정상
+- `index.html` 회귀 없음 — `.site_gnb` 없음, 헤더 class `site_header` 그대로,
+  오버레이 메뉴와 언어 선택 정상 동작
+- 4개 서브 페이지 모두 중복 id 없음, 404 에셋 없음
+- **미검증**: 화면 캡처 비교. 검증에 쓴 브라우저 패널이 프레임을 그리지 않아
+  스크린샷을 얻지 못했고, DOM 실측값으로만 시안과 대조했습니다

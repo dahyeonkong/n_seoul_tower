@@ -24,6 +24,142 @@ function isReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+function readStoredLanguage() {
+  var stored = null;
+  try {
+    stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
+  } catch (error) {
+    return null;
+  }
+  if (typeof stored !== "string") {
+    return null;
+  }
+  return Object.prototype.hasOwnProperty.call(LANGUAGE_LABELS, stored) ? stored : null;
+}
+
+/* --------------------------------------------------------------------------
+   언어 선택
+   메뉴 오버레이와 서브 페이지 헤더가 같은 동작을 쓰므로 한 곳에서 처리합니다.
+   마크업이 달라도 [data-language-button] 의 부모를 기준으로 삼습니다.
+   -------------------------------------------------------------------------- */
+var languageSelectors = [];
+
+function initLanguageSelector(button) {
+  var container = button.parentElement;
+  var menu = container ? container.querySelector("[data-language-menu]") : null;
+  var currentText = container ? container.querySelector("[data-language-current]") : null;
+  var isLanguageMenuOpen = false;
+
+  if (!menu) {
+    return null;
+  }
+
+  function renderLanguageMenuState() {
+    button.setAttribute("aria-expanded", String(isLanguageMenuOpen));
+    if (isLanguageMenuOpen) {
+      menu.removeAttribute("hidden");
+    } else {
+      menu.setAttribute("hidden", "");
+    }
+  }
+
+  function closeLanguageMenu() {
+    if (!isLanguageMenuOpen) {
+      return;
+    }
+    isLanguageMenuOpen = false;
+    renderLanguageMenuState();
+  }
+
+  function handleLanguageMenuToggle() {
+    isLanguageMenuOpen = !isLanguageMenuOpen;
+    renderLanguageMenuState();
+  }
+
+  function renderSelectedLanguage(languageCode) {
+    var label = LANGUAGE_LABELS[languageCode];
+    if (!label) {
+      return;
+    }
+    if (currentText) {
+      currentText.textContent = label;
+    }
+    Array.prototype.forEach.call(menu.querySelectorAll("[data-language]"), function (option) {
+      var isSelected = option.getAttribute("data-language") === languageCode;
+      option.setAttribute("aria-current", String(isSelected));
+    });
+  }
+
+  function handleLanguageSelect(event) {
+    var option = event.target.closest("[data-language]");
+    if (!option) {
+      return;
+    }
+    var languageCode = option.getAttribute("data-language");
+    if (!Object.prototype.hasOwnProperty.call(LANGUAGE_LABELS, languageCode)) {
+      return;
+    }
+    // 실제 다국어 URL 구조가 확정되지 않아 선택 상태만 유지합니다 (PRD 13.5)
+    // 한 페이지에 선택기가 둘(헤더 GNB, 오버레이 메뉴)이라 표시를 함께 맞춥니다.
+    applySelectedLanguage(languageCode);
+    try {
+      window.localStorage.setItem(LANGUAGE_STORAGE_KEY, languageCode);
+    } catch (error) {
+      /* 저장 불가 환경에서도 선택 상태는 유지 */
+    }
+    closeLanguageMenu();
+    button.focus();
+  }
+
+  button.addEventListener("click", handleLanguageMenuToggle);
+  menu.addEventListener("click", handleLanguageSelect);
+  renderSelectedLanguage(readStoredLanguage() || "en");
+
+  return {
+    close: closeLanguageMenu,
+    render: renderSelectedLanguage,
+    contains: function (node) {
+      return container.contains(node);
+    }
+  };
+}
+
+function applySelectedLanguage(languageCode) {
+  languageSelectors.forEach(function (selector) {
+    selector.render(languageCode);
+  });
+}
+
+function closeAllLanguageMenus() {
+  languageSelectors.forEach(function (selector) {
+    selector.close();
+  });
+}
+
+function initLanguageSelectors() {
+  languageSelectors = Array.prototype.map
+    .call(document.querySelectorAll("[data-language-button]"), initLanguageSelector)
+    .filter(Boolean);
+
+  if (languageSelectors.length === 0) {
+    return;
+  }
+
+  document.addEventListener("click", function handleLanguageOutsideClick(event) {
+    languageSelectors.forEach(function (selector) {
+      if (!selector.contains(event.target)) {
+        selector.close();
+      }
+    });
+  });
+
+  document.addEventListener("keydown", function handleLanguageEscape(event) {
+    if (event.key === "Escape") {
+      closeAllLanguageMenus();
+    }
+  });
+}
+
 /* --------------------------------------------------------------------------
    확정되지 않은 링크 안내 (PRD 12.5 / AGENTS 10.6)
    -------------------------------------------------------------------------- */
@@ -180,7 +316,7 @@ function initGlobalMenu() {
       return;
     }
     isMenuOpen = false;
-    closeLanguageMenu();
+    closeAllLanguageMenus();
     renderMenuState();
     unlockBodyScroll();
 
@@ -231,92 +367,6 @@ function initGlobalMenu() {
     }
   }
 
-  /* ---- 언어 선택 ---- */
-  var languageButton = panel.querySelector("[data-language-button]");
-  var languageMenu = panel.querySelector("[data-language-menu]");
-  var languageCurrentText = panel.querySelector("[data-language-current]");
-  var isLanguageMenuOpen = false;
-
-  function renderLanguageMenuState() {
-    if (!languageButton || !languageMenu) {
-      return;
-    }
-    languageButton.setAttribute("aria-expanded", String(isLanguageMenuOpen));
-    if (isLanguageMenuOpen) {
-      languageMenu.removeAttribute("hidden");
-    } else {
-      languageMenu.setAttribute("hidden", "");
-    }
-  }
-
-  function closeLanguageMenu() {
-    if (!isLanguageMenuOpen) {
-      return;
-    }
-    isLanguageMenuOpen = false;
-    renderLanguageMenuState();
-  }
-
-  function handleLanguageMenuToggle() {
-    isLanguageMenuOpen = !isLanguageMenuOpen;
-    renderLanguageMenuState();
-  }
-
-  function renderSelectedLanguage(languageCode) {
-    var label = LANGUAGE_LABELS[languageCode];
-    if (!label || !languageMenu) {
-      return;
-    }
-    if (languageCurrentText) {
-      languageCurrentText.textContent = label;
-    }
-    Array.prototype.forEach.call(languageMenu.querySelectorAll("[data-language]"), function (option) {
-      var isSelected = option.getAttribute("data-language") === languageCode;
-      option.setAttribute("aria-current", String(isSelected));
-    });
-  }
-
-  function readStoredLanguage() {
-    var stored = null;
-    try {
-      stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    } catch (error) {
-      return null;
-    }
-    if (typeof stored !== "string") {
-      return null;
-    }
-    return Object.prototype.hasOwnProperty.call(LANGUAGE_LABELS, stored) ? stored : null;
-  }
-
-  function handleLanguageSelect(event) {
-    var option = event.target.closest("[data-language]");
-    if (!option) {
-      return;
-    }
-    var languageCode = option.getAttribute("data-language");
-    if (!Object.prototype.hasOwnProperty.call(LANGUAGE_LABELS, languageCode)) {
-      return;
-    }
-    // 실제 다국어 URL 구조가 확정되지 않아 선택 상태만 유지합니다 (PRD 13.5)
-    renderSelectedLanguage(languageCode);
-    try {
-      window.localStorage.setItem(LANGUAGE_STORAGE_KEY, languageCode);
-    } catch (error) {
-      /* 저장 불가 환경에서도 선택 상태는 유지 */
-    }
-    closeLanguageMenu();
-    if (languageButton) {
-      languageButton.focus();
-    }
-  }
-
-  if (languageButton && languageMenu) {
-    languageButton.addEventListener("click", handleLanguageMenuToggle);
-    languageMenu.addEventListener("click", handleLanguageSelect);
-    renderSelectedLanguage(readStoredLanguage() || "en");
-  }
-
   toggleButton.addEventListener("click", handleMenuToggle);
 
   panel.addEventListener("keydown", handleMenuKeydown);
@@ -325,10 +375,6 @@ function initGlobalMenu() {
   panel.addEventListener("click", function handleOutsideClick(event) {
     if (event.target === panel) {
       closeMenu(true);
-      return;
-    }
-    if (isLanguageMenuOpen && !event.target.closest(".language_selector")) {
-      closeLanguageMenu();
     }
   });
 }
@@ -451,6 +497,7 @@ function initScrollPager() {
 function initCommon() {
   initPendingLinks();
   initImageFallback();
+  initLanguageSelectors();
   initGlobalMenu();
   initFamilySite();
   initScrollPager();

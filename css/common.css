@@ -11,6 +11,33 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
 @import url("https://fonts.googleapis.com/css2?family=Jost:wght@500&family=Montserrat:wght@700&family=Poppins:wght@500;600;700&display=swap");
 
+@font-face {
+  font-family: "GmarketSansNumber";
+  src: url("../fonts/woff/GmarketSansTTFLight.woff") format("woff");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0025, U+002C-003A, U+20A9;
+}
+
+@font-face {
+  font-family: "GmarketSansNumber";
+  src: url("../fonts/woff/GmarketSansTTFMedium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0025, U+002C-003A, U+20A9;
+}
+
+@font-face {
+  font-family: "GmarketSansNumber";
+  src: url("../fonts/woff/GmarketSansTTFBold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0025, U+002C-003A, U+20A9;
+}
+
 /* --------------------------------------------------------------------------
    tokens
    -------------------------------------------------------------------------- */
@@ -36,12 +63,14 @@
   --color_new_primary_500: #a4b465;
   --color_new_primary_600: #839051;
   --color_new_secondary_500: #626f47;
+  --color_new_secondary_600: #4e5939;
 
   /* color — accent */
   --color_secondary_400: #f9bd4e;
   --color_secondary_500: #f8ac22;
   --color_point_200: #ffecb9;
   --color_point_400: #ffd973;
+  --color_point_800: #ffaf04;
 
   /* color — gray */
   --color_gray_50: #fafafa;
@@ -63,10 +92,10 @@
   --color_course_sub: #99a67e;
 
   /* font family */
-  --font_title: "Poppins", "Pretendard", system-ui, sans-serif;
-  --font_body: "Pretendard", system-ui, sans-serif;
-  --font_display: "Montserrat", "Poppins", sans-serif;
-  --font_logo: "Jost", "Poppins", sans-serif;
+  --font_title: "GmarketSansNumber", "Poppins", "Pretendard", system-ui, sans-serif;
+  --font_body: "GmarketSansNumber", "Pretendard", system-ui, sans-serif;
+  --font_display: "GmarketSansNumber", "Montserrat", "Poppins", sans-serif;
+  --font_logo: "GmarketSansNumber", "Jost", "Poppins", sans-serif;
 
   /* font size — mobile first */
   --fs_h2: 32px;
@@ -163,6 +192,11 @@ body {
   overflow-x: clip;
   /* scrollbar-gutter 미지원 브라우저용 보정 (지원 브라우저에서는 0) */
   padding-right: var(--scrollbar_gap);
+}
+
+/* course.css의 영문 전용 폰트 스택에서도 숫자 글리프는 공통 설정을 우선합니다. */
+html .course_page .course_description {
+  font-family: "GmarketSansNumber", "Open Sans", var(--font_body);
 }
 
 .site_wrapper {
@@ -596,6 +630,230 @@ body {
 }
 
 /* --------------------------------------------------------------------------
+   sub page header — 가로 GNB (Figma 645:2903, 1920 × 84)
+   메인(index.html)은 기존 로고 + 토글 헤더를 그대로 쓰고,
+   pages/ 안의 서브 페이지만 .site_header_sub 로 이 메뉴를 노출합니다.
+   시안이 1920 하나뿐이고 가로 GNB 는 1100px 이상 필요하므로
+   1280 미만에서는 기존 토글 + 오버레이를 유지합니다 (AGENTS 6.4).
+   -------------------------------------------------------------------------- */
+.site_gnb {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  /* 시안의 헤더는 히어로 위에 얹히는 높이 84 의 반투명 바입니다. */
+  .site_header_sub {
+    padding-top: 0;
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .site_header_sub .site_header_inner {
+    height: 84px;
+  }
+
+  /* 데스크톱에서는 가로 GNB 가 오버레이를 대신합니다. */
+  .site_header_sub .menu_toggle {
+    display: none;
+  }
+
+  /* 시안 간격은 30 이지만 1280 에서는 메뉴가 로고에 붙어 버립니다.
+     1440 미만에서만 간격을 좁히고 시안 폭(1440+)에서는 30 을 그대로 씁니다. */
+  .site_gnb {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  /* LNB 가 아래로 펼쳐져도 상단 라벨 줄만 헤더 높이를 차지하게 합니다. */
+  .site_gnb_list {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    height: 46px;
+  }
+
+  .site_gnb_group {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 130px;
+  }
+
+  .site_gnb_title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    font-family: var(--font_body);
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--color_text);
+    text-transform: capitalize;
+    white-space: nowrap;
+  }
+
+  /* 시안에 LNB 배경면이 없지만 floor_guide 는 일러스트 위로 떨어져 읽기 어려워
+     같은 헤더의 언어 드롭다운과 같은 흰 패널을 씁니다.
+     제목 바로 아래(top: 100%)에 붙여야 hover 가 끊기지 않습니다.
+     닫힌 동안에도 포커스는 받아야 :focus-within 이 걸리므로
+     visibility 대신 opacity 를 씁니다. */
+  .site_gnb_lnb {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 105px;
+    padding: 14px 16px;
+    border-radius: var(--radius_lg);
+    background-color: var(--color_surface);
+    box-shadow: 0 8px 24px rgba(33, 33, 33, 0.12);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%);
+    transition: opacity var(--duration) var(--ease_out);
+  }
+
+  .site_gnb_group:hover .site_gnb_lnb,
+  .site_gnb_group:focus-within .site_gnb_lnb {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* width: 100% 를 주면 패널이 가장 긴 항목 기준으로 넓어지지 않습니다.
+     기본 stretch 로 두어 패널 폭이 내용에 맞게 늘어나게 합니다. */
+  .site_gnb_link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    font-family: var(--font_body);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.3;
+    color: var(--color_text);
+    text-align: center;
+    text-transform: capitalize;
+    white-space: nowrap;
+    transition: color var(--duration) var(--ease_out);
+  }
+
+  .site_gnb_link:hover {
+    color: var(--color_new_secondary_600);
+  }
+
+  .site_gnb_link[aria-current="page"] {
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* Book Now (645:2948) */
+  .book_now_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 20px;
+    border-radius: 30px;
+    background-color: var(--color_point_800);
+    color: var(--color_text_white);
+    font-family: var(--font_body);
+    font-size: 20px;
+    line-height: 1.3;
+    white-space: nowrap;
+    transition: background-color var(--duration) var(--ease_out);
+  }
+
+  .book_now_btn:hover {
+    background-color: var(--color_secondary_500);
+  }
+
+  /* 언어 선택 (645:2950) — 오버레이의 어두운 버전과 달리 밑줄형입니다. */
+  .site_gnb_language {
+    position: relative;
+  }
+
+  .site_gnb_language_button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 10px;
+    border-bottom: 1px solid var(--color_new_secondary_600);
+    color: var(--color_new_secondary_600);
+    font-family: var(--font_body);
+    font-size: 20px;
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+
+  .site_gnb_language_button img {
+    width: 20px;
+    height: 20px;
+    transition: transform var(--duration) var(--ease_out);
+  }
+
+  .site_gnb_language_button[aria-expanded="true"] img {
+    transform: rotate(180deg);
+  }
+
+  .site_gnb_language_menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    width: 120px;
+    padding: 8px 12px;
+    border-radius: var(--radius_lg);
+    background-color: var(--color_surface);
+    box-shadow: 0 8px 24px rgba(33, 33, 33, 0.12);
+  }
+
+  .site_gnb_language_menu[hidden] {
+    display: none;
+  }
+
+  .site_gnb_language_option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+    color: var(--color_text);
+    font-family: var(--font_body);
+    font-size: 16px;
+    line-height: 1.3;
+    text-transform: capitalize;
+    transition: color var(--duration) var(--ease_out);
+  }
+
+  .site_gnb_language_option:hover {
+    color: var(--color_new_secondary_600);
+  }
+
+  .site_gnb_language_option[aria-current="true"] {
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+
+/* 시안 기준 폭부터는 Figma 실측 간격(30)을 그대로 씁니다. */
+@media (min-width: 1440px) {
+  .site_gnb,
+  .site_gnb_list {
+    gap: 30px;
+  }
+}
+
+/* --------------------------------------------------------------------------
    global menu overlay
    -------------------------------------------------------------------------- */
 /* 오버레이도 본문과 같은 콘텐츠 폭을 갖도록 동일한 보정값을 적용합니다. */
@@ -988,6 +1246,7 @@ body {
   font-weight: 600;
   line-height: 1;
   text-align: center;
+  text-transform: capitalize;
 }
 
 .subpage_tabs {
