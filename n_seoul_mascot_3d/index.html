@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="N서울타워 마스코트 3D 애니메이션 검증 페이지">
+    <title>N Seoul Mascot 3D</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three.module.min.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main class="mascot_demo">
+      <section class="viewer_panel" aria-labelledby="viewer_title">
+        <div class="viewer_copy">
+          <p class="eyebrow">N SEOUL TOWER</p>
+          <h1 id="viewer_title">Mascot motion study</h1>
+          <p>걷기와 손 흔들기, 부드러운 의상 곡면을 확인하는 독립형 3D surface study입니다.</p>
+        </div>
+
+        <div class="canvas_wrap" data-canvas-wrap>
+          <canvas data-mascot-canvas aria-label="걷고 손을 흔드는 N서울타워 3D 마스코트" aria-describedby="interaction_hint"></canvas>
+          <p class="loading_message" data-loading-message role="status">3D 마스코트를 불러오는 중입니다.</p>
+          <p class="error_message" data-error-message role="alert" hidden></p>
+        </div>
+
+        <div class="motion_controls" aria-label="마스코트 동작 선택">
+          <button class="motion_button is_active" type="button" data-motion="idle" aria-pressed="true" aria-keyshortcuts="1">기본 자세</button>
+          <button class="motion_button" type="button" data-motion="walk" aria-pressed="false" aria-keyshortcuts="2">걷기</button>
+          <button class="motion_button" type="button" data-motion="wave" aria-pressed="false" aria-keyshortcuts="3">손 흔들기</button>
+          <button class="motion_button" type="button" data-toggle-travel aria-pressed="true">앞으로 이동</button>
+        </div>
+
+        <p class="interaction_hint" id="interaction_hint">드래그하거나 방향키를 눌러 마스코트를 돌려볼 수 있습니다. 숫자 1~3으로 동작을 선택할 수 있습니다.</p>
+        <p class="sr_only" data-motion-status aria-live="polite">기본 자세가 선택되었습니다.</p>
+      </section>
+    </main>
+
+    <script type="module" src="./mascot.js"></script>
+  </body>
+</html>
