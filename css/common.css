@@ -1388,6 +1388,10 @@ html .course_page .course_description {
 }
 
 .subpage_tabs {
+  position: sticky;
+  top: calc(100vh - 100px);
+  top: calc(100dvh - 100px);
+  z-index: 90;
   min-height: 100px;
   background-color: var(--subpage_tab_bg, #c8d2a3);
 }
