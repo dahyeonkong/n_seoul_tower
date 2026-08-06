@@ -7,6 +7,9 @@ const errorMessage = document.querySelector("[data-error-message]");
 const motionButtons = [...document.querySelectorAll("[data-motion]")];
 const travelButton = document.querySelector("[data-toggle-travel]");
 const motionStatus = document.querySelector("[data-motion-status]");
+const defaultMotion = document.documentElement.dataset.defaultMotion || "idle";
+const shouldShowGround = document.documentElement.dataset.showGround !== "false";
+const shouldStartTravel = document.documentElement.dataset.travel !== "false";
 
 if (!canvas || !canvasWrap) {
   throw new Error("마스코트 캔버스를 찾을 수 없습니다.");
@@ -33,11 +36,11 @@ let visibilityCheckFrameId;
 let isCanvasVisible = true;
 let isDocumentVisible = !document.hidden;
 let isContextLost = false;
-let currentMotion = "idle";
-let previousMotion = "idle";
+let currentMotion = defaultMotion;
+let previousMotion = defaultMotion;
 let motionStartedAt = 0;
 let motionBlend = 1;
-let shouldTravel = true;
+let shouldTravel = shouldStartTravel;
 let viewYaw = 0;
 let targetViewYaw = 0;
 let isDragging = false;
@@ -449,6 +452,7 @@ function setMotion(nextMotion) {
   if (nextMotion === currentMotion) return;
   previousMotion = currentMotion;
   currentMotion = nextMotion;
+  canvas.dataset.motion = currentMotion;
   motionStartedAt = clock ? clock.getElapsedTime() : 0;
   motionBlend = 0;
 
@@ -756,7 +760,8 @@ function initScene() {
   scene.add(fillLight);
 
   mascot = createMascot();
-  scene.add(mascot, createGround());
+  scene.add(mascot);
+  if (shouldShowGround) scene.add(createGround());
 
   let meshCount = 0;
   let triangleCount = 0;
@@ -771,6 +776,7 @@ function initScene() {
     triangleCount += baseTriangles * (node.isInstancedMesh ? node.count : 1);
   });
   canvas.dataset.threeRevision = THREE.REVISION;
+  canvas.dataset.motion = currentMotion;
   canvas.dataset.meshCount = String(meshCount);
   canvas.dataset.triangleCount = String(Math.round(triangleCount));
 
@@ -784,12 +790,16 @@ function initScene() {
 
   const resizeObserver = new ResizeObserver(resizeRenderer);
   resizeObserver.observe(canvasWrap);
-  loadingMessage.hidden = true;
+  if (loadingMessage) loadingMessage.hidden = true;
   renderFrame();
 }
 
 function showInitError(error) {
-  loadingMessage.hidden = true;
+  if (loadingMessage) loadingMessage.hidden = true;
+  if (!errorMessage) {
+    console.error(error);
+    return;
+  }
   errorMessage.hidden = false;
   errorMessage.textContent = "3D 마스코트를 불러오지 못했습니다. 네트워크 연결과 WebGL 지원을 확인해주세요.";
   canvas.setAttribute("aria-hidden", "true");
