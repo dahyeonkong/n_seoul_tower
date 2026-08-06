@@ -73,18 +73,14 @@ var mainPageData = {
   /* 디자인의 기프트숍 카드는 상품 이미지만 노출합니다.
      상품명·가격·재고는 확정되지 않아 만들지 않고, 이미지 설명만 alt 로 제공합니다. */
   giftShopItems: [
-    { id: "gift_01", image: "n_gift_shop/namsan_yakgwa.png", imageAlt: "Namsan Yakgwa gift box with traditional Korean honey pastries" },
-    { id: "gift_02", image: "n_gift_shop/love_lock_package.png", imageAlt: "Pair of pink heart-shaped love locks" },
-    { id: "gift_03", image: "n_gift_shop/monami_pen.png", imageAlt: "N Seoul Tower Monami pen set in a green gift case" },
-    { id: "gift_04", image: "n_gift_shop/snow_globe.png", imageAlt: "N Seoul Tower snow globe on a green base with cherry blossoms" },
-    { id: "gift_05", image: "n_gift_shop/n_gomi_toy.png", imageAlt: "N-gomi bear plush toy wearing a green N Seoul Tower shirt" },
+    { id: "gift_01", image: "n_gift_shop/gift1.png", imageAlt: "Olive green N Seoul Tower spiral notebook illustrated with N-gomi" },
+    { id: "gift_02", image: "n_gift_shop/gift2.png", imageAlt: "Round olive green badge illustrated with N-gomi" },
+    { id: "gift_03", image: "n_gift_shop/gift3.png", imageAlt: "N Tower Friend memo card illustrated with N-gomi" },
+    { id: "gift_04", image: "n_gift_shop/gift4.png", imageAlt: "Canvas tote bag illustrated with N-gomi and N Seoul Tower" },
+    { id: "gift_05", image: "n_gift_shop/n_gomi_keyring.png", imageAlt: "N-gomi rubber keyring with an N Seoul Tower name tag" },
     { id: "gift_06", image: "n_gift_shop/n_gomi_mug.png", imageAlt: "Ceramic mug printed with N-gomi walking near N Seoul Tower" },
-    { id: "gift_07", image: "n_gift_shop/n_gomi_keyring.png", imageAlt: "N-gomi rubber keyring with an N Seoul Tower name tag" },
-    { id: "gift_08", image: "n_gift_shop/tumbler.png", imageAlt: "Olive green N Seoul Tower tumbler with a tower line drawing" },
-    { id: "gift_09", image: "n_gift_shop/hand_mirror.png", imageAlt: "Round hand mirror with a floral N Seoul Tower illustration" },
-    { id: "gift_10", image: "n_gift_shop/metal_pins.png", imageAlt: "Enamel metal pin badge shaped like N Seoul Tower with pink blossoms" },
-    { id: "gift_11", image: "n_gift_shop/tower_365_bear.png", imageAlt: "Tower 365 Bear keyring figure in a purple and blue outfit" },
-    { id: "gift_12", image: "n_gift_shop/map_postcard.png", imageAlt: "Illustrated postcard showing a map of Seoul with N Seoul Tower" }
+    { id: "gift_07", image: "n_gift_shop/n_gomi_toy.png", imageAlt: "N-gomi bear plush toy wearing a green N Seoul Tower shirt" },
+    { id: "gift_08", image: "n_gift_shop/tumbler.png", imageAlt: "Olive green N Seoul Tower tumbler with a tower line drawing" }
   ],
 
   customGoodsItems: [
@@ -285,11 +281,16 @@ function renderCourses(courses) {
    -------------------------------------------------------------------------- */
 function createGiftCard(item, isDuplicate) {
   var card = createElement("li", "gift_card");
+  var link = createElement("a", "gift_card_link");
+  link.href = "./pages/n_gift_shop.html";
+
   if (isDuplicate) {
     card.setAttribute("aria-hidden", "true");
+    link.tabIndex = -1;
   }
 
-  card.appendChild(createMedia("gift_card_media", item.image, isDuplicate ? "" : item.imageAlt, 253, 300, true));
+  link.appendChild(createMedia("gift_card_media", item.image, isDuplicate ? "" : item.imageAlt, 253, 300, true));
+  card.appendChild(link);
 
   return card;
 }

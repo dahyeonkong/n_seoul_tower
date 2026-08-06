@@ -1023,7 +1023,6 @@
   flex-direction: column;
   align-items: center;
   width: 180px;
-  padding: 12px;
   border: 1px solid var(--color_line_goods);
   border-radius: var(--radius_lg);
   background-color: var(--color_surface_goods);
@@ -1031,10 +1030,17 @@
   transition: transform var(--duration) var(--ease_out), box-shadow var(--duration) var(--ease_out);
 }
 
+.gift_card_link {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border-radius: inherit;
+}
+
 .gift_card_media {
   width: 100%;
   aspect-ratio: 253 / 300;
-  background-color: transparent;
+  background-color: #f2f0ee;
 }
 
 .gift_card_media > img {
@@ -1069,7 +1075,7 @@
 
   .gift_track {
     gap: 28px;
-    padding: 5px 0;
+    padding: 40px 0;
     overflow-x: hidden;
     width: max-content;
     animation: gift_marquee 48s linear infinite;
@@ -1083,8 +1089,11 @@
 
   .gift_card {
     width: 285px;
-    padding: 16px;
     cursor: url("../assets/icon/arrow_cursor.png") 22 20, pointer;
+  }
+
+  .gift_card_link {
+    padding: 16px;
   }
 
   .gift_card:nth-child(8n + 1) {
