@@ -1,6 +1,6 @@
 <svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="28.8" height="28.8" viewBox="0 0 28.8 28.8" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="chevrons-left">
-<path id="Vector" d="M13.1996 20.4001L7.19961 14.4001L13.1996 8.40005" stroke="#3B432B" stroke-opacity="0.4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_2" d="M21.5993 20.4001L15.5993 14.4001L21.5993 8.40005" stroke="#3B432B" stroke-opacity="0.4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector" d="M13.1996 20.4001L7.19961 14.4001L13.1996 8.40005" stroke="#3B432B" stroke-opacity="0.5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_2" d="M21.5993 20.4001L15.5993 14.4001L21.5993 8.40005" stroke="#3B432B" stroke-opacity="0.5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
 </g>
 </svg>
