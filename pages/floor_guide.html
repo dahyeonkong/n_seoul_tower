@@ -250,6 +250,58 @@
         <img class="footer_deco" src="../assets/footer_tower.png" alt="" aria-hidden="true" width="418" height="417" loading="lazy">
       </div>
     </footer>
+    <!-- ===================== floating quick menu (987:7708) =====================
+         닫힘 상태에는 곰 버튼과 CLICK ME 링만 보이고, 누르면 액션 4개가 펼쳐집니다.
+         CLICK ME 글자는 common.js 의 renderQuickMenuRing() 이 채웁니다. -->
+    <div class="quick_menu" data-quick-menu>
+      <div class="quick_menu_actions" id="quick_menu_actions" data-quick-actions hidden>
+        <!-- TODO: 챗봇 서비스가 확정되지 않아 안내 메시지만 노출합니다. -->
+        <button class="quick_action" type="button" data-pending-link aria-disabled="true">
+          <img src="../assets/icon/quick/chat.svg" alt="" width="36" height="36">
+          <span class="visually_hidden">Chatbot</span>
+        </button>
+
+        <!-- TODO: 검색 페이지가 확정되지 않아 안내 메시지만 노출합니다. -->
+        <button class="quick_action" type="button" data-pending-link aria-disabled="true">
+          <img src="../assets/icon/quick/search.svg" alt="" width="36" height="36">
+          <span class="visually_hidden">Search</span>
+        </button>
+
+        <div class="quick_section">
+          <button class="quick_action" type="button" data-quick-section-button aria-expanded="false"
+            aria-controls="quick_section_menu">
+            <img src="../assets/icon/quick/sections.svg" alt="" width="36" height="36">
+            <span class="visually_hidden">Move to a section</span>
+          </button>
+          <nav class="quick_section_menu" id="quick_section_menu" data-quick-section-menu
+            aria-label="Sections on this page" hidden>
+            <p class="quick_section_title">quick menu</p>
+            <ul class="quick_section_list">
+              <li><a class="quick_section_link" href="#floor_f5">F5</a></li>
+              <li><a class="quick_section_link" href="#floor_t1">T1</a></li>
+              <li><a class="quick_section_link" href="#floor_t2">T2</a></li>
+              <li><a class="quick_section_link" href="#floor_t3">T3</a></li>
+              <li><a class="quick_section_link" href="#floor_t4">T4</a></li>
+              <li><a class="quick_section_link" href="#floor_t5">T5</a></li>
+              <li><a class="quick_section_link" href="#floor_t7">T7</a></li>
+            </ul>
+          </nav>
+        </div>
+
+        <a class="quick_action" href="#top">
+          <img src="../assets/icon/quick/arrow_up.svg" alt="" width="36" height="36">
+          <span class="visually_hidden">Back to top</span>
+        </a>
+      </div>
+
+      <button class="quick_toggle" type="button" data-quick-toggle aria-expanded="false"
+        aria-controls="quick_menu_actions">
+        <img class="quick_toggle_image" src="../assets/icon/chatbot.png" alt="" width="96" height="96">
+        <span class="quick_toggle_ring" data-quick-ring aria-hidden="true"></span>
+        <span class="visually_hidden" data-quick-toggle-label>Open quick menu</span>
+      </button>
+    </div>
+
     <p class="link_status" data-link-status role="status" aria-live="polite"></p>
   </div>
   <script src="../js/common.js"></script>
