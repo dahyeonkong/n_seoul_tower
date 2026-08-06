@@ -34,15 +34,15 @@
   height: 100%;
 }
 
-/* 타워 — 실사 이미지, 원본 비율 유지.
-   모바일에서는 흐름 안에서 제목 아래 중앙 배치해 텍스트를 가리지 않게 합니다. */
-.hero_tower {
-  order: 4;
-  align-self: center;
-  width: auto;
-  height: min(50svh, 420px);
-  margin-top: 4px;
-  margin-bottom: -40px;
+/* 히어로 비디오 — 기존 타워 이미지 크기와 무관하게 화면 전체를 채웁니다. */
+.hero_video {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+  object-position: center;
   pointer-events: none;
 }
 
@@ -134,22 +134,8 @@
 }
 
 @media (min-width: 834px) {
-  .hero_tower {
-    height: min(52svh, 560px);
-  }
-
   .hero_info_row {
     gap: 19px;
-  }
-}
-
-@media (min-width: 1280px) {
-  .hero_tower {
-    position: absolute;
-    order: 0;
-    width: 20.24%;
-    height: auto;
-    margin: 0;
   }
 }
 
@@ -159,7 +145,6 @@
     display: block;
     height: 100vh;
     min-height: 720px;
-    max-height: 1080px;
     padding: 0;
   }
 
@@ -173,12 +158,6 @@
     left: 7.5%;
     top: 27.76%;
     width: 95.32%;
-  }
-
-  .hero_tower {
-    left: 37.99%;
-    top: 16.36%;
-    z-index: 3;
   }
 
   .hero_info {
