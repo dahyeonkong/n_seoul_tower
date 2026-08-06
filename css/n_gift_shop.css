@@ -1,0 +1,592 @@
+@charset "utf-8";
+
+/* ==========================================================================
+   n_gift_shop — Explore > N Gift Shop 상세 페이지 전용
+   Figma `N Gift Shop 7` (986:6586, 1920 × 3142) 기준
+   공통 토큰은 common.css 의 :root 를 그대로 쓰고,
+   이 페이지에서만 쓰는 색/치수만 아래 :root 에 추가합니다.
+   ========================================================================== */
+
+:root {
+  /* color — Figma Variables 실측 (common.css 에 없는 값만) */
+  --giftshop_sidebar_bg: #c8d2a3;   /* color/new_primary/300 */
+  --giftshop_olive: #626c3d;        /* color/new_primary/700 */
+  --giftshop_olive_muted: rgba(98, 108, 61, 0.614);
+  --giftshop_deep: #3b432b;         /* color/new_secondary/700 */
+  --giftshop_deep_muted: rgba(59, 67, 43, 0.4);
+  --giftshop_card_text: #4e5939;    /* color/new_secondary/600 */
+  --giftshop_title_color: #272c1c;  /* color/new_secondary/800 */
+
+  /* type — 시안 실측값 (모바일 우선, 1280 이상에서 시안값으로 확대) */
+  --giftshop_fs_eyebrow: 18px;
+  --giftshop_fs_title: 40px;
+  --giftshop_fs_desc: 16px;
+  --giftshop_fs_toolbar: 16px;
+  --giftshop_fs_category: 20px;
+  --giftshop_fs_name: 15px;
+  --giftshop_fs_price: 22px;
+  --giftshop_fs_hours: 14px;
+  --giftshop_fs_hours_sub: 12px;
+
+  /* layout */
+  --giftshop_sidebar_width: 340px;
+  --giftshop_card_gap: 22px;
+  --giftshop_row_gap: 40px;
+}
+
+@media (min-width: 834px) {
+  :root {
+    --giftshop_fs_eyebrow: 20px;
+    --giftshop_fs_title: 52px;
+    --giftshop_fs_desc: 18px;
+    --giftshop_fs_toolbar: 18px;
+    --giftshop_fs_price: 24px;
+    --giftshop_row_gap: 48px;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --giftshop_fs_eyebrow: 24px;
+    --giftshop_fs_title: 64px;
+    --giftshop_fs_desc: 20px;
+    --giftshop_fs_toolbar: 20px;
+    --giftshop_fs_category: 24px;
+    --giftshop_fs_name: 16px;
+    --giftshop_fs_price: 28px;
+    --giftshop_fs_hours: 15px;
+    --giftshop_row_gap: 56px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   layout
+   헤더는 공통 규칙대로 position: absolute 이므로 그만큼 위쪽을 비워 둡니다.
+   (padding-top 20px + inner 43px = 63px, 1280 이상 40px + 43px = 83px)
+   -------------------------------------------------------------------------- */
+.giftshop {
+  padding-top: 63px;
+  background-color: var(--color_bg);
+}
+
+@media (min-width: 1280px) {
+  .giftshop {
+    padding-top: 84px;
+    /* 사이드바가 열리면 본문을 그만큼 오른쪽으로 밉니다. */
+    transition: padding-left var(--duration) var(--ease_out);
+  }
+
+  .giftshop.is_sidebar_open {
+    padding-left: var(--giftshop_sidebar_width);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   left sidebar — category + store info
+   기본은 숨김이고 Filters 버튼으로 왼쪽에서 열리는 화면 고정 드로어입니다.
+   스크롤해도 위치가 변하지 않아야 하므로 position: fixed 를 사용합니다.
+   z-index 는 공통 메뉴 오버레이(100)와 헤더(120)보다 낮게 둡니다.
+   -------------------------------------------------------------------------- */
+.giftshop_sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 90;
+  width: min(var(--giftshop_sidebar_width), 86vw);
+  height: 100%;
+  overflow-y: auto;
+  background-color: var(--giftshop_sidebar_bg);
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition: transform var(--duration) var(--ease_out), visibility var(--duration);
+}
+
+.giftshop_sidebar.is_open {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.giftshop_sidebar_inner {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 100%;
+  /* 위쪽은 고정 헤더(63px / 1280 이상 84px) 아래로 내립니다. */
+  padding: 95px 32px 40px;
+}
+
+@media (min-width: 1280px) {
+  .giftshop_sidebar_inner {
+    gap: 70px;
+    padding: 145px 48px 48px;
+  }
+}
+
+/* ---- category ---- */
+.giftshop_category_list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* 글자 폭이 짧아도 터치 영역 44px 를 확보하도록 가로를 채웁니다 (AGENTS 6.3). */
+.giftshop_category_item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 44px;
+  color: var(--giftshop_olive_muted);
+  font-family: var(--font_body);
+  font-size: var(--giftshop_fs_category);
+  line-height: 1.2;
+  letter-spacing: 0.15px;
+  white-space: nowrap;
+  transition: color var(--duration) var(--ease_out);
+}
+
+.giftshop_category_item:hover {
+  color: var(--giftshop_olive);
+}
+
+.giftshop_category_item.is_active {
+  color: var(--giftshop_olive);
+}
+
+@media (min-width: 1280px) {
+  .giftshop_category_list {
+    gap: 26px;
+  }
+
+  .giftshop_category_item {
+    min-height: 29px;
+  }
+}
+
+/* ---- store info ---- */
+.giftshop_info {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 320px;
+}
+
+.giftshop_hours {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: var(--giftshop_deep);
+}
+
+.giftshop_hours_item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.giftshop_hours_title {
+  font-size: var(--giftshop_fs_hours);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.giftshop_hours_sub {
+  font-size: var(--giftshop_fs_hours_sub);
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.giftshop_tel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--giftshop_deep);
+  font-weight: 600;
+  letter-spacing: -0.23px;
+}
+
+.giftshop_tel_label {
+  font-size: 16px;
+}
+
+/* 터치 영역 44px 확보 (AGENTS 6.3) */
+.giftshop_tel_number {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 20px;
+  transition: opacity var(--duration) var(--ease_out);
+}
+
+.giftshop_tel_number:hover {
+  opacity: 0.7;
+}
+
+@media (min-width: 1280px) {
+  .giftshop_info {
+    max-width: 237px;
+  }
+
+  .giftshop_tel_label {
+    font-size: 18px;
+  }
+
+  .giftshop_tel_number {
+    font-size: 23px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   content
+   -------------------------------------------------------------------------- */
+.giftshop_content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: min(100% - var(--page_pad) * 2, var(--content_max));
+  margin-inline: auto;
+  padding: 48px 0 80px;
+}
+
+@media (min-width: 1280px) {
+  .giftshop_content {
+    max-width: 1406px;
+    padding: 68px 0 120px;
+  }
+
+  /* 사이드바가 열린 상태는 시안 배치(사이드바 340 + 여백 80 + 콘텐츠 1406)를 따릅니다. */
+  .giftshop.is_sidebar_open .giftshop_content {
+    width: min(100% - 160px, 1406px);
+  }
+}
+
+/* ---- page head ---- */
+.giftshop_header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.giftshop_header_title {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 683px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color_primary_600);
+}
+
+.giftshop_eyebrow {
+  font-family: var(--font_body);
+  font-size: var(--giftshop_fs_eyebrow);
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--color_text);
+}
+
+.giftshop_title {
+  font-family: var(--font_title);
+  font-size: var(--giftshop_fs_title);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--giftshop_title_color);
+  opacity: 0.8;
+}
+
+.giftshop_description {
+  font-family: var(--font_body);
+  font-size: var(--giftshop_fs_desc);
+  font-weight: 300;
+  line-height: 1.3;
+  color: var(--color_text);
+}
+
+/* ---- toolbar ---- */
+.giftshop_toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  margin-top: 32px;
+}
+
+.giftshop_filter_btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 8px 28px;
+  border-radius: 50px;
+  border: 2px solid var(--giftshop_olive);
+  color: var(--giftshop_olive);
+  font-family: var(--font_body);
+  font-size: var(--giftshop_fs_toolbar);
+  line-height: 1.2;
+  text-transform: capitalize;
+  transition: background-color var(--duration) var(--ease_out);
+}
+
+.giftshop_filter_btn:hover {
+  background-color: #55613c;
+  color: var(--color_text_white);
+}
+
+.giftshop_filter_btn img {
+  width: 28px;
+  height: 28px;
+  color:var(--giftshop_olive);
+}
+
+.giftshop_filter_btn img:hover {
+  color: var(--color_text_white);
+}
+
+.giftshop_price_notice {
+  font-family: var(--font_body);
+  font-size: var(--giftshop_fs_toolbar);
+  line-height: 1.3;
+  color: var(--giftshop_olive);
+}
+
+@media (min-width: 834px) {
+  .giftshop_toolbar {
+    gap: 32px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   product grid
+   -------------------------------------------------------------------------- */
+.giftshop_grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: var(--giftshop_card_gap);
+  row-gap: var(--giftshop_row_gap);
+  width: 100%;
+  margin-top: 40px;
+}
+
+@media (min-width: 560px) {
+  .giftshop_grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .giftshop_grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 60px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .giftshop_grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.giftshop_card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: transform var(--duration) var(--ease_out);
+}
+
+.giftshop_card[hidden] {
+  display: none;
+}
+
+.giftshop_thumb {
+  width: 100%;
+  /* 시안 카드 이미지 영역 334 × 396 */
+  aspect-ratio: 334 / 396;
+  background-color: var(--color_new_primary_100);
+}
+
+/* 상품 누끼 이미지는 잘리지 않도록 contain (AGENTS 4.3) */
+.giftshop_thumb > img {
+  width: 100%;
+  height: 100%;
+  padding: 48px;
+  object-fit: contain;
+  transition: transform var(--duration) var(--ease_out);
+}
+
+.giftshop_card:hover .giftshop_thumb > img,
+.giftshop_card:focus-within .giftshop_thumb > img {
+  transform: scale(1.04);
+}
+
+.giftshop_card:hover,
+.giftshop_card:focus-within {
+  transform: translateY(-4px);
+}
+
+.giftshop_info_box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--giftshop_card_text);
+}
+
+.giftshop_name {
+  font-family: var(--font_body);
+  font-size: var(--giftshop_fs_name);
+  font-weight: 400;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.giftshop_price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--font_body);
+  font-size: var(--giftshop_fs_price);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.giftshop_price_unit {
+  font-size: var(--giftshop_fs_desc);
+  font-weight: 400;
+}
+
+.giftshop_price_divider {
+  padding-inline: 4px;
+  font-size: var(--giftshop_fs_desc);
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+.giftshop_tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.giftshop_tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 8px;
+  border: 1.1px solid var(--giftshop_card_text);
+  border-radius: 40px;
+  font-family: var(--font_title);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.giftshop_empty {
+  margin-top: 40px;
+}
+
+.giftshop_empty[hidden] {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   pagination
+   -------------------------------------------------------------------------- */
+/* 360px 에서도 5개 컨트롤이 44px 를 유지하도록 간격을 좁힙니다. */
+.giftshop_pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 64px;
+}
+
+.giftshop_page_nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  transition: opacity var(--duration) var(--ease_out);
+}
+
+.giftshop_page_nav img {
+  width: 28px;
+  height: 28px;
+}
+
+.giftshop_page_nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.giftshop_page_nav:not(:disabled):hover {
+  opacity: 0.65;
+}
+
+.giftshop_page_list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.giftshop_page_num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--giftshop_deep_muted);
+  font-family: var(--font_body);
+  font-size: 20px;
+  line-height: 1;
+  transition: color var(--duration) var(--ease_out);
+}
+
+.giftshop_page_num:hover {
+  color: var(--giftshop_deep);
+}
+
+.giftshop_page_num.is_active {
+  color: var(--giftshop_deep);
+  font-weight: 600;
+}
+
+@media (min-width: 834px) {
+  .giftshop_pagination {
+    gap: 14px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .giftshop_pagination {
+    margin-top: 96px;
+  }
+
+  .giftshop_page_num {
+    font-size: 22px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   reduced motion — 카드 확대/이동 제거 (공통 규칙 보완)
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .giftshop_card:hover,
+  .giftshop_card:focus-within {
+    transform: none;
+  }
+
+  .giftshop_card:hover .giftshop_thumb > img,
+  .giftshop_card:focus-within .giftshop_thumb > img {
+    transform: none;
+  }
+}
