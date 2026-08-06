@@ -1,0 +1,81 @@
+{
+  "name": "NSeoulMascot",
+  "version": 3,
+  "referenceProfile": "character",
+  "intendedUse": "real-time browser mascot with walk and wave animations",
+  "proportions": {
+    "totalHeight": 4.8,
+    "bodyWidth": 3.35,
+    "bodyDepth": 2.25,
+    "headUnits": 2.35
+  },
+  "components": [
+    { "id": "body", "primitive": "ellipsoid", "level": "macro", "pivot": "body_bounce_pivot" },
+    { "id": "shirt", "primitive": "ellipsoid", "level": "meso", "parent": "body" },
+    { "id": "left_ear", "primitive": "torus", "level": "meso", "parent": "body" },
+    { "id": "right_ear", "primitive": "torus", "level": "meso", "parent": "body" },
+    { "id": "left_arm", "primitive": "capsule", "level": "meso", "parent": "body", "pivot": "left_shoulder_pivot" },
+    { "id": "right_arm", "primitive": "capsule", "level": "meso", "parent": "body", "pivot": "right_shoulder_pivot" },
+    { "id": "left_leg", "primitive": "capsule", "level": "meso", "parent": "body", "pivot": "left_hip_pivot" },
+    { "id": "right_leg", "primitive": "capsule", "level": "meso", "parent": "body", "pivot": "right_hip_pivot" },
+    { "id": "tail", "primitive": "sphere", "level": "meso", "parent": "body", "pivot": "tail_pivot" },
+    { "id": "face", "primitive": "ellipsoid", "level": "micro", "parent": "body" },
+    { "id": "paw_details", "primitive": "ellipsoid", "level": "micro", "parent": "left_leg" }
+  ],
+  "animations": {
+    "idle": { "loop": true, "duration": 2.8 },
+    "walk": { "loop": true, "duration": 0.92 },
+    "wave": { "loop": false, "duration": 3.4, "returnTo": "idle" }
+  },
+  "currentPass": "surface-pass",
+  "formRefinement": {
+    "shirt": "elliptical multi-ring shell following the torso instead of a rigid cylinder",
+    "limbs": "single plush volumes with hidden elbow and knee joints",
+    "seams": "raised elliptical collar and hem cords",
+    "surface": "subtle generated micro-bump; no photo lighting baked into albedo"
+  },
+  "surfacePass": {
+    "shirtProfile": "centripetal Catmull-Rom interpolation across a dense elliptical ring profile",
+    "sleeves": "rounded plush volumes overlapping the arm and shirt to hide hard joints",
+    "lowerBody": "closer hip pivots and wider leg volumes reduce the pointed center gap",
+    "jointContinuity": "stationary shoulder gussets overlap the moving sleeve volumes",
+    "footContact": "root height compensates for leg swing while the airborne foot receives an explicit lift",
+    "waveArc": "the raised arm oscillates in the front-visible shoulder plane",
+    "ears": "torus rims and recessed inner volumes replace stacked spheres",
+    "eyes": "separate catchlight geometry improves the plush character expression",
+    "tail": "a raised circular root seam clarifies the rear attachment"
+  },
+  "detailFidelity": {
+    "logo": "reduced tube radius and extrusion depth read as a printed/embroidered mark instead of a rigid badge",
+    "stitches": "instanced stitch dashes follow the elliptical collar and hem with two draw calls"
+  },
+  "delivery": {
+    "threeVersion": "0.180.0",
+    "modulePath": "./vendor/three.module.min.js",
+    "networkRequiredAtRuntime": false,
+    "licenseNotice": "./vendor/THREE-LICENSE.txt"
+  },
+  "optimization": {
+    "measuredMeshCount": 43,
+    "measuredTriangleCount": 59292,
+    "shadowMap": "2048px desktop, 1024px below 834px",
+    "microDetailShadows": false,
+    "pixelRatioCap": 2,
+    "mobilePixelRatioCap": 1.5,
+    "pauseWhenOffscreen": true,
+    "pauseWhenDocumentHidden": true,
+    "visibilityFallback": "passive scroll/resize with requestAnimationFrame throttling",
+    "webglContextRecovery": true
+  },
+  "accessibility": {
+    "motionStatusLiveRegion": true,
+    "keyboardMotionShortcuts": ["1", "2", "3"],
+    "reducedMotionDisablesAnimatedControls": true,
+    "canvasDescription": "linked through aria-describedby"
+  },
+  "inferenceNotes": [
+    "The shirt-hidden torso is inferred from the four neutral views.",
+    "Knee and elbow joints are intentionally omitted to preserve the plush silhouette.",
+    "The under view is used for paw layout, not global proportion measurement."
+  ]
+}
