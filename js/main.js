@@ -276,6 +276,44 @@ function renderCourses(courses) {
   list.appendChild(fragment);
 }
 
+function initCourseSectionScroll() {
+  var section = document.querySelector("#course_section");
+  var list = document.querySelector("[data-course-list]");
+
+  if (!section || !list) {
+    return;
+  }
+
+  function handleCourseWheel(event) {
+    if (event.deltaY === 0 || Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
+      return;
+    }
+
+    var deltaY = event.deltaY;
+    if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
+      deltaY *= 16;
+    } else if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) {
+      deltaY *= list.clientHeight;
+    }
+
+    var maxScrollTop = list.scrollHeight - list.clientHeight;
+    var isScrollingDown = deltaY > 0;
+    var canScrollDown = list.scrollTop < maxScrollTop - 1;
+    var canScrollUp = list.scrollTop > 1;
+
+    if ((isScrollingDown && !canScrollDown) || (!isScrollingDown && !canScrollUp)) {
+      event.preventDefault();
+      window.scrollBy({ top: deltaY, left: 0, behavior: "auto" });
+      return;
+    }
+
+    event.preventDefault();
+    list.scrollTop = Math.max(0, Math.min(maxScrollTop, list.scrollTop + deltaY));
+  }
+
+  section.addEventListener("wheel", handleCourseWheel, { passive: false });
+}
+
 /* --------------------------------------------------------------------------
    n gift shop
    -------------------------------------------------------------------------- */
@@ -515,6 +553,7 @@ function initMain() {
   renderTowerStacks(mainPageData.towerParts);
   renderCustomGoods(mainPageData.customGoodsItems);
 
+  initCourseSectionScroll();
   initTowerReveal();
   initRestaurantSlider(mainPageData.restaurantPhotos);
 }
