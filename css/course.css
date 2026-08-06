@@ -96,7 +96,6 @@
   overflow: hidden;
   border-radius: 50%;
   place-items: center;
-  background: var(--course_surface);
 }
 
 .course_page .course_image_circle img {
