@@ -221,11 +221,10 @@
 
 .events_curve {
   position: absolute;
-  top: 8%;
-  left: -30%;
+  top: 0;
+  left: 0;
   z-index: 0;
-  width: 143%;
-  max-width: none;
+  width: 100%;
   height: auto;
   opacity: 0.9;
   pointer-events: none;
@@ -329,9 +328,9 @@
   }
 
   .events_curve {
-    top: 11.5%;
-    left: -29.86%;
-    width: 142.68%;
+    top: 0;
+    left: 0;
+    width: 100%;
   }
 
   .events_list {
