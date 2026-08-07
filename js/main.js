@@ -515,75 +515,6 @@ function renderCustomGoods(items) {
 }
 
 /* --------------------------------------------------------------------------
-   restaurant stack
-   -------------------------------------------------------------------------- */
-function initRestaurantStack() {
-  var stack = document.querySelector("[data-restaurant-stack]");
-  var stackItems = stack ? stack.querySelectorAll("[data-restaurant-stack-item]") : [];
-  var stackOffsets = [48, 148, 248, 348];
-  var stackMeasurements = [];
-  var isStackFramePending = false;
-
-  if (!stack || stackItems.length !== stackOffsets.length) {
-    return;
-  }
-
-  function measureRestaurantStack() {
-    Array.prototype.forEach.call(stackItems, function clearStackTransform(item) {
-      item.style.transform = "";
-    });
-
-    var stackTop = stack.getBoundingClientRect().top + window.scrollY;
-    var stackBottom = stackTop + stack.offsetHeight;
-
-    stackMeasurements = Array.prototype.map.call(stackItems, function measureStackItem(item) {
-      var itemTop = item.getBoundingClientRect().top + window.scrollY;
-      return {
-        itemTop: itemTop,
-        maxTranslate: Math.max(0, stackBottom - itemTop - item.offsetHeight)
-      };
-    });
-  }
-
-  function renderRestaurantStack() {
-    isStackFramePending = false;
-
-    Array.prototype.forEach.call(stackItems, function renderStackItem(item, index) {
-      if (window.innerWidth < 834) {
-        item.style.transform = "";
-        return;
-      }
-
-      var measurement = stackMeasurements[index];
-      var translateY = Math.min(
-        measurement.maxTranslate,
-        Math.max(0, window.scrollY + stackOffsets[index] - measurement.itemTop)
-      );
-
-      item.style.transform = "translate3d(0, " + translateY + "px, 0)";
-    });
-  }
-
-  function requestRestaurantStackRender() {
-    if (isStackFramePending) {
-      return;
-    }
-    isStackFramePending = true;
-    window.requestAnimationFrame(renderRestaurantStack);
-  }
-
-  function handleRestaurantStackResize() {
-    measureRestaurantStack();
-    requestRestaurantStackRender();
-  }
-
-  measureRestaurantStack();
-  renderRestaurantStack();
-  window.addEventListener("scroll", requestRestaurantStackRender, { passive: true });
-  window.addEventListener("resize", handleRestaurantStackResize);
-}
-
-/* --------------------------------------------------------------------------
    init
    -------------------------------------------------------------------------- */
 function initMain() {
@@ -596,7 +527,6 @@ function initMain() {
   initCourseScrollScene();
   initGiftTrackCursor();
   initTowerReveal();
-  initRestaurantStack();
 }
 
 if (document.readyState === "loading") {
