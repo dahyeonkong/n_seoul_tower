@@ -126,15 +126,6 @@ var mainPageData = {
     { file: "custom_goods/candle4.png", step: 4 },
     { file: "custom_goods/candle5.png", step: 5 },
     { file: "custom_goods/candle6.png", step: 6 }
-  ],
-
-  /* Figma restaurant_wrap 에 실제로 포함된 사진만 사용합니다. */
-  restaurantPhotos: [
-    {
-      id: "the_place_dining",
-      image: "restaurant/restaurant_dining.png",
-      alt: "Dining tables by the observatory window at The Place Dining"
-    }
   ]
 };
 
@@ -205,9 +196,9 @@ function renderEvents(events) {
     item.setAttribute("data-event-slot", String(event.slot));
 
     var gondola = createElement("img", "event_gondola");
-    gondola.src = ASSET_PATH + "event/cablecar_nbear.png";
+    gondola.src = ASSET_PATH + "Angolmi_cable.gif";
     gondola.alt = "";
-    gondola.width = 258;
+    gondola.width = "auto";
     gondola.height = 301;
     gondola.loading = "lazy";
     gondola.setAttribute("aria-hidden", "true");
@@ -230,6 +221,183 @@ function renderEvents(events) {
 
   list.textContent = "";
   list.appendChild(fragment);
+}
+
+function initEventPathMotion() {
+  var section = document.querySelector("#events_section");
+  var sticky = document.querySelector("[data-events-sticky]");
+  var curve = section ? section.querySelector(".events_curve") : null;
+  var list = section ? section.querySelector("[data-events-list]") : null;
+  var items = list ? Array.from(list.querySelectorAll(".event_item")) : [];
+  var viewButtons = section ? Array.from(section.querySelectorAll("[data-events-view]")) : [];
+
+  if (!section || !sticky || !curve || !list || items.length === 0) {
+    return;
+  }
+
+  var desktopQuery = window.matchMedia("(min-width: 1280px)");
+  var reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var pathElement = null;
+  var visibleStartLength = 0;
+  var visibleEndLength = 0;
+  var isRenderRequested = false;
+  var isCardView = false;
+
+  function renderCardEvents() {
+    section.classList.add("is_card_view");
+    list.style.removeProperty("--event_path_x");
+    list.style.removeProperty("--event_path_y");
+
+    items.forEach(function (item) {
+      item.classList.remove("is_active");
+      item.removeAttribute("aria-hidden");
+      item.inert = false;
+    });
+  }
+
+  function renderStaticEvents() {
+    section.classList.add("has_static_events");
+    list.style.removeProperty("--event_path_x");
+    list.style.removeProperty("--event_path_y");
+
+    items.forEach(function (item) {
+      item.classList.remove("is_active");
+      item.removeAttribute("aria-hidden");
+      item.inert = false;
+    });
+  }
+
+  function findVisiblePathRange() {
+    var totalLength = pathElement.getTotalLength();
+    var sampleCount = 800;
+    var firstVisibleLength = null;
+    var lastVisibleLength = null;
+
+    for (var index = 0; index <= sampleCount; index += 1) {
+      var length = totalLength * index / sampleCount;
+      var point = pathElement.getPointAtLength(length);
+      var isVisible = point.x >= 0 && point.x <= 1920 && point.y >= 0 && point.y <= 1045;
+
+      if (isVisible && firstVisibleLength === null) {
+        firstVisibleLength = length;
+      }
+
+      if (isVisible) {
+        lastVisibleLength = length;
+      }
+    }
+
+    visibleStartLength = 0;
+    visibleEndLength = lastVisibleLength === null ? totalLength : lastVisibleLength;
+  }
+
+  function renderEventPathMotion() {
+    isRenderRequested = false;
+
+    if (isCardView) {
+      renderCardEvents();
+      return;
+    }
+
+    if (!desktopQuery.matches || reducedMotionQuery.matches || !pathElement) {
+      renderStaticEvents();
+      return;
+    }
+
+    section.classList.remove("has_static_events");
+    var sectionRect = section.getBoundingClientRect();
+    var stickyRect = sticky.getBoundingClientRect();
+    var curveRect = curve.getBoundingClientRect();
+    var scrollTravel = Math.max(1, section.offsetHeight - sticky.offsetHeight);
+    var progress = Math.min(1, Math.max(0, -sectionRect.top / scrollTravel));
+    var pathLength = visibleEndLength - (visibleEndLength - visibleStartLength) * progress;
+    var point = pathElement.getPointAtLength(pathLength);
+    var pathX = curveRect.left - stickyRect.left + point.x * curveRect.width / 1920;
+    var pathY = curveRect.top - stickyRect.top + point.y * curveRect.height / 1045;
+    var pathPositionRatio = pathX / Math.max(1, stickyRect.width);
+    var activeIndex = pathPositionRatio > 0.697 ? 2 : pathPositionRatio > 0.394 ? 1 : 0;
+
+    list.style.setProperty("--event_path_x", pathX.toFixed(2) + "px");
+    list.style.setProperty("--event_path_y", pathY.toFixed(2) + "px");
+
+    items.forEach(function (item, index) {
+      var isActive = index === activeIndex;
+      item.classList.toggle("is_active", isActive);
+      item.setAttribute("aria-hidden", String(!isActive));
+      item.inert = !isActive;
+    });
+  }
+
+  function requestEventPathRender() {
+    if (isRenderRequested) {
+      return;
+    }
+
+    isRenderRequested = true;
+    window.requestAnimationFrame(renderEventPathMotion);
+  }
+
+  function setEventViewMode(viewMode) {
+    isCardView = viewMode === "cards";
+    section.classList.toggle("is_card_view", isCardView);
+    section.scrollIntoView({ block: "start" });
+
+    viewButtons.forEach(function (button) {
+      var isActive = button.getAttribute("data-events-view") === viewMode;
+      button.classList.toggle("is_active", isActive);
+      button.setAttribute("aria-pressed", String(isActive));
+    });
+
+    if (isCardView) {
+      renderCardEvents();
+      return;
+    }
+
+    requestEventPathRender();
+  }
+
+  viewButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      setEventViewMode(button.getAttribute("data-events-view"));
+    });
+  });
+
+  fetch(curve.src)
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error("Event path SVG could not be loaded.");
+      }
+
+      return response.text();
+    })
+    .then(function (svgText) {
+      var svgDocument = new DOMParser().parseFromString(svgText, "image/svg+xml");
+      var sourcePath = svgDocument.querySelector("path");
+
+      if (!sourcePath) {
+        renderStaticEvents();
+        return;
+      }
+
+      var geometry = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      pathElement = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      geometry.classList.add("events_path_geometry");
+      geometry.setAttribute("aria-hidden", "true");
+      pathElement.setAttribute("d", sourcePath.getAttribute("d"));
+      geometry.appendChild(pathElement);
+      section.appendChild(geometry);
+
+      findVisiblePathRange();
+      requestEventPathRender();
+    })
+    .catch(function () {
+      renderStaticEvents();
+    });
+
+  window.addEventListener("scroll", requestEventPathRender, { passive: true });
+  window.addEventListener("resize", requestEventPathRender);
+  desktopQuery.addEventListener("change", requestEventPathRender);
+  reducedMotionQuery.addEventListener("change", requestEventPathRender);
 }
 
 /* --------------------------------------------------------------------------
@@ -259,14 +427,16 @@ function renderCourses(courses) {
 
     item.appendChild(createMedia("course_card_media", course.image, course.imageAlt, 460, 203));
 
-    var button = createPendingButton("btn btn_green", "Learn more", "about " + course.title);
+    var link = createElement("a", "btn btn_green", "Learn more");
+    link.href = "./pages/visitor_guide.html#panel_recommended_courses";
+    link.appendChild(createElement("span", "visually_hidden", " about " + course.title));
     var icon = createElement("img", "btn_icon");
     icon.src = ASSET_PATH + "icon/arrow_right.png";
     icon.alt = "";
     icon.width = 19;
     icon.height = 19;
-    button.appendChild(icon);
-    item.appendChild(button);
+    link.appendChild(icon);
+    item.appendChild(link);
 
     slide.appendChild(item);
     fragment.appendChild(slide);
@@ -276,42 +446,57 @@ function renderCourses(courses) {
   list.appendChild(fragment);
 }
 
-function initCourseSectionScroll() {
+function initCourseScrollScene() {
   var section = document.querySelector("#course_section");
+  var stage = document.querySelector("[data-course-scroll-stage]");
+  var sticky = document.querySelector("[data-course-sticky]");
+  var scene = document.querySelector("[data-course-scene]");
   var list = document.querySelector("[data-course-list]");
 
-  if (!section || !list) {
+  if (!section || !stage || !sticky || !scene || !list) {
     return;
   }
 
-  function handleCourseWheel(event) {
-    if (event.deltaY === 0 || Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
-      return;
-    }
-
-    var deltaY = event.deltaY;
-    if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
-      deltaY *= 16;
-    } else if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) {
-      deltaY *= list.clientHeight;
-    }
-
-    var maxScrollTop = list.scrollHeight - list.clientHeight;
-    var isScrollingDown = deltaY > 0;
-    var canScrollDown = list.scrollTop < maxScrollTop - 1;
-    var canScrollUp = list.scrollTop > 1;
-
-    if ((isScrollingDown && !canScrollDown) || (!isScrollingDown && !canScrollUp)) {
-      event.preventDefault();
-      window.scrollBy({ top: deltaY, left: 0, behavior: "auto" });
-      return;
-    }
-
-    event.preventDefault();
-    list.scrollTop = Math.max(0, Math.min(maxScrollTop, list.scrollTop + deltaY));
+  var slides = list.querySelectorAll(".course_slide");
+  if (slides.length === 0 || isReducedMotion()) {
+    section.classList.add("is_reduced_motion");
+    return;
   }
 
-  section.addEventListener("wheel", handleCourseWheel, { passive: false });
+  var sceneHeight = 0;
+  var scrollTravel = 1;
+  var maxListOffset = 0;
+  var isFrameRequested = false;
+
+  function renderCourseScroll() {
+    var stageRect = stage.getBoundingClientRect();
+    var progress = Math.min(1, Math.max(0, -stageRect.top / scrollTravel));
+    list.style.transform = "translate3d(0, " + -progress * maxListOffset + "px, 0)";
+    isFrameRequested = false;
+  }
+
+  function requestCourseScrollRender() {
+    if (isFrameRequested) {
+      return;
+    }
+
+    isFrameRequested = true;
+    window.requestAnimationFrame(renderCourseScroll);
+  }
+
+  function updateCourseMeasurements() {
+    sceneHeight = scene.clientHeight;
+    section.style.setProperty("--course_scene_height", sceneHeight + "px");
+    var lastSlide = slides[slides.length - 1];
+    maxListOffset = Math.max(0, lastSlide.offsetTop);
+    stage.style.height = sticky.clientHeight + maxListOffset + "px";
+    scrollTravel = Math.max(1, maxListOffset);
+    requestCourseScrollRender();
+  }
+
+  window.addEventListener("scroll", requestCourseScrollRender, { passive: true });
+  window.addEventListener("resize", updateCourseMeasurements);
+  updateCourseMeasurements();
 }
 
 /* --------------------------------------------------------------------------
@@ -359,6 +544,41 @@ function renderGiftItems(items) {
 
   track.textContent = "";
   track.appendChild(fragment);
+}
+
+function initGiftTrackCursor() {
+  var track = document.querySelector("[data-gift-track]");
+  var cursor = document.querySelector("[data-gift-cursor]");
+
+  if (!track || !cursor) {
+    return;
+  }
+
+  function handleGiftPointerMove(event) {
+    cursor.style.transform = "translate3d(" + (event.clientX - 50) + "px, " + (event.clientY - 50) + "px, 0)";
+  }
+
+  function handleGiftPointerEnter(event) {
+    handleGiftPointerMove(event);
+    cursor.classList.add("is_visible");
+  }
+
+  function handleGiftPointerLeave() {
+    cursor.classList.remove("is_visible");
+  }
+
+  function handleGiftTrackClick(event) {
+    if (event.target.closest(".gift_card_link")) {
+      return;
+    }
+
+    window.location.href = "./pages/n_gift_shop.html";
+  }
+
+  track.addEventListener("pointerenter", handleGiftPointerEnter);
+  track.addEventListener("pointermove", handleGiftPointerMove);
+  track.addEventListener("pointerleave", handleGiftPointerLeave);
+  track.addEventListener("click", handleGiftTrackClick);
 }
 
 /* --------------------------------------------------------------------------
@@ -475,87 +695,19 @@ function renderCustomGoods(items) {
 }
 
 /* --------------------------------------------------------------------------
-   restaurant 슬라이더
-   -------------------------------------------------------------------------- */
-function initRestaurantSlider(photos) {
-  var slidesBox = document.querySelector("[data-restaurant-slides]");
-  var dotsBox = document.querySelector("[data-restaurant-dots]");
-  var prevButton = document.querySelector("[data-restaurant-prev]");
-  var nextButton = document.querySelector("[data-restaurant-next]");
-
-  if (!slidesBox || !dotsBox || !prevButton || !nextButton) {
-    return;
-  }
-
-  var slideCount = Array.isArray(photos) ? photos.length : 0;
-  if (slideCount === 0) {
-    return;
-  }
-
-  var currentIndex = 0;
-  var slides = slidesBox.querySelectorAll("[data-restaurant-slide]");
-
-  dotsBox.textContent = "";
-  for (var index = 0; index < slideCount; index += 1) {
-    var dot = createElement("button", "restaurant_dot");
-    dot.type = "button";
-    dot.setAttribute("data-restaurant-dot", String(index));
-    dot.appendChild(createElement("span", "visually_hidden", "Photo " + (index + 1)));
-    dotsBox.appendChild(dot);
-  }
-  var dots = dotsBox.querySelectorAll("[data-restaurant-dot]");
-
-  function renderSlideState() {
-    Array.prototype.forEach.call(slides, function (slide, index) {
-      slide.classList.toggle("is_active", index === currentIndex);
-    });
-    Array.prototype.forEach.call(dots, function (dot, index) {
-      dot.setAttribute("aria-current", String(index === currentIndex));
-    });
-    prevButton.disabled = currentIndex === 0;
-    nextButton.disabled = currentIndex === slideCount - 1;
-  }
-
-  function goToSlide(nextIndex) {
-    if (nextIndex < 0 || nextIndex > slideCount - 1) {
-      return;
-    }
-    currentIndex = nextIndex;
-    renderSlideState();
-  }
-
-  prevButton.addEventListener("click", function handlePrevClick() {
-    goToSlide(currentIndex - 1);
-  });
-
-  nextButton.addEventListener("click", function handleNextClick() {
-    goToSlide(currentIndex + 1);
-  });
-
-  dotsBox.addEventListener("click", function handleDotClick(event) {
-    var dot = event.target.closest("[data-restaurant-dot]");
-    if (!dot) {
-      return;
-    }
-    goToSlide(Number(dot.getAttribute("data-restaurant-dot")));
-  });
-
-  renderSlideState();
-}
-
-/* --------------------------------------------------------------------------
    init
    -------------------------------------------------------------------------- */
 function initMain() {
   renderEvents(mainPageData.events);
+  initEventPathMotion();
   renderCourses(mainPageData.courses);
   renderGiftItems(mainPageData.giftShopItems);
   renderTowerStacks(mainPageData.towerParts);
   renderCustomGoods(mainPageData.customGoodsItems);
 
-  initCourseSectionScroll();
+  initCourseScrollScene();
+  initGiftTrackCursor();
   initTowerReveal();
-  initRestaurantSlider(mainPageData.restaurantPhotos);
 }
 
 if (document.readyState === "loading") {

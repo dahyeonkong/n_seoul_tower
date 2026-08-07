@@ -6,7 +6,6 @@
 
 var LANGUAGE_STORAGE_KEY = "n_seoul_tower_language";
 var LANGUAGE_LABELS = { en: "English", ko: "Korean", ja: "Japanese", zh: "Chinese" };
-var PENDING_LINK_MESSAGE = "연결할 페이지가 아직 확정되지 않았습니다.";
 
 /* --------------------------------------------------------------------------
    공통 유틸
@@ -22,6 +21,190 @@ function getFocusableElements(container) {
 
 function isReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+/* --------------------------------------------------------------------------
+   서브페이지 공통 헤더
+   마크업은 이 템플릿 한 곳에서 관리하고 현재 URL에 맞춰 활성 링크만 설정합니다.
+   -------------------------------------------------------------------------- */
+function getSubHeaderMarkup() {
+  return `
+<header class="site_header site_header_sub">
+      <div class="page_container site_header_inner">
+        <a class="brand_logo" href="../index.html" aria-label="N Seoul Tower home">
+          <img src="../assets/nst_logo_defalut.svg" alt="" width="43" height="43">
+        </a>
+
+        <!-- Desktop subpage navigation -->
+        <nav class="site_gnb" aria-label="Main menu">
+          <ul class="site_gnb_list">
+            <li class="site_gnb_group">
+              <a class="site_gnb_title" href="./brand_story.html">tower story</a>
+              <ul class="site_gnb_lnb">
+                <li><a class="site_gnb_link" href="./brand_story.html">brand story</a></li>
+                <li><button class="site_gnb_link" type="button" data-pending-link aria-disabled="true">history</button>
+                </li>
+              </ul>
+            </li>
+            <li class="site_gnb_group">
+              <a class="site_gnb_title" href="./restaurant_n_burger.html">explore</a>
+              <ul class="site_gnb_lnb">
+                <li><a class="site_gnb_link" href="./restaurant_n_burger.html">restaurants</a></li>
+                <li><a class="site_gnb_link" href="./n_gift_shop.html">N gift shop</a></li>
+                <li><button class="site_gnb_link" type="button" data-pending-link
+                    aria-disabled="true">amenities</button></li>
+                <li><a class="site_gnb_link" href="./floor_guide.html">floor guide</a></li>
+              </ul>
+            </li>
+            <li class="site_gnb_group">
+              <a class="site_gnb_title" href="./visitor_guide.html">visit</a>
+              <ul class="site_gnb_lnb">
+                <li><button class="site_gnb_link" type="button" data-pending-link aria-disabled="true">Hours &amp;
+                    Tickets</button></li>
+                <li><a class="site_gnb_link" href="./visitor_guide.html">visitor guide</a></li>
+              </ul>
+            </li>
+            <li class="site_gnb_group txt_gray">
+              <p class="site_gnb_title">events</p>
+            </li>
+            <li class="site_gnb_group txt_gray">
+              <p class="site_gnb_title">support</p>
+              <ul class="site_gnb_lnb">
+                <li><button class="site_gnb_link" type="button" data-pending-link aria-disabled="true">notice &amp;
+                    news</button></li>
+                <li><button class="site_gnb_link" type="button" data-pending-link aria-disabled="true">FAQ / contact
+                    us</button></li>
+              </ul>
+            </li>
+          </ul>
+
+          <a class="book_now_btn" href="https://naver.me/x0UEXKKZ" target="_blank" rel="noopener noreferrer">Book Now</a>
+
+          <div class="site_gnb_language">
+            <button class="site_gnb_language_button" type="button" data-language-button aria-expanded="false"
+              aria-controls="header_language_menu">
+              <span data-language-current>English</span>
+              <img src="../assets/icon/icon_chevron_down_dark.svg" alt="" width="20" height="20">
+              <span class="visually_hidden">Change language</span>
+            </button>
+            <ul class="site_gnb_language_menu" id="header_language_menu" data-language-menu hidden>
+              <li><button class="site_gnb_language_option" type="button" data-language="en"
+                  aria-current="true">English</button></li>
+              <li><button class="site_gnb_language_option" type="button" data-language="ko">Korean</button></li>
+              <li><button class="site_gnb_language_option" type="button" data-language="ja">Japanese</button></li>
+              <li><button class="site_gnb_language_option" type="button" data-language="zh">Chinese</button></li>
+            </ul>
+          </div>
+        </nav>
+        <button class="menu_toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="global_menu">
+          <svg class="menu_toggle_icon" viewBox="0 0 40 40" fill="currentColor" aria-hidden="true" focusable="false">
+            <path class="menu_toggle_bar menu_toggle_bar_top"
+              d="M13.2201 8.75786C13.6122 8.73215 14.1638 8.74854 14.5647 8.74873L16.9757 8.74952L24.5234 8.74926L31.5781 8.74912L33.8633 8.74911C34.2621 8.74909 34.6754 8.74368 35.0736 8.75739C35.3029 8.76528 35.5551 8.86073 35.7406 8.99694C36.01 9.19463 36.1879 9.49307 36.2334 9.82411C36.3334 10.5386 35.8289 11.1569 35.1219 11.2444C34.7602 11.2726 34.2127 11.257 33.8383 11.2568L31.6121 11.2562L24.559 11.2562L17.0156 11.2564L14.5868 11.2574C14.1572 11.2576 13.7295 11.266 13.2985 11.2496C12.2629 11.2101 11.721 10.0355 12.3559 9.2183C12.5929 8.91332 12.8454 8.81067 13.2201 8.75786Z" />
+            <path class="menu_toggle_bar menu_toggle_bar_middle"
+              d="M4.90152 18.7566C5.49424 18.73 6.21084 18.749 6.81463 18.749L10.3771 18.7491L21.2264 18.7491H30.4393L33.4262 18.7486C33.8725 18.7486 34.3191 18.7468 34.7652 18.7493C35.1607 18.7515 35.4463 18.768 35.7652 19.0166C36.0264 19.2187 36.1963 19.5166 36.2373 19.8443C36.2785 20.1705 36.1883 20.4994 35.9865 20.7588C35.7564 21.0515 35.474 21.1994 35.1086 21.2465C34.5719 21.275 33.873 21.2566 33.3254 21.2566L30.1414 21.2568L20.3223 21.2564H10.1164L6.78197 21.2572C6.1999 21.2574 5.61889 21.2572 5.03681 21.2521C4.40519 21.2469 3.85435 20.8263 3.7642 20.1877C3.71644 19.8447 3.80783 19.497 4.01799 19.2218C4.25316 18.9169 4.53303 18.8044 4.90152 18.7566Z" />
+            <path class="menu_toggle_bar menu_toggle_bar_bottom"
+              d="M19.9016 28.7567C20.8455 28.7163 22.0254 28.7493 22.9889 28.7493L28.8801 28.7491H33.0131L34.3523 28.7493C34.8449 28.7497 35.3227 28.6895 35.7408 28.9969C36.0098 29.1948 36.1873 29.493 36.233 29.8237C36.335 30.5538 35.8231 31.1549 35.1086 31.2465C34.7658 31.2649 34.3643 31.2565 34.018 31.2565L32.2586 31.2567L26.791 31.2565L22.2465 31.2569L20.8231 31.2571C20.7117 31.2571 20.5988 31.2588 20.4885 31.2577C20.0619 31.253 19.6234 31.2895 19.2668 31.0106C18.9881 30.7926 18.8093 30.5295 18.7622 30.1764C18.7166 29.8344 18.8107 29.4887 19.0231 29.217C19.2588 28.9129 19.5313 28.8063 19.9016 28.7567Z" />
+          </svg>
+          <span class="visually_hidden" data-menu-toggle-label>Open menu</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Mobile and tablet global menu -->
+    <div class="global_menu" id="global_menu" data-menu-panel hidden>
+      <div class="page_container global_menu_head">
+        <div class="language_selector">
+          <button class="language_button" type="button" data-language-button aria-expanded="false"
+            aria-controls="language_menu">
+            <span data-language-current>English</span>
+            <img src="../assets/icon/icon_chevron_down.svg" alt="" width="20" height="20">
+            <span class="visually_hidden">Change language</span>
+          </button>
+          <ul class="language_menu" id="language_menu" data-language-menu hidden>
+            <li><button class="language_option" type="button" data-language="en" aria-current="true">English</button>
+            </li>
+            <li><button class="language_option" type="button" data-language="ko">Korean</button></li>
+            <li><button class="language_option" type="button" data-language="ja">Japanese</button></li>
+            <li><button class="language_option" type="button" data-language="zh">Chinese</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="page_container global_menu_body">
+        <div class="menu_brand">
+          <div class="menu_brand_logo">
+            <img src="../assets/nst_logo_gray.svg" alt="" width="219" height="136">
+            <p class="menu_brand_name"><span>N</span> SEOUL TOWER</p>
+          </div>
+          <a class="book_btn" href="https://naver.me/x0UEXKKZ" target="_blank" rel="noopener noreferrer">
+            <img src="../assets/icon/icon_ticket.svg" alt="" width="24" height="24">
+            buy ticket
+          </a>
+        </div>
+
+        <nav class="gnb" aria-label="Main menu">
+          <div class="gnb_group">
+            <p class="gnb_title">tower story</p>
+            <ul class="gnb_lnb">
+              <li><a class="gnb_link" href="./brand_story.html">brand story</a></li>
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">history</button></li>
+            </ul>
+          </div>
+          <div class="gnb_group">
+            <p class="gnb_title">explore</p>
+            <ul class="gnb_lnb">
+              <li><a class="gnb_link" href="./restaurant_n_burger.html">restaurants</a></li>
+              <li><a class="gnb_link" href="./n_gift_shop.html">N gift shop</a></li>
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">amenities</button></li>
+              <li><a class="gnb_link" href="./floor_guide.html">floor guide</a></li>
+            </ul>
+          </div>
+          <div class="gnb_group">
+            <p class="gnb_title">visit</p>
+            <ul class="gnb_lnb">
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">Hours &amp;
+                  Tickets</button></li>
+              <li><a class="gnb_link" href="./visitor_guide.html">visitor guide</a></li>
+            </ul>
+          </div>
+          <div class="gnb_group">
+            <p class="gnb_title">events</p>
+          </div>
+          <div class="gnb_group">
+            <p class="gnb_title">support</p>
+            <ul class="gnb_lnb">
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">notice &amp;
+                  news</button></li>
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">FAQ / contact
+                  us</button></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </div>
+`;
+}
+
+function renderSubHeader() {
+  var mount = document.querySelector("[data-sub-header]");
+  if (!mount) {
+    return;
+  }
+
+  mount.insertAdjacentHTML("beforebegin", getSubHeaderMarkup());
+
+  var currentPath = window.location.pathname;
+  Array.prototype.forEach.call(
+    document.querySelectorAll(".site_gnb_link[href], .gnb_link[href]"),
+    function (link) {
+      var targetPath = new URL(link.href, window.location.href).pathname;
+      if (targetPath === currentPath) {
+        link.setAttribute("aria-current", "page");
+      }
+    }
+  );
+
+  mount.remove();
 }
 
 /* --------------------------------------------------------------------------
@@ -204,36 +387,6 @@ function initLanguageSelectors() {
     if (event.key === "Escape") {
       closeAllLanguageMenus();
     }
-  });
-}
-
-/* --------------------------------------------------------------------------
-   확정되지 않은 링크 안내 (PRD 12.5 / AGENTS 10.6)
-   -------------------------------------------------------------------------- */
-function initPendingLinks() {
-  var statusBox = document.querySelector("[data-link-status]");
-  var hideTimer = null;
-
-  function showPendingMessage() {
-    if (!statusBox) {
-      return;
-    }
-    statusBox.textContent = PENDING_LINK_MESSAGE;
-    statusBox.classList.add("is_open");
-    window.clearTimeout(hideTimer);
-    hideTimer = window.setTimeout(function () {
-      statusBox.classList.remove("is_open");
-      statusBox.textContent = "";
-    }, 2600);
-  }
-
-  document.addEventListener("click", function handlePendingLinkClick(event) {
-    var target = event.target.closest("[data-pending-link]");
-    if (!target) {
-      return;
-    }
-    event.preventDefault();
-    showPendingMessage();
   });
 }
 
@@ -493,6 +646,122 @@ var QUICK_RING_STEP = 10;
 /* 첫 글자가 9시 방향에서 시작해 시계 방향으로 돕니다 (987:6688 이 -90도). */
 var QUICK_RING_START = -90;
 
+/* 페이지별로 달라지는 섹션 링크만 이 설정에서 관리합니다. */
+var QUICK_MENU_SECTIONS_BY_PAGE = {
+  "index.html": [
+    { label: "main", href: "#hero_section" },
+    { label: "events", href: "#events_section" },
+    { label: "course", href: "#course_section" },
+    { label: "n pass", href: "#pass_section" },
+    { label: "n gift shop", href: "#gift_section" },
+    { label: "custom goods", href: "#goods_section" }
+  ],
+  "floor_guide.html": [
+    { label: "F5", href: "#floor_f5" },
+    { label: "T1", href: "#floor_t1" },
+    { label: "T2", href: "#floor_t2" },
+    { label: "T3", href: "#floor_t3" },
+    { label: "T4", href: "#floor_t4" },
+    { label: "T5", href: "#floor_t5" },
+    { label: "T7", href: "#floor_t7" }
+  ],
+  "n_gift_shop.html": [],
+  "restaurant_n_burger.html": [
+    { label: "about", href: "#burger_info" },
+    { label: "gallery", href: "#burger_gallery" },
+    { label: "best menu", href: "#burger_best" },
+    { label: "full menu", href: "#burger_menu" }
+  ],
+  "visitor_guide.html": [
+    { label: "by bus", href: "#by_bus" },
+    { label: "by cable car", href: "#by_cable_car" },
+    { label: "city tour bus", href: "#by_city_tour_bus" },
+    { label: "by cars", href: "#by_cars" },
+    { label: "recommended courses", href: "#panel_recommended_courses" }
+  ]
+};
+
+function getCurrentPageFileName() {
+  var fileName = window.location.pathname.split("/").pop();
+  return fileName ? fileName.toLowerCase() : "index.html";
+}
+
+function getCommonAssetPath() {
+  var scripts = Array.prototype.slice.call(document.scripts);
+  var commonScript = scripts.filter(function (script) {
+    return /\/js\/common\.js(?:\?|$)/.test(script.src);
+  })[0];
+
+  if (commonScript) {
+    return new URL("../assets/", commonScript.src).href;
+  }
+
+  return window.location.pathname.indexOf("/pages/") !== -1 ? "../assets/" : "./assets/";
+}
+
+function getQuickSectionMenuMarkup(sections, assetPath) {
+  if (sections.length === 0) {
+    return "";
+  }
+
+  var links = sections
+    .map(function (section) {
+      return '<li><a class="quick_section_link" href="' + section.href + '">' + section.label + "</a></li>";
+    })
+    .join("");
+
+  return (
+    '<div class="quick_section">' +
+    '<button class="quick_action" type="button" data-quick-section-button aria-expanded="false" ' +
+    'aria-controls="quick_section_menu">' +
+    '<img src="' + assetPath + 'icon/quick/sections.svg" alt="" width="36" height="36">' +
+    '<span class="visually_hidden">Move to a section</span>' +
+    "</button>" +
+    '<nav class="quick_section_menu" id="quick_section_menu" data-quick-section-menu ' +
+    'aria-label="Sections on this page" hidden>' +
+    '<p class="quick_section_title">quick menu</p>' +
+    '<ul class="quick_section_list">' + links + "</ul>" +
+    "</nav>" +
+    "</div>"
+  );
+}
+
+function getQuickMenuMarkup(sections, assetPath) {
+  return (
+    '<div class="quick_menu" data-quick-menu>' +
+    '<div class="quick_menu_actions" id="quick_menu_actions" data-quick-actions hidden>' +
+    '<button class="quick_action" type="button" data-pending-link aria-disabled="true">' +
+    '<img src="' + assetPath + 'icon/quick/chat.svg" alt="" width="36" height="36">' +
+    '<span class="visually_hidden">Search</span>' +
+    "</button>" +
+    getQuickSectionMenuMarkup(sections, assetPath) +
+    '<a class="quick_action" href="#top">' +
+    '<img src="' + assetPath + 'icon/quick/arrow_up.svg" alt="" width="36" height="36">' +
+    '<span class="visually_hidden">Back to top</span>' +
+    "</a>" +
+    "</div>" +
+    '<button class="quick_toggle" type="button" data-quick-toggle aria-expanded="false" ' +
+    'aria-controls="quick_menu_actions">' +
+    '<img class="quick_toggle_image" src="' + assetPath + 'icon/chatbot.png" alt="" width="96" height="96">' +
+    '<span class="quick_toggle_ring" data-quick-ring aria-hidden="true"></span>' +
+    '<span class="visually_hidden" data-quick-toggle-label>Open quick menu</span>' +
+    "</button>" +
+    "</div>"
+  );
+}
+
+function renderCommonQuickMenu() {
+  var mount = document.querySelector("[data-quick-menu-mount]");
+  if (!mount) {
+    return;
+  }
+
+  var pageName = getCurrentPageFileName();
+  var sections = QUICK_MENU_SECTIONS_BY_PAGE[pageName] || [];
+  mount.insertAdjacentHTML("beforebegin", getQuickMenuMarkup(sections, getCommonAssetPath()));
+  mount.remove();
+}
+
 function renderQuickMenuRing(ring) {
   var text = "";
   var fragment = document.createDocumentFragment();
@@ -518,11 +787,13 @@ function renderQuickMenuRing(ring) {
   ring.appendChild(fragment);
 }
 
-/* 어두운 영역 위에서는 CLICK ME 글자가 묻히므로 밝은 색으로 바꿉니다.
+/* 공통 푸터와 data-quick-dark 영역 위에서는 CLICK ME 글자가 묻히므로 밝은 색으로 바꿉니다.
    스크롤마다 위치를 재지 않도록, 관찰 영역을 토글 버튼이 놓인 가로 띠로 좁힌
    IntersectionObserver 로 겹침을 판정합니다 (AGENTS 7.2). */
 function initQuickMenuContrast(quickMenu, toggleButton) {
-  var darkAreas = Array.prototype.slice.call(document.querySelectorAll("[data-quick-dark]"));
+  var darkAreas = Array.prototype.slice.call(
+    document.querySelectorAll(".site_footer, [data-quick-dark]")
+  );
 
   if (darkAreas.length === 0 || !("IntersectionObserver" in window)) {
     return;
@@ -591,8 +862,10 @@ function initQuickMenu() {
   var actions = quickMenu.querySelector("[data-quick-actions]");
   var toggleLabel = quickMenu.querySelector("[data-quick-toggle-label]");
   var ring = quickMenu.querySelector("[data-quick-ring]");
+  var topAction = actions ? actions.querySelector('.quick_action[href="#top"]') : null;
   var sectionButton = quickMenu.querySelector("[data-quick-section-button]");
   var sectionMenu = quickMenu.querySelector("[data-quick-section-menu]");
+  var sectionItems = [];
 
   if (!toggleButton || !actions) {
     return;
@@ -600,6 +873,42 @@ function initQuickMenu() {
 
   var isQuickMenuOpen = false;
   var isSectionMenuOpen = false;
+  var isTopActionVisible = false;
+  var isTopActionFrameRequested = false;
+  var isQuickSectionFrameRequested = false;
+
+  /* 맨 위로 이동 버튼은 전체 스크롤 거리의 20%를 넘긴 뒤 노출합니다. */
+  if (topAction) {
+    topAction.classList.add("quick_top_action");
+    topAction.hidden = true;
+    quickMenu.insertBefore(topAction, toggleButton);
+
+    function renderTopActionVisibility() {
+      var maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      var scrollProgress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+      var shouldShowTopAction = scrollProgress >= 0.2;
+
+      if (shouldShowTopAction !== isTopActionVisible) {
+        isTopActionVisible = shouldShowTopAction;
+        topAction.hidden = !isTopActionVisible;
+      }
+
+      isTopActionFrameRequested = false;
+    }
+
+    function requestTopActionRender() {
+      if (isTopActionFrameRequested) {
+        return;
+      }
+      isTopActionFrameRequested = true;
+      window.requestAnimationFrame(renderTopActionVisibility);
+    }
+
+    renderTopActionVisibility();
+    window.addEventListener("scroll", requestTopActionRender, { passive: true });
+    window.addEventListener("resize", requestTopActionRender);
+    window.addEventListener("load", requestTopActionRender);
+  }
 
   if (ring) {
     renderQuickMenuRing(ring);
@@ -611,6 +920,68 @@ function initQuickMenu() {
     sectionButton.parentElement.remove();
     sectionButton = null;
     sectionMenu = null;
+  }
+
+  function renderQuickSectionCurrent() {
+    var markerPosition = window.scrollY + window.innerHeight * 0.35;
+    var visibleItems = sectionItems.filter(function (item) {
+      return item.target.getClientRects().length > 0 && !item.target.closest("[hidden]");
+    });
+    var activeItem = visibleItems.length > 0 ? visibleItems[0] : null;
+
+    visibleItems.forEach(function (item) {
+      var targetTop = item.target.getBoundingClientRect().top + window.scrollY;
+      if (targetTop <= markerPosition) {
+        activeItem = item;
+      }
+    });
+
+    sectionItems.forEach(function (item) {
+      var isCurrent = item === activeItem;
+      item.link.classList.toggle("is_active", isCurrent);
+      if (isCurrent) {
+        item.link.setAttribute("aria-current", "location");
+      } else {
+        item.link.removeAttribute("aria-current");
+      }
+    });
+
+    isQuickSectionFrameRequested = false;
+  }
+
+  function requestQuickSectionRender() {
+    if (isQuickSectionFrameRequested) {
+      return;
+    }
+    isQuickSectionFrameRequested = true;
+    window.requestAnimationFrame(renderQuickSectionCurrent);
+  }
+
+  if (sectionMenu) {
+    sectionItems = Array.prototype.map
+      .call(sectionMenu.querySelectorAll('.quick_section_link[href^="#"]'), function (link) {
+        return {
+          link: link,
+          target: document.getElementById(link.hash.slice(1))
+        };
+      })
+      .filter(function (item) {
+        return item.target;
+      });
+
+    if (sectionItems.length > 0) {
+      renderQuickSectionCurrent();
+      window.addEventListener("scroll", requestQuickSectionRender, { passive: true });
+      window.addEventListener("resize", requestQuickSectionRender);
+      window.addEventListener("load", requestQuickSectionRender);
+
+      document.addEventListener("click", function handleGuideTabQuickSection(event) {
+        if (event.target.closest("[data-guide-tab]")) {
+          requestQuickSectionRender();
+        }
+      });
+      window.addEventListener("hashchange", requestQuickSectionRender);
+    }
   }
 
   function renderSectionMenuState() {
@@ -704,7 +1075,8 @@ function initQuickMenu() {
    init
    -------------------------------------------------------------------------- */
 function initCommon() {
-  initPendingLinks();
+  renderSubHeader();
+  renderCommonQuickMenu();
   initImageFallback();
   initLanguageSelectors();
   initStickyHeader();

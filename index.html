@@ -122,22 +122,22 @@
             </a>
             <p class="menu_brand_name"><span>N</span> SEOUL TOWER</p>
           </div>
-          <button class="book_btn" type="button" data-pending-link aria-disabled="true">
+          <a class="book_btn" href="https://naver.me/x0UEXKKZ" target="_blank" rel="noopener noreferrer">
             <img src="./assets/icon/icon_ticket.svg" alt="" width="24" height="24">
             buy ticket
-          </button>
+          </a>
         </div>
 
         <nav class="gnb" aria-label="Main menu">
           <div class="gnb_group">
-            <p class="gnb_title">tower story</p>
+            <a class="gnb_title" href="./pages/brand_story.html">tower story</a>
             <ul class="gnb_lnb">
               <li><a class="gnb_link" href="./pages/brand_story.html">brand story</a></li>
               <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">history</button></li>
             </ul>
           </div>
           <div class="gnb_group">
-            <p class="gnb_title">explore</p>
+            <a class="gnb_title" href="./pages/restaurant_n_burger.html">explore</a>
             <ul class="gnb_lnb">
               <li><a class="gnb_link" href="./pages/restaurant_n_burger.html">restaurants</a></li>
               <li><a class="gnb_link" href="./pages/n_gift_shop.html">N gift shop</a></li>
@@ -146,17 +146,17 @@
             </ul>
           </div>
           <div class="gnb_group">
-            <p class="gnb_title">visit</p>
+            <a class="gnb_title" href="./pages/visitor_guide.html">visit</a>
             <ul class="gnb_lnb">
               <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">Hours &amp; Tickets</button></li>
               <li><a class="gnb_link" href="./pages/visitor_guide.html">visitor guide</a></li>
             </ul>
           </div>
           <div class="gnb_group">
-            <p class="gnb_title">events</p>
+            <p class="gnb_title txt_gray">events</p>
           </div>
           <div class="gnb_group">
-            <p class="gnb_title">support</p>
+            <p class="gnb_title txt_gray">support</p>
             <ul class="gnb_lnb">
               <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">notice &amp; news</button></li>
               <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">FAQ / contact us</button></li>
@@ -191,7 +191,7 @@
                 <p>Sunny</p>
                 <p>Sunset Time 07:25 PM</p>
               </div>
-              <img class="hero_weather_icon" src="./assets/icon/weather/weather_cloudsun.png" alt="Sunny with some clouds" width="96" height="60">
+              <img class="hero_weather_icon" src="./assets/icon/weather/sunny.svg" alt="Sunny with some clouds" width="96" height="60">
             </div>
             <div class="hero_info_row">
               <p class="hero_info_value">45min</p>
@@ -209,7 +209,7 @@
             <div class="hero_info_row">
               <p class="hero_info_label">Ticket Price</p>
               <p class="hero_info_value">29,000KRW</p>
-              <button class="btn_stroke" type="button" data-pending-link aria-disabled="true">BOOKING</button>
+              <a class="btn_stroke" href="https://naver.me/x0UEXKKZ" target="_blank" rel="noopener noreferrer">BOOKING</a>
             </div>
             <div class="hero_info_row">
               <p class="hero_info_label">Visiting Hours</p>
@@ -221,45 +221,49 @@
 
       <!-- ===================== 2. events ===================== -->
       <section class="events_section" id="events_section" aria-labelledby="events_title">
-        <img class="events_curve" src="./assets/event/events_curve.svg" alt="" aria-hidden="true" width="2549" height="1241" loading="lazy">
+        <div class="events_sticky" data-events-sticky>
+          <img class="events_curve" src="./assets/event_path.svg" alt="" aria-hidden="true" width="1920" height="1045" loading="lazy">
 
-        <div class="page_container events_head">
-          <h2 class="section_title" id="events_title">Events</h2>
+          <div class="page_container events_head">
+            <h2 class="section_title" id="events_title">Events</h2>
+            <div class="events_view_toggle" role="group" aria-label="Choose events view">
+              <button class="events_view_button is_active" type="button" data-events-view="motion" aria-pressed="true" aria-controls="events_list">Interactive View</button>
+              <button class="events_view_button" type="button" data-events-view="cards" aria-pressed="false" aria-controls="events_list">Card View</button>
+            </div>
+          </div>
+
+          <ul class="events_list" id="events_list" data-events-list>
+            <!-- renderEvents() -->
+          </ul>
         </div>
-
-        <ul class="events_list" data-events-list>
-          <!-- renderEvents() -->
-        </ul>
       </section>
 
       <!-- ===================== 3. recommended course ===================== -->
       <section class="course_section" id="course_section" aria-labelledby="course_title">
-        <div class="page_container section_head course_head">
-          <p class="section_head_label">Curated for Every Journey.</p>
-          <h2 class="section_title" id="course_title">Recommended Course</h2>
-        </div>
+        <div class="course_scroll_stage" data-course-scroll-stage>
+          <div class="course_sticky" data-course-sticky>
+            <div class="page_container section_head course_head">
+              <p class="section_head_label">Curated for Every Journey.</p>
+              <h2 class="section_title" id="course_title">Recommended Course</h2>
+            </div>
 
-        <div class="course_scene">
-          <img class="course_scene_bg" src="./assets/guide_course/walk_bg.png" alt="" aria-hidden="true" width="2010" height="711" loading="lazy">
-          <iframe
-            class="course_scene_char"
-            src="./n_seoul_mascot_3d/embed.html"
-            title="제자리에서 걷는 N서울타워 3D 마스코트"
-            width="262"
-            height="283"
-            loading="lazy"
-            tabindex="-1"
-            aria-hidden="true"
-          ></iframe>
-          <ul
-            class="course_list"
-            data-course-list
-            tabindex="0"
-            role="region"
-            aria-label="Recommended courses, scrollable list"
-          >
-            <!-- renderCourses() -->
-          </ul>
+            <div class="course_scene" data-course-scene>
+              <img class="course_scene_bg" src="./assets/guide_course/walk_bg.png" alt="" aria-hidden="true" width="2010" height="711" loading="lazy">
+              <iframe
+                class="course_scene_char"
+                src="./n_seoul_mascot_3d/embed.html"
+                title="제자리에서 걷는 N서울타워 3D 마스코트"
+                width="262"
+                height="283"
+                loading="lazy"
+                tabindex="-1"
+                aria-hidden="true"
+              ></iframe>
+              <ul class="course_list" data-course-list>
+                <!-- renderCourses() -->
+              </ul>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -280,58 +284,82 @@
                   <p>Spend less time waiting and more time enjoying Seoul's breathtaking views.</p>
                 </div>
               </div>
-              <button class="btn btn_yellow" type="button" data-pending-link aria-disabled="true">BOOKING</button>
+              <a class="btn btn_yellow" href="https://naver.me/x0UEXKKZ" target="_blank" rel="noopener noreferrer">BOOKING</a>
             </div>
           </div>
         </div>
       </section>
 
       <!-- ===================== 5. restaurant ===================== -->
-      <section class="restaurant_section" data-quick-dark id="restaurant_section" aria-labelledby="restaurant_title">
-        <img class="restaurant_bg" src="./assets/restaurant/restaurant_bg.png" alt="" aria-hidden="true" width="3168" height="1344" loading="lazy">
-
+      <section class="restaurant_section" id="restaurant_section" aria-labelledby="restaurant_title">
         <div class="page_container restaurant_inner">
-          <div class="restaurant_texts">
-            <div>
-              <p class="restaurant_enjoy">ENJOY</p>
-              <div class="restaurant_body">
-                <p>A casual Italian restaurant filled</p>
-                <p>with youth and romance.</p>
-              </div>
-            </div>
-            <button class="restaurant_more" type="button" data-pending-link aria-disabled="true">View More +</button>
+          <div class="restaurant_head">
+            <p class="restaurant_kicker">From N Seoul Tower's signature dishes to romantic dining!</p>
+            <h2 class="section_title" id="restaurant_title">Restaurant</h2>
           </div>
 
-          <div class="restaurant_center">
-            <div class="restaurant_head">
-              <p class="restaurant_kicker">Restaurant</p>
-              <h2 class="restaurant_title" id="restaurant_title"><span>THE PLACE</span> <span>DINING</span></h2>
-            </div>
-
-            <div class="restaurant_slides" data-restaurant-slides>
-              <div class="restaurant_slide is_active" data-restaurant-slide>
-                <img src="./assets/restaurant/restaurant_dining.png" alt="Dining tables by the observatory window at The Place Dining" width="396" height="168" loading="lazy">
+          <div class="restaurant_list">
+            <div class="restaurant_stack_layer">
+            <article class="restaurant_item restaurant_stack_card restaurant_stack_card_1">
+              <div class="restaurant_item_inner">
+                <div class="restaurant_texts">
+                  <h3 class="restaurant_name">N GRILL</h3>
+                  <div class="restaurant_info">
+                    <div class="restaurant_body">
+                      <p>A French restaurant located at the highest point of N Seoul Tower.</p>
+                      <p>A luxurious 360-degree rotating French fine-dining restaurant.</p>
+                    </div>
+                    <button class="restaurant_more" type="button" data-pending-link aria-disabled="true">View more</button>
+                  </div>
+                </div>
+                <img class="restaurant_image" src="./assets/main_restaurant/res_1.png" alt="Night dining table overlooking Seoul at N Grill" width="1920" height="1080" loading="lazy">
               </div>
-            </div>
+            </article>
 
-            <div class="restaurant_controls">
-              <button class="restaurant_nav restaurant_nav_prev" type="button" data-restaurant-prev>
-                <img src="./assets/icon/icon_arrow_right.svg" alt="" width="24" height="24">
-                <span class="visually_hidden">Previous photo</span>
-              </button>
-              <div class="restaurant_dots" data-restaurant-dots role="tablist" aria-label="Restaurant photos"></div>
-              <button class="restaurant_nav" type="button" data-restaurant-next>
-                <img src="./assets/icon/icon_arrow_right.svg" alt="" width="24" height="24">
-                <span class="visually_hidden">Next photo</span>
-              </button>
-            </div>
-          </div>
+            <div class="restaurant_stack_layer">
+            <article class="restaurant_item restaurant_stack_card restaurant_stack_card_2">
+              <div class="restaurant_item_inner">
+                <div class="restaurant_texts">
+                  <h3 class="restaurant_name">N Burger</h3>
+                  <div class="restaurant_info">
+                    <div class="restaurant_body">
+                      <p>Perched atop Namsan, Seoul’s premier spot for artisanal burgers.</p>
+                      <p>A casual American-style burger and craft beer joint.</p>
+                    </div>
+                    <button class="restaurant_more" type="button" data-pending-link aria-disabled="true">View more</button>
+                  </div>
+                </div>
+                <img class="restaurant_image" src="./assets/main_restaurant/res_2.png" alt="N Burger Seoul bulgogi burger" width="396" height="683" loading="lazy">
+              </div>
+            </article>
 
-          <div class="restaurant_note">
-            <p>Take in the beautiful greenery of Namsan</p>
-            <p>and sweeping views of Seoul while</p>
-            <p>comfortably digging into rich, authentic,</p>
-            <p>and light homemade-style Italian meals</p>
+            <div class="restaurant_stack_layer">
+            <article class="restaurant_item restaurant_stack_card restaurant_stack_card_3">
+              <div class="restaurant_item_inner">
+                <div class="restaurant_texts">
+                  <h3 class="restaurant_name">Durumi Bunsik</h3>
+                  <div class="restaurant_info">
+                    <div class="restaurant_body">
+                      <p>You can enjoy a wide variety of delicious Korean street food.</p>
+                      <p>This is a Korean restaurant specializing in popular street foods such as tteokbokki.</p>
+                    </div>
+                    <button class="restaurant_more" type="button" data-pending-link aria-disabled="true">View more</button>
+                  </div>
+                </div>
+                <img class="restaurant_image" src="./assets/main_restaurant/res_3.png" alt="Korean street food served at Durumi Bunsik" width="1640" height="1009" loading="lazy">
+              </div>
+            </article>
+
+            <div class="restaurant_stack_layer">
+            <div class="restaurant_all restaurant_stack_card restaurant_stack_card_4">
+              <h3 class="restaurant_all_title">Would you like to try more restaurants?</h3>
+              <a class="restaurant_more" href="./pages/restaurant_n_burger.html">View All Restaurants</a>
+            </div>
+            <div class="restaurant_stack_end" aria-hidden="true"></div>
+            </div>
+            </div>
+            </div>
+            </div>
           </div>
         </div>
       </section>
@@ -356,6 +384,11 @@
           >
             <!-- renderGiftItems() -->
           </ul>
+          <span class="gift_cursor" data-gift-cursor aria-hidden="true">
+            <svg viewBox="0 0 64 40" aria-hidden="true" focusable="false">
+              <path d="M10 20H50M37 7L51 20L37 33" />
+            </svg>
+          </span>
           <!-- <button class="btn_circle gift_more" type="button" data-pending-link aria-disabled="true">
             <img src="./assets/icon/arrow_cursor.png" alt="" width="44" height="39">
             <span class="visually_hidden">See all gift shop products</span>
@@ -414,10 +447,6 @@
           <p class="footer_logo">
             <img src="./assets/nst_logo_defalut.svg" alt="N Seoul Tower" width="80" height="107" loading="lazy">
           </p>
-          <a class="top_button" href="#top">
-            <img src="./assets/icon/arrow_up.png" alt="" width="24" height="24" loading="lazy">
-            top
-          </a>
         </div>
 
         <div class="footer_body">
@@ -514,62 +543,12 @@
             </ul>
           </div>
         </div>
-        <img class="footer_deco" src="./assets/footer_tower.png" alt="" aria-hidden="true" width="418" height="417" loading="lazy">
+        <!-- <img class="footer_deco" src="./assets/footer_tower.png" alt="" aria-hidden="true" width="418" height="417" loading="lazy"> -->
       </div>
     </footer>
 
-    <!-- ===================== floating quick menu (987:7708) =====================
-         닫힘 상태에는 곰 버튼과 CLICK ME 링만 보이고, 누르면 액션 4개가 펼쳐집니다.
-         CLICK ME 글자는 common.js 의 renderQuickMenuRing() 이 채웁니다. -->
-    <div class="quick_menu" data-quick-menu>
-      <div class="quick_menu_actions" id="quick_menu_actions" data-quick-actions hidden>
-        <!-- TODO: 챗봇 서비스가 확정되지 않아 안내 메시지만 노출합니다. -->
-        <button class="quick_action" type="button" data-pending-link aria-disabled="true">
-          <img src="./assets/icon/quick/chat.svg" alt="" width="36" height="36">
-          <span class="visually_hidden">Chatbot</span>
-        </button>
-
-        <!-- TODO: 검색 페이지가 확정되지 않아 안내 메시지만 노출합니다. -->
-        <button class="quick_action" type="button" data-pending-link aria-disabled="true">
-          <img src="./assets/icon/quick/search.svg" alt="" width="36" height="36">
-          <span class="visually_hidden">Search</span>
-        </button>
-
-        <div class="quick_section">
-          <button class="quick_action" type="button" data-quick-section-button aria-expanded="false"
-            aria-controls="quick_section_menu">
-            <img src="./assets/icon/quick/sections.svg" alt="" width="36" height="36">
-            <span class="visually_hidden">Move to a section</span>
-          </button>
-          <nav class="quick_section_menu" id="quick_section_menu" data-quick-section-menu
-            aria-label="Sections on this page" hidden>
-            <p class="quick_section_title">quick menu</p>
-            <ul class="quick_section_list">
-              <li><a class="quick_section_link" href="#hero_section">main</a></li>
-              <li><a class="quick_section_link" href="#events_section">events</a></li>
-              <li><a class="quick_section_link" href="#course_section">course</a></li>
-              <li><a class="quick_section_link" href="#pass_section">n pass</a></li>
-              <li><a class="quick_section_link" href="#gift_section">n gift shop</a></li>
-              <li><a class="quick_section_link" href="#goods_section">custom goods</a></li>
-            </ul>
-          </nav>
-        </div>
-
-        <a class="quick_action" href="#top">
-          <img src="./assets/icon/quick/arrow_up.svg" alt="" width="36" height="36">
-          <span class="visually_hidden">Back to top</span>
-        </a>
-      </div>
-
-      <button class="quick_toggle" type="button" data-quick-toggle aria-expanded="false"
-        aria-controls="quick_menu_actions">
-        <img class="quick_toggle_image" src="./assets/icon/chatbot.png" alt="" width="96" height="96">
-        <span class="quick_toggle_ring" data-quick-ring aria-hidden="true"></span>
-        <span class="visually_hidden" data-quick-toggle-label>Open quick menu</span>
-      </button>
-    </div>
-
-    <p class="link_status" data-link-status role="status" aria-live="polite"></p>
+    <!-- 공통 퀵 메뉴: 페이지별 섹션 목록은 common.js 설정에서 관리합니다. -->
+    <div data-quick-menu-mount></div>
   </div>
 
   <script src="./js/common.js"></script>

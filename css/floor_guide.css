@@ -1,6 +1,20 @@
 @charset "utf-8";
 
+/* --------------------------------------------------------------------------
+   Floor Guide (Figma 790:7008)
+
+   디자인 캔버스는 1920 x 1080 이고, 첫 섹션(T7)만 1920 x 1331 입니다.
+   1280 이상에서는 캔버스 좌표를 백분율로 그대로 옮겨 비정형 배치를 유지하고,
+   그 아래에서는 1열 / 2열 흐름 배치로 전환합니다.
+
+   --u 는 "디자인 1px" 단위입니다. 타워와 조명은 이 단위로만 크기를 계산해
+   해상도별 값을 중복 선언하지 않습니다.
+   -------------------------------------------------------------------------- */
+
 .floor_guide_page {
+  --u: 0.645px;
+  --floor_label_color: #b1b1b1;
+  --floor_more_color: #737373;
   background: var(--color_bg);
 }
 
@@ -9,47 +23,24 @@
   padding-top: var(--header_height);
 }
 
+/* --------------------------------------------------------------------------
+   stage / sticky tower
+   -------------------------------------------------------------------------- */
 .floor_guide_stage {
-  --tower_width: 86px;
-  --tower_height: 269px;
-  --tower_bottom: 74px;
-  --light_size: 139px;
-  --light_top: 188px;
+  --light_size: 122;
+  --light_top: 18;
   display: grid;
   grid-template: "floor_stage" auto / minmax(0, 1fr);
   position: relative;
   background: var(--color_bg);
 }
 
-.floor_guide_stage[data-active-floor="t1"] {
-  --light_size: 101px;
-  --light_top: 192px;
-}
-
-.floor_guide_stage[data-active-floor="t2"] {
-  --light_size: 84px;
-  --light_top: 180px;
-}
-
-.floor_guide_stage[data-active-floor="t3"] {
-  --light_size: 84px;
-  --light_top: 54px;
-}
-
-.floor_guide_stage[data-active-floor="t4"] {
-  --light_size: 84px;
-  --light_top: 37px;
-}
-
-.floor_guide_stage[data-active-floor="t5"] {
-  --light_size: 68px;
-  --light_top: 28px;
-}
-
-.floor_guide_stage[data-active-floor="t7"] {
-  --light_size: 68px;
-  --light_top: 10px;
-}
+.floor_guide_stage[data-active-floor="t5"] { --light_size: 122; --light_top: 51; }
+.floor_guide_stage[data-active-floor="t4"] { --light_size: 150; --light_top: 67; }
+.floor_guide_stage[data-active-floor="t3"] { --light_size: 150; --light_top: 97; }
+.floor_guide_stage[data-active-floor="t2"] { --light_size: 150; --light_top: 325; }
+.floor_guide_stage[data-active-floor="t1"] { --light_size: 181; --light_top: 347; }
+.floor_guide_stage[data-active-floor="f5"] { --light_size: 249; --light_top: 340; }
 
 .floor_tower_sticky,
 .floor_scene_list {
@@ -62,10 +53,9 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  width: calc(var(--tower_width) + 56px);
+  width: calc(249 * var(--u));
   height: 100svh;
   margin-inline: auto;
-  padding-bottom: var(--tower_bottom);
   pointer-events: none;
   align-items: flex-end;
   justify-content: center;
@@ -74,19 +64,20 @@
 .floor_tower_visual {
   position: relative;
   width: 100%;
-  height: var(--tower_height);
+  height: calc(485 * var(--u));
   overflow: hidden;
-  opacity: 0.16;
+  opacity: 0.34;
 }
 
 .floor_light {
   position: absolute;
   z-index: 0;
-  top: var(--light_top);
+  top: calc(var(--light_top) * var(--u));
   left: 50%;
-  width: var(--light_size);
-  height: var(--light_size);
-  object-fit: fill;
+  width: calc(var(--light_size) * var(--u));
+  height: calc(var(--light_size) * var(--u));
+  /* 원본이 181 x 166 이라 정사각 프레임에 맞추면서 비율은 유지합니다. */
+  object-fit: cover;
   transform: translateX(-50%);
   transition: top 220ms var(--ease_out), width 220ms var(--ease_out), height 220ms var(--ease_out);
 }
@@ -96,9 +87,8 @@
   z-index: 1;
   bottom: 0;
   left: 50%;
-  width: var(--tower_width);
-  height: var(--tower_height);
-  object-fit: fill;
+  width: calc(155 * var(--u));
+  height: calc(485 * var(--u));
   opacity: 0;
   transform: translateX(-50%);
   transition: opacity 220ms var(--ease_out);
@@ -108,98 +98,98 @@
   opacity: 1;
 }
 
+/* --------------------------------------------------------------------------
+   scene / heading
+   -------------------------------------------------------------------------- */
 .floor_scene_list {
   position: relative;
   z-index: 2;
+  /* 좌우에서 들어오는 등장 모션이 순간적으로 가로 스크롤을 만들지 않게 잘라냅니다.
+     clip 은 hidden 과 달리 스크롤 컨테이너를 만들지 않아 세로 스크롤과 스냅에 영향이 없습니다. */
+  overflow-x: clip;
 }
 
 .floor_scene {
-  --floor_label: "";
   position: relative;
-  min-height: 100svh;
-  padding: 132px var(--page_pad) 160px;
+  padding: 88px var(--page_pad) 112px;
 }
 
-.floor_scene_f5 { --floor_label: "F5"; padding-top: 52px; }
-.floor_scene_t1 { --floor_label: "T1"; }
-.floor_scene_t2 { --floor_label: "T2"; }
-.floor_scene_t3 { --floor_label: "T3"; }
-.floor_scene_t4 { --floor_label: "T4"; }
-.floor_scene_t5 { --floor_label: "T5"; }
-.floor_scene_t7 { --floor_label: "T7"; }
+.floor_scene_f5 {
+  padding-top: 52px;
+}
 
 .floor_scene_inner {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   position: relative;
-  width: min(100%, 1500px);
-  min-height: 100%;
+  width: min(100%, 1920px);
   margin-inline: auto;
-  gap: 132px;
+  gap: 32px;
 }
 
 .floor_guide_heading {
   position: relative;
   z-index: 4;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .floor_guide_title {
   color: var(--color_primary_600);
   font-family: var(--font_title);
-  font-size: clamp(42px, 13vw, 54px);
+  font-size: clamp(32px, 2.5vw, 48px);
   font-weight: 600;
   line-height: 1.15;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.02em;
 }
 
 .floor_guide_lead {
   max-width: 558px;
   margin-top: 6px;
   color: var(--color_gray_600);
-  font-size: 16px;
+  font-size: clamp(16px, 1.25vw, 24px);
   line-height: 1.4;
 }
 
+/* --------------------------------------------------------------------------
+   card
+   -------------------------------------------------------------------------- */
+/* 카드를 flex 컨테이너로 두어 링크가 카드 높이를 항상 채우게 합니다.
+   (min-height: 100% 는 높이가 auto 인 부모에서는 해석되지 않습니다.) */
 .floor_card {
+  /* --stagger_y 는 태블릿 지그재그 배치, --reveal_x/y 는 등장 모션이 씁니다.
+     세 값을 한 transform 에 합쳐 서로 덮어쓰지 않게 합니다. */
+  --stagger_y: 0px;
+  --reveal_x: 0px;
+  --reveal_y: 0px;
+  display: flex;
   position: relative;
   z-index: 3;
   width: min(100%, 340px);
   margin-inline: auto;
-  padding-top: 43px;
-}
-
-.floor_card::before {
-  position: absolute;
-  z-index: -1;
-  top: 0;
-  left: 12px;
-  color: rgba(27, 92, 78, 0.16);
-  font-family: var(--font_title);
-  font-size: 56px;
-  font-weight: 700;
-  line-height: 1;
-  content: var(--floor_label);
+  border: 2px solid rgba(206, 199, 194, 0.3);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.96);
+  overflow: hidden;
+  transform: translate(var(--reveal_x), calc(var(--stagger_y) + var(--reveal_y)));
 }
 
 .floor_card_link {
   display: flex;
-  min-height: 100%;
-  padding: 12px 12px 0;
-  border-bottom: 4px solid var(--color_primary_600);
-  border-radius: 4px 4px 0 0;
-  background: var(--color_surface);
+  width: 100%;
+  padding: 12px;
   color: inherit;
+  flex: 1;
   flex-direction: column;
-  text-decoration: none;
-  box-shadow: 0 8px 30px rgba(49, 50, 50, 0.055);
+  text-align: left;
 }
 
 .floor_card_media {
   display: block;
   position: relative;
   overflow: hidden;
+  border-radius: 8px;
   background: var(--color_gray_200);
-  aspect-ratio: 1.42 / 1;
+  aspect-ratio: 1.41 / 1;
 }
 
 .floor_card_media img {
@@ -211,74 +201,68 @@
 
 .floor_card_body {
   display: flex;
-  min-height: 250px;
-  padding: 25px 14px 22px;
+  min-height: 216px;
+  padding: 18px 6px 6px;
   flex: 1;
   flex-direction: column;
   align-items: flex-start;
 }
 
 .floor_card_type {
-  display: inline-flex;
-  min-height: 28px;
-  padding: 6px 10px;
-  border: 1px solid currentColor;
-  color: var(--color_gray_600);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1;
-  align-items: center;
+  color: var(--floor_label_color);
+  font-size: clamp(11px, 0.625vw, 12px);
+  font-weight: 300;
+  line-height: 1.3;
 }
 
 .floor_card_title {
-  margin-top: 14px;
+  margin-top: 3px;
   font-family: var(--font_title);
-  font-size: 26px;
+  font-size: clamp(18px, 1.25vw, 24px);
   font-weight: 600;
   line-height: 1.2;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
 }
 
 .floor_card_kicker {
   margin-top: 12px;
   color: var(--color_primary_600);
-  font-size: 14px;
+  font-size: clamp(11px, 0.6771vw, 13px);
   font-weight: 600;
 }
 
 .floor_card_description {
-  margin-top: 18px;
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 1.65;
+  margin-top: 14px;
+  font-size: clamp(12px, 0.7292vw, 14px);
+  font-weight: 300;
+  line-height: 1.35;
 }
 
 .floor_card_more {
   display: inline-flex;
-  min-height: 46px;
+  min-height: 44px;
   margin-top: auto;
   margin-left: auto;
-  padding-top: 18px;
-  color: var(--color_gray_600);
-  font-size: 14px;
-  font-weight: 600;
+  padding-top: 16px;
+  color: var(--floor_more_color);
+  font-size: clamp(12px, 0.7292vw, 14px);
+  font-weight: 400;
   line-height: 1;
   align-items: center;
-  gap: 9px;
+  gap: 2px;
 }
 
-.floor_card_more img {
+/* 아이콘은 currentColor 를 쓰는 인라인 SVG 라 카드 배경 위에서도 항상 보입니다. */
+.floor_card_more_icon {
   width: 14px;
   height: 14px;
-  padding: 13px;
-  border: 1px solid currentColor;
-  border-radius: 50%;
-  box-sizing: content-box;
+  flex: none;
 }
 
 .floor_card_link:focus-visible {
+  border-radius: 18px;
   outline: 3px solid var(--color_secondary_500);
-  outline-offset: 5px;
+  outline-offset: -3px;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -295,457 +279,59 @@
   color: #da4b47;
 }
 
+/* 장식 오브젝트는 1280 이상에서만 배경으로 불러옵니다.
+   그 아래 해상도에서는 요청 자체가 발생하지 않습니다. */
 .floor_deco {
+  --reveal_x: 0px;
+  --reveal_y: 0px;
   display: none;
-}
-
-.has_floor_motion .floor_card {
-  opacity: 0;
-  transform: translateY(48px);
-  transition: opacity 600ms var(--ease_out), transform 600ms var(--ease_out);
-}
-
-.has_floor_motion .floor_card.is_revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-@media (min-width: 834px) {
-  .floor_guide_stage {
-    --tower_width: 112px;
-    --tower_height: 350px;
-    --tower_bottom: 62px;
-    --light_size: 179px;
-    --light_top: 245px;
-  }
-
-  .floor_guide_stage[data-active-floor="t1"] {
-    --light_size: 131px;
-    --light_top: 250px;
-  }
-
-  .floor_guide_stage[data-active-floor="t2"] {
-    --light_size: 108px;
-    --light_top: 235px;
-  }
-
-  .floor_guide_stage[data-active-floor="t3"] {
-    --light_size: 108px;
-    --light_top: 70px;
-  }
-
-  .floor_guide_stage[data-active-floor="t4"] {
-    --light_size: 108px;
-    --light_top: 48px;
-  }
-
-  .floor_guide_stage[data-active-floor="t5"] {
-    --light_size: 88px;
-    --light_top: 37px;
-  }
-
-  .floor_guide_stage[data-active-floor="t7"] {
-    --light_size: 88px;
-    --light_top: 13px;
-  }
-
-  .floor_tower_sticky {
-    width: 180px;
-  }
-
-  .floor_tower_visual {
-    opacity: 0.66;
-  }
-
-  .floor_scene {
-    padding-block: 150px 190px;
-  }
-
-  .floor_scene_f5 {
-    padding-top: 78px;
-  }
-
-  .floor_scene_inner {
-    grid-template-columns: minmax(0, 1fr) 124px minmax(0, 1fr);
-    column-gap: 22px;
-    row-gap: 160px;
-  }
-
-  .floor_guide_heading {
-    grid-column: 1 / -1;
-    margin-bottom: 30px;
-  }
-
-  .floor_guide_title {
-    font-size: 48px;
-  }
-
-  .floor_guide_lead {
-    font-size: 20px;
-  }
-
-  .floor_card,
-  .floor_card_large {
-    grid-column: 1;
-    width: min(100%, 318px);
-    margin: 0;
-    justify-self: start;
-  }
-
-  .floor_card:nth-of-type(even) {
-    grid-column: 3;
-    margin-top: 170px;
-    justify-self: end;
-  }
-
-  .floor_card_body {
-    min-height: 285px;
-  }
-}
-
-@media (min-width: 1280px) {
-  .floor_guide_stage {
-    --tower_width: 155px;
-    --tower_height: 485px;
-    --tower_bottom: 34px;
-    --light_size: 249px;
-    --light_top: 340px;
-  }
-
-  .floor_guide_stage[data-active-floor="t1"] {
-    --light_size: 181px;
-    --light_top: 347px;
-  }
-
-  .floor_guide_stage[data-active-floor="t2"] {
-    --light_size: 150px;
-    --light_top: 325px;
-  }
-
-  .floor_guide_stage[data-active-floor="t3"] {
-    --light_size: 150px;
-    --light_top: 97px;
-  }
-
-  .floor_guide_stage[data-active-floor="t4"] {
-    --light_size: 150px;
-    --light_top: 67px;
-  }
-
-  .floor_guide_stage[data-active-floor="t5"] {
-    --light_size: 122px;
-    --light_top: 51px;
-  }
-
-  .floor_guide_stage[data-active-floor="t7"] {
-    --light_size: 122px;
-    --light_top: 18px;
-  }
-
-  .floor_tower_sticky {
-    width: 249px;
-  }
-
-  .floor_tower_visual {
-    opacity: 1;
-  }
-
-  .floor_scene {
-    padding-block: 180px 240px;
-  }
-
-  .floor_scene_f5 {
-    padding-top: 94px;
-  }
-
-  .floor_scene_inner {
-    grid-template-columns: minmax(0, 1fr) 260px minmax(0, 1fr);
-    column-gap: 62px;
-    row-gap: 210px;
-  }
-
-  .floor_guide_heading {
-    margin-bottom: 62px;
-  }
-
-  .floor_guide_title {
-    font-size: 48px;
-    letter-spacing: 0;
-  }
-
-  .floor_guide_lead {
-    font-size: 24px;
-  }
-
-  .floor_card,
-  .floor_card_large {
-    width: min(100%, 520px);
-    padding-top: 68px;
-  }
-
-  .floor_card::before {
-    left: -22px;
-    font-size: 92px;
-  }
-
-  .floor_card:nth-of-type(even) {
-    margin-top: 230px;
-  }
-
-  .floor_card_link,
-  .floor_card_large .floor_card_link {
-    padding: 16px 16px 0;
-  }
-
-  .floor_card_media,
-  .floor_card_large .floor_card_media {
-    height: auto;
-    aspect-ratio: 1.5 / 1;
-  }
-
-  .floor_card_body,
-  .floor_card_large .floor_card_body {
-    min-height: 330px;
-    padding: 30px 18px 26px;
-  }
-
-  .floor_card_title,
-  .floor_card_large .floor_card_title {
-    font-size: 34px;
-  }
-
-  .floor_card_description,
-  .floor_card_large .floor_card_description {
-    font-size: 17px;
-    line-height: 1.7;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .floor_light,
-  .tower_state_image,
-  .floor_card_media img,
-  .has_floor_motion .floor_card {
-    transition: none;
-  }
-
-  .has_floor_motion .floor_card {
-    opacity: 1;
-    transform: none;
-  }
+  transform: translate(var(--reveal_x), var(--reveal_y));
 }
 
 /* --------------------------------------------------------------------------
-   Figma visual layout
-   Only the tower uses the reference site's viewport-height sticky format.
+   등장 모션
+
+   has_floor_motion 은 floor_guide.js 가 붙입니다. JS 가 없거나 reduced motion
+   이면 클래스가 붙지 않아 처음부터 전부 보입니다.
+   방향 클래스(is_from_*)도 floor_guide.js 가 배치를 보고 정합니다.
    -------------------------------------------------------------------------- */
-.floor_guide_stage {
-  --tower_width: 100px;
-  --tower_height: 313px;
-  --tower_bottom: 0px;
-  --light_size: 161px;
-  --light_top: 219px;
-}
-
-.floor_guide_stage[data-active-floor="t1"] {
-  --light_size: 117px;
-  --light_top: 224px;
-}
-
-.floor_guide_stage[data-active-floor="t2"] {
-  --light_size: 97px;
-  --light_top: 210px;
-}
-
-.floor_guide_stage[data-active-floor="t3"] {
-  --light_size: 97px;
-  --light_top: 63px;
-}
-
-.floor_guide_stage[data-active-floor="t4"] {
-  --light_size: 97px;
-  --light_top: 43px;
-}
-
-.floor_guide_stage[data-active-floor="t5"] {
-  --light_size: 79px;
-  --light_top: 33px;
-}
-
-.floor_guide_stage[data-active-floor="t7"] {
-  --light_size: 79px;
-  --light_top: 12px;
-}
-
-.floor_tower_sticky {
-  width: calc(var(--tower_width) + 62px);
-  padding-bottom: var(--tower_bottom);
-}
-
-.floor_tower_visual {
-  opacity: 0.34;
-}
-
-.floor_scene {
-  padding: 88px var(--page_pad) 112px;
-}
-
-.floor_scene_f5 {
-  padding-top: 52px;
-}
-
-.floor_scene_inner {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  width: min(100%, 1920px);
-  gap: 32px;
-}
-
-.floor_guide_heading {
-  margin-bottom: 16px;
-}
-
-.floor_card,
-.floor_card_large {
-  position: relative;
-  width: min(100%, 340px);
-  margin-inline: auto;
-  padding-top: 0;
-  border: 2px solid rgba(206, 199, 194, 0.3);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.96);
-  overflow: hidden;
-  opacity: 1;
-  transform: none;
-}
-
-.floor_card::before {
-  content: none;
-}
-
-.floor_card_link,
-.floor_card_large .floor_card_link {
-  padding: 12px;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-}
-
-.floor_card_media,
-.floor_card_large .floor_card_media {
-  height: auto;
-  border-radius: 8px;
-  aspect-ratio: 1.42 / 1;
-}
-
-.floor_card_body,
-.floor_card_large .floor_card_body {
-  min-height: 216px;
-  padding: 18px 6px 6px;
-}
-
-.floor_card_type {
-  display: inline;
-  min-height: 0;
-  padding: 0;
-  border: 0;
-  color: #b1b1b1;
-  font-size: 12px;
-  font-weight: 300;
-  line-height: 1.3;
-}
-
-.floor_card_title,
-.floor_card_large .floor_card_title {
-  margin-top: 3px;
-  font-size: 23px;
-}
-
-.floor_card_kicker {
-  margin-top: 12px;
-  font-size: 13px;
-}
-
-.floor_card_description,
-.floor_card_large .floor_card_description {
-  margin-top: 14px;
-  font-size: 14px;
-  font-weight: 300;
-  line-height: 1.35;
-}
-
-.floor_card_more {
-  min-height: 44px;
-  padding-top: 16px;
-  color: #737373;
-  font-size: 14px;
-  font-weight: 400;
-  gap: 2px;
-}
-
-.floor_card_more img {
-  width: 14px;
-  height: 14px;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  box-sizing: border-box;
-}
-
-.floor_card_link:focus-visible {
-  border-radius: 18px;
-  outline: 3px solid var(--color_secondary_500);
-  outline-offset: -3px;
-}
-
 .has_floor_motion .floor_card,
-.has_floor_motion .floor_card.is_revealed {
-  opacity: 1;
-  transform: none;
-  transition: none;
+.has_floor_motion .floor_deco {
+  /* 기본은 아래에서 떠오릅니다. */
+  --reveal_y: 34px;
+  opacity: 0;
+  transition: opacity 920ms var(--ease_out), transform 920ms var(--ease_out);
+  transition-delay: var(--reveal_delay, 0ms);
 }
 
+.has_floor_motion .is_from_left {
+  --reveal_x: -52px;
+  --reveal_y: 14px;
+}
+
+.has_floor_motion .is_from_right {
+  --reveal_x: 52px;
+  --reveal_y: 14px;
+}
+
+.has_floor_motion .is_from_top {
+  --reveal_x: 0px;
+  --reveal_y: -38px;
+}
+
+/* 방향 규칙과 특이도가 같으므로 반드시 뒤에 와야 합니다. */
+.has_floor_motion .is_revealed {
+  --reveal_x: 0px;
+  --reveal_y: 0px;
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Tablet
+   -------------------------------------------------------------------------- */
 @media (min-width: 834px) {
-  .floor_guide_stage {
-    --tower_width: 124px;
-    --tower_height: 388px;
-    --light_size: 199px;
-    --light_top: 272px;
-  }
-
-  .floor_guide_stage[data-active-floor="t1"] {
-    --light_size: 145px;
-    --light_top: 278px;
-  }
-
-  .floor_guide_stage[data-active-floor="t2"] {
-    --light_size: 120px;
-    --light_top: 260px;
-  }
-
-  .floor_guide_stage[data-active-floor="t3"] {
-    --light_size: 120px;
-    --light_top: 78px;
-  }
-
-  .floor_guide_stage[data-active-floor="t4"] {
-    --light_size: 120px;
-    --light_top: 54px;
-  }
-
-  .floor_guide_stage[data-active-floor="t5"] {
-    --light_size: 98px;
-    --light_top: 41px;
-  }
-
-  .floor_guide_stage[data-active-floor="t7"] {
-    --light_size: 98px;
-    --light_top: 14px;
-  }
-
-  .floor_tower_sticky {
-    width: calc(var(--tower_width) + 76px);
+  .floor_guide_page {
+    --u: 0.8px;
   }
 
   .floor_tower_visual {
@@ -770,201 +356,339 @@
     margin-bottom: 8px;
   }
 
-  .floor_card,
-  .floor_card_large {
-    grid-column: auto;
+  .floor_card {
     width: min(100%, 330px);
     margin: 0 auto;
-    justify-self: auto;
   }
 
   .floor_card:nth-of-type(even) {
-    grid-column: auto;
-    margin-top: 0;
-    transform: translateY(110px);
-    justify-self: auto;
+    --stagger_y: 110px;
   }
 
-  .floor_card_large {
-    width: min(100%, 354px);
-  }
-
-  .floor_card_body,
-  .floor_card_large .floor_card_body {
+  .floor_card_body {
     min-height: 230px;
   }
 }
 
+/* --------------------------------------------------------------------------
+   Desktop — Figma 캔버스 좌표를 백분율로 옮긴 비정형 배치
+   -------------------------------------------------------------------------- */
 @media (min-width: 1280px) {
-  .floor_guide_stage {
-    --tower_width: 155px;
-    --tower_height: 485px;
-    --light_size: 249px;
-    --light_top: 340px;
-  }
-
-  .floor_guide_stage[data-active-floor="t1"] {
-    --light_size: 181px;
-    --light_top: 347px;
-  }
-
-  .floor_guide_stage[data-active-floor="t2"] {
-    --light_size: 150px;
-    --light_top: 325px;
-  }
-
-  .floor_guide_stage[data-active-floor="t3"] {
-    --light_size: 150px;
-    --light_top: 97px;
-  }
-
-  .floor_guide_stage[data-active-floor="t4"] {
-    --light_size: 150px;
-    --light_top: 67px;
-  }
-
-  .floor_guide_stage[data-active-floor="t5"] {
-    --light_size: 122px;
-    --light_top: 51px;
-  }
-
-  .floor_guide_stage[data-active-floor="t7"] {
-    --light_size: 122px;
-    --light_top: 18px;
-  }
-
-  .floor_tower_sticky {
-    width: 249px;
-  }
-
-  .floor_tower_visual {
-    opacity: 1;
+  .floor_guide_page {
+    --u: min(1px, 0.052083vw);
   }
 
   .floor_scene {
-    min-height: 1080px;
     padding: 0;
   }
 
   .floor_scene_f5 {
-    min-height: 1180px;
     padding-top: 0;
   }
 
   .floor_scene_inner {
     display: block;
-    height: 1080px;
+    aspect-ratio: 1920 / 1080;
+    gap: 0;
   }
 
+  /* 디자인의 첫 프레임은 1920 x 1331 로, 표준 1080 레이아웃 위에 제목용 251px 띠가
+     얹힌 구조입니다 (타워 위치가 846 - 595 = 251 만큼 내려가 있는 것으로 확인).
+     제목이 F5 로 옮겨졌으므로 이 높이도 F5 가 가집니다. */
   .floor_scene_f5 .floor_scene_inner {
-    height: 1180px;
+    aspect-ratio: 1920 / 1331;
   }
 
   .floor_guide_heading {
     position: absolute;
-    top: 72px;
-    left: max(60px, calc(50% - 793px));
-    width: 558px;
+    top: 10.5184%;
+    left: 8.6979%;
+    width: 29.0625%;
     margin: 0;
   }
 
+  /* 높이는 디자인 값을 "최소"로만 잡습니다. 1920 에서는 디자인과 같은 높이가 되고,
+     그보다 좁아 글자가 가독성 하한에 걸리면 카드가 아래로 늘어나 잘리지 않습니다. */
   .floor_card,
-  .floor_card_large,
   .floor_card:nth-of-type(even) {
+    --stagger_y: 0px;
     position: absolute;
-    width: 412px;
-    height: 521px;
+    width: 21.4583%;
+    height: auto;
+    min-height: calc(521 * var(--u));
     margin: 0;
-    transform: none;
   }
 
   .floor_card_large {
-    width: 544px;
-    height: 688px;
+    width: 28.3333%;
+    min-height: calc(688 * var(--u));
   }
 
-  .floor_card_link,
+  .floor_card_big {
+    width: 26.5104%;
+    min-height: calc(643 * var(--u));
+  }
+
+  .floor_card_link {
+    padding: 4.854%;
+  }
+
   .floor_card_large .floor_card_link {
-    padding: 20px;
+    padding: 4.412%;
   }
 
-  .floor_card_large .floor_card_link {
-    padding: 24px;
+  .floor_card_big .floor_card_link {
+    padding: 3.929%;
   }
 
-  .floor_card_media,
-  .floor_card_large .floor_card_media {
-    height: 264px;
-    aspect-ratio: auto;
+  .floor_card_media {
+    aspect-ratio: 1.41 / 1;
     flex: none;
   }
 
   .floor_card_large .floor_card_media {
-    height: 336px;
+    aspect-ratio: 1.476 / 1;
   }
 
   .floor_card_body,
   .floor_card_large .floor_card_body {
     min-height: 0;
-    padding: 20px 6px 0;
+    padding: 4.854% 0 0;
   }
 
-  .floor_card_large .floor_card_body {
-    padding-inline: 4px;
+  .floor_card_large .floor_card_title,
+  .floor_card_big .floor_card_title {
+    font-size: clamp(22px, 1.6667vw, 32px);
   }
 
-  .floor_card_title {
-    font-size: 24px;
+  .floor_card_large .floor_card_description,
+  .floor_card_big .floor_card_description {
+    font-size: clamp(13px, 0.8333vw, 16px);
   }
 
-  .floor_card_large .floor_card_title {
-    font-size: 32px;
-  }
-
-  .floor_card_large .floor_card_description {
-    font-size: 16px;
+  /* 카드 전체가 버튼이라 44px 터치 영역을 따로 확보할 필요가 없습니다.
+     디자인의 more_button 높이(14px)에 맞춰 카드 안에 내용이 들어가게 합니다. */
+  .floor_card_more {
+    min-height: 0;
+    padding-top: clamp(8px, 0.8333vw, 16px);
   }
 
   .floor_deco {
     display: block;
     position: absolute;
     z-index: 2;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
     pointer-events: none;
   }
 
-  .floor_card_gift { top: 244px; left: max(76px, calc(50% - 681px)); }
-  .floor_card_sweet { top: 337px; right: max(92px, calc(50% - 774px)); }
-  .floor_deco_sweet { top: 860px; right: max(72px, calc(50% - 780px)); }
-  .floor_card_burger { top: 128px; left: max(54px, calc(50% - 842px)); }
-  .floor_card_t1_gift { top: 498px; left: max(330px, calc(50% - 570px)); }
-  .floor_card_terrace { top: 178px; right: max(330px, calc(50% - 570px)); }
-  .floor_card_durum { top: 505px; right: max(54px, calc(50% - 842px)); }
-  .floor_deco_food { top: 748px; left: max(78px, calc(50% - 790px)); }
-  .floor_card_place { top: 185px; left: max(90px, calc(50% - 760px)); }
-  .floor_card_t2_telescope { top: 122px; right: max(88px, calc(50% - 780px)); }
-  .floor_card_roof { top: 570px; right: max(316px, calc(50% - 560px)); }
-  .floor_deco_lock { top: 620px; right: max(44px, calc(50% - 820px)); }
-  .floor_card_hancook { top: 180px; left: max(110px, calc(50% - 750px)); }
-  .floor_deco_hancook_logo { top: 176px; right: max(216px, calc(50% - 660px)); }
-  .floor_deco_hancook_dish { top: 336px; right: max(76px, calc(50% - 800px)); }
-  .floor_deco_hancook_table { top: 706px; right: max(332px, calc(50% - 530px)); }
-  .floor_card_t4_observatory { top: 176px; left: max(92px, calc(50% - 770px)); }
-  .floor_card_t4_telescope { top: 455px; right: max(104px, calc(50% - 770px)); }
-  .floor_deco_observatory { top: 156px; right: max(72px, calc(50% - 810px)); }
-  .floor_card_t5_observatory { top: 152px; left: max(58px, calc(50% - 842px)); }
-  .floor_card_t5_telescope { top: 500px; left: max(328px, calc(50% - 568px)); }
-  .floor_card_panorama { top: 178px; right: max(330px, calc(50% - 568px)); }
-  .floor_card_t5_gift { top: 510px; right: max(58px, calc(50% - 842px)); }
-  .floor_deco_popcorn { top: 680px; right: max(96px, calc(50% - 790px)); opacity: 0.9; }
-  .floor_card_ngrill { top: 210px; left: max(110px, calc(50% - 750px)); }
-  .floor_deco_ngrill_logo { top: 232px; right: max(210px, calc(50% - 665px)); }
-  .floor_deco_ngrill_dish { top: 355px; right: max(70px, calc(50% - 810px)); }
-  .floor_deco_ngrill_food { top: 690px; right: max(250px, calc(50% - 610px)); }
+  /* --- T7 (Figma F07) ---
+     원본은 1331 캔버스이지만 첫 섹션이 아니게 되어 제목 띠 251px 을 뺀
+     표준 1080 캔버스 기준으로 환산했습니다. (예: 카드 y 444 → 193) */
+  .floor_card_ngrill { top: 17.8704%; left: 16.3542%; }
+
+  .floor_deco_tea {
+    top: 8.5185%;
+    left: 55.3646%;
+    width: 12.9167%;
+    aspect-ratio: 248 / 349;
+    background-image: url("../assets/floorguide/snack03.png");
+  }
+
+  .floor_deco_beef {
+    top: 63.8889%;
+    left: 8.5938%;
+    width: 13.6979%;
+    aspect-ratio: 263 / 238;
+    background-image: url("../assets/floorguide/food01.png");
+  }
+
+  .floor_deco_ngrill_photo {
+    top: 52.0370%;
+    left: 63.0208%;
+    width: 22.5521%;
+    aspect-ratio: 433 / 237;
+    background-image: url("../assets/floorguide/ngrill02.png");
+  }
+
+  .floor_deco_ngrill_logo {
+    top: 75.7407%;
+    left: 75%;
+    width: 8.5417%;
+    aspect-ratio: 164 / 38;
+    background-image: url("../assets/floorguide/ngrill01.png");
+  }
+
+  /* --- T5 (Figma F05) --- */
+  .floor_card_t5_observatory { top: 26.2037%; left: 3.125%; }
+  .floor_card_t5_telescope { top: 33.8889%; left: 26.25%; }
+  .floor_card_panorama { top: 24.7222%; left: 52.0833%; }
+  .floor_card_t5_gift { top: 41.9444%; left: 75.2083%; }
+
+  /* --- T4 (Figma F04) --- */
+  .floor_card_t4_observatory { top: 16.2963%; left: 16.3542%; }
+  .floor_card_t4_telescope { top: 21.2963%; left: 57.1875%; }
+
+  .floor_deco_observatory {
+    top: 64.8148%;
+    left: 71.4583%;
+    width: 19.6875%;
+    aspect-ratio: 378 / 209;
+    background-image: url("../assets/floorguide/Observatory.png");
+  }
+
+  /* --- T3 (Figma F03) --- */
+  .floor_card_hancook { top: 20.3704%; left: 14.5313%; }
+
+  /* 디자인에서 이 트레이만 카드 위로 겹칩니다 (.floor_card 는 z-index 3). */
+  .floor_deco_hancook_tray {
+    z-index: 4;
+    top: 70.6481%;
+    left: 10.5729%;
+    width: 18.1771%;
+    aspect-ratio: 349 / 201;
+    background-image: url("../assets/floorguide/hancook03.png");
+  }
+
+  .floor_deco_hancook_photo {
+    top: 24.9074%;
+    left: 57.9167%;
+    width: 17.9688%;
+    aspect-ratio: 345 / 189;
+    background-image: url("../assets/floorguide/hancook05.png");
+  }
+
+  .floor_deco_hancook_bibimbap {
+    top: 45.7407%;
+    left: 72.6042%;
+    width: 14.6875%;
+    aspect-ratio: 282 / 133;
+    background-image: url("../assets/floorguide/hancook02.png");
+  }
+
+  .floor_deco_hancook_bowl {
+    top: 59.0741%;
+    left: 64.6354%;
+    width: 9.5833%;
+    aspect-ratio: 184 / 179;
+    background-image: url("../assets/floorguide/hancook04.png");
+  }
+
+  .floor_deco_hancook_logo {
+    top: 58.7963%;
+    left: 79.3229%;
+    width: 6.3021%;
+    aspect-ratio: 121 / 44;
+    background-image: url("../assets/floorguide/hancook01.png");
+  }
+
+  /* --- T2 (Figma F02) --- */
+  .floor_card_place { top: 16.2963%; left: 14.5313%; }
+  .floor_card_t2_telescope { top: 23.4259%; left: 52.8125%; }
+  .floor_card_roof { top: 33.0556%; left: 75.9375%; }
+
+  .floor_deco_steak {
+    top: 62.3148%;
+    left: 8.3854%;
+    width: 20.7292%;
+    aspect-ratio: 398 / 341;
+    background-image: url("../assets/floorguide/food02.png");
+  }
+
+  /* --- T1 (Figma F01) --- */
+  .floor_card_burger { top: 14.6296%; left: 2.8125%; }
+  .floor_card_t1_gift { top: 22.3148%; left: 25.9375%; }
+  .floor_card_terrace { top: 27.6852%; left: 52.2917%; }
+  .floor_card_durum { top: 37.2222%; left: 75.4167%; }
+
+  /* --- F5 (Figma T05) ---
+     첫 섹션이 되어 캔버스가 1331 로 늘었습니다. 제목 띠 251px 만큼 아래로 밀어
+     디자인의 1080 레이아웃을 그대로 유지합니다. (예: 카드 y 205 → 456) */
+  .floor_card_gift { top: 34.2600%; left: 14.5313%; }
+  .floor_card_sweet { top: 36.7393%; left: 56.3542%; }
+
+  .floor_deco_popcorn {
+    top: 27.1225%;
+    left: 67.1875%;
+    width: 19.7396%;
+    aspect-ratio: 379 / 347;
+    background-image: url("../assets/floorguide/popcon01.png");
+  }
+
+  .floor_deco_sweetbar {
+    top: 79.5642%;
+    left: 71.9271%;
+    width: 15.7813%;
+    aspect-ratio: 303 / 124;
+    background-image: url("../assets/floorguide/sweetbar02.png");
+  }
 }
 
-@media (min-width: 1920px) {
+/* --------------------------------------------------------------------------
+   Wide desktop — 층마다 한 장씩 넘어가는 스크롤
+
+   1600 부터 적용합니다. 그 아래에서는 디자인 캔버스가 화면 폭에 비례해 줄어드는데
+   고정 헤더 높이는 그대로라, 스냅으로 섹션을 화면 상단에 붙이면 제목과 카드가
+   헤더에 눌립니다. 1600 미만은 기존 일반 스크롤을 유지합니다.
+   -------------------------------------------------------------------------- */
+@media (min-width: 1600px) {
+  /* 이 파일은 floor_guide 페이지에서만 로드되므로 html 선언 범위도 이 페이지에 한정됩니다.
+
+     scroll-padding-top 은 0 이어야 합니다. 헤더 높이만큼 넣으면 스냅 영역이
+     섹션(디자인 16:9)보다 작아져 "큰 요소" 규칙에 걸리고 스냅이 아예 동작하지 않습니다.
+     디자인도 각 프레임 상단에 헤더 띠를 포함하므로, 고정 헤더가 그 자리를 덮습니다. */
+  html {
+    scroll-snap-type: y mandatory;
+    scroll-padding-top: 0;
+  }
+
+  .floor_scene {
+    /* 한 층이 화면을 정확히 채우도록 합니다. 이 선언이 없으면 스크롤바 폭 때문에
+       섹션이 뷰포트보다 낮아져 다음 층이 아래에 걸쳐 보입니다.
+       .floor_scene_inner 는 디자인 비율을 유지하므로 카드 좌표는 그대로입니다. */
+    min-height: 100svh;
+    /* reset.css 의 :target { scroll-margin-top: 120px } 을 무효화해
+       퀵메뉴 이동과 스냅 위치를 일치시킵니다. */
+    scroll-margin-top: 0;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  /* 스냅 지점이 없으면 mandatory 상태에서 푸터에 도달할 수 없습니다. */
+  .site_footer {
+    scroll-snap-align: start;
+  }
+
+  /* 스냅하면 섹션 상단이 뷰포트 상단에 붙어 고정 헤더가 그 위를 덮습니다.
+     1600 부근에서는 디자인 값이 헤더에 닿으므로 하한을 둡니다. 1920 에서는 디자인 값 그대로입니다. */
   .floor_guide_heading {
-    top: 72px;
-    left: 167px;
+    top: max(10.5184%, calc(var(--header_height) + 24px));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .floor_light,
+  .tower_state_image,
+  .floor_card_media img {
+    transition: none;
+  }
+
+  /* JS 가 클래스를 붙이지 않지만, 붙은 뒤 설정이 바뀐 경우에도 가려지지 않게 합니다. */
+  .has_floor_motion .floor_card,
+  .has_floor_motion .floor_deco {
+    --reveal_x: 0px;
+    --reveal_y: 0px;
+    opacity: 1;
+    transition: none;
+  }
+
+  /* 스냅은 사용자의 스크롤 의도와 무관하게 화면을 이동시키므로 해제합니다.
+     스냅이 없어도 모든 층 정보는 그대로 읽을 수 있습니다. */
+  html {
+    scroll-snap-type: none;
   }
 }

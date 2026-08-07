@@ -23,6 +23,8 @@
   padding: calc(var(--header_height) + 24px) 0 40px;
   background-color: var(--color_bg_hero);
   overflow: hidden;
+  /* hero_video 의 blend 가 히어로 밖으로 번지지 않게 합성 범위를 가둡니다. */
+  isolation: isolate;
 }
 
 .hero_inner {
@@ -34,7 +36,9 @@
   height: 100%;
 }
 
-/* 히어로 비디오 — 기존 타워 이미지 크기와 무관하게 화면 전체를 채웁니다. */
+/* 히어로 비디오 — 기존 타워 이미지 크기와 무관하게 화면 전체를 채웁니다.
+   webm 이 알파 없이 검정 배경으로 인코딩되어 있어, screen 합성으로 검정을 걷어내고
+   히어로 배경색(--color_bg_hero)이 그대로 보이게 합니다. */
 .hero_video {
   position: absolute;
   inset: 0;
@@ -43,6 +47,7 @@
   height: 100vh;
   object-fit: cover;
   object-position: center;
+  mix-blend-mode: screen;
   pointer-events: none;
 }
 
@@ -206,7 +211,11 @@
 .events_section {
   position: relative;
   padding: var(--section_space) 0 0;
-  overflow: hidden;
+  overflow: clip;
+}
+
+.events_sticky {
+  position: relative;
 }
 
 .events_head {
@@ -216,13 +225,20 @@
 
 .events_curve {
   position: absolute;
-  top: 8%;
-  left: -30%;
+  top: 0;
+  left: 0;
   z-index: 0;
-  width: 143%;
-  max-width: none;
+  width: 100%;
   height: auto;
   opacity: 0.9;
+  pointer-events: none;
+}
+
+.events_path_geometry {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
   pointer-events: none;
 }
 
@@ -307,6 +323,65 @@
   line-height: 1.2;
   text-transform: capitalize;
 }
+.events_view_toggle {
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.events_view_button {
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid var(--color_new_primary_600);
+  border-radius: var(--radius_round);
+  background-color: transparent;
+  color: var(--color_primary_800);
+  font-size: var(--fs_sm);
+  line-height: 1.2;
+  transition: background-color var(--duration) var(--ease_out), color var(--duration) var(--ease_out);
+}
+
+.events_view_button.is_active {
+  background-color: var(--color_primary_800);
+  color: var(--color_bg);
+}
+
+.events_view_button:focus-visible {
+  outline: 2px solid var(--color_primary_800);
+  outline-offset: 3px;
+}
+
+@media (max-width: 1279px) {
+  .events_curve,
+  .event_gondola {
+    display: none;
+  }
+
+  .events_list {
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .event_item {
+    width: 100%;
+    scroll-snap-align: none;
+  }
+}
+
+@media (max-width: 833px) {
+  .events_list {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 834px) and (max-width: 1279px) {
+  .events_list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
 
 /* 데스크톱: 곡선 경로를 따라 서로 다른 높이에 배치
    좌표는 Figma event 프레임(1920 x 1180)의 카드·곤돌라 위치를 비율로 환산한 값 */
@@ -324,9 +399,9 @@
   }
 
   .events_curve {
-    top: 11.5%;
-    left: -29.86%;
-    width: 142.68%;
+    top: 0;
+    left: 0;
+    width: 100%;
   }
 
   .events_list {
@@ -394,16 +469,257 @@
   }
 }
 
+
+/* Desktop scroll interaction: one gondola-card group follows the SVG path. */
+@media (min-width: 1280px) {
+  .events_section {
+    height: 300svh;
+    min-height: 0;
+  }
+
+  .events_head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 16px;
+  }
+
+  .events_view_toggle {
+    display: flex;
+    position: relative;
+    z-index: 3;
+  }
+
+  .events_sticky {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  .events_curve {
+    top: 60%;
+    transform: translateY(-50%);
+  }
+  .events_list {
+    position: absolute;
+    inset: 0;
+  }
+
+  .event_item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 11.2%;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate3d(var(--event_path_x, 0), var(--event_path_y, 0), 0) translate(-50%, 0);
+    transition: opacity 240ms var(--ease_out);
+    will-change: transform, opacity;
+  }
+
+  .event_item.is_active {
+    z-index: 2;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .event_item[data-event-slot] .event_gondola {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 130%;
+    transform: translateX(-11.538%);
+  }
+
+  .event_item[data-event-slot] .event_card {
+    top: 35%;
+    left: 88%;
+    width: 192%;
+  }
+
+  .event_item[data-event-slot="1"] .event_card {
+    right: 88%;
+    left: auto;
+  }
+
+  .event_item[data-event-slot="2"] .event_card {
+    top: 82%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .event_item[data-event-slot="2"]:hover .event_card,
+  .event_item[data-event-slot="2"]:focus-within .event_card {
+    transform: translate(-50%, -4px);
+  }
+
+  .event_item[data-event-slot="3"] .event_card {
+    top: 22%;
+    left: 105%;
+  }
+}
+
+@media (min-width: 1280px) {
+  .events_section.has_static_events {
+    height: auto;
+    padding: var(--section_space) 0;
+  }
+
+  .has_static_events .events_sticky {
+    position: relative;
+    height: auto;
+    overflow: visible;
+  }
+
+  .has_static_events .events_curve,
+  .has_static_events .event_gondola {
+    display: none;
+  }
+
+  .has_static_events .events_head {
+    position: relative;
+    top: auto;
+    left: auto;
+  }
+
+  .has_static_events .events_list {
+    position: relative;
+    display: flex;
+    gap: 24px;
+    margin-top: 48px;
+    padding: 0 var(--page_pad);
+  }
+
+  .has_static_events .event_item {
+    position: relative;
+    width: calc((100% - 48px) / 3);
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  .has_static_events .event_item[data-event-slot] .event_card {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    width: 100%;
+  }
+}
+
+@media (min-width: 1280px) {
+  .events_section.is_card_view {
+    height: auto;
+    min-height: 100svh;
+    padding: var(--section_space) 0;
+  }
+
+  .is_card_view .events_sticky {
+    position: relative;
+    height: auto;
+    overflow: visible;
+  }
+
+  .is_card_view .events_curve,
+  .is_card_view .event_gondola {
+    display: none;
+  }
+
+  .is_card_view .events_head {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+  }
+
+  .is_card_view .events_list {
+    position: relative;
+    display: flex;
+    gap: 24px;
+    margin-top: 48px;
+    padding: 0 var(--page_pad);
+  }
+
+  .is_card_view .event_item {
+    position: relative;
+    width: calc((100% - 48px) / 3);
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+
+  .is_card_view .event_item[data-event-slot] .event_card {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    width: 100%;
+    transform: none;
+  }
+}
+
+@media (min-width: 1280px) and (prefers-reduced-motion: reduce) {
+  .events_section {
+    height: auto;
+    padding: var(--section_space) 0;
+  }
+
+  .events_sticky {
+    position: relative;
+    height: auto;
+    overflow: visible;
+  }
+
+  .events_curve,
+  .event_gondola {
+    display: none;
+  }
+
+  .events_head {
+    position: relative;
+    top: auto;
+    left: auto;
+  }
+
+  .events_list {
+    position: relative;
+    display: flex;
+    gap: 24px;
+    margin-top: 48px;
+    padding: 0 var(--page_pad);
+  }
+
+  .event_item,
+  .event_item.is_active {
+    position: relative;
+    width: calc((100% - 48px) / 3);
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  .event_item[data-event-slot] .event_card {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    width: 100%;
+  }
+}
+
 /* ==========================================================================
    3. recommended course
    ========================================================================== */
 .course_section {
   display: flex;
   flex-direction: column;
-  gap: 40px;
   align-items: center;
-  padding: var(--section_space) 0;
-  overflow: hidden;
+  padding: 0;
+  overflow: clip;
 }
 
 .course_head {
@@ -411,10 +727,29 @@
   text-align: center;
 }
 
+.course_scroll_stage {
+  position: relative;
+  width: 100%;
+}
+
+.course_sticky {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 100svh;
+  gap: 40px;
+  padding: 32px 0;
+  overflow: hidden;
+}
+
 .course_scene {
   position: relative;
   width: 100%;
   height: min(160vw, 620px);
+  flex: 0 0 auto;
   overflow: hidden;
 }
 
@@ -444,31 +779,22 @@
 }
 
 .course_list {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100%;
-  gap: 16px;
-  padding: 32px var(--page_pad);
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-width: none;
-  scroll-snap-type: y mandatory;
-  overscroll-behavior-y: auto;
-}
-
-.course_list::-webkit-scrollbar {
-  display: none;
+  width: 100%;
+  will-change: transform;
 }
 
 .course_slide {
   display: flex;
-  flex: 0 0 auto;
+  flex: 0 0 var(--course_scene_height, 620px);
   align-items: center;
   width: 100%;
-  scroll-snap-align: center;
+  padding: 32px var(--page_pad);
 }
 
 .course_slide:nth-child(odd) {
@@ -528,12 +854,17 @@
 }
 
 @media (min-width: 834px) {
+  .course_sticky {
+    gap: 48px;
+    padding: 40px 0;
+  }
+
   .course_scene {
     height: 640px;
     border-radius: var(--radius_xl);
   }
 
-  .course_list {
+  .course_slide {
     padding: 48px 40px;
   }
 
@@ -543,15 +874,17 @@
 }
 
 @media (min-width: 1280px) {
-  .course_section {
-    gap: 80px;
-    padding: 100px 0 160px;
+  .course_sticky {
+    gap: 64px;
   }
 
   .course_scene {
-    width: min(100% - var(--page_pad) * 2, var(--content_max));
     height: calc(100vw * 676 / 1920);
     max-height: 676px;
+  }
+
+  .course_scroll_stage {
+    width: min(100% - var(--page_pad) * 2, var(--content_max));
   }
 
   .course_scene_char {
@@ -559,22 +892,41 @@
     max-width: none;
   }
 
-  /* 장면은 그대로 두고 코스 카드를 한 장씩 넘겨 보는 구성 (Figma scroll_area) */
-  .course_list {
-    padding: 0;
-    gap: 0;
-  }
-
   .course_slide {
-    flex: 0 0 100%;
     padding-inline: 3.88%;
-    scroll-snap-align: start;
   }
 
   .course_card {
     width: 508px;
     gap: 36px;
     padding: 60px 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course_scroll_stage {
+    height: auto !important;
+  }
+
+  .course_sticky {
+    position: relative;
+    height: auto;
+  }
+
+  .course_scene {
+    position: relative;
+    height: auto;
+    min-height: 620px;
+  }
+
+  .course_list {
+    position: relative;
+    transform: none !important;
+  }
+
+  .course_slide {
+    flex-basis: auto;
+    min-height: 620px;
   }
 }
 
@@ -608,12 +960,12 @@
   width: 100%;
   padding: 40px 24px;
   border-radius: var(--radius_2xl);
-  background-color: var(--color_surface_card);
+  /* background-color: var(--color_surface_card); */
   background-image: url("../assets/npass/ticket_bg.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  box-shadow: 0 12px 32px rgba(49, 50, 50, 0.1);
+  /* box-shadow: 0 12px 32px rgba(49, 50, 50, 0.1); */
   overflow: hidden;
 }
 
@@ -713,180 +1065,81 @@
 }
 
 /* ==========================================================================
-   5. restaurant (디자인에 존재하는 섹션 — 슬라이더)
+   5. restaurant
    ========================================================================== */
 .restaurant_section {
-  position: relative;
-  background-color: #1c1c1c;
-  color: var(--color_text_white);
-  overflow: hidden;
+  padding: 88px 0;
+  background-color: var(--color_bg);
 }
 
-.restaurant_bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: blur(2.5px);
-  transform: scale(1.03);
-}
-
-.restaurant_section::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background-color: rgba(0, 0, 0, 0.35);
-  pointer-events: none;
+.restaurant_inner,
+.restaurant_item_inner,
+.restaurant_texts,
+.restaurant_info,
+.restaurant_all {
+  display: flex;
+  flex-direction: column;
 }
 
 .restaurant_inner {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  align-items: center;
-  padding: 64px 0;
+  gap: 48px;
 }
 
 .restaurant_head {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  align-items: center;
-  font-family: var(--font_display);
-  font-weight: 700;
-  color: var(--color_gray_50);
-  text-align: center;
 }
 
 .restaurant_kicker {
-  font-size: var(--fs_card_label);
-  line-height: 1.2;
-  text-transform: capitalize;
+  color: var(--color_gray_600);
+  font-size: clamp(16px, 3.8vw, 24px);
+  line-height: 1.4;
 }
 
-.restaurant_title {
-  font-family: var(--font_display);
-  font-size: clamp(32px, 6vw, 56px);
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.restaurant_title span {
+.restaurant_list {
   display: block;
 }
 
-.restaurant_slides {
+.restaurant_stack_layer {
   position: relative;
-  width: min(100%, 400px);
-  aspect-ratio: 1 / 1;
-  background-color: #c0c0c0;
-  overflow: hidden;
 }
 
-.restaurant_slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity var(--duration) var(--ease_out);
+.restaurant_stack_layer .restaurant_stack_layer {
+  margin-top: 40px;
 }
 
-.restaurant_slide.is_active {
-  opacity: 1;
+.restaurant_item,
+.restaurant_all {
+  border-top: 1px solid var(--color-new_primary-900, #212414);
 }
 
-.restaurant_slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.restaurant_controls {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.restaurant_nav {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  background-color: rgba(217, 217, 217, 0.2);
-  transition: background-color var(--duration) var(--ease_out), opacity var(--duration) var(--ease_out);
-}
-
-.restaurant_nav img {
-  width: 24px;
-  height: 24px;
-}
-
-.restaurant_nav_prev img {
-  transform: scaleX(-1);
-}
-
-.restaurant_nav:hover {
-  background-color: rgba(217, 217, 217, 0.42);
-}
-
-.restaurant_nav:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-
-.restaurant_dots {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.restaurant_dot {
-  width: 36px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  background: none;
-}
-
-.restaurant_dot::after {
-  content: "";
-  display: block;
-  width: 100%;
-  height: 3px;
-  background-color: var(--color_gray_600);
-  transition: background-color var(--duration) var(--ease_out);
-}
-
-.restaurant_dot[aria-current="true"]::after {
-  background-color: var(--color_text_white);
+.restaurant_item_inner {
+  gap: 28px;
+  padding: 28px 0 0;
 }
 
 .restaurant_texts {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  width: 100%;
+  gap: 36px;
 }
 
-.restaurant_enjoy {
-  font-family: var(--font_display);
-  font-size: clamp(24px, 4vw, 32px);
-  font-weight: 700;
+.restaurant_name,
+.restaurant_all_title {
+  color: var(--color_primary_800);
+  font-family: var(--font_title);
+  font-size: clamp(24px, 6.6vw, 32px);
+  font-weight: 600;
   line-height: 1.1;
 }
 
-.restaurant_body {
-  font-size: var(--fs_sm);
-  line-height: 1.2;
+.restaurant_info {
+  gap: 24px;
 }
 
-.restaurant_body p + p {
-  margin-top: 8px;
+.restaurant_body {
+  color: var(--color_gray_700);
+  font-size: clamp(16px, 4.5vw, 20px);
+  line-height: 1.3;
 }
 
 .restaurant_more {
@@ -895,68 +1148,152 @@
   justify-content: center;
   align-self: flex-start;
   min-height: 44px;
-  padding: 12px 40px;
-  border-radius: var(--radius_sm);
-  background-color: rgba(128, 128, 128, 0.2);
-  color: var(--color_text_white);
+  padding: 12px 20px;
+  border: 1px solid var(--color_new_primary_600);
+  border-radius: var(--radius_round);
+  background-color: rgba(228, 228, 228, 0.2);
+  backdrop-filter: blur(10px);
+  color: var(--color_text);
   font-size: var(--fs_sm);
   line-height: 1.2;
   transition: background-color var(--duration) var(--ease_out);
 }
 
 .restaurant_more:hover {
-  background-color: rgba(128, 128, 128, 0.45);
+  background-color: rgba(228, 228, 228, 0.5);
+}
+
+.restaurant_image {
+  width: 100%;
+  aspect-ratio: 481.452 / 535;
+  border-radius: 20px;
+  object-fit: cover;
+}
+
+.restaurant_all {
+  align-items: center;
+  gap: 80px;
+  min-height: 360px;
+  padding: 56px 0;
+  text-align: center;
+}
+
+.restaurant_all .restaurant_more {
+  align-self: center;
+}
+
+@media (min-width: 834px) {
+  .restaurant_section {
+    padding: 120px 0;
+  }
+
+  .restaurant_item_inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 38%);
+    align-items: stretch;
+    gap: 30px;
+  }
+
+  .restaurant_item,
+  .restaurant_all {
+    position: sticky;
+    background-color: var(--color_bg);
+  }
+
+  .restaurant_stack_card_1 {
+    top: 48px;
+    z-index: 1;
+  }
+
+  .restaurant_stack_card_2 {
+    top: 148px;
+    z-index: 2;
+  }
+
+  .restaurant_stack_card_3 {
+    top: 248px;
+    z-index: 3;
+  }
+
+  .restaurant_stack_card_4 {
+    top: 348px;
+    z-index: 4;
+  }
+
+  .restaurant_stack_end {
+    height: calc(100svh - 348px);
+  }
+
+  .restaurant_texts {
+    justify-content: space-between;
+    min-height: 420px;
+  }
+
+  .restaurant_image {
+    height: 420px;
+  }
 }
 
 @media (min-width: 1280px) {
   .restaurant_section {
-    height: calc(100vw * 814 / 1920);
-    min-height: 560px;
+    padding: 200px 0;
   }
 
   .restaurant_inner {
-    display: grid;
-    grid-template-columns: 1fr 400px 1fr;
-    align-items: center;
-    gap: 40px;
-    height: 100%;
-    padding: 0;
-    width: min(100% - var(--page_pad) * 2, 1200px);
+    gap: 60px;
   }
 
-  .restaurant_center {
+  .restaurant_list {
+    padding-bottom: 0;
+  }
+
+  .restaurant_stack_layer .restaurant_stack_layer {
+    margin-top: 60px;
+  }
+
+  .restaurant_item {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: center;
-    grid-column: 2;
-    grid-row: 1;
+    justify-content: flex-end;
+  }
+
+  .restaurant_item_inner {
+    grid-template-columns: minmax(0, 1fr) 36.71%;
+    gap: 0;
+    width: 81.966%;
+    min-height: 599px;
+    padding: 32px 0 32px 30px;
+    border-left: 1px solid var(--color-new_primary-850, #31361e);
   }
 
   .restaurant_texts {
-    grid-column: 1;
-    grid-row: 1;
-    gap: 48px;
+    justify-content: flex-start;
+    gap: 140px;
+    height: 535px;
   }
 
-  .restaurant_note {
-    grid-column: 3;
-    grid-row: 1;
-    text-align: right;
+  .restaurant_name {
+    padding: 20px 0;
   }
 
-  .restaurant_more {
-    padding: 12px 64px;
+  .restaurant_info {
+    gap: 32px;
   }
-}
 
-.restaurant_note {
-  font-size: var(--fs_sm);
-  line-height: 1.2;
-}
+  .restaurant_image {
+    width: 100%;
+    height: 535px;
+  }
 
-.restaurant_note p + p {
-  margin-top: 8px;
+  .restaurant_all {
+    justify-content: flex-start;
+    gap: 140px;
+    min-height: 599px;
+    padding: 52px 30px;
+  }
+
+  .restaurant_all_title {
+    padding: 20px 0;
+  }
 }
 
 /* ==========================================================================
@@ -979,6 +1316,10 @@
 .gift_track_wrap {
   position: relative;
   width: 100%;
+}
+
+.gift_cursor {
+  display: none;
 }
 
 .gift_track {
@@ -1063,7 +1404,6 @@
 
   .gift_card {
     width: 285px;
-    cursor: url("../assets/icon/arrow_cursor.png") 22 20, pointer;
   }
 
   .gift_card_link {
@@ -1114,6 +1454,52 @@
     top: 43px;
     z-index: 3;
     margin: 0;
+  }
+}
+
+@media (min-width: 1280px) and (hover: hover) and (pointer: fine) {
+  .gift_track,
+  .gift_track * {
+    cursor: none;
+  }
+
+  .gift_cursor {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    width: 100px;
+    height: 100px;
+    border: 1px solid #262626;
+    border-radius: 50px;
+    background: rgba(190, 190, 190, 0.2);
+    color: #262626;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    backdrop-filter: blur(4.4px);
+    -webkit-backdrop-filter: blur(4.4px);
+    transition: opacity 160ms ease, visibility 160ms ease;
+  }
+
+  .gift_cursor.is_visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .gift_cursor svg {
+    width: 56px;
+    height: 40px;
+  }
+
+  .gift_cursor path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 }
 
