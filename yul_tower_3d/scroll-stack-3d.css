@@ -1,0 +1,131 @@
+/*
+ * scroll-stack-3d.css
+ * 모든 규칙은 .s3d 아래로만 스코프된다. 호스트 페이지의 스타일을 건드리지 않는다.
+ * 색·글꼴은 아래 변수만 덮어쓰면 호스트 디자인에 맞출 수 있다.
+ */
+
+.s3d {
+  --s3d-bg: transparent;
+  --s3d-ink: #2f3328;
+  --s3d-muted: #9aa08c;
+  --s3d-accent: #6e7a4e;
+  --s3d-font: inherit;
+
+  position: relative;
+  background: var(--s3d-bg);
+}
+
+/* 핀으로 고정되는 실제 화면. 높이는 뷰포트 하나. */
+.s3d__stage {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.s3d__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* --- 오버레이 UI --- */
+
+.s3d__ui {
+  position: absolute;
+  inset: 0;
+  padding: clamp(20px, 5vw, 64px);
+  pointer-events: none;
+  font-family: var(--s3d-font);
+  color: var(--s3d-ink);
+}
+
+.s3d__eyebrow {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--s3d-muted);
+}
+
+.s3d__steps {
+  position: absolute;
+  left: clamp(20px, 5vw, 64px);
+  bottom: clamp(20px, 5vw, 64px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.s3d__step {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  opacity: 0.28;
+  transform: translateX(-4px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.s3d__step.is-on {
+  opacity: 0.55;
+  transform: none;
+}
+
+.s3d__step.is-now {
+  opacity: 1;
+  font-weight: 600;
+}
+
+.s3d__num {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--s3d-muted);
+}
+
+.s3d__step.is-now .s3d__num {
+  color: var(--s3d-accent);
+}
+
+/* 진행 레일 */
+.s3d__rail {
+  position: absolute;
+  right: clamp(20px, 5vw, 64px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: min(220px, 32vh);
+  background: currentColor;
+  opacity: 0.12;
+  border-radius: 2px;
+}
+
+.s3d__rail-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--s3d-accent);
+  border-radius: 2px;
+  transform: scaleY(0);
+  transform-origin: top center;
+}
+
+@media (max-width: 720px) {
+  .s3d__steps {
+    grid-template-columns: repeat(2, auto);
+    gap: 4px 18px;
+  }
+  .s3d__rail {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .s3d__step {
+    transition: none;
+  }
+}
