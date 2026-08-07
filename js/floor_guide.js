@@ -5,13 +5,15 @@
   const floorSections = Array.from(document.querySelectorAll("[data-floor-section]"));
   const towerImages = Array.from(document.querySelectorAll("[data-tower-floor]"));
   const activeFloorStatus = document.querySelector("[data-active-floor-status]");
-  const viewMoreLinks = document.querySelectorAll("[data-view-more]");
 
   if (!floorStage || floorSections.length === 0 || towerImages.length === 0) {
     return;
   }
 
-  let activeFloor = "f5";
+  /* 디자인과 동일하게 최상층에서 시작합니다. */
+  const DEFAULT_FLOOR = "t7";
+
+  let activeFloor = DEFAULT_FLOOR;
   let scrollFrame = 0;
 
   function formatFloorName(floorName) {
@@ -102,20 +104,9 @@
     window.addEventListener("resize", handleViewportChange);
   }
 
-  function handleViewMoreClick(event) {
-    event.preventDefault();
-  }
-
-  function initViewMoreLinks() {
-    viewMoreLinks.forEach((viewMoreLink) => {
-      viewMoreLink.addEventListener("click", handleViewMoreClick);
-    });
-  }
-
   function initFloorGuide() {
     floorStage.dataset.activeFloor = activeFloor;
     initFloorObserver();
-    initViewMoreLinks();
     updateFloorFromViewport();
   }
 
