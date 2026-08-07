@@ -400,10 +400,9 @@
 .course_section {
   display: flex;
   flex-direction: column;
-  gap: 40px;
   align-items: center;
-  padding: var(--section_space) 0;
-  overflow: hidden;
+  padding: 0;
+  overflow: clip;
 }
 
 .course_head {
@@ -411,10 +410,29 @@
   text-align: center;
 }
 
+.course_scroll_stage {
+  position: relative;
+  width: 100%;
+}
+
+.course_sticky {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 100svh;
+  gap: 40px;
+  padding: 32px 0;
+  overflow: hidden;
+}
+
 .course_scene {
   position: relative;
   width: 100%;
   height: min(160vw, 620px);
+  flex: 0 0 auto;
   overflow: hidden;
 }
 
@@ -444,31 +462,22 @@
 }
 
 .course_list {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100%;
-  gap: 16px;
-  padding: 32px var(--page_pad);
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-width: none;
-  scroll-snap-type: y mandatory;
-  overscroll-behavior-y: auto;
-}
-
-.course_list::-webkit-scrollbar {
-  display: none;
+  width: 100%;
+  will-change: transform;
 }
 
 .course_slide {
   display: flex;
-  flex: 0 0 auto;
+  flex: 0 0 var(--course_scene_height, 620px);
   align-items: center;
   width: 100%;
-  scroll-snap-align: center;
+  padding: 32px var(--page_pad);
 }
 
 .course_slide:nth-child(odd) {
@@ -528,12 +537,17 @@
 }
 
 @media (min-width: 834px) {
+  .course_sticky {
+    gap: 48px;
+    padding: 40px 0;
+  }
+
   .course_scene {
     height: 640px;
     border-radius: var(--radius_xl);
   }
 
-  .course_list {
+  .course_slide {
     padding: 48px 40px;
   }
 
@@ -543,15 +557,17 @@
 }
 
 @media (min-width: 1280px) {
-  .course_section {
-    gap: 80px;
-    padding: 100px 0 160px;
+  .course_sticky {
+    gap: 64px;
   }
 
   .course_scene {
-    width: min(100% - var(--page_pad) * 2, var(--content_max));
     height: calc(100vw * 676 / 1920);
     max-height: 676px;
+  }
+
+  .course_scroll_stage {
+    width: min(100% - var(--page_pad) * 2, var(--content_max));
   }
 
   .course_scene_char {
@@ -559,22 +575,41 @@
     max-width: none;
   }
 
-  /* 장면은 그대로 두고 코스 카드를 한 장씩 넘겨 보는 구성 (Figma scroll_area) */
-  .course_list {
-    padding: 0;
-    gap: 0;
-  }
-
   .course_slide {
-    flex: 0 0 100%;
     padding-inline: 3.88%;
-    scroll-snap-align: start;
   }
 
   .course_card {
     width: 508px;
     gap: 36px;
     padding: 60px 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course_scroll_stage {
+    height: auto !important;
+  }
+
+  .course_sticky {
+    position: relative;
+    height: auto;
+  }
+
+  .course_scene {
+    position: relative;
+    height: auto;
+    min-height: 620px;
+  }
+
+  .course_list {
+    position: relative;
+    transform: none !important;
+  }
+
+  .course_slide {
+    flex-basis: auto;
+    min-height: 620px;
   }
 }
 

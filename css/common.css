@@ -1179,7 +1179,7 @@ html .course_page .course_description {
   position: fixed;
   right: calc(var(--quick_gap) + var(--scrollbar_gap, 0px));
   bottom: var(--quick_gap);
-  z-index: 60;
+  z-index: 100;
   display: flex;
   flex-direction: column;
   align-items: center;
