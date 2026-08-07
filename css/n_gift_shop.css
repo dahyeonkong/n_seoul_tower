@@ -26,7 +26,7 @@
   --giftshop_fs_name: 15px;
   --giftshop_fs_price: 22px;
   --giftshop_fs_hours: 14px;
-  --giftshop_fs_hours_sub: 12px;
+  --giftshop_fs_hours_sub: 11px;
 
   /* layout */
   --giftshop_sidebar_width: 340px;
@@ -201,12 +201,12 @@
   align-items: center;
   gap: 12px;
   color: var(--giftshop_deep);
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: -0.23px;
 }
 
 .giftshop_tel_label {
-  font-size: 16px;
+  font-size: 12px;
 }
 
 /* 터치 영역 44px 확보 (AGENTS 6.3) */
@@ -258,12 +258,11 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    min-height: calc(100vh - var(--header_height));
     padding-top: 68px;
   }
 
   .giftshop_intro .giftshop_toolbar {
-    margin-top: auto;
+    margin: 40px 0;
   }
 
   /* 사이드바가 열린 상태는 시안 배치(사이드바 340 + 여백 80 + 콘텐츠 1406)를 따릅니다. */
@@ -283,7 +282,7 @@
 .giftshop_header_title {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   width: 100%;
   max-width: 683px;
   padding: 16px 0;
@@ -467,7 +466,7 @@
   gap: 4px;
   font-family: var(--font_body);
   font-size: var(--giftshop_fs_price);
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.2;
 }
 
@@ -576,7 +575,7 @@
 
 .giftshop_page_num.is_active {
   color: var(--giftshop_deep);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 @media (min-width: 834px) {
