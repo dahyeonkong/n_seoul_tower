@@ -223,6 +223,183 @@ function renderEvents(events) {
   list.appendChild(fragment);
 }
 
+function initEventPathMotion() {
+  var section = document.querySelector("#events_section");
+  var sticky = document.querySelector("[data-events-sticky]");
+  var curve = section ? section.querySelector(".events_curve") : null;
+  var list = section ? section.querySelector("[data-events-list]") : null;
+  var items = list ? Array.from(list.querySelectorAll(".event_item")) : [];
+  var viewButtons = section ? Array.from(section.querySelectorAll("[data-events-view]")) : [];
+
+  if (!section || !sticky || !curve || !list || items.length === 0) {
+    return;
+  }
+
+  var desktopQuery = window.matchMedia("(min-width: 1280px)");
+  var reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var pathElement = null;
+  var visibleStartLength = 0;
+  var visibleEndLength = 0;
+  var isRenderRequested = false;
+  var isCardView = false;
+
+  function renderCardEvents() {
+    section.classList.add("is_card_view");
+    list.style.removeProperty("--event_path_x");
+    list.style.removeProperty("--event_path_y");
+
+    items.forEach(function (item) {
+      item.classList.remove("is_active");
+      item.removeAttribute("aria-hidden");
+      item.inert = false;
+    });
+  }
+
+  function renderStaticEvents() {
+    section.classList.add("has_static_events");
+    list.style.removeProperty("--event_path_x");
+    list.style.removeProperty("--event_path_y");
+
+    items.forEach(function (item) {
+      item.classList.remove("is_active");
+      item.removeAttribute("aria-hidden");
+      item.inert = false;
+    });
+  }
+
+  function findVisiblePathRange() {
+    var totalLength = pathElement.getTotalLength();
+    var sampleCount = 800;
+    var firstVisibleLength = null;
+    var lastVisibleLength = null;
+
+    for (var index = 0; index <= sampleCount; index += 1) {
+      var length = totalLength * index / sampleCount;
+      var point = pathElement.getPointAtLength(length);
+      var isVisible = point.x >= 0 && point.x <= 1920 && point.y >= 0 && point.y <= 1045;
+
+      if (isVisible && firstVisibleLength === null) {
+        firstVisibleLength = length;
+      }
+
+      if (isVisible) {
+        lastVisibleLength = length;
+      }
+    }
+
+    visibleStartLength = 0;
+    visibleEndLength = lastVisibleLength === null ? totalLength : lastVisibleLength;
+  }
+
+  function renderEventPathMotion() {
+    isRenderRequested = false;
+
+    if (isCardView) {
+      renderCardEvents();
+      return;
+    }
+
+    if (!desktopQuery.matches || reducedMotionQuery.matches || !pathElement) {
+      renderStaticEvents();
+      return;
+    }
+
+    section.classList.remove("has_static_events");
+    var sectionRect = section.getBoundingClientRect();
+    var stickyRect = sticky.getBoundingClientRect();
+    var curveRect = curve.getBoundingClientRect();
+    var scrollTravel = Math.max(1, section.offsetHeight - sticky.offsetHeight);
+    var progress = Math.min(1, Math.max(0, -sectionRect.top / scrollTravel));
+    var pathLength = visibleEndLength - (visibleEndLength - visibleStartLength) * progress;
+    var point = pathElement.getPointAtLength(pathLength);
+    var pathX = curveRect.left - stickyRect.left + point.x * curveRect.width / 1920;
+    var pathY = curveRect.top - stickyRect.top + point.y * curveRect.height / 1045;
+    var pathPositionRatio = pathX / Math.max(1, stickyRect.width);
+    var activeIndex = pathPositionRatio > 0.697 ? 2 : pathPositionRatio > 0.394 ? 1 : 0;
+
+    list.style.setProperty("--event_path_x", pathX.toFixed(2) + "px");
+    list.style.setProperty("--event_path_y", pathY.toFixed(2) + "px");
+
+    items.forEach(function (item, index) {
+      var isActive = index === activeIndex;
+      item.classList.toggle("is_active", isActive);
+      item.setAttribute("aria-hidden", String(!isActive));
+      item.inert = !isActive;
+    });
+  }
+
+  function requestEventPathRender() {
+    if (isRenderRequested) {
+      return;
+    }
+
+    isRenderRequested = true;
+    window.requestAnimationFrame(renderEventPathMotion);
+  }
+
+  function setEventViewMode(viewMode) {
+    isCardView = viewMode === "cards";
+    section.classList.toggle("is_card_view", isCardView);
+    section.scrollIntoView({ block: "start" });
+
+    viewButtons.forEach(function (button) {
+      var isActive = button.getAttribute("data-events-view") === viewMode;
+      button.classList.toggle("is_active", isActive);
+      button.setAttribute("aria-pressed", String(isActive));
+    });
+
+    if (isCardView) {
+      renderCardEvents();
+      return;
+    }
+
+    requestEventPathRender();
+  }
+
+  viewButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      setEventViewMode(button.getAttribute("data-events-view"));
+    });
+  });
+
+  fetch(curve.src)
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error("Event path SVG could not be loaded.");
+      }
+
+      return response.text();
+    })
+    .then(function (svgText) {
+      var svgDocument = new DOMParser().parseFromString(svgText, "image/svg+xml");
+      var sourcePath = svgDocument.querySelector("path");
+
+      if (!sourcePath) {
+        renderStaticEvents();
+        return;
+      }
+
+      var geometry = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      pathElement = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      geometry.classList.add("events_path_geometry");
+      geometry.setAttribute("aria-hidden", "true");
+      pathElement.setAttribute("d", sourcePath.getAttribute("d"));
+      geometry.appendChild(pathElement);
+      section.appendChild(geometry);
+
+      findVisiblePathRange();
+      requestEventPathRender();
+    })
+    .catch(function () {
+      renderStaticEvents();
+    });
+
+  window.addEventListener("scroll", requestEventPathRender, { passive: true });
+  window.addEventListener("resize", requestEventPathRender);
+  desktopQuery.addEventListener("change", requestEventPathRender);
+  reducedMotionQuery.addEventListener("change", requestEventPathRender);
+}
+
 /* --------------------------------------------------------------------------
    recommended course
    -------------------------------------------------------------------------- */
@@ -521,6 +698,7 @@ function renderCustomGoods(items) {
    -------------------------------------------------------------------------- */
 function initMain() {
   renderEvents(mainPageData.events);
+  initEventPathMotion();
   renderCourses(mainPageData.courses);
   renderGiftItems(mainPageData.giftShopItems);
   renderTowerStacks(mainPageData.towerParts);
