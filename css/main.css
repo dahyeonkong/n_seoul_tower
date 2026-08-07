@@ -211,7 +211,11 @@
 .events_section {
   position: relative;
   padding: var(--section_space) 0 0;
-  overflow: hidden;
+  overflow: clip;
+}
+
+.events_sticky {
+  position: relative;
 }
 
 .events_head {
@@ -227,6 +231,14 @@
   width: 100%;
   height: auto;
   opacity: 0.9;
+  pointer-events: none;
+}
+
+.events_path_geometry {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
   pointer-events: none;
 }
 
@@ -311,6 +323,65 @@
   line-height: 1.2;
   text-transform: capitalize;
 }
+.events_view_toggle {
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.events_view_button {
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid var(--color_new_primary_600);
+  border-radius: var(--radius_round);
+  background-color: transparent;
+  color: var(--color_primary_800);
+  font-size: var(--fs_sm);
+  line-height: 1.2;
+  transition: background-color var(--duration) var(--ease_out), color var(--duration) var(--ease_out);
+}
+
+.events_view_button.is_active {
+  background-color: var(--color_primary_800);
+  color: var(--color_bg);
+}
+
+.events_view_button:focus-visible {
+  outline: 2px solid var(--color_primary_800);
+  outline-offset: 3px;
+}
+
+@media (max-width: 1279px) {
+  .events_curve,
+  .event_gondola {
+    display: none;
+  }
+
+  .events_list {
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .event_item {
+    width: 100%;
+    scroll-snap-align: none;
+  }
+}
+
+@media (max-width: 833px) {
+  .events_list {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 834px) and (max-width: 1279px) {
+  .events_list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
 
 /* 데스크톱: 곡선 경로를 따라 서로 다른 높이에 배치
    좌표는 Figma event 프레임(1920 x 1180)의 카드·곤돌라 위치를 비율로 환산한 값 */
@@ -395,6 +466,248 @@
 
   .event_card_desc {
     font-size: 14px;
+  }
+}
+
+
+/* Desktop scroll interaction: one gondola-card group follows the SVG path. */
+@media (min-width: 1280px) {
+  .events_section {
+    height: 300svh;
+    min-height: 0;
+  }
+
+  .events_head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 16px;
+  }
+
+  .events_view_toggle {
+    display: flex;
+    position: relative;
+    z-index: 3;
+  }
+
+  .events_sticky {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  .events_curve {
+    top: 60%;
+    transform: translateY(-50%);
+  }
+  .events_list {
+    position: absolute;
+    inset: 0;
+  }
+
+  .event_item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 11.2%;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate3d(var(--event_path_x, 0), var(--event_path_y, 0), 0) translate(-50%, 0);
+    transition: opacity 240ms var(--ease_out);
+    will-change: transform, opacity;
+  }
+
+  .event_item.is_active {
+    z-index: 2;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .event_item[data-event-slot] .event_gondola {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 130%;
+    transform: translateX(-11.538%);
+  }
+
+  .event_item[data-event-slot] .event_card {
+    top: 35%;
+    left: 88%;
+    width: 192%;
+  }
+
+  .event_item[data-event-slot="1"] .event_card {
+    right: 88%;
+    left: auto;
+  }
+
+  .event_item[data-event-slot="2"] .event_card {
+    top: 82%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .event_item[data-event-slot="2"]:hover .event_card,
+  .event_item[data-event-slot="2"]:focus-within .event_card {
+    transform: translate(-50%, -4px);
+  }
+
+  .event_item[data-event-slot="3"] .event_card {
+    top: 22%;
+    left: 105%;
+  }
+}
+
+@media (min-width: 1280px) {
+  .events_section.has_static_events {
+    height: auto;
+    padding: var(--section_space) 0;
+  }
+
+  .has_static_events .events_sticky {
+    position: relative;
+    height: auto;
+    overflow: visible;
+  }
+
+  .has_static_events .events_curve,
+  .has_static_events .event_gondola {
+    display: none;
+  }
+
+  .has_static_events .events_head {
+    position: relative;
+    top: auto;
+    left: auto;
+  }
+
+  .has_static_events .events_list {
+    position: relative;
+    display: flex;
+    gap: 24px;
+    margin-top: 48px;
+    padding: 0 var(--page_pad);
+  }
+
+  .has_static_events .event_item {
+    position: relative;
+    width: calc((100% - 48px) / 3);
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  .has_static_events .event_item[data-event-slot] .event_card {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    width: 100%;
+  }
+}
+
+@media (min-width: 1280px) {
+  .events_section.is_card_view {
+    height: auto;
+    min-height: 100svh;
+    padding: var(--section_space) 0;
+  }
+
+  .is_card_view .events_sticky {
+    position: relative;
+    height: auto;
+    overflow: visible;
+  }
+
+  .is_card_view .events_curve,
+  .is_card_view .event_gondola {
+    display: none;
+  }
+
+  .is_card_view .events_head {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+  }
+
+  .is_card_view .events_list {
+    position: relative;
+    display: flex;
+    gap: 24px;
+    margin-top: 48px;
+    padding: 0 var(--page_pad);
+  }
+
+  .is_card_view .event_item {
+    position: relative;
+    width: calc((100% - 48px) / 3);
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+
+  .is_card_view .event_item[data-event-slot] .event_card {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    width: 100%;
+    transform: none;
+  }
+}
+
+@media (min-width: 1280px) and (prefers-reduced-motion: reduce) {
+  .events_section {
+    height: auto;
+    padding: var(--section_space) 0;
+  }
+
+  .events_sticky {
+    position: relative;
+    height: auto;
+    overflow: visible;
+  }
+
+  .events_curve,
+  .event_gondola {
+    display: none;
+  }
+
+  .events_head {
+    position: relative;
+    top: auto;
+    left: auto;
+  }
+
+  .events_list {
+    position: relative;
+    display: flex;
+    gap: 24px;
+    margin-top: 48px;
+    padding: 0 var(--page_pad);
+  }
+
+  .event_item,
+  .event_item.is_active {
+    position: relative;
+    width: calc((100% - 48px) / 3);
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  .event_item[data-event-slot] .event_card {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    width: 100%;
   }
 }
 

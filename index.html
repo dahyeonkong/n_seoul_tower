@@ -221,15 +221,21 @@
 
       <!-- ===================== 2. events ===================== -->
       <section class="events_section" id="events_section" aria-labelledby="events_title">
-        <img class="events_curve" src="./assets/event_path.svg" alt="" aria-hidden="true" width="1920" height="1045" loading="lazy">
+        <div class="events_sticky" data-events-sticky>
+          <img class="events_curve" src="./assets/event_path.svg" alt="" aria-hidden="true" width="1920" height="1045" loading="lazy">
 
-        <div class="page_container events_head">
-          <h2 class="section_title" id="events_title">Events</h2>
+          <div class="page_container events_head">
+            <h2 class="section_title" id="events_title">Events</h2>
+            <div class="events_view_toggle" role="group" aria-label="Choose events view">
+              <button class="events_view_button is_active" type="button" data-events-view="motion" aria-pressed="true" aria-controls="events_list">Interactive View</button>
+              <button class="events_view_button" type="button" data-events-view="cards" aria-pressed="false" aria-controls="events_list">Card View</button>
+            </div>
+          </div>
+
+          <ul class="events_list" id="events_list" data-events-list>
+            <!-- renderEvents() -->
+          </ul>
         </div>
-
-        <ul class="events_list" data-events-list>
-          <!-- renderEvents() -->
-        </ul>
       </section>
 
       <!-- ===================== 3. recommended course ===================== -->
