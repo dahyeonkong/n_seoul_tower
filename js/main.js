@@ -196,9 +196,9 @@ function renderEvents(events) {
     item.setAttribute("data-event-slot", String(event.slot));
 
     var gondola = createElement("img", "event_gondola");
-    gondola.src = ASSET_PATH + "event/cablecar_nbear.png";
+    gondola.src = ASSET_PATH + "Angolmi_cable.gif";
     gondola.alt = "";
-    gondola.width = 258;
+    gondola.width = "auto";
     gondola.height = 301;
     gondola.loading = "lazy";
     gondola.setAttribute("aria-hidden", "true");

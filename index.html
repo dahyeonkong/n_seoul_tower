@@ -221,7 +221,7 @@
 
       <!-- ===================== 2. events ===================== -->
       <section class="events_section" id="events_section" aria-labelledby="events_title">
-        <img class="events_curve" src="./assets/event/events_curve.svg" alt="" aria-hidden="true" width="2549" height="1241" loading="lazy">
+        <img class="events_curve" src="./assets/event_path.svg" alt="" aria-hidden="true" width="1920" height="1045" loading="lazy">
 
         <div class="page_container events_head">
           <h2 class="section_title" id="events_title">Events</h2>
@@ -306,7 +306,7 @@
                     <button class="restaurant_more" type="button" data-pending-link aria-disabled="true">View more</button>
                   </div>
                 </div>
-                <img class="restaurant_image" src="./assets/floorguide/f7_ngrill_card.png" alt="Night dining table overlooking Seoul at N Grill" width="1920" height="1080" loading="lazy">
+                <img class="restaurant_image" src="./assets/main_restaurant/res_1.png" alt="Night dining table overlooking Seoul at N Grill" width="1920" height="1080" loading="lazy">
               </div>
             </article>
 
@@ -323,7 +323,7 @@
                     <button class="restaurant_more" type="button" data-pending-link aria-disabled="true">View more</button>
                   </div>
                 </div>
-                <img class="restaurant_image" src="./assets/restaurant/burger_image5.png" alt="N Burger Seoul bulgogi burger" width="396" height="683" loading="lazy">
+                <img class="restaurant_image" src="./assets/main_restaurant/res_2.png" alt="N Burger Seoul bulgogi burger" width="396" height="683" loading="lazy">
               </div>
             </article>
 
@@ -340,7 +340,7 @@
                     <button class="restaurant_more" type="button" data-pending-link aria-disabled="true">View more</button>
                   </div>
                 </div>
-                <img class="restaurant_image" src="./assets/floorguide/t1_durum_card.png" alt="Korean street food served at Durumi Bunsik" width="1640" height="1009" loading="lazy">
+                <img class="restaurant_image" src="./assets/main_restaurant/res_3.png" alt="Korean street food served at Durumi Bunsik" width="1640" height="1009" loading="lazy">
               </div>
             </article>
 
@@ -541,56 +541,8 @@
       </div>
     </footer>
 
-    <!-- ===================== floating quick menu (987:7708) =====================
-         닫힘 상태에는 곰 버튼과 CLICK ME 링만 보이고, 누르면 액션 4개가 펼쳐집니다.
-         CLICK ME 글자는 common.js 의 renderQuickMenuRing() 이 채웁니다. -->
-    <div class="quick_menu" data-quick-menu>
-      <div class="quick_menu_actions" id="quick_menu_actions" data-quick-actions hidden>
-        <!-- TODO: 챗봇 서비스가 확정되지 않아 안내 메시지만 노출합니다. -->
-        <button class="quick_action" type="button" data-pending-link aria-disabled="true">
-          <img src="./assets/icon/quick/chat.svg" alt="" width="36" height="36">
-          <span class="visually_hidden">Chatbot</span>
-        </button>
-
-        <!-- TODO: 검색 페이지가 확정되지 않아 안내 메시지만 노출합니다. -->
-        <button class="quick_action" type="button" data-pending-link aria-disabled="true">
-          <img src="./assets/icon/quick/search.svg" alt="" width="36" height="36">
-          <span class="visually_hidden">Search</span>
-        </button>
-
-        <div class="quick_section">
-          <button class="quick_action" type="button" data-quick-section-button aria-expanded="false"
-            aria-controls="quick_section_menu">
-            <img src="./assets/icon/quick/sections.svg" alt="" width="36" height="36">
-            <span class="visually_hidden">Move to a section</span>
-          </button>
-          <nav class="quick_section_menu" id="quick_section_menu" data-quick-section-menu
-            aria-label="Sections on this page" hidden>
-            <p class="quick_section_title">quick menu</p>
-            <ul class="quick_section_list">
-              <li><a class="quick_section_link" href="#hero_section">main</a></li>
-              <li><a class="quick_section_link" href="#events_section">events</a></li>
-              <li><a class="quick_section_link" href="#course_section">course</a></li>
-              <li><a class="quick_section_link" href="#pass_section">n pass</a></li>
-              <li><a class="quick_section_link" href="#gift_section">n gift shop</a></li>
-              <li><a class="quick_section_link" href="#goods_section">custom goods</a></li>
-            </ul>
-          </nav>
-        </div>
-
-        <a class="quick_action" href="#top">
-          <img src="./assets/icon/quick/arrow_up.svg" alt="" width="36" height="36">
-          <span class="visually_hidden">Back to top</span>
-        </a>
-      </div>
-
-      <button class="quick_toggle" type="button" data-quick-toggle aria-expanded="false"
-        aria-controls="quick_menu_actions">
-        <img class="quick_toggle_image" src="./assets/icon/chatbot.png" alt="" width="96" height="96">
-        <span class="quick_toggle_ring" data-quick-ring aria-hidden="true"></span>
-        <span class="visually_hidden" data-quick-toggle-label>Open quick menu</span>
-      </button>
-    </div>
+    <!-- 공통 퀵 메뉴: 페이지별 섹션 목록은 common.js 설정에서 관리합니다. -->
+    <div data-quick-menu-mount></div>
   </div>
 
   <script src="./js/common.js"></script>
