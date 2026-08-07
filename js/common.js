@@ -7,6 +7,11 @@
 var LANGUAGE_STORAGE_KEY = "n_seoul_tower_language";
 var LANGUAGE_LABELS = { en: "English", ko: "Korean", ja: "Japanese", zh: "Chinese" };
 
+var LENIS_VERSION = "1.3.25";
+var LENIS_SCRIPT_URL = "https://unpkg.com/lenis@" + LENIS_VERSION + "/dist/lenis.min.js";
+var LENIS_STYLE_URL = "https://unpkg.com/lenis@" + LENIS_VERSION + "/dist/lenis.css";
+var lenisInstance = null;
+var lenisLoadPromise = null;
 /* --------------------------------------------------------------------------
    공통 유틸
    -------------------------------------------------------------------------- */
@@ -23,6 +28,112 @@ function isReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+/* --------------------------------------------------------------------------
+   Lenis smooth scroll
+   -------------------------------------------------------------------------- */
+function loadLenisAssets() {
+  if (window.Lenis) {
+    return Promise.resolve(true);
+  }
+
+  if (lenisLoadPromise) {
+    return lenisLoadPromise;
+  }
+
+  if (!document.querySelector('[data-lenis-style]')) {
+    var stylesheet = document.createElement("link");
+    stylesheet.rel = "stylesheet";
+    stylesheet.href = LENIS_STYLE_URL;
+    stylesheet.setAttribute("data-lenis-style", "");
+    document.head.appendChild(stylesheet);
+  }
+
+  lenisLoadPromise = new Promise(function (resolve) {
+    var script = document.querySelector('[data-lenis-script]');
+
+    function handleLenisLoad() {
+      resolve(typeof window.Lenis === "function");
+    }
+
+    function handleLenisError() {
+      resolve(false);
+    }
+
+    if (!script) {
+      script = document.createElement("script");
+      script.src = LENIS_SCRIPT_URL;
+      script.defer = true;
+      script.setAttribute("data-lenis-script", "");
+      script.addEventListener("load", handleLenisLoad, { once: true });
+      script.addEventListener("error", handleLenisError, { once: true });
+      document.head.appendChild(script);
+      return;
+    }
+
+    if (window.Lenis) {
+      handleLenisLoad();
+      return;
+    }
+
+    script.addEventListener("load", handleLenisLoad, { once: true });
+    script.addEventListener("error", handleLenisError, { once: true });
+  });
+
+  return lenisLoadPromise;
+}
+
+function destroySmoothScroll() {
+  if (!lenisInstance) {
+    return;
+  }
+
+  lenisInstance.destroy();
+  lenisInstance = null;
+}
+
+function initSmoothScroll() {
+  if (isReducedMotion() || lenisInstance) {
+    return;
+  }
+
+  loadLenisAssets().then(function (isLoaded) {
+    if (!isLoaded || isReducedMotion() || lenisInstance) {
+      return;
+    }
+
+    lenisInstance = new window.Lenis({
+      autoRaf: true,
+      autoToggle: true,
+      anchors: true,
+      allowNestedScroll: true
+    });
+
+    if (document.body.style.overflow === "hidden") {
+      lenisInstance.stop();
+    }
+  });
+}
+
+function initMotionPreference() {
+  var motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  function handleMotionPreferenceChange(event) {
+    if (event.matches) {
+      destroySmoothScroll();
+      return;
+    }
+
+    initSmoothScroll();
+  }
+
+  if (typeof motionPreference.addEventListener === "function") {
+    motionPreference.addEventListener("change", handleMotionPreferenceChange);
+  } else if (typeof motionPreference.addListener === "function") {
+    motionPreference.addListener(handleMotionPreferenceChange);
+  }
+
+  initSmoothScroll();
+}
 /* --------------------------------------------------------------------------
    서브페이지 공통 헤더
    마크업은 이 템플릿 한 곳에서 관리하고 현재 URL에 맞춰 활성 링크만 설정합니다.
@@ -442,6 +553,10 @@ function initGlobalMenu() {
     previousBodyOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
+    if (lenisInstance) {
+      lenisInstance.stop();
+    }
+
     var gap = Math.round(sensor.getBoundingClientRect().width - widthBefore);
     if (gap > 0) {
       document.documentElement.style.setProperty("--scrollbar_gap", gap + "px");
@@ -451,6 +566,10 @@ function initGlobalMenu() {
   function unlockBodyScroll() {
     document.body.style.overflow = previousBodyOverflow;
     document.documentElement.style.removeProperty("--scrollbar_gap");
+
+    if (lenisInstance && !isReducedMotion()) {
+      lenisInstance.start();
+    }
   }
 
   function renderMenuState() {
@@ -1075,6 +1194,7 @@ function initQuickMenu() {
    init
    -------------------------------------------------------------------------- */
 function initCommon() {
+  initMotionPreference();
   renderSubHeader();
   renderCommonQuickMenu();
   initImageFallback();
