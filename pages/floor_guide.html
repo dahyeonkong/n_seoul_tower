@@ -8,7 +8,7 @@
   <meta name="description"
     content="Explore restaurants, observatories, shops, and attractions on every floor of N Seoul Tower.">
   <link rel="icon" href="../assets/nst_logo_defalut.svg" type="image/svg+xml">
-  <link rel="preload" as="image" href="../assets/floorguide/tower01.png">
+  <link rel="preload" as="image" href="../assets/floorguide/tower07.png">
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/common.css">
   <link rel="stylesheet" href="../css/floor_guide.css">
@@ -171,13 +171,17 @@
       </div>
     </div>
 
+    <!-- ===================== floor guide (790:7008) =====================
+         디자인 순서와 동일하게 최상층(T7)에서 시작해 아래층(F5)으로 내려갑니다.
+         타워는 sticky 로 고정되고, 현재 층에 따라 이미지와 조명 위치가 바뀝니다.
+         카드 이동 경로가 확정되지 않아 전부 pending 상태로 둡니다. -->
     <main class="floor_guide_main" id="main_content">
-      <div class="floor_guide_stage" data-floor-stage data-active-floor="f5">
+      <div class="floor_guide_stage" data-floor-stage data-active-floor="t7">
         <div class="floor_tower_sticky" aria-hidden="true">
           <div class="floor_tower_visual">
             <img class="floor_light" src="../assets/floorguide/circle03.png" alt="" width="181" height="166">
-            <img class="tower_state_image is_active" src="../assets/floorguide/tower01.png" alt="" width="155"
-              height="485" data-tower-floor="f5">
+            <img class="tower_state_image" src="../assets/floorguide/tower01.png" alt="" width="155" height="485"
+              data-tower-floor="f5">
             <img class="tower_state_image" src="../assets/floorguide/tower02.png" alt="" width="155" height="485"
               data-tower-floor="t1">
             <img class="tower_state_image" src="../assets/floorguide/tower03.png" alt="" width="155" height="485"
@@ -188,173 +192,40 @@
               data-tower-floor="t4">
             <img class="tower_state_image" src="../assets/floorguide/tower06.png" alt="" width="155" height="485"
               data-tower-floor="t5">
-            <img class="tower_state_image" src="../assets/floorguide/tower07.png" alt="" width="155" height="485"
-              data-tower-floor="t7">
+            <img class="tower_state_image is_active" src="../assets/floorguide/tower07.png" alt="" width="155"
+              height="485" data-tower-floor="t7">
           </div>
         </div>
-        <p class="visually_hidden" data-active-floor-status aria-live="polite">Current floor: F5</p>
+        <p class="visually_hidden" data-active-floor-status aria-live="polite">Current floor: T7</p>
 
         <div class="floor_scene_list">
-          <section class="floor_scene floor_scene_f5" id="floor_f5" data-floor-section="f5"
-            aria-labelledby="floor_guide_title floor_f5_title">
+          <section class="floor_scene floor_scene_t7" id="floor_t7" data-floor-section="t7"
+            aria-labelledby="floor_guide_title floor_t7_title">
             <div class="floor_scene_inner">
               <div class="floor_guide_heading">
                 <h1 class="floor_guide_title" id="floor_guide_title">Floor Guide</h1>
                 <p class="floor_guide_lead">You can see the tower’s main facilities at a glance.</p>
               </div>
-              <h2 class="visually_hidden" id="floor_f5_title">F5</h2>
-              <article class="floor_card floor_card_gift floor_card_large">
-                <a class="floor_card_link" href="#" data-view-more>
-                  <span class="floor_card_media"><img src="../assets/floorguide/f5_gift_card.png"
-                      alt="N Gift Shop interior filled with N Seoul Tower souvenirs" width="1536" height="1024"
-                      fetchpriority="high"></span>
-                  <span class="floor_card_body"><span class="floor_card_type">Shop</span><span
-                      class="floor_card_title">N GIFT SHOP</span><span class="floor_card_description">Find romantic
-                      items for couples and unique souvenirs from Seoul and Korea to remember your time at N SEOUL
-                      TOWER.</span><span class="floor_card_more">View More <img
-                        src="../assets/icon/icon_arrow_right.svg" alt="" width="20" height="20"></span></span>
-                </a>
+              <h2 class="visually_hidden" id="floor_t7_title">T7</h2>
+              <article class="floor_card floor_card_big floor_card_ngrill">
+                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                  <span class="floor_card_media"><img src="../assets/floorguide/f7_ngrill_card.png"
+                      alt="N Grill fine-dining restaurant with night views of Seoul" width="1920" height="1080"
+                      fetchpriority="high" decoding="async"></span>
+                  <span class="floor_card_body"><span class="floor_card_type">French Restaurant</span><span
+                      class="floor_card_title">N.GRILL</span><span class="floor_card_description">A high-end French
+                      restaurant at the top of N Seoul Tower, pairing a creative course with jewel-like night
+                      views.</span><span class="floor_card_more">View More <svg class="floor_card_more_icon"
+                        viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+                        <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      </svg></span></span>
+                </button>
               </article>
-              <article class="floor_card floor_card_sweet">
-                <a class="floor_card_link" href="#" data-view-more>
-                  <span class="floor_card_media"><img src="../assets/floorguide/f5_sweet_bar_card.png"
-                      alt="N Sweet Bar counter with colorful desserts" width="1505" height="1045" loading="lazy"></span>
-                  <span class="floor_card_body"><span class="floor_card_type">Dessert</span><span
-                      class="floor_card_title">N Sweet Bar</span><span class="floor_card_description">A place full of
-                      sweet delights. Visit before heading up and make your Observatory experience even
-                      sweeter.</span><span class="floor_card_more">View More <img
-                        src="../assets/icon/icon_arrow_right.svg" alt="" width="20" height="20"></span></span>
-                </a>
-              </article>
-              <img class="floor_deco floor_deco_sweet" src="../assets/floorguide/sweetbar02.png" alt="" width="303"
-                height="124" loading="lazy">
-            </div>
-          </section>
-
-          <section class="floor_scene floor_scene_t1" id="floor_t1" data-floor-section="t1"
-            aria-labelledby="floor_t1_title">
-            <div class="floor_scene_inner">
-              <h2 class="visually_hidden" id="floor_t1_title">T1</h2>
-              <article class="floor_card floor_card_burger"><a class="floor_card_link" href="#" data-view-more><span
-                    class="floor_card_media"><img src="../assets/floorguide/t1_n_burger_card.png"
-                      alt="N Burger restaurant interior" width="1536" height="1024" loading="lazy"></span><span
-                    class="floor_card_body"><span class="floor_card_type">Restaurant</span><span
-                      class="floor_card_title">N BURGER</span><span class="floor_card_description">Classic
-                      American-style burgers and signature K-style creations, available only at N SEOUL
-                      TOWER.</span><span class="floor_card_more">View More <img
-                        src="../assets/icon/icon_arrow_right.svg" alt="" width="20" height="20"></span></span></a>
-              </article>
-              <article class="floor_card floor_card_t1_gift"><a class="floor_card_link" href="#" data-view-more><span
-                    class="floor_card_media"><img src="../assets/floorguide/t1_gift_card.png"
-                      alt="N Gift Shop souvenir display" width="1254" height="1254" loading="lazy"></span><span
-                    class="floor_card_body"><span class="floor_card_type">Shop</span><span class="floor_card_title">N
-                      GIFT SHOP</span><span class="floor_card_description">Romantic items and unique Seoul souvenirs
-                      made to keep your visit memorable.</span><span class="floor_card_more">View More <img
-                        src="../assets/icon/icon_arrow_right.svg" alt="" width="20" height="20"></span></span></a>
-              </article>
-              <article class="floor_card floor_card_terrace"><a class="floor_card_link" href="#" data-view-more><span
-                    class="floor_card_media"><img src="../assets/floorguide/t1_n_terrace_card.png"
-                      alt="N Terrace café overlooking Seoul" width="1536" height="1024" loading="lazy"></span><span
-                    class="floor_card_body"><span class="floor_card_type">Café &amp; Bar</span><span
-                      class="floor_card_title">N TERRACE</span><span class="floor_card_description">Enjoy drinks and
-                      perfectly paired dishes with sweeping city views through floor-to-ceiling windows.</span><span
-                      class="floor_card_more">View More <img src="../assets/icon/icon_arrow_right.svg" alt="" width="20"
-                        height="20"></span></span></a></article>
-              <article class="floor_card floor_card_durum"><a class="floor_card_link" href="#" data-view-more><span
-                    class="floor_card_media"><img src="../assets/floorguide/t1_durum_card.png"
-                      alt="Korean dishes served at Durum Bunsik" width="1619" height="971" loading="lazy"></span><span
-                    class="floor_card_body"><span class="floor_card_type">Korean Diner</span><span
-                      class="floor_card_title">DURUM BUNSIK</span><span class="floor_card_description">Enjoy kimbap,
-                      whole garaetteok tteokbokki, sweet and spicy fried chicken, and spicy ramen.</span><span
-                      class="floor_card_more">View More <img src="../assets/icon/icon_arrow_right.svg" alt="" width="20"
-                        height="20"></span></span></a></article>
-              <img class="floor_deco floor_deco_food" src="../assets/floorguide/food01.png" alt="" width="263"
-                height="238" loading="lazy">
-            </div>
-          </section>
-
-          <section class="floor_scene floor_scene_t2" id="floor_t2" data-floor-section="t2"
-            aria-labelledby="floor_t2_title">
-            <div class="floor_scene_inner">
-              <h2 class="visually_hidden" id="floor_t2_title">T2</h2>
-              <article class="floor_card floor_card_place floor_card_large"><a class="floor_card_link" href="#"
-                  data-view-more><span class="floor_card_media"><img src="../assets/floorguide/t2_the_place_card.png"
-                      alt="The Place Dining Italian restaurant interior" width="1536" height="1024"
-                      loading="lazy"></span><span class="floor_card_body"><span class="floor_card_type">Italian
-                      Restaurant</span><span class="floor_card_title">THE PLACE Dining</span><span
-                      class="floor_card_description">A casual Italian restaurant full of youth and romance, with
-                      traditional home-style meals and views of Namsan and Seoul.</span><span
-                      class="floor_card_more">View More <img src="../assets/icon/icon_arrow_right.svg" alt="" width="20"
-                        height="20"></span></span></a></article>
-              <article class="floor_card floor_card_t2_telescope"><a class="floor_card_link" href="#"
-                  data-view-more><span class="floor_card_media"><img src="../assets/floorguide/t2_telescope_card.png"
-                      alt="Digital telescope facing the Seoul skyline" width="2470" height="1422"
-                      loading="lazy"></span><span class="floor_card_body"><span
-                      class="floor_card_type">Experience</span><span class="floor_card_title">Digital
-                      Telescope</span><span class="floor_card_description">Enjoy Seoul’s cityscape with an optical zoom
-                      lens and a high-quality LCD display.</span><span class="floor_card_more">View More <img
-                        src="../assets/icon/icon_arrow_right.svg" alt="" width="20" height="20"></span></span></a>
-              </article>
-              <article class="floor_card floor_card_roof"><a class="floor_card_link" href="#" data-view-more><span
-                    class="floor_card_media"><img src="../assets/floorguide/t2_roof_card.png"
-                      alt="Love padlocks attached to the roof terrace railing" width="1536" height="1024"
-                      loading="lazy"></span><span class="floor_card_body"><span class="floor_card_type">Outdoor
-                      Terrace</span><span class="floor_card_title">Roof Terrace <span class="title_heart"
-                        aria-hidden="true">♥</span></span><span class="floor_card_description">Hang your own love
-                      padlock on the open terrace.</span><span class="floor_card_more">View More <img
-                        src="../assets/icon/icon_arrow_right.svg" alt="" width="20" height="20"></span></span></a>
-              </article>
-              <img class="floor_deco floor_deco_lock" src="../assets/floorguide/snack03.png" alt="" width="248"
-                height="349" loading="lazy">
-            </div>
-          </section>
-
-          <section class="floor_scene floor_scene_t3" id="floor_t3" data-floor-section="t3"
-            aria-labelledby="floor_t3_title">
-            <div class="floor_scene_inner">
-              <h2 class="visually_hidden" id="floor_t3_title">T3</h2>
-              <article class="floor_card floor_card_hancook floor_card_large"><a class="floor_card_link" href="#"
-                  data-view-more><span class="floor_card_media"><img src="../assets/floorguide/t3_hancook_card.png"
-                      alt="Hancook restaurant dining room with panoramic windows" width="1920" height="1080"
-                      loading="lazy"></span><span class="floor_card_body"><span
-                      class="floor_card_type">Restaurant</span><span class="floor_card_title">Hancook</span><span
-                      class="floor_card_kicker">Modern Korean beef grill on Namsan</span><span
-                      class="floor_card_description">Korea’s traditional taste and modern style coexist in this Korean
-                      restaurant.</span><span class="floor_card_more">View More <img
-                        src="../assets/icon/icon_arrow_right.svg" alt="" width="20" height="20"></span></span></a>
-              </article>
-              <img class="floor_deco floor_deco_hancook_logo" src="../assets/floorguide/hancook01.png" alt=""
-                width="121" height="44" loading="lazy">
-              <img class="floor_deco floor_deco_hancook_dish" src="../assets/floorguide/hancook03.png" alt=""
-                width="349" height="201" loading="lazy">
-              <img class="floor_deco floor_deco_hancook_table" src="../assets/floorguide/hancook04.png" alt=""
-                width="184" height="179" loading="lazy">
-            </div>
-          </section>
-
-          <section class="floor_scene floor_scene_t4" id="floor_t4" data-floor-section="t4"
-            aria-labelledby="floor_t4_title">
-            <div class="floor_scene_inner">
-              <h2 class="visually_hidden" id="floor_t4_title">T4</h2>
-              <article class="floor_card floor_card_t4_observatory floor_card_large"><a class="floor_card_link" href="#"
-                  data-view-more><span class="floor_card_media"><img src="../assets/floorguide/t4_observatory_card.png"
-                      alt="N Seoul Tower observatory interior" width="1536" height="1024" loading="lazy"></span><span
-                    class="floor_card_body"><span class="floor_card_type">Observatory</span><span
-                      class="floor_card_title">Observatory</span><span class="floor_card_description">The observation
-                      deck sits 400 m above sea level and offers a full view of Seoul.</span><span
-                      class="floor_card_more">View More <img src="../assets/icon/icon_arrow_right.svg" alt="" width="20"
-                        height="20"></span></span></a></article>
-              <article class="floor_card floor_card_t4_telescope"><a class="floor_card_link" href="#"
-                  data-view-more><span class="floor_card_media"><img src="../assets/floorguide/t4_telescope_card.png"
-                      alt="Digital telescope inside the observatory" width="1536" height="1024"
-                      loading="lazy"></span><span class="floor_card_body"><span
-                      class="floor_card_type">Experience</span><span class="floor_card_title">Digital
-                      Telescope</span><span class="floor_card_description">Enjoy Seoul’s cityscape with an optical zoom
-                      lens and a high-quality LCD display.</span><span class="floor_card_more">View More <img
-                        src="../assets/icon/icon_arrow_right.svg" alt="" width="20" height="20"></span></span></a>
-              </article>
-              <img class="floor_deco floor_deco_observatory" src="../assets/floorguide/Observatory.png" alt=""
-                width="378" height="209" loading="lazy">
+              <span class="floor_deco floor_deco_tea" aria-hidden="true"></span>
+              <span class="floor_deco floor_deco_beef" aria-hidden="true"></span>
+              <span class="floor_deco floor_deco_ngrill_photo" aria-hidden="true"></span>
+              <span class="floor_deco floor_deco_ngrill_logo" aria-hidden="true"></span>
             </div>
           </section>
 
@@ -362,64 +233,307 @@
             aria-labelledby="floor_t5_title">
             <div class="floor_scene_inner">
               <h2 class="visually_hidden" id="floor_t5_title">T5</h2>
-              <article class="floor_card floor_card_t5_observatory"><a class="floor_card_link" href="#"
-                  data-view-more><span class="floor_card_media"><img src="../assets/floorguide/t5_observatory_card.png"
-                      alt="N Seoul Tower observatory with Seoul beyond the windows" width="1536" height="1024"
-                      loading="lazy"></span><span class="floor_card_body"><span
-                      class="floor_card_type">Observatory</span><span class="floor_card_title">Observatory</span><span
-                      class="floor_card_description">A special observation deck experience 400 m above sea
-                      level.</span><span class="floor_card_more">View More <img
-                        src="../assets/icon/icon_arrow_right.svg" alt="" width="20" height="20"></span></span></a>
+              <article class="floor_card floor_card_t5_observatory">
+                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                  <span class="floor_card_media"><img src="../assets/floorguide/t5_observatory_card.png"
+                      alt="Visitors looking out over Seoul from the observation deck" width="1536" height="1024"
+                      loading="lazy" decoding="async"></span>
+                  <span class="floor_card_body"><span class="floor_card_type">Observatory</span><span
+                      class="floor_card_title">View Point</span><span class="floor_card_description">The observation
+                      deck sits 400 m above sea level and is the only place where one can take in a full view of
+                      Seoul.</span><span class="floor_card_more">View More <svg class="floor_card_more_icon"
+                        viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+                        <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      </svg></span></span>
+                </button>
               </article>
-              <article class="floor_card floor_card_t5_telescope"><a class="floor_card_link" href="#"
-                  data-view-more><span class="floor_card_media"><img src="../assets/floorguide/t5_telescope_card.png"
-                      alt="Digital telescope overlooking Seoul" width="1536" height="1024" loading="lazy"></span><span
-                    class="floor_card_body"><span class="floor_card_type">Experience</span><span
-                      class="floor_card_title">Digital Telescope</span><span class="floor_card_description">See the city
-                      through an optical zoom lens and a high-quality LCD display.</span><span
-                      class="floor_card_more">View More <img src="../assets/icon/icon_arrow_right.svg" alt="" width="20"
-                        height="20"></span></span></a></article>
-              <article class="floor_card floor_card_panorama"><a class="floor_card_link" href="#" data-view-more><span
-                    class="floor_card_media"><img src="../assets/floorguide/t5_panorama_card.png"
-                      alt="Panoramic city view from N Seoul Tower" width="1536" height="1024"
-                      loading="lazy"></span><span class="floor_card_body"><span class="floor_card_type">View</span><span
+              <article class="floor_card floor_card_t5_telescope">
+                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                  <!-- 에셋 파일명이 실제 사진과 어긋나 있어, 내용 기준으로 연결합니다. -->
+                  <span class="floor_card_media"><img src="../assets/floorguide/t5_gift_card.png"
+                      alt="Digital telescope overlooking Seoul" width="1536" height="1024" loading="lazy"
+                      decoding="async"></span>
+                  <span class="floor_card_body"><span class="floor_card_type">Observatory</span><span
+                      class="floor_card_title">Digital Telescope</span><span class="floor_card_description">Enjoy the
+                      beautiful cityscape of Seoul with the optical zoom lens and the high-quality LCD display
+                      screen.</span><span class="floor_card_more">View More <svg class="floor_card_more_icon"
+                        viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+                        <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      </svg></span></span>
+                </button>
+              </article>
+              <article class="floor_card floor_card_panorama">
+                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                  <span class="floor_card_media"><img src="../assets/floorguide/t5_telescope_card.png"
+                      alt="Curved observation hall with floor-to-ceiling windows facing Seoul" width="1536"
+                      height="1024" loading="lazy" decoding="async"></span>
+                  <span class="floor_card_body"><span class="floor_card_type">Observatory</span><span
                       class="floor_card_title">360-Degree Panoramic View</span><span
-                      class="floor_card_description">Media art creates a fantastic atmosphere on the way to the
-                      observation deck.</span><span class="floor_card_more">View More <img
-                        src="../assets/icon/icon_arrow_right.svg" alt="" width="20" height="20"></span></span></a>
+                      class="floor_card_description">The elevator leading to the observation deck is decorated with
+                      media art, creating a fantastic atmosphere right from the entrance.</span><span
+                      class="floor_card_more">View More <svg class="floor_card_more_icon" viewBox="0 0 20 20"
+                        fill="none" aria-hidden="true" focusable="false">
+                        <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      </svg></span></span>
+                </button>
               </article>
-              <article class="floor_card floor_card_t5_gift"><a class="floor_card_link" href="#" data-view-more><span
-                    class="floor_card_media"><img src="../assets/floorguide/t5_gift_card.png"
-                      alt="N Gift Shop display inside N Seoul Tower" width="1536" height="1024"
-                      loading="lazy"></span><span class="floor_card_body"><span class="floor_card_type">Shop</span><span
-                      class="floor_card_title">N GIFT SHOP</span><span class="floor_card_description">Find romantic
-                      items and unique souvenirs from Seoul and Korea.</span><span class="floor_card_more">View More
-                      <img src="../assets/icon/icon_arrow_right.svg" alt="" width="20" height="20"></span></span></a>
+              <article class="floor_card floor_card_t5_gift">
+                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                  <span class="floor_card_media"><img src="../assets/floorguide/t5_panorama_card.png"
+                      alt="N Gift Shop display inside N Seoul Tower" width="1536" height="1024" loading="lazy"
+                      decoding="async"></span>
+                  <span class="floor_card_body"><span class="floor_card_type">N Seoul Tower Merchandise</span><span
+                      class="floor_card_title">N GIFT SHOP</span><span class="floor_card_description">At N Gift, you can
+                      find romantic items for couples and unique souvenirs from Seoul and Korea.</span><span
+                      class="floor_card_more">View More <svg class="floor_card_more_icon" viewBox="0 0 20 20"
+                        fill="none" aria-hidden="true" focusable="false">
+                        <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      </svg></span></span>
+                </button>
               </article>
-              <img class="floor_deco floor_deco_popcorn" src="../assets/floorguide/popcon01.png" alt="" width="379"
-                height="347" loading="lazy">
             </div>
           </section>
 
-          <section class="floor_scene floor_scene_t7" id="floor_t7" data-floor-section="t7"
-            aria-labelledby="floor_t7_title">
+          <section class="floor_scene floor_scene_t4" id="floor_t4" data-floor-section="t4"
+            aria-labelledby="floor_t4_title">
             <div class="floor_scene_inner">
-              <h2 class="visually_hidden" id="floor_t7_title">T7</h2>
-              <article class="floor_card floor_card_ngrill floor_card_large"><a class="floor_card_link" href="#"
-                  data-view-more><span class="floor_card_media"><img src="../assets/floorguide/f7_ngrill_card.png"
-                      alt="N Grill fine-dining restaurant with night views of Seoul" width="1920" height="1080"
-                      loading="lazy"></span><span class="floor_card_body"><span class="floor_card_type">French
-                      Restaurant</span><span class="floor_card_title">N.GRILL</span><span
-                      class="floor_card_description">A high-end French restaurant at the top of N Seoul Tower, pairing a
-                      creative course with jewel-like night views.</span><span class="floor_card_more">View More <img
-                        src="../assets/icon/icon_arrow_right.svg" alt="" width="20" height="20"></span></span></a>
+              <h2 class="visually_hidden" id="floor_t4_title">T4</h2>
+              <article class="floor_card floor_card_big floor_card_t4_observatory">
+                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                  <span class="floor_card_media"><img src="../assets/floorguide/t4_observatory_card.png"
+                      alt="N Seoul Tower observatory interior" width="1536" height="1024" loading="lazy"
+                      decoding="async"></span>
+                  <span class="floor_card_body"><span class="floor_card_type">Observatory</span><span
+                      class="floor_card_title">View Point</span><span class="floor_card_description">The elevator to the
+                      observation deck is adorned with art to welcome visitors to this special experience, right from
+                      the very start.</span><span
+                      class="floor_card_more">View More <svg class="floor_card_more_icon" viewBox="0 0 20 20"
+                        fill="none" aria-hidden="true" focusable="false">
+                        <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      </svg></span></span>
+                </button>
               </article>
-              <img class="floor_deco floor_deco_ngrill_logo" src="../assets/floorguide/ngrill01.png" alt="" width="164"
-                height="38" loading="lazy">
-              <img class="floor_deco floor_deco_ngrill_dish" src="../assets/floorguide/ngrill02.png" alt="" width="433"
-                height="237" loading="lazy">
-              <img class="floor_deco floor_deco_ngrill_food" src="../assets/floorguide/food02.png" alt="" width="399"
-                height="342" loading="lazy">
+              <article class="floor_card floor_card_t4_telescope">
+                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                  <span class="floor_card_media"><img src="../assets/floorguide/t4_telescope_card.png"
+                      alt="Digital telescope inside the observatory" width="1536" height="1024" loading="lazy"
+                      decoding="async"></span>
+                  <span class="floor_card_body"><span class="floor_card_type">Observatory</span><span
+                      class="floor_card_title">Digital Telescope</span><span class="floor_card_description">Enjoy the
+                      beautiful cityscape of Seoul with the optical zoom lens and the high-quality LCD display
+                      screen.</span><span class="floor_card_more">View More <svg class="floor_card_more_icon"
+                        viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+                        <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      </svg></span></span>
+                </button>
+              </article>
+              <span class="floor_deco floor_deco_observatory" aria-hidden="true"></span>
+            </div>
+          </section>
+
+          <section class="floor_scene floor_scene_t3" id="floor_t3" data-floor-section="t3"
+            aria-labelledby="floor_t3_title">
+            <div class="floor_scene_inner">
+              <h2 class="visually_hidden" id="floor_t3_title">T3</h2>
+              <article class="floor_card floor_card_large floor_card_hancook">
+                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                  <span class="floor_card_media"><img src="../assets/floorguide/t3_hancook_card.png"
+                      alt="Hancook restaurant dining room with panoramic windows" width="1920" height="1080"
+                      loading="lazy" decoding="async"></span>
+                  <span class="floor_card_body"><span class="floor_card_type">Restaurant</span><span
+                      class="floor_card_title">Hancook</span><span class="floor_card_kicker">Modern Korean beef grill on
+                      Namsan</span><span class="floor_card_description">Korea’s traditional taste and modern fashion
+                      coexist in this Korean restaurant.</span><span class="floor_card_more">View More <svg
+                        class="floor_card_more_icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"
+                        focusable="false">
+                        <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      </svg></span></span>
+                </button>
+              </article>
+              <span class="floor_deco floor_deco_hancook_tray" aria-hidden="true"></span>
+              <span class="floor_deco floor_deco_hancook_photo" aria-hidden="true"></span>
+              <span class="floor_deco floor_deco_hancook_bibimbap" aria-hidden="true"></span>
+              <span class="floor_deco floor_deco_hancook_bowl" aria-hidden="true"></span>
+              <span class="floor_deco floor_deco_hancook_logo" aria-hidden="true"></span>
+            </div>
+          </section>
+
+          <section class="floor_scene floor_scene_t2" id="floor_t2" data-floor-section="t2"
+            aria-labelledby="floor_t2_title">
+            <div class="floor_scene_inner">
+              <h2 class="visually_hidden" id="floor_t2_title">T2</h2>
+              <article class="floor_card floor_card_large floor_card_place">
+                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                  <!-- 에셋 파일명이 실제 사진과 어긋나 있어, 내용 기준으로 연결합니다. -->
+                  <span class="floor_card_media"><img src="../assets/floorguide/t2_telescope_card.png"
+                      alt="Italian dishes served at a window table overlooking Seoul" width="2470" height="1422"
+                      loading="lazy" decoding="async"></span>
+                  <span class="floor_card_body"><span class="floor_card_type">Restaurant</span><span
+                      class="floor_card_title">THE PLACE Dining</span><span class="floor_card_kicker">casual Italian
+                      restaurant full of youth and romance</span><span class="floor_card_description">Indulge in
+                      affordable, traditional, Italian home-style meals, with all the richness and flavor of Italy,
+                      while enjoying a view of Namsan and Seoul City.</span><span class="floor_card_more">View More <svg
+                        class="floor_card_more_icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"
+                        focusable="false">
+                        <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      </svg></span></span>
+                </button>
+              </article>
+              <article class="floor_card floor_card_t2_telescope">
+                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                  <span class="floor_card_media"><img src="../assets/floorguide/t2_the_place_card.png"
+                      alt="Digital telescope facing the Seoul skyline" width="1536" height="1024" loading="lazy"
+                      decoding="async"></span>
+                  <span class="floor_card_body"><span class="floor_card_type">Observatory</span><span
+                      class="floor_card_title">Digital Telescope</span><span class="floor_card_description">Enjoy the
+                      beautiful cityscape of Seoul with the optical zoom lens and the high-quality LCD display
+                      screen.</span><span class="floor_card_more">View More <svg class="floor_card_more_icon"
+                        viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+                        <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      </svg></span></span>
+                </button>
+              </article>
+              <article class="floor_card floor_card_roof">
+                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                  <span class="floor_card_media"><img src="../assets/floorguide/t2_roof_card.png"
+                      alt="Love padlocks attached to the roof terrace railing" width="1536" height="1024" loading="lazy"
+                      decoding="async"></span>
+                  <span class="floor_card_body"><span class="floor_card_type">Locked space</span><span
+                      class="floor_card_title">Roof Terrace <span class="title_heart"
+                        aria-hidden="true">♥</span></span><span class="floor_card_description">Hang your own love
+                      padlock on the open terrace.</span><span class="floor_card_more">View More <svg
+                        class="floor_card_more_icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"
+                        focusable="false">
+                        <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      </svg></span></span>
+                </button>
+              </article>
+              <span class="floor_deco floor_deco_steak" aria-hidden="true"></span>
+            </div>
+          </section>
+
+          <section class="floor_scene floor_scene_t1" id="floor_t1" data-floor-section="t1"
+            aria-labelledby="floor_t1_title">
+            <div class="floor_scene_inner">
+              <h2 class="visually_hidden" id="floor_t1_title">T1</h2>
+              <article class="floor_card floor_card_burger">
+                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                  <!-- 에셋 파일명이 실제 사진과 어긋나 있어, 내용 기준으로 연결합니다. -->
+                  <span class="floor_card_media"><img src="../assets/floorguide/t1_gift_card.png"
+                      alt="N Burger signature menu poster" width="1254" height="1254" loading="lazy"
+                      decoding="async"></span>
+                  <span class="floor_card_body"><span class="floor_card_type">Restaurant</span><span
+                      class="floor_card_title">N BURGER</span><span class="floor_card_description">From classic
+                      American-style burgers to N Burger’s signature K-style creations, discover the most Seoul-inspired
+                      handcrafted burger house, available only at N SEOUL TOWER.</span><span
+                      class="floor_card_more">View More <svg class="floor_card_more_icon" viewBox="0 0 20 20"
+                        fill="none" aria-hidden="true" focusable="false">
+                        <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      </svg></span></span>
+                </button>
+              </article>
+              <article class="floor_card floor_card_t1_gift">
+                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                  <span class="floor_card_media"><img src="../assets/floorguide/t1_n_burger_card.png"
+                      alt="N Gift Shop souvenir display" width="1536" height="1024" loading="lazy"
+                      decoding="async"></span>
+                  <span class="floor_card_body"><span class="floor_card_type">N Seoul Tower Merchandise</span><span
+                      class="floor_card_title">N GIFT SHOP</span><span class="floor_card_description">At N Gift, you can
+                      find romantic items for couples and unique souvenirs from Seoul and Korea.</span><span
+                      class="floor_card_more">View More <svg class="floor_card_more_icon" viewBox="0 0 20 20"
+                        fill="none" aria-hidden="true" focusable="false">
+                        <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      </svg></span></span>
+                </button>
+              </article>
+              <article class="floor_card floor_card_terrace">
+                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                  <span class="floor_card_media"><img src="../assets/floorguide/t1_n_terrace_card.png"
+                      alt="N Terrace café overlooking Seoul" width="1536" height="1024" loading="lazy"
+                      decoding="async"></span>
+                  <span class="floor_card_body"><span class="floor_card_type">Restaurant</span><span
+                      class="floor_card_title">N TERRACE</span><span class="floor_card_kicker">A terrace café &amp; bar
+                      at the highest point in Seoul</span><span class="floor_card_description">In the heart of Seoul, at
+                      the highest Terrace Café &amp; Bar, N Terrace, enjoy a refreshing beer with perfectly paired
+                      dishes, while taking in sweeping views of the city through expansive floor-to-ceiling
+                      windows.</span><span class="floor_card_more">View More <svg class="floor_card_more_icon"
+                        viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+                        <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      </svg></span></span>
+                </button>
+              </article>
+              <article class="floor_card floor_card_durum">
+                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                  <span class="floor_card_media"><img src="../assets/floorguide/t1_durum_card.png"
+                      alt="Korean dishes served at Durumi Bunsik" width="1619" height="971" loading="lazy"
+                      decoding="async"></span>
+                  <span class="floor_card_body"><span class="floor_card_type">Restaurant</span><span
+                      class="floor_card_title">DURUMI BUNSIK</span><span class="floor_card_kicker">A Korean diner where
+                      you can enjoy delicious food</span><span class="floor_card_description">From kimbap filled with
+                      fresh ingredients to whole garaetteok tteokbokki, sweet and spicy fried chicken, and spicy ramen.
+                      Korea’s soul food snack bar.</span><span class="floor_card_more">View More <svg
+                        class="floor_card_more_icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"
+                        focusable="false">
+                        <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      </svg></span></span>
+                </button>
+              </article>
+            </div>
+          </section>
+
+          <section class="floor_scene floor_scene_f5" id="floor_f5" data-floor-section="f5"
+            aria-labelledby="floor_f5_title">
+            <div class="floor_scene_inner">
+              <h2 class="visually_hidden" id="floor_f5_title">F5</h2>
+              <article class="floor_card floor_card_large floor_card_gift">
+                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                  <span class="floor_card_media"><img src="../assets/floorguide/f5_gift_card.png"
+                      alt="N Gift Shop interior filled with N Seoul Tower souvenirs" width="1536" height="1024"
+                      loading="lazy" decoding="async"></span>
+                  <span class="floor_card_body"><span class="floor_card_type">N Seoul Tower Merchandise</span><span
+                      class="floor_card_title">N GIFT SHOP</span><span class="floor_card_description">At N Gift, you can
+                      find romantic items for couples and unique souvenirs from Seoul and Korea. These items will help
+                      you remember your time at N SEOUL TOWER for a long time.</span><span class="floor_card_more">View
+                      More <svg class="floor_card_more_icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"
+                        focusable="false">
+                        <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      </svg></span></span>
+                </button>
+              </article>
+              <article class="floor_card floor_card_sweet">
+                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                  <span class="floor_card_media"><img src="../assets/floorguide/f5_sweet_bar_card.png"
+                      alt="N Sweet Bar counter with popcorn and drinks" width="1505" height="1045" loading="lazy"
+                      decoding="async"></span>
+                  <span class="floor_card_body"><span class="floor_card_type">Restaurant</span><span
+                      class="floor_card_title">N Sweet Bar</span><span class="floor_card_kicker">A place full of sweet
+                      delights</span><span class="floor_card_description">Want to make your Observatory experience even
+                      sweeter? Visit N SWEET BAR before heading up. Enjoy an even sweeter experience with an Observatory
+                      combo package from N SWEET BAR.</span><span class="floor_card_more">View More <svg
+                        class="floor_card_more_icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"
+                        focusable="false">
+                        <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                      </svg></span></span>
+                </button>
+              </article>
+              <span class="floor_deco floor_deco_popcorn" aria-hidden="true"></span>
+              <span class="floor_deco floor_deco_sweetbar" aria-hidden="true"></span>
             </div>
           </section>
         </div>
@@ -514,13 +628,13 @@
             aria-label="Sections on this page" hidden>
             <p class="quick_section_title">quick menu</p>
             <ul class="quick_section_list">
-              <li><a class="quick_section_link" href="#floor_f5">F5</a></li>
-              <li><a class="quick_section_link" href="#floor_t1">T1</a></li>
-              <li><a class="quick_section_link" href="#floor_t2">T2</a></li>
-              <li><a class="quick_section_link" href="#floor_t3">T3</a></li>
-              <li><a class="quick_section_link" href="#floor_t4">T4</a></li>
-              <li><a class="quick_section_link" href="#floor_t5">T5</a></li>
               <li><a class="quick_section_link" href="#floor_t7">T7</a></li>
+              <li><a class="quick_section_link" href="#floor_t5">T5</a></li>
+              <li><a class="quick_section_link" href="#floor_t4">T4</a></li>
+              <li><a class="quick_section_link" href="#floor_t3">T3</a></li>
+              <li><a class="quick_section_link" href="#floor_t2">T2</a></li>
+              <li><a class="quick_section_link" href="#floor_t1">T1</a></li>
+              <li><a class="quick_section_link" href="#floor_f5">F5</a></li>
             </ul>
           </nav>
         </div>
