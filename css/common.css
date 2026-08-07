@@ -60,6 +60,7 @@
   --color_primary_deep: #1e4c43;
   --color_primary_400: #3a786b;
   --color_new_primary_100: #edf0e0;
+  --color_new_primary_400: #b6c384;
   --color_new_primary_500: #a4b465;
   --color_new_primary_600: #839051;
   --color_new_primary_800: #424828;
@@ -433,40 +434,33 @@ html .course_page .course_description {
   }
 }
 
-/* 링크 목적지가 확정되지 않은 CTA (PRD 12.5 / AGENTS 10.6) */
-[data-pending-link][aria-disabled="true"] {
-  cursor: not-allowed;
-}
-
+/* 링크 목적지가 확정되지 않은 CTA — 클릭은 막지 않고 회색 텍스트로만 구분합니다. */
+[data-pending-link][aria-disabled="true"],
 [data-pending-link][aria-disabled="true"]:hover {
-  opacity: 0.75;
+  color: #999;
 }
 
-.link_status {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  z-index: 300;
-  max-width: min(92vw, 520px);
-  padding: 14px 20px;
-  border-radius: var(--radius_md);
-  background-color: var(--color_primary_800);
-  color: var(--color_text_white);
-  font-size: var(--fs_sm);
-  text-align: center;
-  transform: translate(-50%, 12px);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity var(--duration) var(--ease_out), transform var(--duration) var(--ease_out),
-    visibility var(--duration);
+/* 어두운 배경 위(글로벌 메뉴 / 푸터 / 퀵메뉴 / 레스토랑 배너)에서는 밝은 회색을 사용합니다. */
+.global_menu [data-pending-link][aria-disabled="true"],
+.global_menu [data-pending-link][aria-disabled="true"]:hover,
+.site_footer [data-pending-link][aria-disabled="true"],
+.site_footer [data-pending-link][aria-disabled="true"]:hover,
+.quick_menu [data-pending-link][aria-disabled="true"],
+.quick_menu [data-pending-link][aria-disabled="true"]:hover,
+.restaurant_section [data-pending-link][aria-disabled="true"],
+.restaurant_section [data-pending-link][aria-disabled="true"]:hover {
+  color: #999;
 }
 
-.link_status.is_open {
-  opacity: 1;
-  visibility: visible;
-  transform: translate(-50%, 0);
+/* 이동할 페이지가 없는 영역을 회색 텍스트로 표시합니다.
+   서브페이지 GNB 의 events / support 그룹에 사용합니다. */
+.txt_gray,
+.txt_gray .site_gnb_title,
+.txt_gray .site_gnb_link,
+.txt_gray .site_gnb_link:hover {
+  color: #999999;
 }
-
+.gnb_title.txt_gray{color:#999;}
 /* --------------------------------------------------------------------------
    media placeholder — 이미지 로딩 전 비율 유지 / 로드 실패 대체 배경
    -------------------------------------------------------------------------- */
