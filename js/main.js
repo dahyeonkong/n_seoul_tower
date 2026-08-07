@@ -276,42 +276,56 @@ function renderCourses(courses) {
   list.appendChild(fragment);
 }
 
-function initCourseSectionScroll() {
+function initCourseScrollScene() {
   var section = document.querySelector("#course_section");
+  var stage = document.querySelector("[data-course-scroll-stage]");
+  var sticky = document.querySelector("[data-course-sticky]");
+  var scene = document.querySelector("[data-course-scene]");
   var list = document.querySelector("[data-course-list]");
 
-  if (!section || !list) {
+  if (!section || !stage || !sticky || !scene || !list) {
     return;
   }
 
-  function handleCourseWheel(event) {
-    if (event.deltaY === 0 || Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
-      return;
-    }
-
-    var deltaY = event.deltaY;
-    if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
-      deltaY *= 16;
-    } else if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) {
-      deltaY *= list.clientHeight;
-    }
-
-    var maxScrollTop = list.scrollHeight - list.clientHeight;
-    var isScrollingDown = deltaY > 0;
-    var canScrollDown = list.scrollTop < maxScrollTop - 1;
-    var canScrollUp = list.scrollTop > 1;
-
-    if ((isScrollingDown && !canScrollDown) || (!isScrollingDown && !canScrollUp)) {
-      event.preventDefault();
-      window.scrollBy({ top: deltaY, left: 0, behavior: "auto" });
-      return;
-    }
-
-    event.preventDefault();
-    list.scrollTop = Math.max(0, Math.min(maxScrollTop, list.scrollTop + deltaY));
+  var slides = list.querySelectorAll(".course_slide");
+  if (slides.length === 0 || isReducedMotion()) {
+    section.classList.add("is_reduced_motion");
+    return;
   }
 
-  section.addEventListener("wheel", handleCourseWheel, { passive: false });
+  var sceneHeight = 0;
+  var scrollTravel = 1;
+  var maxListOffset = 0;
+  var isFrameRequested = false;
+
+  function renderCourseScroll() {
+    var stageRect = stage.getBoundingClientRect();
+    var progress = Math.min(1, Math.max(0, -stageRect.top / scrollTravel));
+    list.style.transform = "translate3d(0, " + -progress * maxListOffset + "px, 0)";
+    isFrameRequested = false;
+  }
+
+  function requestCourseScrollRender() {
+    if (isFrameRequested) {
+      return;
+    }
+
+    isFrameRequested = true;
+    window.requestAnimationFrame(renderCourseScroll);
+  }
+
+  function updateCourseMeasurements() {
+    sceneHeight = scene.clientHeight;
+    section.style.setProperty("--course_scene_height", sceneHeight + "px");
+    stage.style.height = sticky.clientHeight + sceneHeight * (slides.length - 1) + "px";
+    maxListOffset = Math.max(0, sceneHeight * (slides.length - 1));
+    scrollTravel = Math.max(1, stage.offsetHeight - sticky.clientHeight);
+    requestCourseScrollRender();
+  }
+
+  window.addEventListener("scroll", requestCourseScrollRender, { passive: true });
+  window.addEventListener("resize", updateCourseMeasurements);
+  updateCourseMeasurements();
 }
 
 /* --------------------------------------------------------------------------
@@ -553,7 +567,7 @@ function initMain() {
   renderTowerStacks(mainPageData.towerParts);
   renderCustomGoods(mainPageData.customGoodsItems);
 
-  initCourseSectionScroll();
+  initCourseScrollScene();
   initTowerReveal();
   initRestaurantSlider(mainPageData.restaurantPhotos);
 }
