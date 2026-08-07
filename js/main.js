@@ -487,9 +487,10 @@ function initCourseScrollScene() {
   function updateCourseMeasurements() {
     sceneHeight = scene.clientHeight;
     section.style.setProperty("--course_scene_height", sceneHeight + "px");
-    stage.style.height = sticky.clientHeight + sceneHeight * (slides.length - 1) + "px";
-    maxListOffset = Math.max(0, sceneHeight * (slides.length - 1));
-    scrollTravel = Math.max(1, stage.offsetHeight - sticky.clientHeight);
+    var lastSlide = slides[slides.length - 1];
+    maxListOffset = Math.max(0, lastSlide.offsetTop);
+    stage.style.height = sticky.clientHeight + maxListOffset + "px";
+    scrollTravel = Math.max(1, maxListOffset);
     requestCourseScrollRender();
   }
 
