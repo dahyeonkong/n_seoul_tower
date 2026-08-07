@@ -6,7 +6,6 @@
 
 var LANGUAGE_STORAGE_KEY = "n_seoul_tower_language";
 var LANGUAGE_LABELS = { en: "English", ko: "Korean", ja: "Japanese", zh: "Chinese" };
-var PENDING_LINK_MESSAGE = "연결할 페이지가 아직 확정되지 않았습니다.";
 
 /* --------------------------------------------------------------------------
    공통 유틸
@@ -204,36 +203,6 @@ function initLanguageSelectors() {
     if (event.key === "Escape") {
       closeAllLanguageMenus();
     }
-  });
-}
-
-/* --------------------------------------------------------------------------
-   확정되지 않은 링크 안내 (PRD 12.5 / AGENTS 10.6)
-   -------------------------------------------------------------------------- */
-function initPendingLinks() {
-  var statusBox = document.querySelector("[data-link-status]");
-  var hideTimer = null;
-
-  function showPendingMessage() {
-    if (!statusBox) {
-      return;
-    }
-    statusBox.textContent = PENDING_LINK_MESSAGE;
-    statusBox.classList.add("is_open");
-    window.clearTimeout(hideTimer);
-    hideTimer = window.setTimeout(function () {
-      statusBox.classList.remove("is_open");
-      statusBox.textContent = "";
-    }, 2600);
-  }
-
-  document.addEventListener("click", function handlePendingLinkClick(event) {
-    var target = event.target.closest("[data-pending-link]");
-    if (!target) {
-      return;
-    }
-    event.preventDefault();
-    showPendingMessage();
   });
 }
 
@@ -704,7 +673,6 @@ function initQuickMenu() {
    init
    -------------------------------------------------------------------------- */
 function initCommon() {
-  initPendingLinks();
   initImageFallback();
   initLanguageSelectors();
   initStickyHeader();
