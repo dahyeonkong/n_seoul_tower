@@ -91,7 +91,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 90;
+  z-index: 999;
   width: min(var(--giftshop_sidebar_width), 86vw);
   height: 100%;
   overflow-y: auto;
