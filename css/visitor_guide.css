@@ -231,6 +231,10 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   padding-block: var(--guide_section_pad);
 }
 
+.guide_feature {
+  display: contents;
+}
+
 .guide_title {
   font-family: var(--font_title);
   font-size: var(--fs_card_title);
@@ -266,6 +270,17 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   overflow: hidden;
 }
 
+@media (min-width: 834px) {
+  .guide_media_wrap,
+  .guide_media {
+    width: 100%;
+  }
+
+  .guide_media {
+    border-radius: var(--radius_2xl);
+  }
+}
+
 /* 원 안에서의 이미지 크기·위치는 Figma 의 이미지 fill 값을 원 지름(400) 기준 %로 옮긴 것입니다.
    기본(케이블카 945:3785): 533 / 400 = 133.3% 폭으로 가운데 정렬 */
 .guide_media img {
@@ -299,6 +314,16 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   left: 27.9%;
   width: 225%;
   transform: translate(-50%, -50%) rotate(-5.7deg);
+}
+
+@media (min-width: 834px) {
+  .guide_media img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 80%;
+    object-fit: contain;
+  }
 }
 
 /* --- 외부 사이트 이동 버튼 (945:3786 / 945:3896) --- */
@@ -338,8 +363,8 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 .guide_pill:hover {
   background-color: var(--color_primary_800);
 }
-.guide_detail{
-  position:relative;
+.guide_info_button {
+  position: relative;
 }
 /* --- Cable Car Information 칩 (945:4145) --- */
 .guide_pill_row {
@@ -372,6 +397,40 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   top:110%;
   z-index:1;
   box-sizing:border-box;
+}
+
+.cable_info:not([hidden]) {
+  animation: cable_info_reveal 360ms var(--ease_out) both;
+  transform-origin: top center;
+}
+
+.cable_info.is_closing {
+  animation: cable_info_hide 280ms var(--ease_out) both;
+  pointer-events: none;
+}
+
+@keyframes cable_info_reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes cable_info_hide {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
 }
 
 .cable_info_title {
@@ -541,8 +600,46 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   gap: 8px;
 }
 
+.guide_fact_website_row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 16px;
+  row-gap: 8px;
+  align-items: start;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guide_fact_website_row > li:first-child {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.guide_fact_website {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.guide_fact_website_row > li:first-child p:first-child {
+  font-size: 16px;
+  line-height: 1.18;
+  color: var(--color_text);
+}
+
+.guide_fact_website_row > li:first-child p:last-child {
+  font-size: 14px;
+  font-weight: 200;
+  line-height: 1.35;
+  color: var(--color_text);
+  white-space: nowrap;
+}
+
 .guide_fact dt {
-  font-size: var(--fs_body);
+  font-size: 16px;
   line-height: 1.18;
   color: var(--color_text);
 }
@@ -550,7 +647,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 .guide_fact dd {
   display: flex;
   flex-direction: column;
-  font-size: var(--fs_sm);
+  font-size: 14px;
   font-weight: 200;
   line-height: 1.35;
   color: var(--color_text);
@@ -558,12 +655,6 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 
 .guide_fact_note {
   font-size: var(--fs_xs);
-}
-
-/* 긴 주소가 레이아웃 밖으로 넘치지 않게 합니다. */
-.guide_fact_url {
-  overflow-wrap: anywhere;
-  word-break: break-word;
 }
 
 /* 디자인에는 일반 텍스트지만 전화번호와 주소는 실제로 연결합니다.
@@ -577,6 +668,38 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 
 .guide_fact a:hover {
   color: var(--color_primary_600);
+}
+
+.guide_fact a.guide_fact_url {
+  display: inline-flex;
+  align-self: flex-start;
+  gap: 8px;
+  min-height: 44px;
+  margin-top: 4px;
+  padding: 10px 16px;
+  border-radius: var(--radius_round);
+  background-color: var(--color_primary_600);
+  color: var(--color_text_white);
+  font-weight: 400;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition: background-color var(--duration) var(--ease_out);
+  font-size: var(--fs_xs);
+}
+
+.guide_fact_website_row a.guide_fact_url {
+  margin-top: 0;
+}
+
+.guide_fact a.guide_fact_url:hover {
+  background-color: var(--color_primary_800);
+  color: var(--color_text_white);
+}
+
+.guide_fact_url img {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
 }
 
 /* --- 순서가 있는 안내 (945:3770 등) --- */
@@ -615,6 +738,102 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   }
 }
 
+@media (min-width: 834px) and (max-width: 1279px) {
+  .guide_section {
+    gap: 36px;
+  }
+
+  .guide_feature {
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 295px);
+    grid-template-rows: auto auto 1fr;
+    column-gap: 10px;
+    width: 100%;
+    height: 400px;
+    padding: 40px;
+    border-radius: var(--radius_2xl);
+    background-color: var(--color_guide_media_bg);
+  }
+
+  .guide_feature > .guide_title {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    color: var(--color_text_white);
+    font-size: 28px;
+    line-height: normal;
+  }
+
+  .guide_feature > .guide_info_button {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: start;
+    margin-top: 4px;
+  }
+
+  .guide_feature .guide_pill {
+    gap: 14px;
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  .guide_feature > .guide_lead {
+    grid-column: 1;
+    grid-row: 3;
+    align-self: end;
+    padding-top: 36px;
+    border-top: 1px solid rgba(255, 255, 255, 0.7);
+    color: var(--color_text_white);
+    font-size: 14px;
+    line-height: normal;
+  }
+
+  .guide_feature > .guide_media_wrap {
+    grid-column: 2;
+    grid-row: 1 / -1;
+    align-self: stretch;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+  }
+
+  .guide_feature .guide_media {
+    width: 100%;
+    height: 326px;
+    max-height: 100%;
+    border-radius: 0;
+    background-color: transparent;
+  }
+
+  .guide_feature .guide_media_link {
+    display: none;
+  }
+
+  .guide_section > .guide_detail {
+    box-sizing: border-box;
+    padding: 0 48px;
+    border-top: 0;
+  }
+
+  .guide_section .guide_columns {
+    gap: 70px;
+  }
+
+  .guide_section .guide_route_title {
+    margin-bottom: 24px;
+    font-size: 28px;
+    line-height: normal;
+  }
+
+  .guide_section .guide_steps {
+    font-size: 18px;
+    line-height: normal;
+  }
+}
+
 /* --------------------------------------------------------------------------
    데스크톱 — Figma 배치 (이미지 400 + gap 64 + 본문 620 = 1084)
    bus·citytour 는 오른쪽 끝, cable car·cars 는 왼쪽 끝에 붙습니다.
@@ -634,10 +853,6 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
     grid-template-rows: repeat(4, auto);
   }
 
-  .guide_section:has(.cable_info:not([hidden])) {
-    grid-template-rows: repeat(5, auto);
-  }
-
   .guide_section_media_first {
     grid-template-columns: var(--guide_media_size) minmax(0, 620px);
     justify-content: flex-end;
@@ -648,19 +863,21 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
     justify-content: flex-start;
   }
 
-  .guide_section_media_first > .guide_media_wrap {
+  .guide_section_media_first > .guide_feature > .guide_media_wrap {
     grid-column: 1;
   }
 
-  .guide_section_media_first > :not(.guide_media_wrap) {
+  .guide_section_media_first > .guide_feature > :not(.guide_media_wrap),
+  .guide_section_media_first > .guide_detail {
     grid-column: 2;
   }
 
-  .guide_section_text_first > .guide_media_wrap {
+  .guide_section_text_first > .guide_feature > .guide_media_wrap {
     grid-column: 2;
   }
 
-  .guide_section_text_first > :not(.guide_media_wrap) {
+  .guide_section_text_first > .guide_feature > :not(.guide_media_wrap),
+  .guide_section_text_first > .guide_detail {
     grid-column: 1;
   }
 
