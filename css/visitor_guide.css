@@ -573,8 +573,6 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   display: flex;
   align-items: center;
   min-height: 44px;
-  text-decoration: underline;
-  text-underline-offset: 2px;
 }
 
 .guide_fact a:hover {

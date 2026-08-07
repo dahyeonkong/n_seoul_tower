@@ -1557,30 +1557,6 @@ html .course_page .course_description {
   height: auto;
 }
 
-.top_button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  min-height: 44px;
-  padding: 8px 18px;
-  border-radius: 20px;
-  background-color: var(--color_footer_btn);
-  color: var(--color_text_white);
-  font-size: var(--fs_sm);
-  text-transform: uppercase;
-  transition: background-color var(--duration) var(--ease_out);
-}
-
-.top_button:hover {
-  background-color: #9ba382;
-}
-
-.top_button img {
-  width: 24px;
-  height: 24px;
-}
-
 .footer_body {
   display: flex;
   flex-direction: column;
@@ -1833,7 +1809,6 @@ html .course_page .course_description {
   }
 
   .footer_service_btn,
-  .top_button,
   .family_site_button {
     font-size: 18px;
   }
