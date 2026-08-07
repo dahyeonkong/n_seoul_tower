@@ -646,6 +646,126 @@ var QUICK_RING_STEP = 10;
 /* 첫 글자가 9시 방향에서 시작해 시계 방향으로 돕니다 (987:6688 이 -90도). */
 var QUICK_RING_START = -90;
 
+/* 페이지별로 달라지는 섹션 링크만 이 설정에서 관리합니다. */
+var QUICK_MENU_SECTIONS_BY_PAGE = {
+  "index.html": [
+    { label: "main", href: "#hero_section" },
+    { label: "events", href: "#events_section" },
+    { label: "course", href: "#course_section" },
+    { label: "n pass", href: "#pass_section" },
+    { label: "n gift shop", href: "#gift_section" },
+    { label: "custom goods", href: "#goods_section" }
+  ],
+  "floor_guide.html": [
+    { label: "T7", href: "#floor_t7" },
+    { label: "T5", href: "#floor_t5" },
+    { label: "T4", href: "#floor_t4" },
+    { label: "T3", href: "#floor_t3" },
+    { label: "T2", href: "#floor_t2" },
+    { label: "T1", href: "#floor_t1" },
+    { label: "F5", href: "#floor_f5" }
+  ],
+  "n_gift_shop.html": [],
+  "restaurant_n_burger.html": [
+    { label: "about", href: "#burger_info" },
+    { label: "gallery", href: "#burger_gallery" },
+    { label: "best menu", href: "#burger_best" },
+    { label: "full menu", href: "#burger_menu" }
+  ],
+  "visitor_guide.html": [
+    { label: "by bus", href: "#by_bus" },
+    { label: "by cable car", href: "#by_cable_car" },
+    { label: "city tour bus", href: "#by_city_tour_bus" },
+    { label: "by cars", href: "#by_cars" },
+    { label: "recommended courses", href: "#panel_recommended_courses" }
+  ]
+};
+
+function getCurrentPageFileName() {
+  var fileName = window.location.pathname.split("/").pop();
+  return fileName ? fileName.toLowerCase() : "index.html";
+}
+
+function getCommonAssetPath() {
+  var scripts = Array.prototype.slice.call(document.scripts);
+  var commonScript = scripts.filter(function (script) {
+    return /\/js\/common\.js(?:\?|$)/.test(script.src);
+  })[0];
+
+  if (commonScript) {
+    return new URL("../assets/", commonScript.src).href;
+  }
+
+  return window.location.pathname.indexOf("/pages/") !== -1 ? "../assets/" : "./assets/";
+}
+
+function getQuickSectionMenuMarkup(sections, assetPath) {
+  if (sections.length === 0) {
+    return "";
+  }
+
+  var links = sections
+    .map(function (section) {
+      return '<li><a class="quick_section_link" href="' + section.href + '">' + section.label + "</a></li>";
+    })
+    .join("");
+
+  return (
+    '<div class="quick_section">' +
+    '<button class="quick_action" type="button" data-quick-section-button aria-expanded="false" ' +
+    'aria-controls="quick_section_menu">' +
+    '<img src="' + assetPath + 'icon/quick/sections.svg" alt="" width="36" height="36">' +
+    '<span class="visually_hidden">Move to a section</span>' +
+    "</button>" +
+    '<nav class="quick_section_menu" id="quick_section_menu" data-quick-section-menu ' +
+    'aria-label="Sections on this page" hidden>' +
+    '<p class="quick_section_title">quick menu</p>' +
+    '<ul class="quick_section_list">' + links + "</ul>" +
+    "</nav>" +
+    "</div>"
+  );
+}
+
+function getQuickMenuMarkup(sections, assetPath) {
+  return (
+    '<div class="quick_menu" data-quick-menu>' +
+    '<div class="quick_menu_actions" id="quick_menu_actions" data-quick-actions hidden>' +
+    '<button class="quick_action" type="button" data-pending-link aria-disabled="true">' +
+    '<img src="' + assetPath + 'icon/quick/chat.svg" alt="" width="36" height="36">' +
+    '<span class="visually_hidden">Chatbot</span>' +
+    "</button>" +
+    '<button class="quick_action" type="button" data-pending-link aria-disabled="true">' +
+    '<img src="' + assetPath + 'icon/quick/chat.svg" alt="" width="36" height="36">' +
+    '<span class="visually_hidden">Search</span>' +
+    "</button>" +
+    getQuickSectionMenuMarkup(sections, assetPath) +
+    '<a class="quick_action" href="#top">' +
+    '<img src="' + assetPath + 'icon/quick/arrow_up.svg" alt="" width="36" height="36">' +
+    '<span class="visually_hidden">Back to top</span>' +
+    "</a>" +
+    "</div>" +
+    '<button class="quick_toggle" type="button" data-quick-toggle aria-expanded="false" ' +
+    'aria-controls="quick_menu_actions">' +
+    '<img class="quick_toggle_image" src="' + assetPath + 'icon/chatbot.png" alt="" width="96" height="96">' +
+    '<span class="quick_toggle_ring" data-quick-ring aria-hidden="true"></span>' +
+    '<span class="visually_hidden" data-quick-toggle-label>Open quick menu</span>' +
+    "</button>" +
+    "</div>"
+  );
+}
+
+function renderCommonQuickMenu() {
+  var mount = document.querySelector("[data-quick-menu-mount]");
+  if (!mount) {
+    return;
+  }
+
+  var pageName = getCurrentPageFileName();
+  var sections = QUICK_MENU_SECTIONS_BY_PAGE[pageName] || [];
+  mount.insertAdjacentHTML("beforebegin", getQuickMenuMarkup(sections, getCommonAssetPath()));
+  mount.remove();
+}
+
 function renderQuickMenuRing(ring) {
   var text = "";
   var fragment = document.createDocumentFragment();
@@ -746,8 +866,10 @@ function initQuickMenu() {
   var actions = quickMenu.querySelector("[data-quick-actions]");
   var toggleLabel = quickMenu.querySelector("[data-quick-toggle-label]");
   var ring = quickMenu.querySelector("[data-quick-ring]");
+  var topAction = actions ? actions.querySelector('.quick_action[href="#top"]') : null;
   var sectionButton = quickMenu.querySelector("[data-quick-section-button]");
   var sectionMenu = quickMenu.querySelector("[data-quick-section-menu]");
+  var sectionItems = [];
 
   if (!toggleButton || !actions) {
     return;
@@ -755,6 +877,42 @@ function initQuickMenu() {
 
   var isQuickMenuOpen = false;
   var isSectionMenuOpen = false;
+  var isTopActionVisible = false;
+  var isTopActionFrameRequested = false;
+  var isQuickSectionFrameRequested = false;
+
+  /* 맨 위로 이동 버튼은 전체 스크롤 거리의 20%를 넘긴 뒤 노출합니다. */
+  if (topAction) {
+    topAction.classList.add("quick_top_action");
+    topAction.hidden = true;
+    quickMenu.insertBefore(topAction, toggleButton);
+
+    function renderTopActionVisibility() {
+      var maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      var scrollProgress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+      var shouldShowTopAction = scrollProgress >= 0.2;
+
+      if (shouldShowTopAction !== isTopActionVisible) {
+        isTopActionVisible = shouldShowTopAction;
+        topAction.hidden = !isTopActionVisible;
+      }
+
+      isTopActionFrameRequested = false;
+    }
+
+    function requestTopActionRender() {
+      if (isTopActionFrameRequested) {
+        return;
+      }
+      isTopActionFrameRequested = true;
+      window.requestAnimationFrame(renderTopActionVisibility);
+    }
+
+    renderTopActionVisibility();
+    window.addEventListener("scroll", requestTopActionRender, { passive: true });
+    window.addEventListener("resize", requestTopActionRender);
+    window.addEventListener("load", requestTopActionRender);
+  }
 
   if (ring) {
     renderQuickMenuRing(ring);
@@ -766,6 +924,68 @@ function initQuickMenu() {
     sectionButton.parentElement.remove();
     sectionButton = null;
     sectionMenu = null;
+  }
+
+  function renderQuickSectionCurrent() {
+    var markerPosition = window.scrollY + window.innerHeight * 0.35;
+    var visibleItems = sectionItems.filter(function (item) {
+      return item.target.getClientRects().length > 0 && !item.target.closest("[hidden]");
+    });
+    var activeItem = visibleItems.length > 0 ? visibleItems[0] : null;
+
+    visibleItems.forEach(function (item) {
+      var targetTop = item.target.getBoundingClientRect().top + window.scrollY;
+      if (targetTop <= markerPosition) {
+        activeItem = item;
+      }
+    });
+
+    sectionItems.forEach(function (item) {
+      var isCurrent = item === activeItem;
+      item.link.classList.toggle("is_active", isCurrent);
+      if (isCurrent) {
+        item.link.setAttribute("aria-current", "location");
+      } else {
+        item.link.removeAttribute("aria-current");
+      }
+    });
+
+    isQuickSectionFrameRequested = false;
+  }
+
+  function requestQuickSectionRender() {
+    if (isQuickSectionFrameRequested) {
+      return;
+    }
+    isQuickSectionFrameRequested = true;
+    window.requestAnimationFrame(renderQuickSectionCurrent);
+  }
+
+  if (sectionMenu) {
+    sectionItems = Array.prototype.map
+      .call(sectionMenu.querySelectorAll('.quick_section_link[href^="#"]'), function (link) {
+        return {
+          link: link,
+          target: document.getElementById(link.hash.slice(1))
+        };
+      })
+      .filter(function (item) {
+        return item.target;
+      });
+
+    if (sectionItems.length > 0) {
+      renderQuickSectionCurrent();
+      window.addEventListener("scroll", requestQuickSectionRender, { passive: true });
+      window.addEventListener("resize", requestQuickSectionRender);
+      window.addEventListener("load", requestQuickSectionRender);
+
+      document.addEventListener("click", function handleGuideTabQuickSection(event) {
+        if (event.target.closest("[data-guide-tab]")) {
+          requestQuickSectionRender();
+        }
+      });
+      window.addEventListener("hashchange", requestQuickSectionRender);
+    }
   }
 
   function renderSectionMenuState() {
@@ -860,6 +1080,7 @@ function initQuickMenu() {
    -------------------------------------------------------------------------- */
 function initCommon() {
   renderSubHeader();
+  renderCommonQuickMenu();
   initImageFallback();
   initLanguageSelectors();
   initStickyHeader();
