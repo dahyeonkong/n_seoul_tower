@@ -7,6 +7,8 @@
 function initRestaurantScrollAnimations() {
   var isReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  initBurgerGallerySlider(isReducedMotion);
+
   if (isReducedMotion || !window.gsap || !window.ScrollTrigger) {
     return;
   }
@@ -40,6 +42,124 @@ function initRestaurantScrollAnimations() {
     });
   }
 
+  function initBurgerGallerySlider(shouldReduceMotion) {
+    var slider = document.querySelector("[data-gallery-slider]");
+    var previousButton = document.querySelector("[data-gallery-prev]");
+    var nextButton = document.querySelector("[data-gallery-next]");
+
+    if (!slider || !previousButton || !nextButton) {
+      return;
+    }
+
+    var sliderRegion = slider.closest(".burger_gallery_inner") || slider;
+    var slides = Array.prototype.slice.call(slider.querySelectorAll("[data-gallery-slide]"));
+    var galleryGsap = window.gsap;
+
+    if (!galleryGsap || slides.length < 2) {
+      previousButton.disabled = true;
+      nextButton.disabled = true;
+      return;
+    }
+
+    var currentIndex = 0;
+    var isAnimating = false;
+    var autoPlayTimer = null;
+    var SLIDE_INTERVAL = 2000;
+
+    galleryGsap.set(slides, { xPercent: -100, autoAlpha: 0 });
+    galleryGsap.set(slides[currentIndex], { xPercent: 0, autoAlpha: 1 });
+
+    function renderSlideAccessibility() {
+      slides.forEach(function renderSlideState(slide, index) {
+        var isCurrentSlide = index === currentIndex;
+        slide.classList.toggle("is_active", isCurrentSlide);
+        slide.setAttribute("aria-hidden", String(!isCurrentSlide));
+      });
+    }
+
+    function moveGallery(direction) {
+      if (isAnimating) {
+        return;
+      }
+
+      isAnimating = true;
+      var nextIndex = (currentIndex + direction + slides.length) % slides.length;
+      var currentSlide = slides[currentIndex];
+      var nextSlide = slides[nextIndex];
+      var incomingPosition = direction > 0 ? -100 : 100;
+      var outgoingPosition = direction > 0 ? 100 : -100;
+      var transitionDuration = shouldReduceMotion ? 0 : 0.65;
+
+      galleryGsap.set(nextSlide, {
+        xPercent: incomingPosition,
+        autoAlpha: 1,
+        zIndex: 2
+      });
+      galleryGsap.set(currentSlide, { zIndex: 1 });
+
+      galleryGsap.timeline({
+        defaults: {
+          duration: transitionDuration,
+          ease: "power2.inOut"
+        },
+        onComplete: function handleGalleryTransitionComplete() {
+          galleryGsap.set(currentSlide, { autoAlpha: 0, zIndex: 0 });
+          currentIndex = nextIndex;
+          isAnimating = false;
+          renderSlideAccessibility();
+        }
+      })
+        .to(currentSlide, { xPercent: outgoingPosition }, 0)
+        .to(nextSlide, { xPercent: 0 }, 0);
+    }
+
+    function startAutoPlay() {
+      if (shouldReduceMotion || autoPlayTimer) {
+        return;
+      }
+
+      autoPlayTimer = window.setInterval(function handleGalleryAutoPlay() {
+        moveGallery(1);
+      }, SLIDE_INTERVAL);
+    }
+
+    function stopAutoPlay() {
+      if (!autoPlayTimer) {
+        return;
+      }
+
+      window.clearInterval(autoPlayTimer);
+      autoPlayTimer = null;
+    }
+
+    function handlePreviousClick() {
+      moveGallery(-1);
+    }
+
+    function handleNextClick() {
+      moveGallery(1);
+    }
+
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        stopAutoPlay();
+      } else {
+        startAutoPlay();
+      }
+    }
+
+    previousButton.addEventListener("click", handlePreviousClick);
+    nextButton.addEventListener("click", handleNextClick);
+    sliderRegion.addEventListener("pointerenter", stopAutoPlay);
+    sliderRegion.addEventListener("pointerleave", startAutoPlay);
+    sliderRegion.addEventListener("focusin", stopAutoPlay);
+    sliderRegion.addEventListener("focusout", startAutoPlay);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    renderSlideAccessibility();
+    startAutoPlay();
+  }
+
   revealFrom(document.querySelectorAll(".burger_info_thumb"), {
     x: -64,
     y: 0,
@@ -51,13 +171,6 @@ function initRestaurantScrollAnimations() {
     y: 0,
     stagger: 0.12,
     trigger: document.querySelector(".burger_info")
-  });
-
-  revealFrom(document.querySelectorAll(".burger_gallery_stage"), {
-    y: 64,
-    scale: 0.96,
-    duration: 1,
-    trigger: document.querySelector(".burger_gallery")
   });
 
   revealFrom(document.querySelectorAll(".burger_best_type_top"), {
