@@ -3,65 +3,638 @@
 
 <head>
   <meta charset="UTF-8">
-  <!-- 기본 SEO -->
-  <title>Brand Story | N Seoul Tower</title>
-  <meta name="description" content="The N Seoul Tower brand story page is being prepared. Please visit again soon.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 기본 SEO (default.html 구조 준용) -->
+  <title>Brand Story | N서울타워</title>
+  <meta name="description"
+    content="A romantic island in the heart of the city. How N Seoul Tower became Seoul's landmark, and the tower data behind it." />
   <meta name="keywords"
-    content="N SEOUL TOWER, Namsan Seoul Tower, Seoul landmark, Seoul observatory, Namsan, Seoul travel, Seoul attractions, brand story">
-  <meta name="author" content="Kbrand N SEOUL TOWER Renewal Team">
-  <!-- 준비 중인 페이지이므로 색인에서 제외합니다. -->
-  <meta name="robots" content="noindex, follow">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="canonical" href="https://dahyeonkong.github.io/n_seoul_tower/pages/brand_story.html">
-  <meta name="theme-color" content="#56780c">
+    content="N SEOUL TOWER, brand story, Namsan tower, Seoul landmark, tower data, observatory" />
+  <meta name="author" content="Kbrand N SEOUL TOWER Renewal Team" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <link rel="canonical" href="https://dahyeonkong.github.io/n_seoul_tower/pages/brand_story.html" />
+  <meta name="theme-color" content="#56780c" />
 
   <!-- 파비콘 세트 -->
-  <link rel="icon" type="image/svg+xml" href="../assets/favicon/favicon.svg">
-  <link rel="icon" href="../assets/favicon/favicon.ico" sizes="48x48">
-  <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32.png">
-  <link rel="apple-touch-icon" href="../assets/favicon/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon/icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="../assets/favicon/icon-512.png">
-  <link rel="manifest" href="../assets/favicon/site.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon/favicon.svg" />
+  <link rel="icon" href="../assets/favicon/favicon.ico" sizes="48x48" />
+  <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32.png" />
+  <link rel="apple-touch-icon" href="../assets/favicon/apple-touch-icon.png" />
+  <link rel="manifest" href="../assets/favicon/site.webmanifest" />
 
   <!-- 오픈그래프 -->
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="N서울타워">
-  <meta property="og:title" content="Brand Story | N Seoul Tower">
-  <meta property="og:description" content="The N Seoul Tower brand story page is being prepared. Please visit again soon.">
-  <meta property="og:url" content="https://dahyeonkong.github.io/n_seoul_tower/pages/brand_story.html">
-  <meta property="og:image" content="https://dahyeonkong.github.io/n_seoul_tower/assets/og-image.png">
-  <meta property="og:image:alt" content="서울의 야경과 N서울타워">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="N서울타워" />
+  <meta property="og:title" content="Brand Story | N서울타워" />
+  <meta property="og:description"
+    content="A romantic island in the heart of the city. How N Seoul Tower became Seoul's landmark, and the tower data behind it." />
+  <meta property="og:url" content="https://dahyeonkong.github.io/n_seoul_tower/pages/brand_story.html" />
+  <meta property="og:image" content="https://dahyeonkong.github.io/n_seoul_tower/assets/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
 
   <!-- 트위터(X) 카드 -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Brand Story | N Seoul Tower">
-  <meta name="twitter:description" content="The N Seoul Tower brand story page is being prepared. Please visit again soon.">
-  <meta name="twitter:image" content="https://dahyeonkong.github.io/n_seoul_tower/assets/og-image.png">
-  <meta name="twitter:image:alt" content="서울의 야경과 N서울타워">
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Brand Story | N서울타워" />
+  <meta name="twitter:description"
+    content="A romantic island in the heart of the city. How N Seoul Tower became Seoul's landmark, and the tower data behind it." />
+  <meta name="twitter:image" content="https://dahyeonkong.github.io/n_seoul_tower/assets/og-image.png" />
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/common.css">
-  <link rel="stylesheet" href="../css/page_miss.css">
+  <link rel="stylesheet" href="../css/brand_story.css">
 </head>
 
 <body>
-  <!-- ===================== page miss (Figma 1131:1592) =====================
-       brand story 페이지가 준비되기 전까지 노출하는 안내 화면입니다.
-       시안에 헤더와 푸터가 없어 단독 화면으로 구성했습니다. -->
-  <main class="page_miss">
-    <p class="page_miss_visual">
-      <img src="../assets/miss_img.png" alt="" width="626" height="626">
-    </p>
+  <div class="site_wrapper" id="top">
+    <a class="skip_link" href="#main_content">Skip to main content</a>
 
-    <div class="page_miss_body">
-      <h1 class="page_miss_title">Page Under Construction</h1>
-      <a class="page_miss_home" href="../index.html">Back to Home</a>
+    <!-- ===================== global header (공통 컴포넌트 재사용) ===================== -->
+    <header class="site_header site_header_sub">
+      <div class="page_container site_header_inner">
+        <a class="brand_logo" href="../index.html" aria-label="N Seoul Tower home">
+          <img src="../assets/nst_logo_defalut.svg" alt="" width="43" height="43">
+        </a>
+
+        <!-- ===================== sub page GNB (645:2903) ===================== -->
+        <nav class="site_gnb" aria-label="Main menu">
+          <ul class="site_gnb_list">
+            <li class="site_gnb_group">
+              <p class="site_gnb_title">tower story</p>
+              <ul class="site_gnb_lnb">
+                <li><a class="site_gnb_link" href="./brand_story.html" aria-current="page">brand story</a></li>
+                <li><button class="site_gnb_link" type="button" data-pending-link
+                    aria-disabled="true">history</button></li>
+              </ul>
+            </li>
+            <li class="site_gnb_group">
+              <p class="site_gnb_title">explore</p>
+              <ul class="site_gnb_lnb">
+                <li><a class="site_gnb_link" href="./restaurant_n_burger.html">restaurants</a></li>
+                <li><a class="site_gnb_link" href="./n_gift_shop.html">N gift shop</a></li>
+                <li><button class="site_gnb_link" type="button" data-pending-link
+                    aria-disabled="true">amenities</button></li>
+                <li><a class="site_gnb_link" href="./floor_guide.html">floor guide</a></li>
+              </ul>
+            </li>
+            <li class="site_gnb_group">
+              <p class="site_gnb_title">visit</p>
+              <ul class="site_gnb_lnb">
+                <li><button class="site_gnb_link" type="button" data-pending-link aria-disabled="true">Hours &amp;
+                    Tickets</button></li>
+                <li><a class="site_gnb_link" href="./visitor_guide.html">visitor guide</a></li>
+              </ul>
+            </li>
+            <li class="site_gnb_group">
+              <p class="site_gnb_title">events</p>
+            </li>
+            <li class="site_gnb_group">
+              <p class="site_gnb_title">support</p>
+              <ul class="site_gnb_lnb">
+                <li><button class="site_gnb_link" type="button" data-pending-link aria-disabled="true">notice &amp;
+                    news</button></li>
+                <li><button class="site_gnb_link" type="button" data-pending-link aria-disabled="true">FAQ / contact
+                    us</button></li>
+              </ul>
+            </li>
+          </ul>
+
+          <!-- TODO: 예매 페이지 주소가 확정되지 않아 안내 메시지만 노출합니다. -->
+          <button class="book_now_btn" type="button" data-pending-link aria-disabled="true">Book Now</button>
+
+          <div class="site_gnb_language">
+            <button class="site_gnb_language_button" type="button" data-language-button aria-expanded="false"
+              aria-controls="header_language_menu">
+              <span data-language-current>English</span>
+              <img src="../assets/icon/icon_chevron_down_dark.svg" alt="" width="20" height="20">
+              <span class="visually_hidden">Change language</span>
+            </button>
+            <ul class="site_gnb_language_menu" id="header_language_menu" data-language-menu hidden>
+              <li><button class="site_gnb_language_option" type="button" data-language="en"
+                  aria-current="true">English</button></li>
+              <li><button class="site_gnb_language_option" type="button" data-language="ko">Korean</button></li>
+              <li><button class="site_gnb_language_option" type="button" data-language="ja">Japanese</button></li>
+              <li><button class="site_gnb_language_option" type="button" data-language="zh">Chinese</button></li>
+            </ul>
+          </div>
+        </nav>
+        <button
+          class="menu_toggle"
+          type="button"
+          data-menu-toggle
+          aria-expanded="false"
+          aria-controls="global_menu"
+        >
+          <svg
+            class="menu_toggle_icon"
+            viewBox="0 0 40 40"
+            fill="currentColor"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              class="menu_toggle_bar menu_toggle_bar_top"
+              d="M13.2201 8.75786C13.6122 8.73215 14.1638 8.74854 14.5647 8.74873L16.9757 8.74952L24.5234 8.74926L31.5781 8.74912L33.8633 8.74911C34.2621 8.74909 34.6754 8.74368 35.0736 8.75739C35.3029 8.76528 35.5551 8.86073 35.7406 8.99694C36.01 9.19463 36.1879 9.49307 36.2334 9.82411C36.3334 10.5386 35.8289 11.1569 35.1219 11.2444C34.7602 11.2726 34.2127 11.257 33.8383 11.2568L31.6121 11.2562L24.559 11.2562L17.0156 11.2564L14.5868 11.2574C14.1572 11.2576 13.7295 11.266 13.2985 11.2496C12.2629 11.2101 11.721 10.0355 12.3559 9.2183C12.5929 8.91332 12.8454 8.81067 13.2201 8.75786Z"
+            />
+            <path
+              class="menu_toggle_bar menu_toggle_bar_middle"
+              d="M4.90152 18.7566C5.49424 18.73 6.21084 18.749 6.81463 18.749L10.3771 18.7491L21.2264 18.7491H30.4393L33.4262 18.7486C33.8725 18.7486 34.3191 18.7468 34.7652 18.7493C35.1607 18.7515 35.4463 18.768 35.7652 19.0166C36.0264 19.2187 36.1963 19.5166 36.2373 19.8443C36.2785 20.1705 36.1883 20.4994 35.9865 20.7588C35.7564 21.0515 35.474 21.1994 35.1086 21.2465C34.5719 21.275 33.873 21.2566 33.3254 21.2566L30.1414 21.2568L20.3223 21.2564H10.1164L6.78197 21.2572C6.1999 21.2574 5.61889 21.2572 5.03681 21.2521C4.40519 21.2469 3.85435 20.8263 3.7642 20.1877C3.71644 19.8447 3.80783 19.497 4.01799 19.2218C4.25316 18.9169 4.53303 18.8044 4.90152 18.7566Z"
+            />
+            <path
+              class="menu_toggle_bar menu_toggle_bar_bottom"
+              d="M19.9016 28.7567C20.8455 28.7163 22.0254 28.7493 22.9889 28.7493L28.8801 28.7491H33.0131L34.3523 28.7493C34.8449 28.7497 35.3227 28.6895 35.7408 28.9969C36.0098 29.1948 36.1873 29.493 36.233 29.8237C36.335 30.5538 35.8231 31.1549 35.1086 31.2465C34.7658 31.2649 34.3643 31.2565 34.018 31.2565L32.2586 31.2567L26.791 31.2565L22.2465 31.2569L20.8231 31.2571C20.7117 31.2571 20.5988 31.2588 20.4885 31.2577C20.0619 31.253 19.6234 31.2895 19.2668 31.0106C18.9881 30.7926 18.8093 30.5295 18.7622 30.1764C18.7166 29.8344 18.8107 29.4887 19.0231 29.217C19.2588 28.9129 19.5313 28.8063 19.9016 28.7567Z"
+            />
+          </svg>
+          <span class="visually_hidden" data-menu-toggle-label>Open menu</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ===================== global menu overlay (공통 컴포넌트 재사용) ===================== -->
+    <div class="global_menu" id="global_menu" data-menu-panel hidden>
+      <div class="page_container global_menu_head">
+        <div class="language_selector">
+          <button
+            class="language_button"
+            type="button"
+            data-language-button
+            aria-expanded="false"
+            aria-controls="language_menu"
+          >
+            <span data-language-current>English</span>
+            <img src="../assets/icon/icon_chevron_down.svg" alt="" width="20" height="20">
+            <span class="visually_hidden">Change language</span>
+          </button>
+          <ul class="language_menu" id="language_menu" data-language-menu hidden>
+            <li><button class="language_option" type="button" data-language="en" aria-current="true">English</button></li>
+            <li><button class="language_option" type="button" data-language="ko">Korean</button></li>
+            <li><button class="language_option" type="button" data-language="ja">Japanese</button></li>
+            <li><button class="language_option" type="button" data-language="zh">Chinese</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="page_container global_menu_body">
+        <div class="menu_brand">
+          <div class="menu_brand_logo">
+            <img src="../assets/nst_logo_gray.svg" alt="" width="219" height="136">
+            <p class="menu_brand_name"><span>N</span> SEOUL TOWER</p>
+          </div>
+          <button class="book_btn" type="button" data-pending-link aria-disabled="true">
+            <img src="../assets/icon/icon_ticket.svg" alt="" width="24" height="24">
+            buy ticket
+          </button>
+        </div>
+
+        <nav class="gnb" aria-label="Main menu">
+          <div class="gnb_group">
+            <p class="gnb_title">tower story</p>
+            <ul class="gnb_lnb">
+              <li><a class="gnb_link" href="./brand_story.html" aria-current="page">brand story</a></li>
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">history</button></li>
+            </ul>
+          </div>
+          <div class="gnb_group">
+            <p class="gnb_title">explore</p>
+            <ul class="gnb_lnb">
+              <li><a class="gnb_link" href="./restaurant_n_burger.html">restaurants</a></li>
+              <li><a class="gnb_link" href="./n_gift_shop.html">N gift shop</a></li>
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">amenities</button></li>
+              <li><a class="gnb_link" href="./floor_guide.html">floor guide</a></li>
+            </ul>
+          </div>
+          <div class="gnb_group">
+            <p class="gnb_title">visit</p>
+            <ul class="gnb_lnb">
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">Hours &amp; Tickets</button></li>
+              <li><a class="gnb_link" href="./visitor_guide.html">visitor guide</a></li>
+            </ul>
+          </div>
+          <div class="gnb_group">
+            <p class="gnb_title">events</p>
+          </div>
+          <div class="gnb_group">
+            <p class="gnb_title">support</p>
+            <ul class="gnb_lnb">
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">notice &amp; news</button></li>
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">FAQ / contact us</button></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
     </div>
-  </main>
+
+    <main class="sub_content brand_story" id="main_content">
+
+      <!-- ===================== 1. hero (1095:14675) ===================== -->
+      <section class="subpage_hero brand_hero" aria-labelledby="brand_hero_title">
+        <img class="subpage_hero_image brand_hero_image" src="../assets/brand_story/visual_img.png"
+          alt="Illustrated 3D scene of N Seoul Tower on Namsan with visitors, a picnic and media art arches"
+          width="1244" height="626" fetchpriority="high">
+        <h1 class="subpage_hero_title" id="brand_hero_title">Brand Story</h1>
+
+        <!-- 아래로 더 스크롤할 수 있다는 표시입니다 (1095:14720). 위아래로 가볍게 움직입니다. -->
+        <span class="brand_hero_scroll_cue" aria-hidden="true">
+          <img src="../assets/brand_story/arrow_forward_down.svg" alt="" width="32" height="32">
+        </span>
+      </section>
+
+      <!-- ===================== 2. section tabs (1095:14678) ===================== -->
+      <nav class="subpage_tabs brand_tabs" aria-label="Brand story sections">
+        <ul class="subpage_tabs_list">
+          <li><a class="subpage_tab" href="./brand_story.html" aria-current="page">Overview</a></li>
+          <!-- TODO: Brand Identity 는 시안만 있고 구현 대상이 아니라 비활성으로 둡니다. -->
+          <li><button class="subpage_tab" type="button" data-pending-link aria-disabled="true">Brand Identity</button></li>
+        </ul>
+      </nav>
+
+      <!-- ===================== 3. about (1058:11721) =====================
+           1280 이상에서는 .about_viewport 를 sticky 로 고정하고, 스크롤 진행에 따라
+           패널 5개를 교체합니다 (이미지는 위에서 아래로, 텍스트는 아래에서 위로).
+           1280 미만과 prefers-reduced-motion 에서는 그냥 5개가 세로로 쌓입니다. -->
+      <section class="brand_about" id="brand_about" aria-labelledby="brand_about_title" data-about-section>
+        <h2 class="visually_hidden" id="brand_about_title">About N Seoul Tower</h2>
+
+        <div class="about_viewport" data-about-viewport>
+          <article class="about_panel is_active" data-about-panel="1">
+            <div class="about_image_box">
+              <img class="about_image" src="../assets/brand_story/about_img01.png"
+                alt="N Seoul Tower rising above a sea of clouds over Namsan at sunrise" width="920" height="1080"
+                loading="lazy">
+            </div>
+            <p class="about_number" aria-hidden="true">01</p>
+            <div class="about_text">
+              <div class="about_title_box">
+                <p class="about_eyebrow">About</p>
+                <p class="about_title">N Seoul Tower</p>
+                <p class="about_subtitle">: A Romantic Island in the Heart of the City</p>
+              </div>
+              <div class="about_body">
+                <h3 class="about_lead">Where the sky meets the clouds</h3>
+                <p class="about_desc">N Seoul Tower is a multifunctional cultural space in Seoul that offers a perfect
+                  harmony of Namsan's natural beauty and 21st-century cutting-edge technology, along with leisurely
+                  relaxation and a diverse array of cultural experiences.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="about_panel" data-about-panel="2">
+            <div class="about_image_box">
+              <img class="about_image" src="../assets/brand_story/about_img02.png"
+                alt="N Seoul Tower lit up at night above the Seoul city skyline" width="920" height="1080"
+                loading="lazy">
+            </div>
+            <p class="about_number" aria-hidden="true">02</p>
+            <div class="about_text">
+              <div class="about_title_box">
+                <p class="about_eyebrow">About</p>
+                <p class="about_title">N Seoul Tower</p>
+                <p class="about_subtitle">: A Romantic Island in the Heart of the City</p>
+              </div>
+              <div class="about_body">
+                <h3 class="about_lead">Located in the heart of Seoul</h3>
+                <p class="about_desc">N Seoul Tower is a symbol of the city and the highest vantage point from which to
+                  take in Seoul's most beautiful views at a glance. It was built in 1969 as Korea's first comprehensive
+                  broadcast tower to transmit TV and radio signals to the Seoul metropolitan area.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="about_panel" data-about-panel="3">
+            <div class="about_image_box">
+              <img class="about_image" src="../assets/brand_story/about_img03.png"
+                alt="Close-up of the N Seoul Tower observatory and broadcast antennas at sunset" width="920"
+                height="1080" loading="lazy">
+            </div>
+            <p class="about_number" aria-hidden="true">03</p>
+            <div class="about_text">
+              <div class="about_title_box">
+                <p class="about_eyebrow">About</p>
+                <p class="about_title">N Seoul Tower</p>
+                <p class="about_subtitle">: A Romantic Island in the Heart of the City</p>
+              </div>
+              <div class="about_body">
+                <h3 class="about_lead">48% of radio listeners nationwide receive broadcasts through N Seoul Tower.</h3>
+                <p class="about_desc">This tower is equipped not only with transmission antennas for KBS, MBC, and SBS
+                  TV and FM, but also with antennas for PBC, TBS, CBS, and BBS FM.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="about_panel" data-about-panel="4">
+            <div class="about_image_box">
+              <img class="about_image" src="../assets/brand_story/about_img04.png"
+                alt="Visitors walking a tree-lined Namsan trail with N Seoul Tower beyond the leaves" width="920"
+                height="1080" loading="lazy">
+            </div>
+            <p class="about_number" aria-hidden="true">04</p>
+            <div class="about_text">
+              <div class="about_title_box">
+                <p class="about_eyebrow">About</p>
+                <p class="about_title">N Seoul Tower</p>
+                <p class="about_subtitle">: A Romantic Island in the Heart of the City</p>
+              </div>
+              <div class="about_body">
+                <h3 class="about_lead">Since opening to the public in 1980</h3>
+                <p class="about_desc">N Seoul Tower has established itself as a place of relaxation for Seoul citizens
+                  and a tourist attraction for foreigners, harmonizing with the vibrant natural surroundings of Namsan
+                  Mountain.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="about_panel" data-about-panel="5">
+            <div class="about_image_box">
+              <img class="about_image" src="../assets/brand_story/about_img05.png"
+                alt="N Seoul Tower glowing at night beside illuminated media art installations" width="920"
+                height="1080" loading="lazy">
+            </div>
+            <p class="about_number" aria-hidden="true">05</p>
+            <div class="about_text">
+              <div class="about_title_box">
+                <p class="about_eyebrow">About</p>
+                <p class="about_title">N Seoul Tower</p>
+                <p class="about_subtitle">: A Romantic Island in the Heart of the City</p>
+              </div>
+              <div class="about_body">
+                <h3 class="about_lead">A place that shines beautifully at any time</h3>
+                <p class="about_desc">In an "Art of Light" environment where colors and patterns change moment by moment
+                  thanks to state-of-the-art LED lighting you can experience unique cultural and artistic expressions
+                  alongside diverse media art installations.</p>
+                <p class="about_desc">Reborn as Seoul's premier multifunctional cultural space, N Seoul Tower is set to
+                  become a proud landmark of Seoul.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 대각선 진행 표시. 패널 순서를 나타내는 장식이라 접근성 트리에서 제외합니다. -->
+          <ol class="about_rail" aria-hidden="true" data-about-rail>
+            <li class="about_step is_active"><span class="about_step_dot"></span><span class="about_step_num">01</span></li>
+            <li class="about_step"><span class="about_step_dot"></span><span class="about_step_num">02</span></li>
+            <li class="about_step"><span class="about_step_dot"></span><span class="about_step_num">03</span></li>
+            <li class="about_step"><span class="about_step_dot"></span><span class="about_step_num">04</span></li>
+            <li class="about_step"><span class="about_step_dot"></span><span class="about_step_num">05</span></li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ===================== 4. tower data (1095:14723) ===================== -->
+      <section class="tower_data" id="tower_data" aria-labelledby="tower_data_title">
+        <div class="tower_data_inner">
+          <div class="tower_data_head">
+            <p class="tower_data_eyebrow">Design Tower</p>
+            <h2 class="tower_data_title" id="tower_data_title">Tower Data</h2>
+          </div>
+
+          <div class="tower_data_columns">
+            <!-- 좌측 — 구조 제원 -->
+            <div class="tower_data_column tower_data_column_left">
+              <dl class="tower_data_group">
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Elevation</dt>
+                  <dd class="tower_data_value">506.7m/1.662ft</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Namsan</dt>
+                  <dd class="tower_data_value">270.0m/885ft<br>(to the foundation of N SEOUL TOWER)</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">N SEOUL TOWER</dt>
+                  <dd class="tower_data_value">236.7m / 777ft<br>(tower body 135.7m/445ft + steel tower 101m/332ft)</dd>
+                </div>
+              </dl>
+
+              <dl class="tower_data_group tower_data_group_narrow">
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Site</dt>
+                  <dd class="tower_data_value">8,456m&sup2;</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Floor space</dt>
+                  <dd class="tower_data_value">3,986m&sup2;</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Total floor space</dt>
+                  <dd class="tower_data_value">15,378m&sup2;</dd>
+                </div>
+              </dl>
+
+              <dl class="tower_data_group">
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Safe wind speed</dt>
+                  <dd class="tower_data_value">Safe even in strong winds of about 56m/s</dd>
+                </div>
+              </dl>
+            </div>
+
+            <!-- 가운데 — 타워 실루엣(Vector_15.svg)으로 마스킹한 영상 (1095:14757) -->
+            <div class="tower_data_media" aria-hidden="true">
+              <video class="tower_data_video" src="../assets/brand_story/video.mp4" muted loop playsinline autoplay
+                preload="metadata" data-tower-video></video>
+            </div>
+
+            <!-- 우측 — 전망대 제원 -->
+            <div class="tower_data_column tower_data_column_right">
+              <dl class="tower_data_group">
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Total extent of Observatory</dt>
+                  <dd class="tower_data_value">2,403m&sup2;</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">View 1st Floor</dt>
+                  <dd class="tower_data_value">450m&sup2;</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">View 2nd Floor</dt>
+                  <dd class="tower_data_value">460m&sup2;</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Observatory 3rd Floor</dt>
+                  <dd class="tower_data_value">466m&sup2;</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">View 5th Floor</dt>
+                  <dd class="tower_data_value">271m&sup2; (Rotating area 149m&sup2;)</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Rotating time</dt>
+                  <dd class="tower_data_value">1 hour and 40 minutes</dd>
+                </div>
+              </dl>
+
+              <dl class="tower_data_group">
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Safety inspections</dt>
+                  <dd class="tower_data_value">Public recognition of its safety was granted following an inspection by
+                    an international accreditation body on May 21, 1973.</dd>
+                  <dd class="tower_data_value">Safety inspections are conducted more than once every year</dd>
+                  <dd class="tower_data_value">Safety was confirmed following an inspection in January 2005</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===================== footer (공통 컴포넌트 재사용) ===================== -->
+    <footer class="site_footer">
+      <div class="page_container site_footer_inner">
+        <div class="footer_top">
+          <p class="footer_logo">
+            <img src="../assets/nst_logo_defalut.svg" alt="N Seoul Tower" width="80" height="107" loading="lazy">
+          </p>
+          <a class="top_button" href="#top">
+            <img src="../assets/icon/arrow_up.png" alt="" width="24" height="24" loading="lazy">
+            top
+          </a>
+        </div>
+
+        <div class="footer_body">
+          <div class="footer_info">
+            <address class="footer_info_list">
+              <p class="footer_info_row">Business Registration Number: 312-81-42519</p>
+              <p class="footer_info_row">
+                <span>CEO: Lee Geon-il</span>
+                <span class="footer_divider" aria-hidden="true"></span>
+                <span>Chief Privacy Officer: Kim Jae-wan</span>
+              </p>
+              <p class="footer_info_row">Address: N Seoul Tower, 105, Namsangongwon-gil, Yongsan-gu, Seoul</p>
+              <p class="footer_info_row">
+                <a href="tel:+82234559277">Tel : 02) 3455 - 9277, 9288</a>
+                <span class="footer_divider" aria-hidden="true"></span>
+                <a href="mailto:helpmaster@cj.net">Email : helpmaster@cj.net</a>
+              </p>
+            </address>
+
+            <div class="family_site">
+              <button
+                class="family_site_button"
+                type="button"
+                data-family-button
+                aria-expanded="false"
+                aria-controls="family_site_menu"
+              >
+                family site
+                <img src="../assets/icon/icon_chevron_down.svg" alt="" width="24" height="24" loading="lazy">
+              </button>
+              <div class="family_site_menu" id="family_site_menu" data-family-menu hidden>
+                <div class="family_site_group">
+                  <p class="family_site_group_title">CJ그룹</p>
+                  <a class="family_site_link" href="https://www.cj.net" target="_blank" rel="noopener noreferrer">CJ주식회사</a>
+                </div>
+                <div class="family_site_group">
+                  <p class="family_site_group_title">식품&amp;식품서비스</p>
+                  <a class="family_site_link" href="https://www.cj.co.kr" target="_blank" rel="noopener noreferrer">CJ제일제당</a>
+                  <a class="family_site_link" href="https://www.cjfoodville.co.kr" target="_blank" rel="noopener noreferrer">CJ푸드빌</a>
+                  <a class="family_site_link" href="https://www.cjfreshway.com" target="_blank" rel="noopener noreferrer">CJ프레시웨이</a>
+                </div>
+                <div class="family_site_group">
+                  <p class="family_site_group_title">생명공학</p>
+                  <a class="family_site_link" href="https://www.cj.co.kr" target="_blank" rel="noopener noreferrer">CJ제일제당 BIO사업부문</a>
+                  <a class="family_site_link" href="https://www.cjfeedncare.co.kr" target="_blank" rel="noopener noreferrer">CJ Feed&amp;Care</a>
+                </div>
+                <div class="family_site_group">
+                  <p class="family_site_group_title">물류 &amp; 신유통</p>
+                  <a class="family_site_link" href="https://www.cjlogistics.com" target="_blank" rel="noopener noreferrer">CJ대한통운</a>
+                  <a class="family_site_link" href="https://www.cjlogistics.com" target="_blank" rel="noopener noreferrer">CJ대한통운 건설부문</a>
+                  <a class="family_site_link" href="https://www.oliveyoung.co.kr" target="_blank" rel="noopener noreferrer">CJ올리브영</a>
+                  <a class="family_site_link" href="https://www.cjolivenetworks.co.kr" target="_blank" rel="noopener noreferrer">CJ올리브네트웍스</a>
+                  <a class="family_site_link" href="https://www.cjenm.com" target="_blank" rel="noopener noreferrer">CJ ENM 커머스부문</a>
+                </div>
+                <div class="family_site_group">
+                  <p class="family_site_group_title">엔터테인먼트&amp;미디어</p>
+                  <a class="family_site_link" href="https://www.cjenm.com" target="_blank" rel="noopener noreferrer">CJ ENM 엔터테인먼트부문</a>
+                  <a class="family_site_link" href="https://www.cgv.co.kr" target="_blank" rel="noopener noreferrer">CJ CGV</a>
+                  <a class="family_site_link" href="https://www.cjpowercast.com" target="_blank" rel="noopener noreferrer">CJ파워캐스트</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer_service">
+            <h2 class="footer_service_title">customer service</h2>
+            <button class="footer_service_btn" type="button" data-pending-link aria-disabled="true">FAQ</button>
+            <button class="footer_service_btn" type="button" data-pending-link aria-disabled="true">Contact Us</button>
+          </div>
+        </div>
+
+        <div class="footer_bottom">
+          <div class="footer_bottom_row">
+            <p class="footer_copyright">© 2026. ALL RIGHTS RESERVED BY SEOUL TOWER</p>
+            <ul class="footer_sns">
+              <li>
+                <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
+                  <img src="../assets/icon/sns/sns1.png" alt="" width="24" height="24" loading="lazy">
+                  <span class="visually_hidden">Facebook</span>
+                </button>
+              </li>
+              <li>
+                <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
+                  <img src="../assets/icon/sns/sns2.png" alt="" width="24" height="24" loading="lazy">
+                  <span class="visually_hidden">Instagram</span>
+                </button>
+              </li>
+              <li>
+                <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
+                  <img src="../assets/icon/sns/sns3.png" alt="" width="24" height="24" loading="lazy">
+                  <span class="visually_hidden">YouTube</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <img class="footer_deco" src="../assets/footer_tower.png" alt="" aria-hidden="true" width="418" height="417" loading="lazy">
+      </div>
+    </footer>
+
+    <!-- ===================== floating quick menu (987:7708) ===================== -->
+    <div class="quick_menu" data-quick-menu>
+      <div class="quick_menu_actions" id="quick_menu_actions" data-quick-actions hidden>
+
+        <!-- TODO: 검색 페이지가 확정되지 않아 안내 메시지만 노출합니다. -->
+        <button class="quick_action" type="button" data-pending-link aria-disabled="true">
+          <img src="../assets/icon/quick/search.svg" alt="" width="36" height="36">
+          <span class="visually_hidden">Search</span>
+        </button>
+
+        <div class="quick_section">
+          <button class="quick_action" type="button" data-quick-section-button aria-expanded="false"
+            aria-controls="quick_section_menu">
+            <img src="../assets/icon/quick/sections.svg" alt="" width="36" height="36">
+            <span class="visually_hidden">Move to a section</span>
+          </button>
+          <nav class="quick_section_menu" id="quick_section_menu" data-quick-section-menu
+            aria-label="Sections on this page" hidden>
+            <p class="quick_section_title">quick menu</p>
+            <ul class="quick_section_list">
+              <li><a class="quick_section_link" href="#brand_about">about</a></li>
+              <li><a class="quick_section_link" href="#tower_data">tower data</a></li>
+            </ul>
+          </nav>
+        </div>
+
+        <a class="quick_action" href="#top">
+          <img src="../assets/icon/quick/arrow_up.svg" alt="" width="36" height="36">
+          <span class="visually_hidden">Back to top</span>
+        </a>
+      </div>
+
+      <button class="quick_toggle" type="button" data-quick-toggle aria-expanded="false"
+        aria-controls="quick_menu_actions">
+        <img class="quick_toggle_image" src="../assets/icon/chatbot.png" alt="" width="96" height="96">
+        <span class="quick_toggle_ring" data-quick-ring aria-hidden="true"></span>
+        <span class="visually_hidden" data-quick-toggle-label>Open quick menu</span>
+      </button>
+    </div>
+
+    <p class="link_status" data-link-status role="status" aria-live="polite"></p>
+  </div>
+
+  <script src="../js/common.js"></script>
+  <script src="../js/brand_story.js"></script>
 </body>
 
 </html>

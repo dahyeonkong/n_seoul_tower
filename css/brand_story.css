@@ -1,0 +1,839 @@
+@charset "utf-8";
+
+/* ==========================================================================
+   brand story — Figma `brandstory_about_data` (1095:14559, 1920 × 4655)
+   about 패널 5개는 `about_wrap` (1058:11721, 1920 × 5400) 기준입니다.
+
+   공통 컴포넌트를 최대한 그대로 씁니다.
+   - 헤더 / 메뉴 오버레이 / 푸터 / 퀵 메뉴 : common.css
+   - 히어로 `.subpage_hero`, 탭 `.subpage_tabs` : common.css (변수만 이 파일에서 조정)
+   이 파일에는 about 5단과 tower data 만 새로 작성합니다.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   page tokens
+   시안에 Figma Variables 로 연결되지 않은 하드코딩 색이 있어 여기서만 선언합니다.
+   -------------------------------------------------------------------------- */
+.brand_story {
+  /* 시안 실측 — Variables 의 secondary/50(#fef7e9) 과 다른 값입니다. */
+  --brand_surface: #fcf3e7;
+  /* 인디케이터 레일 — 지나온 구간 / 남은 구간 / 대기 점 (시안 렌더 픽셀 실측) */
+  --brand_rail_fill: var(--color_new_primary_200, #dbe1c1);
+  --brand_rail_track: var(--color_new_primary_100, #edf0e0);
+  --brand_dot_idle: #e4e8d1;
+  --brand_rail_thickness: 2px;
+
+  /* 패널 전환용 이징 — 시작을 부드럽게 밀고 끝에서 길게 감속합니다. */
+  --brand_ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* about 이미지 영역은 아랫변이 짧은 사다리꼴입니다.
+     시안 실측 — 윗변 끝 920, 아랫변 끝 659 (920 기준 71.63%). */
+  --brand_image_bottom: 71.63%;
+
+  /* 탭 바가 화면 하단에 고정돼 마지막 100px 을 덮습니다 (common.css .subpage_tabs).
+     그만큼 섹션 아래 여백을 더 잡아 콘텐츠가 잘리지 않게 합니다. */
+  --brand_tab_h: 100px;
+
+  /* 타워가 딛고 선 언덕 (1180:5885) — 타원의 윗부분만 잘라 씁니다.
+     시안 폭(2048)은 화면 끝에서 곡선이 바닥에 닿아 언덕이 사라집니다.
+     타원을 화면 두 배로 넓혀 양 끝까지 언덕이 이어지게 했습니다. */
+  --brand_hill: #c8d2a3;
+  --hill_w: 200vw;
+  --hill_h: min(16.15vw, 310px);
+  --hill_top: min(5.26vw, 101px);
+
+  /* 공통 히어로·탭 컴포넌트 조정 (기본값과 같은 값도 의도를 남기려 명시합니다) */
+  --subpage_hero_bg: var(--color_new_primary_400, #b6c384);
+  --subpage_hero_title_mobile: clamp(40px, 11vw, 96px);
+  --subpage_hero_title_desktop: clamp(72px, 6.25vw, 120px);
+  --subpage_tab_bg: #c8d2a3;
+  --subpage_tab_ink: var(--color_new_secondary_700, #3b432b);
+
+  position: relative;
+}
+
+/* --------------------------------------------------------------------------
+   1. hero (1095:14675)
+   시안은 이미지 1244 × 626 이라 공통 컴포넌트의 정사각 비율을 덮어씁니다.
+   img 의 width/height 속성이 aspect-ratio 를 무력화하므로 height: auto 가 필요합니다.
+   -------------------------------------------------------------------------- */
+/* 히어로 + 하단 고정 탭 바가 합쳐서 화면을 꽉 채웁니다.
+   탭 바는 common.css 에서 `top: calc(100dvh - 100px)` 으로 붙어 있어,
+   스크롤하면 제자리를 떠나 화면 하단에 붙습니다. 그때 원래 있던 자리가
+   빈 띠로 남아 히어로와 about 사이가 뜹니다.
+   그래서 히어로를 탭 높이만큼 더 키우고, 같은 크기의 음수 마진으로 탭을
+   히어로 위로 끌어올립니다. 탭이 앉는 자리가 곧 히어로 배경이라 빈 띠가 없고,
+   about 은 히어로가 끝나는 지점에서 바로 시작합니다.
+   내용 위치는 padding-bottom 으로 그대로 유지됩니다. */
+.brand_hero {
+  /* 스크롤 표시가 하단에 절대 배치되므로 기준 컨테이너를 잡아 둡니다. */
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  margin-bottom: calc(-1 * var(--brand_tab_h));
+  padding-bottom: calc(56px + var(--brand_tab_h));
+}
+
+.brand_hero .brand_hero_image {
+  width: min(90%, 420px);
+  height: auto;
+  aspect-ratio: 1244 / 626;
+  object-fit: contain;
+}
+
+/* 아래로 더 볼 수 있다는 표시입니다. 클릭 대상이 아닙니다. */
+.brand_hero_scroll_cue {
+  position: absolute;
+  bottom: calc(24px + var(--brand_tab_h));
+  left: 50%;
+  display: block;
+  pointer-events: none;
+  animation: brand_scroll_cue 1800ms var(--ease_out) infinite;
+}
+
+.brand_hero_scroll_cue img {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+
+@keyframes brand_scroll_cue {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, 10px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. about (1058:11721)
+   기본(모바일·태블릿)은 패널 5개가 그냥 세로로 쌓입니다.
+   1280 이상에서만 sticky 고정 + 스크롤 전환으로 바뀝니다.
+   -------------------------------------------------------------------------- */
+.brand_about {
+  position: relative;
+  background-color: var(--brand_surface);
+}
+
+.about_viewport {
+  position: relative;
+}
+
+.about_panel {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-bottom: 64px;
+}
+
+.about_image_box {
+  position: relative;
+  overflow: hidden;
+}
+
+.about_image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 배경 숫자 — 시안 260px / point400 20%. 모바일에서는 이미지 위에 겹칩니다. */
+.about_number {
+  position: absolute;
+  top: 8px;
+  right: var(--page_pad);
+  color: var(--color_point_400, #ffd973);
+  font-family: var(--font_title);
+  font-size: clamp(88px, 22vw, 160px);
+  font-weight: 700;
+  line-height: 1.2;
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.about_text {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-inline: var(--page_pad);
+}
+
+.about_title_box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.about_eyebrow {
+  color: var(--color_point_600, #ffc52d);
+  font-size: clamp(15px, 3.6vw, 24px);
+  line-height: 1.4;
+}
+
+.about_title {
+  color: var(--color_new_secondary_700, #3b432b);
+  font-family: var(--font_title);
+  font-weight: 400;
+  font-size: clamp(34px, 9vw, 72px);
+  line-height: 1.2;
+}
+
+.about_subtitle {
+  color: var(--color_new_secondary_200, #b7bea9);
+  font-size: clamp(16px, 4.2vw, 32px);
+  line-height: 1.4;
+}
+
+.about_body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--color_gray_600, #5a5a5a);
+}
+
+.about_lead {
+  font-size: clamp(16px, 4vw, 24px);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.about_desc {
+  font-size: clamp(15px, 3.8vw, 24px);
+  font-weight: 300;
+  line-height: 1.4;
+}
+
+/* 대각선 인디케이터는 209 × 424 고정 좌표 장식이라 좁은 폭에서는 숨깁니다. */
+.about_rail {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   4. tower data (1095:14723)
+   -------------------------------------------------------------------------- */
+.tower_data {
+  position: relative;
+  /* 아래쪽은 고정된 탭 바에 가려지므로 탭 높이만큼 더 확보합니다. */
+  padding: 72px var(--page_pad) var(--brand_tab_h);
+  overflow: hidden;
+  background-color: var(--brand_surface);
+}
+
+/* 타워가 딛고 선 언덕 (1180:5885).
+   시안은 2048 × 310 타원을 아래 101 지점에서 잘라 완만한 곡선만 남깁니다.
+   여기서는 탭 높이만큼 더 아래까지 같은 색이 이어지도록 위치만 내렸습니다.
+   그래서 탭 바가 덮어도 곡선은 그대로 보이고 푸터까지 끊기지 않습니다. */
+.tower_data::after {
+  content: "";
+  position: absolute;
+  bottom: calc(var(--hill_top) + var(--brand_tab_h) - var(--hill_h));
+  left: 50%;
+  width: var(--hill_w);
+  height: var(--hill_h);
+  border-radius: 50%;
+  background-color: var(--brand_hill);
+  transform: translateX(-50%);
+}
+
+/* position 을 주지 않습니다. 영상이 이 박스가 아니라 섹션 전체를 기준으로
+   가운데 정렬돼야 합니다 (시안에서 타워가 페이지 정중앙에 섭니다). */
+.tower_data_inner {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin-inline: auto;
+  max-width: var(--content_max);
+}
+
+.tower_data_head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tower_data_eyebrow {
+  color: var(--color_point_600, #ffc52d);
+  font-size: clamp(15px, 3.6vw, 24px);
+  line-height: 1.4;
+}
+
+.tower_data_title {
+  color: var(--color_new_secondary_700, #3b432b);
+  font-family: var(--font_title);
+  font-weight: 400;
+  font-size: clamp(34px, 9vw, 72px);
+  line-height: 1.2;
+}
+
+.tower_data_columns {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.tower_data_column {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.tower_data_group {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.tower_data_item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tower_data_label {
+  color: var(--color_new_secondary_400, #7e8968);
+  font-family: var(--font_title);
+  font-weight: 500;
+  font-size: clamp(17px, 4vw, 24px);
+  line-height: 1.2;
+  text-transform: capitalize;
+}
+
+.tower_data_value {
+  color: var(--color_gray_600, #5a5a5a);
+  font-size: clamp(14px, 3.4vw, 18px);
+  font-weight: 300;
+  line-height: 1.3;
+}
+
+/* 타워 실루엣(Vector_15.svg)으로 영상을 오려냅니다.
+   시안은 마스크 471 × 1134 안에 영상 781 × 1171 을 (-165, -37) 위치로 넣습니다. */
+.tower_data_media {
+  position: relative;
+  overflow: hidden;
+  order: -1;
+  width: min(60%, 300px);
+  margin-inline: auto;
+  aspect-ratio: 471 / 1134;
+  -webkit-mask: url("../assets/brand_story/Vector_15.svg") 0 0 / 100% 100% no-repeat;
+  mask: url("../assets/brand_story/Vector_15.svg") 0 0 / 100% 100% no-repeat;
+}
+
+/* 실루엣이 세로로 길어 영상을 세로 기준으로 채우고 좌우를 잘라 씁니다.
+   가운데(50%)로 두면 왼쪽 아래 모서리에 영상의 어두운 부분이 들어와서
+   조금 오른쪽으로 밀어 두었습니다. */
+.tower_data_video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 40% center;
+}
+
+/* --------------------------------------------------------------------------
+   tablet — 834
+   -------------------------------------------------------------------------- */
+@media (min-width: 834px) {
+  /* 공통 컴포넌트의 `min-height: 100svh` 를 그대로 두되 탭 자리를 안쪽 여백으로 잡습니다. */
+  .brand_hero {
+    min-height: 100vh;
+    min-height: 100svh;
+  }
+
+  .brand_hero .brand_hero_image {
+    width: min(84%, 680px);
+  }
+
+  .brand_hero_scroll_cue {
+    bottom: calc(32px + var(--brand_tab_h));
+  }
+
+  .about_panel {
+    gap: 40px;
+    padding-bottom: 88px;
+  }
+
+  .about_text {
+    gap: 48px;
+  }
+
+  .tower_data {
+    padding-top: 120px;
+  }
+
+  .tower_data_inner {
+    gap: 64px;
+  }
+
+  /* 2열 — 왼쪽에 영상, 오른쪽에 제원 두 묶음 */
+  .tower_data_columns {
+    display: grid;
+    grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+    align-items: start;
+    gap: 56px;
+  }
+
+  .tower_data_media {
+    order: 0;
+    grid-row: 1 / span 2;
+    width: 100%;
+    margin-inline: 0;
+  }
+
+  .tower_data_column {
+    gap: 56px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   desktop — 1280 이상에서 시안 배치로 전환
+   -------------------------------------------------------------------------- */
+@media (min-width: 1280px) {
+  /* ---- hero ----
+     공통 컴포넌트는 높이를 `95vw * 1080/1920` (최대 980) 으로 잡지만,
+     이 페이지는 화면을 꽉 채워야 하므로 뷰포트 기준으로 다시 잡습니다.
+     아주 낮은 화면에서 내용이 잘리지 않도록 640 을 하한으로 둡니다. */
+  .brand_hero {
+    height: clamp(740px, 100vh, 1500px);
+    height: clamp(740px, 100dvh, 1500px);
+    min-height: 0;
+    max-height: none;
+    /* 탭이 앉을 자리를 히어로 안쪽에 확보합니다. 내용은 그 위에서 가운데 정렬됩니다. */
+    padding-bottom: var(--brand_tab_h);
+  }
+
+  /* 시안의 1244 는 화면 폭 1920 기준이라 vw 로 잡습니다.
+     공통 히어로에 좌우 padding 160 이 있어 % 로 쓰면 그만큼 작아집니다. */
+  .brand_hero .brand_hero_image {
+    width: min(64.79vw, 1244px);
+    max-width: 100%;
+  }
+
+  .brand_hero_scroll_cue {
+    bottom: calc(2.34vw + var(--brand_tab_h));
+  }
+
+  /* ---- about : sticky 고정 + 패널 전환 ---- */
+  /* 패널 5개 × 100vh. 첫 패널은 고정되자마자 보이므로 전환 구간은 4 × 100vh 입니다. */
+  .brand_about {
+    height: 500vh;
+  }
+
+  .about_viewport {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* 한 번에 움직이는 요소를 최소로 줍니다.
+     들어오는 사진만 내려오고, 나가는 사진은 제자리에서 흐려지기만 합니다.
+     - 기본(지나간 패널) : 완전히 숨김. 위쪽에 대기.
+     - .is_previous      : 방금 덮인 패널. 사진만 50% 로 남습니다.
+     - .is_active        : 현재 패널. 맨 위에 옵니다. */
+  .about_panel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+    padding: 0 9.375vw 0 0;
+    visibility: hidden;
+    opacity: 1;
+    z-index: 0;
+    /* 자식들이 다 사라진 뒤에 숨깁니다. */
+    transition: visibility 0s linear 800ms;
+  }
+
+  .about_panel.is_previous {
+    visibility: visible;
+    z-index: 1;
+    transition-delay: 0s;
+  }
+
+  .about_panel.is_active {
+    visibility: visible;
+    /* 들어오는 패널이 이전 패널을 덮습니다. */
+    z-index: 2;
+    transition-delay: 0s;
+  }
+
+  /* 아랫변이 윗변보다 짧은 사다리꼴 영역입니다.
+     이미지 자체에는 이 모양이 없어 (에셋은 온전한 사각형) 여기서 잘라 냅니다. */
+  .about_image_box {
+    width: 47.92vw;
+    height: 100%;
+    flex: none;
+    clip-path: polygon(0 0, 100% 0, var(--brand_image_bottom) 100%, 0 100%);
+  }
+
+  /* 대기 상태에서는 위쪽에 올려 두고 투명하게 둡니다.
+     transform 을 되돌리는 건 다 사라진 뒤(800ms)라 되감기는 움직임이 보이지 않습니다. */
+  .about_image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: translateY(-100%);
+    transition: opacity 500ms var(--brand_ease), transform 0s linear 800ms;
+    will-change: transform, opacity;
+  }
+
+  /* 덮인 사진 — 움직이지 않고 50% 로만 물러납니다. */
+  .about_panel.is_previous .about_image {
+    opacity: 0.5;
+    transform: translateY(0);
+    transition: opacity 600ms var(--brand_ease), transform 0s;
+  }
+
+  /* 들어오는 사진 — 위에서 아래로 내려오며 이전 사진을 덮습니다. */
+  .about_panel.is_active .about_image {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 400ms var(--brand_ease), transform 1000ms var(--brand_ease);
+  }
+
+  /* 배경 숫자는 움직이지 않고 밝기만 바뀝니다. */
+  .about_number {
+    top: 14.35%;
+    right: auto;
+    left: 77.19%;
+    font-size: clamp(150px, 13.54vw, 260px);
+    opacity: 0;
+    transition: opacity 400ms var(--brand_ease);
+  }
+
+  .about_panel.is_active .about_number {
+    opacity: 0.2;
+    transition: opacity 700ms var(--brand_ease) 200ms;
+  }
+
+  /* 텍스트는 아래에서 위로 올라옵니다. */
+  .about_text {
+    width: 34.53vw;
+    flex: none;
+    /* 제목 묶음 ↔ 본문 묶음 간격. 시안은 120 이지만 80 으로 좁혔습니다. */
+    gap: min(4.17vw, 80px);
+    padding-top: 3.125vw;
+    padding-inline: 0;
+    transform: translateY(56px);
+    opacity: 0;
+    /* 나갈 때는 움직이지 않고 짧게 사라지기만 합니다. 되돌리는 건 다 사라진 뒤에. */
+    transition: opacity 280ms var(--brand_ease), transform 0s linear 800ms;
+    will-change: transform, opacity;
+  }
+
+  /* 들어오는 텍스트만 아래에서 위로 올라옵니다. 사진이 자리잡은 뒤 시작합니다. */
+  .about_panel.is_active .about_text {
+    transform: translateY(0);
+    opacity: 1;
+    transition: opacity 700ms var(--brand_ease) 260ms, transform 900ms var(--brand_ease) 260ms;
+  }
+
+  .about_title_box {
+    gap: 0;
+  }
+
+  .about_eyebrow {
+    font-size: clamp(18px, 1.25vw, 24px);
+  }
+
+  .about_title {
+    font-size: clamp(48px, 3.75vw, 72px);
+  }
+
+  .about_subtitle {
+    font-size: clamp(22px, 1.667vw, 32px);
+  }
+
+  .about_lead,
+  .about_desc {
+    font-size: clamp(17px, 1.25vw, 24px);
+  }
+
+  /* ---- about 인디케이터 (1095:14695) ----
+     선과 점을 모두 한 직선 위에 올리고, 그 기울기를 이미지 사다리꼴의
+     대각선과 똑같이 맞춥니다. 패널 높이가 뷰포트를 따라가므로 각도가 고정이 아니고,
+     brand_story.js 가 실제 렌더 결과를 재서 --rail_angle / --rail_len 을 넣어 줍니다.
+     (시안 1920 × 1080 기준으로는 103.5도 부근입니다.) */
+  .about_rail {
+    --rail_w: min(10.885vw, 209px);
+    --rail_angle: 103.5deg;
+    --rail_len: calc(var(--rail_w) * 342.755 / 209);
+
+    position: absolute;
+    top: 50%;
+    /* 시안 위치(37.71%)에서 20px 오른쪽으로 옮겼습니다.
+       그대로 두면 점이 사진 대각선 경계선에 붙습니다. */
+    left: calc(37.71% + 20px);
+    z-index: 3;
+    display: block;
+    width: var(--rail_w);
+    height: calc(var(--rail_w) * 424 / 209);
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  /* 선의 시작점은 시안 좌표(125.03, 54.23)를 박스 비율로 옮긴 값입니다. */
+  .about_rail::before,
+  .about_rail::after {
+    content: "";
+    position: absolute;
+    top: 12.79%;
+    left: 59.83%;
+    height: var(--brand_rail_thickness);
+    border-radius: var(--brand_rail_thickness);
+    transform-origin: 0 50%;
+  }
+
+  /* 채워지는 길이는 brand_story.js 가 스크롤 진행도에 맞춰 매 프레임 갱신합니다.
+     그래서 transition 을 주지 않습니다 — 주면 스크롤을 한 박자 늦게 따라옵니다. */
+  .about_rail::before {
+    width: var(--rail_len);
+    background: linear-gradient(
+      to right,
+      var(--brand_rail_fill) 0 var(--rail_progress, 0%),
+      var(--brand_rail_track) var(--rail_progress, 0%) 100%
+    );
+    transform: rotate(var(--rail_angle));
+  }
+
+  /* 레일 끝의 짧은 꼬리 (1095:14697). 선과 같은 각도로 이어 붙입니다. */
+  .about_rail::after {
+    width: calc(var(--rail_w) * 24 / 209);
+    background-color: var(--brand_rail_track);
+    transform: rotate(var(--rail_angle))
+      translateX(calc(var(--rail_len) + var(--rail_w) * 3 / 209));
+  }
+
+  .about_step {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: calc(var(--rail_w) * 8 / 209);
+    /* 선과 같은 시작점에서 출발해 선 방향으로 --step_t 만큼 이동한 뒤
+       다시 반대로 돌려 숫자를 똑바로 세웁니다.
+       마지막 translate 는 점의 중심이 선 위에 정확히 놓이도록 하는 보정입니다. */
+    top: 12.79%;
+    left: 59.83%;
+    transform-origin: 0 0;
+    transform: rotate(var(--rail_angle)) translateX(var(--step_t))
+      rotate(calc(-1 * var(--rail_angle)))
+      translate(calc(var(--rail_w) * -4 / 209), -50%);
+  }
+
+  /* 각 점이 선 위 어디에 놓이는지 (선 길이 대비 비율). 시안 좌표에서 구했습니다. */
+  .about_step:nth-child(1) { --step_t: calc(var(--rail_len) * 0.0015); }
+  .about_step:nth-child(2) { --step_t: calc(var(--rail_len) * 0.2202); }
+  .about_step:nth-child(3) { --step_t: calc(var(--rail_len) * 0.4389); }
+  .about_step:nth-child(4) { --step_t: calc(var(--rail_len) * 0.6845); }
+  .about_step:nth-child(5) { --step_t: calc(var(--rail_len) * 0.9294); }
+
+  /* 선이 점에 닿는 순간 색이 바뀌도록 짧게 물들입니다. */
+  .about_step_dot {
+    width: calc(var(--rail_w) * 8 / 209);
+    height: calc(var(--rail_w) * 8 / 209);
+    flex: none;
+    border-radius: 50%;
+    background-color: var(--brand_dot_idle);
+    transition: background-color 220ms linear;
+  }
+
+  .about_step.is_active .about_step_dot,
+  .about_step.is_passed .about_step_dot {
+    background-color: var(--brand_rail_fill);
+  }
+
+  .about_step_num {
+    display: grid;
+    width: calc(var(--rail_w) * 40 / 209);
+    height: calc(var(--rail_w) * 40 / 209);
+    flex: none;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--color_new_primary_200, #dbe1c1);
+    font-family: var(--font_title);
+    font-weight: 500;
+    font-size: calc(var(--rail_w) * 18 / 209);
+    line-height: 1.2;
+    transition: background-color 400ms var(--ease_out), color 400ms var(--ease_out);
+  }
+
+  .about_step.is_active .about_step_num {
+    background-color: var(--color_new_primary_500, #a4b465);
+    color: var(--color_new_primary_50, #f6f7f0);
+  }
+
+  /* ---- tower data ---- */
+  /* 시안 높이 1608 을 확보해야 타워 영상과 제원 목록의 위아래 관계가 유지됩니다.
+     여기에 탭 높이만큼 더 붙여 아래가 잘리지 않게 합니다. */
+  .tower_data {
+    padding: 20.83vw 20.83vw var(--brand_tab_h) 11.46vw;
+    min-height: calc(min(83.75vw, 1608px) + var(--brand_tab_h));
+  }
+
+  .tower_data_inner {
+    gap: 5.21vw;
+    max-width: none;
+  }
+
+  /* 제목 묶음은 폭 471 안에서 오른쪽 정렬입니다 (1095:14726). */
+  .tower_data_head {
+    width: 36.23%;
+    align-items: flex-end;
+    gap: 4px;
+    text-align: right;
+  }
+
+  /* 좌 472 / 가운데 499(영상 자리) / 우 329 — 합계 1300 */
+  .tower_data_columns {
+    display: grid;
+    grid-template-columns: 472fr 499fr 329fr;
+    align-items: start;
+    gap: 0;
+  }
+
+  .tower_data_column {
+    gap: 4.17vw;
+  }
+
+  .tower_data_column_left {
+    grid-column: 1;
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .tower_data_column_right {
+    grid-column: 3;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  /* 시안의 두 번째 묶음만 폭 208 로 좁습니다 (1095:14735). */
+  .tower_data_group_narrow {
+    width: 44.07%;
+  }
+
+  .tower_data_group {
+    gap: 1.25vw;
+  }
+
+  .tower_data_item {
+    gap: 0.21vw;
+  }
+
+  .tower_data_label {
+    font-size: clamp(19px, 1.25vw, 24px);
+  }
+
+  .tower_data_value {
+    font-size: clamp(15px, 0.9375vw, 18px);
+  }
+
+  /* 영상은 페이지 가운데에 두고, 타워 밑동이 언덕에 물리도록 띄웁니다.
+     시안에서 마스크 아래가 섹션 바닥에서 50 떠 있습니다 (1095:14757, y 327). */
+  .tower_data_media {
+    position: absolute;
+    bottom: calc(min(2.6vw, 50px) + var(--brand_tab_h));
+    left: 50%;
+    z-index: 1;
+    order: 0;
+    width: min(24.53vw, 471px);
+    margin-inline: 0;
+    transform: translateX(-50%);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   design reference — 1920
+   -------------------------------------------------------------------------- */
+@media (min-width: 1920px) {
+  .tower_data {
+    padding: 400px 400px var(--brand_tab_h) 220px;
+    min-height: calc(1608px + var(--brand_tab_h));
+  }
+
+  .tower_data_inner {
+    gap: 100px;
+  }
+
+  .tower_data_column {
+    gap: 80px;
+  }
+
+  .tower_data_group {
+    gap: 24px;
+  }
+
+  .tower_data_item {
+    gap: 4px;
+  }
+
+  .about_text {
+    gap: 80px;
+    padding-top: 60px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   motion 접근성 (AGENTS 10.7)
+   고정 전환과 스크롤 표시 움직임을 끄고 정적 배치로 되돌립니다.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .brand_hero_scroll_cue {
+    animation: none;
+  }
+
+  .brand_about {
+    height: auto;
+  }
+
+  .about_viewport {
+    position: relative;
+    height: auto;
+    overflow: visible;
+  }
+
+  .about_panel {
+    position: relative;
+    inset: auto;
+    flex-direction: column;
+    visibility: visible;
+    opacity: 1;
+    padding: 0 0 88px;
+  }
+
+  /* 쌓임 배치에서는 사다리꼴 대신 온전한 사각형으로 둡니다. */
+  .about_image_box {
+    width: 100%;
+    height: auto;
+    clip-path: none;
+  }
+
+  .about_image {
+    height: auto;
+    transform: none;
+  }
+
+  .about_text {
+    width: 100%;
+    gap: 28px;
+    padding: 28px var(--page_pad) 0;
+    transform: none;
+    opacity: 1;
+  }
+
+  .about_number {
+    top: 8px;
+    right: var(--page_pad);
+    left: auto;
+  }
+
+  .about_rail {
+    display: none;
+  }
+}
