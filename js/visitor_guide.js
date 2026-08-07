@@ -92,7 +92,24 @@ function initCableCarInformation() {
 
   function renderCableCarInformation(isOpen) {
     disclosureButton.setAttribute("aria-expanded", String(isOpen));
-    infoPanel.hidden = !isOpen;
+
+    if (isOpen) {
+      infoPanel.classList.remove("is_closing");
+      infoPanel.hidden = false;
+      return;
+    }
+
+    if (!infoPanel.hidden) {
+      infoPanel.classList.add("is_closing");
+    }
+  }
+
+  function handleCableCarInformationAnimationEnd(event) {
+    if (event.target !== infoPanel || event.animationName !== "cable_info_hide") return;
+    if (disclosureButton.getAttribute("aria-expanded") === "true") return;
+
+    infoPanel.hidden = true;
+    infoPanel.classList.remove("is_closing");
   }
 
   function handleCableCarInformationToggle() {
@@ -140,6 +157,7 @@ function initCableCarInformation() {
   }
 
   disclosureButton.addEventListener("click", handleCableCarInformationToggle);
+  infoPanel.addEventListener("animationend", handleCableCarInformationAnimationEnd);
   document.addEventListener("keydown", handleCableCarInformationKeydown);
 
   fareTabs.forEach(function (tab) {

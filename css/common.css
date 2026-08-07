@@ -14,27 +14,30 @@
 @font-face {
   font-family: "GmarketSansNumber";
   src: url("../fonts/woff/GmarketSansTTFLight.woff") format("woff");
-  font-weight: 300;
+  font-weight: 200;
   font-style: normal;
   font-display: swap;
+  size-adjust: 93%;
   unicode-range: U+0025, U+002C-003A, U+20A9;
 }
 
 @font-face {
   font-family: "GmarketSansNumber";
   src: url("../fonts/woff/GmarketSansTTFMedium.woff") format("woff");
-  font-weight: 500;
+  font-weight: 300;
   font-style: normal;
   font-display: swap;
+  size-adjust: 93%;
   unicode-range: U+0025, U+002C-003A, U+20A9;
 }
 
 @font-face {
   font-family: "GmarketSansNumber";
   src: url("../fonts/woff/GmarketSansTTFBold.woff") format("woff");
-  font-weight: 700;
+  font-weight: 500;
   font-style: normal;
   font-display: swap;
+  size-adjust: 93%;
   unicode-range: U+0025, U+002C-003A, U+20A9;
 }
 
