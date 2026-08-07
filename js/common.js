@@ -732,10 +732,6 @@ function getQuickMenuMarkup(sections, assetPath) {
     '<div class="quick_menu_actions" id="quick_menu_actions" data-quick-actions hidden>' +
     '<button class="quick_action" type="button" data-pending-link aria-disabled="true">' +
     '<img src="' + assetPath + 'icon/quick/chat.svg" alt="" width="36" height="36">' +
-    '<span class="visually_hidden">Chatbot</span>' +
-    "</button>" +
-    '<button class="quick_action" type="button" data-pending-link aria-disabled="true">' +
-    '<img src="' + assetPath + 'icon/quick/chat.svg" alt="" width="36" height="36">' +
     '<span class="visually_hidden">Search</span>' +
     "</button>" +
     getQuickSectionMenuMarkup(sections, assetPath) +
