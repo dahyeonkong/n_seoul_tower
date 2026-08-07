@@ -756,7 +756,6 @@
 }
 
 .restaurant_inner,
-.restaurant_list,
 .restaurant_item_inner,
 .restaurant_texts,
 .restaurant_info,
@@ -782,7 +781,15 @@
 }
 
 .restaurant_list {
-  gap: 40px;
+  display: block;
+}
+
+.restaurant_stack_layer {
+  position: relative;
+}
+
+.restaurant_stack_layer .restaurant_stack_layer {
+  margin-top: 40px;
 }
 
 .restaurant_item,
@@ -863,10 +870,6 @@
     padding: 120px 0;
   }
 
-  .restaurant_list {
-    padding-bottom: calc(100svh - 348px);
-  }
-
   .restaurant_item_inner {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(300px, 38%);
@@ -876,26 +879,32 @@
 
   .restaurant_item,
   .restaurant_all {
-    position: relative;
-    top: auto;
+    position: sticky;
     background-color: var(--color_bg);
-    will-change: transform;
   }
 
-  .restaurant_item:nth-child(1) {
+  .restaurant_stack_card_1 {
+    top: 48px;
     z-index: 1;
   }
 
-  .restaurant_item:nth-child(2) {
+  .restaurant_stack_card_2 {
+    top: 148px;
     z-index: 2;
   }
 
-  .restaurant_item:nth-child(3) {
+  .restaurant_stack_card_3 {
+    top: 248px;
     z-index: 3;
   }
 
-  .restaurant_all {
+  .restaurant_stack_card_4 {
+    top: 348px;
     z-index: 4;
+  }
+
+  .restaurant_stack_end {
+    height: calc(100svh - 348px);
   }
 
   .restaurant_texts {
@@ -918,8 +927,11 @@
   }
 
   .restaurant_list {
-    gap: 60px;
-    padding-bottom: calc(100svh - 348px);
+    padding-bottom: 0;
+  }
+
+  .restaurant_stack_layer .restaurant_stack_layer {
+    margin-top: 60px;
   }
 
   .restaurant_item {
