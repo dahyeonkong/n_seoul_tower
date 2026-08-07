@@ -285,51 +285,66 @@
       </section>
 
       <!-- ===================== 5. restaurant ===================== -->
-      <section class="restaurant_section" data-quick-dark id="restaurant_section" aria-labelledby="restaurant_title">
-        <img class="restaurant_bg" src="./assets/restaurant/restaurant_bg.png" alt="" aria-hidden="true" width="3168" height="1344" loading="lazy">
-
+      <section class="restaurant_section" id="restaurant_section" aria-labelledby="restaurant_title">
         <div class="page_container restaurant_inner">
-          <div class="restaurant_texts">
-            <div>
-              <p class="restaurant_enjoy">ENJOY</p>
-              <div class="restaurant_body">
-                <p>A casual Italian restaurant filled</p>
-                <p>with youth and romance.</p>
-              </div>
-            </div>
-            <button class="restaurant_more" type="button" data-pending-link aria-disabled="true">View More +</button>
+          <div class="restaurant_head">
+            <p class="restaurant_kicker">From N Seoul Tower's signature dishes to romantic dining!</p>
+            <h2 class="section_title" id="restaurant_title">Restaurant</h2>
           </div>
 
-          <div class="restaurant_center">
-            <div class="restaurant_head">
-              <p class="restaurant_kicker">Restaurant</p>
-              <h2 class="restaurant_title" id="restaurant_title"><span>THE PLACE</span> <span>DINING</span></h2>
-            </div>
-
-            <div class="restaurant_slides" data-restaurant-slides>
-              <div class="restaurant_slide is_active" data-restaurant-slide>
-                <img src="./assets/restaurant/restaurant_dining.png" alt="Dining tables by the observatory window at The Place Dining" width="396" height="168" loading="lazy">
+          <div class="restaurant_list" data-restaurant-stack>
+            <article class="restaurant_item" data-restaurant-stack-item>
+              <div class="restaurant_item_inner">
+                <div class="restaurant_texts">
+                  <h3 class="restaurant_name">N GRILL</h3>
+                  <div class="restaurant_info">
+                    <div class="restaurant_body">
+                      <p>A French restaurant located at the highest point of N Seoul Tower.</p>
+                      <p>A luxurious 360-degree rotating French fine-dining restaurant.</p>
+                    </div>
+                    <button class="restaurant_more" type="button" data-pending-link aria-disabled="true">View more</button>
+                  </div>
+                </div>
+                <img class="restaurant_image" src="./assets/floorguide/f7_ngrill_card.png" alt="Night dining table overlooking Seoul at N Grill" width="1920" height="1080" loading="lazy">
               </div>
-            </div>
+            </article>
 
-            <div class="restaurant_controls">
-              <button class="restaurant_nav restaurant_nav_prev" type="button" data-restaurant-prev>
-                <img src="./assets/icon/icon_arrow_right.svg" alt="" width="24" height="24">
-                <span class="visually_hidden">Previous photo</span>
-              </button>
-              <div class="restaurant_dots" data-restaurant-dots role="tablist" aria-label="Restaurant photos"></div>
-              <button class="restaurant_nav" type="button" data-restaurant-next>
-                <img src="./assets/icon/icon_arrow_right.svg" alt="" width="24" height="24">
-                <span class="visually_hidden">Next photo</span>
-              </button>
-            </div>
-          </div>
+            <article class="restaurant_item" data-restaurant-stack-item>
+              <div class="restaurant_item_inner">
+                <div class="restaurant_texts">
+                  <h3 class="restaurant_name">N Burger</h3>
+                  <div class="restaurant_info">
+                    <div class="restaurant_body">
+                      <p>Perched atop Namsan, Seoul’s premier spot for artisanal burgers.</p>
+                      <p>A casual American-style burger and craft beer joint.</p>
+                    </div>
+                    <button class="restaurant_more" type="button" data-pending-link aria-disabled="true">View more</button>
+                  </div>
+                </div>
+                <img class="restaurant_image" src="./assets/restaurant/burger_image5.png" alt="N Burger Seoul bulgogi burger" width="396" height="683" loading="lazy">
+              </div>
+            </article>
 
-          <div class="restaurant_note">
-            <p>Take in the beautiful greenery of Namsan</p>
-            <p>and sweeping views of Seoul while</p>
-            <p>comfortably digging into rich, authentic,</p>
-            <p>and light homemade-style Italian meals</p>
+            <article class="restaurant_item" data-restaurant-stack-item>
+              <div class="restaurant_item_inner">
+                <div class="restaurant_texts">
+                  <h3 class="restaurant_name">Durumi Bunsik</h3>
+                  <div class="restaurant_info">
+                    <div class="restaurant_body">
+                      <p>You can enjoy a wide variety of delicious Korean street food.</p>
+                      <p>This is a Korean restaurant specializing in popular street foods such as tteokbokki.</p>
+                    </div>
+                    <button class="restaurant_more" type="button" data-pending-link aria-disabled="true">View more</button>
+                  </div>
+                </div>
+                <img class="restaurant_image" src="./assets/floorguide/t1_durum_card.png" alt="Korean street food served at Durumi Bunsik" width="1640" height="1009" loading="lazy">
+              </div>
+            </article>
+
+            <div class="restaurant_all" data-restaurant-stack-item>
+              <h3 class="restaurant_all_title">Would you like to try more restaurants?</h3>
+              <a class="restaurant_more" href="./pages/restaurant_n_burger.html">View All Restaurants</a>
+            </div>
           </div>
         </div>
       </section>
@@ -354,6 +369,11 @@
           >
             <!-- renderGiftItems() -->
           </ul>
+          <span class="gift_cursor" data-gift-cursor aria-hidden="true">
+            <svg viewBox="0 0 64 40" aria-hidden="true" focusable="false">
+              <path d="M10 20H50M37 7L51 20L37 33" />
+            </svg>
+          </span>
           <!-- <button class="btn_circle gift_more" type="button" data-pending-link aria-disabled="true">
             <img src="./assets/icon/arrow_cursor.png" alt="" width="44" height="39">
             <span class="visually_hidden">See all gift shop products</span>

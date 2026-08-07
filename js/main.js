@@ -126,15 +126,6 @@ var mainPageData = {
     { file: "custom_goods/candle4.png", step: 4 },
     { file: "custom_goods/candle5.png", step: 5 },
     { file: "custom_goods/candle6.png", step: 6 }
-  ],
-
-  /* Figma restaurant_wrap 에 실제로 포함된 사진만 사용합니다. */
-  restaurantPhotos: [
-    {
-      id: "the_place_dining",
-      image: "restaurant/restaurant_dining.png",
-      alt: "Dining tables by the observatory window at The Place Dining"
-    }
   ]
 };
 
@@ -375,6 +366,41 @@ function renderGiftItems(items) {
   track.appendChild(fragment);
 }
 
+function initGiftTrackCursor() {
+  var track = document.querySelector("[data-gift-track]");
+  var cursor = document.querySelector("[data-gift-cursor]");
+
+  if (!track || !cursor) {
+    return;
+  }
+
+  function handleGiftPointerMove(event) {
+    cursor.style.transform = "translate3d(" + (event.clientX - 50) + "px, " + (event.clientY - 50) + "px, 0)";
+  }
+
+  function handleGiftPointerEnter(event) {
+    handleGiftPointerMove(event);
+    cursor.classList.add("is_visible");
+  }
+
+  function handleGiftPointerLeave() {
+    cursor.classList.remove("is_visible");
+  }
+
+  function handleGiftTrackClick(event) {
+    if (event.target.closest(".gift_card_link")) {
+      return;
+    }
+
+    window.location.href = "./pages/n_gift_shop.html";
+  }
+
+  track.addEventListener("pointerenter", handleGiftPointerEnter);
+  track.addEventListener("pointermove", handleGiftPointerMove);
+  track.addEventListener("pointerleave", handleGiftPointerLeave);
+  track.addEventListener("click", handleGiftTrackClick);
+}
+
 /* --------------------------------------------------------------------------
    custom tower visual
    -------------------------------------------------------------------------- */
@@ -489,72 +515,72 @@ function renderCustomGoods(items) {
 }
 
 /* --------------------------------------------------------------------------
-   restaurant 슬라이더
+   restaurant stack
    -------------------------------------------------------------------------- */
-function initRestaurantSlider(photos) {
-  var slidesBox = document.querySelector("[data-restaurant-slides]");
-  var dotsBox = document.querySelector("[data-restaurant-dots]");
-  var prevButton = document.querySelector("[data-restaurant-prev]");
-  var nextButton = document.querySelector("[data-restaurant-next]");
+function initRestaurantStack() {
+  var stack = document.querySelector("[data-restaurant-stack]");
+  var stackItems = stack ? stack.querySelectorAll("[data-restaurant-stack-item]") : [];
+  var stackOffsets = [48, 148, 248, 348];
+  var stackMeasurements = [];
+  var isStackFramePending = false;
 
-  if (!slidesBox || !dotsBox || !prevButton || !nextButton) {
+  if (!stack || stackItems.length !== stackOffsets.length) {
     return;
   }
 
-  var slideCount = Array.isArray(photos) ? photos.length : 0;
-  if (slideCount === 0) {
-    return;
-  }
-
-  var currentIndex = 0;
-  var slides = slidesBox.querySelectorAll("[data-restaurant-slide]");
-
-  dotsBox.textContent = "";
-  for (var index = 0; index < slideCount; index += 1) {
-    var dot = createElement("button", "restaurant_dot");
-    dot.type = "button";
-    dot.setAttribute("data-restaurant-dot", String(index));
-    dot.appendChild(createElement("span", "visually_hidden", "Photo " + (index + 1)));
-    dotsBox.appendChild(dot);
-  }
-  var dots = dotsBox.querySelectorAll("[data-restaurant-dot]");
-
-  function renderSlideState() {
-    Array.prototype.forEach.call(slides, function (slide, index) {
-      slide.classList.toggle("is_active", index === currentIndex);
+  function measureRestaurantStack() {
+    Array.prototype.forEach.call(stackItems, function clearStackTransform(item) {
+      item.style.transform = "";
     });
-    Array.prototype.forEach.call(dots, function (dot, index) {
-      dot.setAttribute("aria-current", String(index === currentIndex));
+
+    var stackTop = stack.getBoundingClientRect().top + window.scrollY;
+    var stackBottom = stackTop + stack.offsetHeight;
+
+    stackMeasurements = Array.prototype.map.call(stackItems, function measureStackItem(item) {
+      var itemTop = item.getBoundingClientRect().top + window.scrollY;
+      return {
+        itemTop: itemTop,
+        maxTranslate: Math.max(0, stackBottom - itemTop - item.offsetHeight)
+      };
     });
-    prevButton.disabled = currentIndex === 0;
-    nextButton.disabled = currentIndex === slideCount - 1;
   }
 
-  function goToSlide(nextIndex) {
-    if (nextIndex < 0 || nextIndex > slideCount - 1) {
+  function renderRestaurantStack() {
+    isStackFramePending = false;
+
+    Array.prototype.forEach.call(stackItems, function renderStackItem(item, index) {
+      if (window.innerWidth < 834) {
+        item.style.transform = "";
+        return;
+      }
+
+      var measurement = stackMeasurements[index];
+      var translateY = Math.min(
+        measurement.maxTranslate,
+        Math.max(0, window.scrollY + stackOffsets[index] - measurement.itemTop)
+      );
+
+      item.style.transform = "translate3d(0, " + translateY + "px, 0)";
+    });
+  }
+
+  function requestRestaurantStackRender() {
+    if (isStackFramePending) {
       return;
     }
-    currentIndex = nextIndex;
-    renderSlideState();
+    isStackFramePending = true;
+    window.requestAnimationFrame(renderRestaurantStack);
   }
 
-  prevButton.addEventListener("click", function handlePrevClick() {
-    goToSlide(currentIndex - 1);
-  });
+  function handleRestaurantStackResize() {
+    measureRestaurantStack();
+    requestRestaurantStackRender();
+  }
 
-  nextButton.addEventListener("click", function handleNextClick() {
-    goToSlide(currentIndex + 1);
-  });
-
-  dotsBox.addEventListener("click", function handleDotClick(event) {
-    var dot = event.target.closest("[data-restaurant-dot]");
-    if (!dot) {
-      return;
-    }
-    goToSlide(Number(dot.getAttribute("data-restaurant-dot")));
-  });
-
-  renderSlideState();
+  measureRestaurantStack();
+  renderRestaurantStack();
+  window.addEventListener("scroll", requestRestaurantStackRender, { passive: true });
+  window.addEventListener("resize", handleRestaurantStackResize);
 }
 
 /* --------------------------------------------------------------------------
@@ -568,8 +594,9 @@ function initMain() {
   renderCustomGoods(mainPageData.customGoodsItems);
 
   initCourseScrollScene();
+  initGiftTrackCursor();
   initTowerReveal();
-  initRestaurantSlider(mainPageData.restaurantPhotos);
+  initRestaurantStack();
 }
 
 if (document.readyState === "loading") {
