@@ -250,14 +250,16 @@ function renderCourses(courses) {
 
     item.appendChild(createMedia("course_card_media", course.image, course.imageAlt, 460, 203));
 
-    var button = createPendingButton("btn btn_green", "Learn more", "about " + course.title);
+    var link = createElement("a", "btn btn_green", "Learn more");
+    link.href = "./pages/visitor_guide.html#panel_recommended_courses";
+    link.appendChild(createElement("span", "visually_hidden", " about " + course.title));
     var icon = createElement("img", "btn_icon");
     icon.src = ASSET_PATH + "icon/arrow_right.png";
     icon.alt = "";
     icon.width = 19;
     icon.height = 19;
-    button.appendChild(icon);
-    item.appendChild(button);
+    link.appendChild(icon);
+    item.appendChild(link);
 
     slide.appendChild(item);
     fragment.appendChild(slide);
