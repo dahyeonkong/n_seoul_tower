@@ -1156,11 +1156,20 @@
   color: var(--color_text);
   font-size: var(--fs_sm);
   line-height: 1.2;
-  transition: background-color var(--duration) var(--ease_out);
+  transition:
+    background-color var(--duration) var(--ease_out),
+    border-color var(--duration) var(--ease_out),
+    color var(--duration) var(--ease_out);
 }
 
 .restaurant_more:hover {
   background-color: rgba(228, 228, 228, 0.5);
+}
+
+.restaurant_all.is_stacked .restaurant_more {
+  border-color: var(--color_primary_800);
+  background-color: var(--color_primary_800);
+  color: var(--color_bg);
 }
 
 .restaurant_image {
@@ -1172,7 +1181,7 @@
 
 .restaurant_all {
   align-items: center;
-  gap: 80px;
+  gap: 40px;
   min-height: 360px;
   padding: 56px 0;
   text-align: center;
@@ -1286,7 +1295,7 @@
 
   .restaurant_all {
     justify-content: flex-start;
-    gap: 140px;
+    gap: 64px;
     min-height: 599px;
     padding: 52px 30px;
   }

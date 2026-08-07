@@ -694,6 +694,48 @@ function renderCustomGoods(items) {
   list.appendChild(fragment);
 }
 
+function initRestaurantStackState() {
+  var restaurantAll = document.querySelector("[data-restaurant-all]");
+  if (!restaurantAll) {
+    return;
+  }
+
+  var stickyMedia = window.matchMedia("(min-width: 834px)");
+  var isFrameRequested = false;
+
+  function renderRestaurantStackState() {
+    var restaurantRect = restaurantAll.getBoundingClientRect();
+    var stickyTop = parseFloat(window.getComputedStyle(restaurantAll).top) || 0;
+    var isStacked =
+      stickyMedia.matches &&
+      restaurantRect.top <= stickyTop + 1 &&
+      restaurantRect.bottom > stickyTop;
+
+    restaurantAll.classList.toggle("is_stacked", isStacked);
+    isFrameRequested = false;
+  }
+
+  function requestRestaurantStackRender() {
+    if (isFrameRequested) {
+      return;
+    }
+
+    isFrameRequested = true;
+    window.requestAnimationFrame(renderRestaurantStackState);
+  }
+
+  window.addEventListener("scroll", requestRestaurantStackRender, { passive: true });
+  window.addEventListener("resize", requestRestaurantStackRender);
+
+  if (typeof stickyMedia.addEventListener === "function") {
+    stickyMedia.addEventListener("change", requestRestaurantStackRender);
+  } else if (typeof stickyMedia.addListener === "function") {
+    stickyMedia.addListener(requestRestaurantStackRender);
+  }
+
+  requestRestaurantStackRender();
+}
+
 /* --------------------------------------------------------------------------
    init
    -------------------------------------------------------------------------- */
@@ -708,6 +750,7 @@ function initMain() {
   initCourseScrollScene();
   initGiftTrackCursor();
   initTowerReveal();
+  initRestaurantStackState();
 }
 
 if (document.readyState === "loading") {
