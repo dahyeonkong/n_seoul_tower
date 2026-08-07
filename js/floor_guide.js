@@ -10,8 +10,8 @@
     return;
   }
 
-  /* 디자인과 동일하게 최상층에서 시작합니다. */
-  const DEFAULT_FLOOR = "t7";
+  /* 아래층에서 시작해 위로 올라갑니다. */
+  const DEFAULT_FLOOR = "f5";
 
   let activeFloor = DEFAULT_FLOOR;
   let scrollFrame = 0;
@@ -104,9 +104,87 @@
     window.addEventListener("resize", handleViewportChange);
   }
 
+  /* 배치를 보고 등장 방향을 정합니다.
+     좌우 끝에 있으면 그쪽에서, 가운데 위쪽이면 위에서 들어옵니다.
+     모바일처럼 전부 가운데 정렬이면 좌우를 번갈아 써서 단조롭지 않게 합니다. */
+  function getRevealDirection(revealTarget, sceneBounds, targetIndex) {
+    const targetBounds = revealTarget.getBoundingClientRect();
+
+    if (sceneBounds.width === 0 || targetBounds.width === 0) {
+      return "";
+    }
+
+    const centerRatio = (targetBounds.left + targetBounds.width / 2 - sceneBounds.left) / sceneBounds.width;
+    const topRatio = (targetBounds.top - sceneBounds.top) / sceneBounds.height;
+
+    if (centerRatio < 0.38) {
+      return "is_from_left";
+    }
+
+    if (centerRatio > 0.62) {
+      return "is_from_right";
+    }
+
+    if (topRatio < 0.3) {
+      return "is_from_top";
+    }
+
+    return targetIndex % 2 === 0 ? "is_from_left" : "is_from_right";
+  }
+
+  /* 카드와 장식이 화면에 들어올 때 서서히 나타납니다.
+     같은 층 안에서는 순서대로 조금씩 늦게 등장합니다. */
+  function initRevealMotion() {
+    const revealTargets = Array.from(document.querySelectorAll(".floor_card, .floor_deco"));
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (prefersReducedMotion || revealTargets.length === 0 || !("IntersectionObserver" in window)) {
+      return;
+    }
+
+    floorSections.forEach((floorSection) => {
+      const floorScene = floorSection.querySelector(".floor_scene_inner") || floorSection;
+      const sceneBounds = floorScene.getBoundingClientRect();
+      const sectionTargets = floorSection.querySelectorAll(".floor_card, .floor_deco");
+
+      sectionTargets.forEach((revealTarget, targetIndex) => {
+        const direction = getRevealDirection(revealTarget, sceneBounds, targetIndex);
+
+        if (direction) {
+          revealTarget.classList.add(direction);
+        }
+
+        revealTarget.style.setProperty("--reveal_delay", `${Math.min(targetIndex, 5) * 120}ms`);
+      });
+    });
+
+    /* 클래스를 붙이는 순간부터 숨겨지므로, 관찰을 시작하기 직전에 붙입니다. */
+    floorStage.classList.add("has_floor_motion");
+
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return;
+          }
+
+          entry.target.classList.add("is_revealed");
+          revealObserver.unobserve(entry.target);
+        });
+      },
+      {
+        rootMargin: "0px 0px -10% 0px",
+        threshold: 0.05
+      }
+    );
+
+    revealTargets.forEach((revealTarget) => revealObserver.observe(revealTarget));
+  }
+
   function initFloorGuide() {
     floorStage.dataset.activeFloor = activeFloor;
     initFloorObserver();
+    initRevealMotion();
     updateFloorFromViewport();
   }
 
