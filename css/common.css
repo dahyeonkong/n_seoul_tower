@@ -1194,6 +1194,44 @@ html .course_page .course_description {
   display: none;
 }
 
+.quick_menu_actions:not([hidden]) {
+  animation: quick_actions_reveal 420ms var(--ease_out) both;
+  transform-origin: bottom center;
+}
+
+@keyframes quick_actions_reveal {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.quick_top_action[hidden] {
+  display: none;
+}
+
+.quick_top_action:not([hidden]) {
+  animation: quick_top_action_reveal 420ms var(--ease_out) both;
+  transform-origin: bottom center;
+}
+
+@keyframes quick_top_action_reveal {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* --- 액션 버튼 (977:5207 search / 977:5201 top) --- */
 .quick_action {
   display: flex;
@@ -1269,6 +1307,15 @@ html .course_page .course_description {
 
 .quick_section_link:hover {
   color: var(--color_new_secondary_600);
+}
+
+.quick_section_link.is_active,
+.quick_section_link[aria-current="location"] {
+  color: var(--color_secondary_400);
+  font-weight: 400;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
 }
 
 /* --- 토글 (987:7706 속성1=off) ---
@@ -1398,6 +1445,7 @@ html .course_page .course_description {
   padding-block: 18px;
   align-items: center;
   justify-content: center;
+  justify-content: safe center;
   gap: 16px;
   overflow-x: auto;
   scroll-snap-type: x proximity;
@@ -1486,8 +1534,11 @@ html .course_page .course_description {
     gap: 24px;
   }
 
+}
+
+@media (min-width: 843px) {
   .subpage_tab {
-    font-size: 20px;
+    font-size: 14px;
   }
 }
 
@@ -1507,12 +1558,6 @@ html .course_page .course_description {
 
   .subpage_hero_title {
     font-size: var(--subpage_hero_title_desktop, clamp(72px, 6.25vw, 120px));
-  }
-}
-
-@media (max-width: 480px) {
-  .subpage_tabs_list {
-    justify-content: flex-start;
   }
 }
 
