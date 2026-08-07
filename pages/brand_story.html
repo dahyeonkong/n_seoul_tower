@@ -3,63 +3,226 @@
 
 <head>
   <meta charset="UTF-8">
-  <!-- 기본 SEO -->
-  <title>Brand Story | N Seoul Tower</title>
-  <meta name="description" content="The N Seoul Tower brand story page is being prepared. Please visit again soon.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 기본 SEO (default.html 구조 준용) -->
+  <title>Brand Story | N서울타워</title>
+  <meta name="description"
+    content="A romantic island in the heart of the city. How N Seoul Tower became Seoul's landmark, and the tower data behind it." />
   <meta name="keywords"
-    content="N SEOUL TOWER, Namsan Seoul Tower, Seoul landmark, Seoul observatory, Namsan, Seoul travel, Seoul attractions, brand story">
-  <meta name="author" content="Kbrand N SEOUL TOWER Renewal Team">
-  <!-- 준비 중인 페이지이므로 색인에서 제외합니다. -->
-  <meta name="robots" content="noindex, follow">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="canonical" href="https://dahyeonkong.github.io/n_seoul_tower/pages/brand_story.html">
-  <meta name="theme-color" content="#56780c">
+    content="N SEOUL TOWER, brand story, Namsan tower, Seoul landmark, tower data, observatory" />
+  <meta name="author" content="Kbrand N SEOUL TOWER Renewal Team" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <link rel="canonical" href="https://dahyeonkong.github.io/n_seoul_tower/pages/brand_story.html" />
+  <meta name="theme-color" content="#56780c" />
 
   <!-- 파비콘 세트 -->
-  <link rel="icon" type="image/svg+xml" href="../assets/favicon/favicon.svg">
-  <link rel="icon" href="../assets/favicon/favicon.ico" sizes="48x48">
-  <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32.png">
-  <link rel="apple-touch-icon" href="../assets/favicon/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon/icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="../assets/favicon/icon-512.png">
-  <link rel="manifest" href="../assets/favicon/site.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon/favicon.svg" />
+  <link rel="icon" href="../assets/favicon/favicon.ico" sizes="48x48" />
+  <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32.png" />
+  <link rel="apple-touch-icon" href="../assets/favicon/apple-touch-icon.png" />
+  <link rel="manifest" href="../assets/favicon/site.webmanifest" />
 
   <!-- 오픈그래프 -->
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="N서울타워">
-  <meta property="og:title" content="Brand Story | N Seoul Tower">
-  <meta property="og:description" content="The N Seoul Tower brand story page is being prepared. Please visit again soon.">
-  <meta property="og:url" content="https://dahyeonkong.github.io/n_seoul_tower/pages/brand_story.html">
-  <meta property="og:image" content="https://dahyeonkong.github.io/n_seoul_tower/assets/og-image.png">
-  <meta property="og:image:alt" content="서울의 야경과 N서울타워">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="N서울타워" />
+  <meta property="og:title" content="Brand Story | N서울타워" />
+  <meta property="og:description"
+    content="A romantic island in the heart of the city. How N Seoul Tower became Seoul's landmark, and the tower data behind it." />
+  <meta property="og:url" content="https://dahyeonkong.github.io/n_seoul_tower/pages/brand_story.html" />
+  <meta property="og:image" content="https://dahyeonkong.github.io/n_seoul_tower/assets/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
 
   <!-- 트위터(X) 카드 -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Brand Story | N Seoul Tower">
-  <meta name="twitter:description" content="The N Seoul Tower brand story page is being prepared. Please visit again soon.">
-  <meta name="twitter:image" content="https://dahyeonkong.github.io/n_seoul_tower/assets/og-image.png">
-  <meta name="twitter:image:alt" content="서울의 야경과 N서울타워">
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Brand Story | N서울타워" />
+  <meta name="twitter:description"
+    content="A romantic island in the heart of the city. How N Seoul Tower became Seoul's landmark, and the tower data behind it." />
+  <meta name="twitter:image" content="https://dahyeonkong.github.io/n_seoul_tower/assets/og-image.png" />
 
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/common.css">
-  <link rel="stylesheet" href="../css/page_miss.css">
+  <link rel="stylesheet" href="../css/brand_story.css">
 </head>
 
 <body>
-  <!-- ===================== page miss (Figma 1131:1592) =====================
-       brand story 페이지가 준비되기 전까지 노출하는 안내 화면입니다.
-       시안에 헤더와 푸터가 없어 단독 화면으로 구성했습니다. -->
-  <main class="page_miss">
-    <p class="page_miss_visual">
-      <img src="../assets/miss_img.png" alt="" width="626" height="626">
-    </p>
+  <div class="site_wrapper" id="top">
+    <a class="skip_link" href="#main_content">Skip to main content</a>
 
-    <div class="page_miss_body">
-      <h1 class="page_miss_title">Page Under Construction</h1>
-      <a class="page_miss_home" href="../index.html">Back to Home</a>
+    <!-- ===================== global header (공통 컴포넌트 재사용) ===================== -->
+    <header class="site_header site_header_sub">
+      <div class="page_container site_header_inner">
+        <a class="brand_logo" href="../index.html" aria-label="N Seoul Tower home">
+          <img src="../assets/nst_logo_defalut.svg" alt="" width="43" height="43">
+        </a>
+
+        <!-- ===================== sub page GNB (645:2903) ===================== -->
+        <nav class="site_gnb" aria-label="Main menu">
+          <ul class="site_gnb_list">
+            <li class="site_gnb_group">
+              <p class="site_gnb_title">tower story</p>
+              <ul class="site_gnb_lnb">
+                <li><a class="site_gnb_link" href="./brand_story.html" aria-current="page">brand story</a></li>
+                <li><button class="site_gnb_link" type="button" data-pending-link
+                    aria-disabled="true">history</button></li>
+              </ul>
+            </li>
+            <li class="site_gnb_group">
+              <p class="site_gnb_title">explore</p>
+              <ul class="site_gnb_lnb">
+                <li><a class="site_gnb_link" href="./restaurant_n_burger.html">restaurants</a></li>
+                <li><a class="site_gnb_link" href="./n_gift_shop.html">N gift shop</a></li>
+                <li><button class="site_gnb_link" type="button" data-pending-link
+                    aria-disabled="true">amenities</button></li>
+                <li><a class="site_gnb_link" href="./floor_guide.html">floor guide</a></li>
+              </ul>
+            </li>
+            <li class="site_gnb_group">
+              <p class="site_gnb_title">visit</p>
+              <ul class="site_gnb_lnb">
+                <li><button class="site_gnb_link" type="button" data-pending-link aria-disabled="true">Hours &amp;
+                    Tickets</button></li>
+                <li><a class="site_gnb_link" href="./visitor_guide.html">visitor guide</a></li>
+              </ul>
+            </li>
+            <li class="site_gnb_group">
+              <p class="site_gnb_title">events</p>
+            </li>
+            <li class="site_gnb_group">
+              <p class="site_gnb_title">support</p>
+              <ul class="site_gnb_lnb">
+                <li><button class="site_gnb_link" type="button" data-pending-link aria-disabled="true">notice &amp;
+                    news</button></li>
+                <li><button class="site_gnb_link" type="button" data-pending-link aria-disabled="true">FAQ / contact
+                    us</button></li>
+              </ul>
+            </li>
+          </ul>
+
+          <!-- TODO: 예매 페이지 주소가 확정되지 않아 안내 메시지만 노출합니다. -->
+          <button class="book_now_btn" type="button" data-pending-link aria-disabled="true">Book Now</button>
+
+          <div class="site_gnb_language">
+            <button class="site_gnb_language_button" type="button" data-language-button aria-expanded="false"
+              aria-controls="header_language_menu">
+              <span data-language-current>English</span>
+              <img src="../assets/icon/icon_chevron_down_dark.svg" alt="" width="20" height="20">
+              <span class="visually_hidden">Change language</span>
+            </button>
+            <ul class="site_gnb_language_menu" id="header_language_menu" data-language-menu hidden>
+              <li><button class="site_gnb_language_option" type="button" data-language="en"
+                  aria-current="true">English</button></li>
+              <li><button class="site_gnb_language_option" type="button" data-language="ko">Korean</button></li>
+              <li><button class="site_gnb_language_option" type="button" data-language="ja">Japanese</button></li>
+              <li><button class="site_gnb_language_option" type="button" data-language="zh">Chinese</button></li>
+            </ul>
+          </div>
+        </nav>
+        <button
+          class="menu_toggle"
+          type="button"
+          data-menu-toggle
+          aria-expanded="false"
+          aria-controls="global_menu"
+        >
+          <svg
+            class="menu_toggle_icon"
+            viewBox="0 0 40 40"
+            fill="currentColor"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              class="menu_toggle_bar menu_toggle_bar_top"
+              d="M13.2201 8.75786C13.6122 8.73215 14.1638 8.74854 14.5647 8.74873L16.9757 8.74952L24.5234 8.74926L31.5781 8.74912L33.8633 8.74911C34.2621 8.74909 34.6754 8.74368 35.0736 8.75739C35.3029 8.76528 35.5551 8.86073 35.7406 8.99694C36.01 9.19463 36.1879 9.49307 36.2334 9.82411C36.3334 10.5386 35.8289 11.1569 35.1219 11.2444C34.7602 11.2726 34.2127 11.257 33.8383 11.2568L31.6121 11.2562L24.559 11.2562L17.0156 11.2564L14.5868 11.2574C14.1572 11.2576 13.7295 11.266 13.2985 11.2496C12.2629 11.2101 11.721 10.0355 12.3559 9.2183C12.5929 8.91332 12.8454 8.81067 13.2201 8.75786Z"
+            />
+            <path
+              class="menu_toggle_bar menu_toggle_bar_middle"
+              d="M4.90152 18.7566C5.49424 18.73 6.21084 18.749 6.81463 18.749L10.3771 18.7491L21.2264 18.7491H30.4393L33.4262 18.7486C33.8725 18.7486 34.3191 18.7468 34.7652 18.7493C35.1607 18.7515 35.4463 18.768 35.7652 19.0166C36.0264 19.2187 36.1963 19.5166 36.2373 19.8443C36.2785 20.1705 36.1883 20.4994 35.9865 20.7588C35.7564 21.0515 35.474 21.1994 35.1086 21.2465C34.5719 21.275 33.873 21.2566 33.3254 21.2566L30.1414 21.2568L20.3223 21.2564H10.1164L6.78197 21.2572C6.1999 21.2574 5.61889 21.2572 5.03681 21.2521C4.40519 21.2469 3.85435 20.8263 3.7642 20.1877C3.71644 19.8447 3.80783 19.497 4.01799 19.2218C4.25316 18.9169 4.53303 18.8044 4.90152 18.7566Z"
+            />
+            <path
+              class="menu_toggle_bar menu_toggle_bar_bottom"
+              d="M19.9016 28.7567C20.8455 28.7163 22.0254 28.7493 22.9889 28.7493L28.8801 28.7491H33.0131L34.3523 28.7493C34.8449 28.7497 35.3227 28.6895 35.7408 28.9969C36.0098 29.1948 36.1873 29.493 36.233 29.8237C36.335 30.5538 35.8231 31.1549 35.1086 31.2465C34.7658 31.2649 34.3643 31.2565 34.018 31.2565L32.2586 31.2567L26.791 31.2565L22.2465 31.2569L20.8231 31.2571C20.7117 31.2571 20.5988 31.2588 20.4885 31.2577C20.0619 31.253 19.6234 31.2895 19.2668 31.0106C18.9881 30.7926 18.8093 30.5295 18.7622 30.1764C18.7166 29.8344 18.8107 29.4887 19.0231 29.217C19.2588 28.9129 19.5313 28.8063 19.9016 28.7567Z"
+            />
+          </svg>
+          <span class="visually_hidden" data-menu-toggle-label>Open menu</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ===================== global menu overlay (공통 컴포넌트 재사용) ===================== -->
+    <div class="global_menu" id="global_menu" data-menu-panel hidden>
+      <div class="page_container global_menu_head">
+        <div class="language_selector">
+          <button
+            class="language_button"
+            type="button"
+            data-language-button
+            aria-expanded="false"
+            aria-controls="language_menu"
+          >
+            <span data-language-current>English</span>
+            <img src="../assets/icon/icon_chevron_down.svg" alt="" width="20" height="20">
+            <span class="visually_hidden">Change language</span>
+          </button>
+          <ul class="language_menu" id="language_menu" data-language-menu hidden>
+            <li><button class="language_option" type="button" data-language="en" aria-current="true">English</button></li>
+            <li><button class="language_option" type="button" data-language="ko">Korean</button></li>
+            <li><button class="language_option" type="button" data-language="ja">Japanese</button></li>
+            <li><button class="language_option" type="button" data-language="zh">Chinese</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="page_container global_menu_body">
+        <div class="menu_brand">
+          <div class="menu_brand_logo">
+            <img src="../assets/nst_logo_gray.svg" alt="" width="219" height="136">
+            <p class="menu_brand_name"><span>N</span> SEOUL TOWER</p>
+          </div>
+          <button class="book_btn" type="button" data-pending-link aria-disabled="true">
+            <img src="../assets/icon/icon_ticket.svg" alt="" width="24" height="24">
+            buy ticket
+          </button>
+        </div>
+
+        <nav class="gnb" aria-label="Main menu">
+          <div class="gnb_group">
+            <p class="gnb_title">tower story</p>
+            <ul class="gnb_lnb">
+              <li><a class="gnb_link" href="./brand_story.html" aria-current="page">brand story</a></li>
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">history</button></li>
+            </ul>
+          </div>
+          <div class="gnb_group">
+            <p class="gnb_title">explore</p>
+            <ul class="gnb_lnb">
+              <li><a class="gnb_link" href="./restaurant_n_burger.html">restaurants</a></li>
+              <li><a class="gnb_link" href="./n_gift_shop.html">N gift shop</a></li>
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">amenities</button></li>
+              <li><a class="gnb_link" href="./floor_guide.html">floor guide</a></li>
+            </ul>
+          </div>
+          <div class="gnb_group">
+            <p class="gnb_title">visit</p>
+            <ul class="gnb_lnb">
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">Hours &amp; Tickets</button></li>
+              <li><a class="gnb_link" href="./visitor_guide.html">visitor guide</a></li>
+            </ul>
+          </div>
+          <div class="gnb_group">
+            <p class="gnb_title">events</p>
+          </div>
+          <div class="gnb_group">
+            <p class="gnb_title">support</p>
+            <ul class="gnb_lnb">
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">notice &amp; news</button></li>
+              <li><button class="gnb_link" type="button" data-pending-link aria-disabled="true">FAQ / contact us</button></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
     </div>
   </main>
 

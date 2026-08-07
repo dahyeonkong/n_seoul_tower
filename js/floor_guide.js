@@ -104,6 +104,34 @@
     window.addEventListener("resize", handleViewportChange);
   }
 
+  /* 배치를 보고 등장 방향을 정합니다.
+     좌우 끝에 있으면 그쪽에서, 가운데 위쪽이면 위에서 들어옵니다.
+     모바일처럼 전부 가운데 정렬이면 좌우를 번갈아 써서 단조롭지 않게 합니다. */
+  function getRevealDirection(revealTarget, sceneBounds, targetIndex) {
+    const targetBounds = revealTarget.getBoundingClientRect();
+
+    if (sceneBounds.width === 0 || targetBounds.width === 0) {
+      return "";
+    }
+
+    const centerRatio = (targetBounds.left + targetBounds.width / 2 - sceneBounds.left) / sceneBounds.width;
+    const topRatio = (targetBounds.top - sceneBounds.top) / sceneBounds.height;
+
+    if (centerRatio < 0.38) {
+      return "is_from_left";
+    }
+
+    if (centerRatio > 0.62) {
+      return "is_from_right";
+    }
+
+    if (topRatio < 0.3) {
+      return "is_from_top";
+    }
+
+    return targetIndex % 2 === 0 ? "is_from_left" : "is_from_right";
+  }
+
   /* 카드와 장식이 화면에 들어올 때 서서히 나타납니다.
      같은 층 안에서는 순서대로 조금씩 늦게 등장합니다. */
   function initRevealMotion() {
@@ -115,10 +143,18 @@
     }
 
     floorSections.forEach((floorSection) => {
+      const floorScene = floorSection.querySelector(".floor_scene_inner") || floorSection;
+      const sceneBounds = floorScene.getBoundingClientRect();
       const sectionTargets = floorSection.querySelectorAll(".floor_card, .floor_deco");
 
       sectionTargets.forEach((revealTarget, targetIndex) => {
-        revealTarget.style.setProperty("--reveal_delay", `${Math.min(targetIndex, 5) * 90}ms`);
+        const direction = getRevealDirection(revealTarget, sceneBounds, targetIndex);
+
+        if (direction) {
+          revealTarget.classList.add(direction);
+        }
+
+        revealTarget.style.setProperty("--reveal_delay", `${Math.min(targetIndex, 5) * 120}ms`);
       });
     });
 

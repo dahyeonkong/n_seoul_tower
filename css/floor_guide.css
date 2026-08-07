@@ -104,6 +104,9 @@
 .floor_scene_list {
   position: relative;
   z-index: 2;
+  /* 좌우에서 들어오는 등장 모션이 순간적으로 가로 스크롤을 만들지 않게 잘라냅니다.
+     clip 은 hidden 과 달리 스크롤 컨테이너를 만들지 않아 세로 스크롤과 스냅에 영향이 없습니다. */
+  overflow-x: clip;
 }
 
 .floor_scene {
@@ -153,9 +156,10 @@
 /* 카드를 flex 컨테이너로 두어 링크가 카드 높이를 항상 채우게 합니다.
    (min-height: 100% 는 높이가 auto 인 부모에서는 해석되지 않습니다.) */
 .floor_card {
-  /* --stagger_y 는 태블릿 지그재그 배치, --reveal_y 는 등장 모션이 씁니다.
-     두 값을 한 transform 에 합쳐 서로 덮어쓰지 않게 합니다. */
+  /* --stagger_y 는 태블릿 지그재그 배치, --reveal_x/y 는 등장 모션이 씁니다.
+     세 값을 한 transform 에 합쳐 서로 덮어쓰지 않게 합니다. */
   --stagger_y: 0px;
+  --reveal_x: 0px;
   --reveal_y: 0px;
   display: flex;
   position: relative;
@@ -166,7 +170,7 @@
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.96);
   overflow: hidden;
-  transform: translateY(calc(var(--stagger_y) + var(--reveal_y)));
+  transform: translate(var(--reveal_x), calc(var(--stagger_y) + var(--reveal_y)));
 }
 
 .floor_card_link {
@@ -278,9 +282,10 @@
 /* 장식 오브젝트는 1280 이상에서만 배경으로 불러옵니다.
    그 아래 해상도에서는 요청 자체가 발생하지 않습니다. */
 .floor_deco {
+  --reveal_x: 0px;
   --reveal_y: 0px;
   display: none;
-  transform: translateY(var(--reveal_y));
+  transform: translate(var(--reveal_x), var(--reveal_y));
 }
 
 /* --------------------------------------------------------------------------
@@ -288,24 +293,35 @@
 
    has_floor_motion 은 floor_guide.js 가 붙입니다. JS 가 없거나 reduced motion
    이면 클래스가 붙지 않아 처음부터 전부 보입니다.
+   방향 클래스(is_from_*)도 floor_guide.js 가 배치를 보고 정합니다.
    -------------------------------------------------------------------------- */
 .has_floor_motion .floor_card,
 .has_floor_motion .floor_deco {
+  /* 기본은 아래에서 떠오릅니다. */
+  --reveal_y: 34px;
   opacity: 0;
-  transition: opacity 620ms var(--ease_out), transform 620ms var(--ease_out);
+  transition: opacity 920ms var(--ease_out), transform 920ms var(--ease_out);
   transition-delay: var(--reveal_delay, 0ms);
 }
 
-.has_floor_motion .floor_card {
-  --reveal_y: 24px;
+.has_floor_motion .is_from_left {
+  --reveal_x: -52px;
+  --reveal_y: 14px;
 }
 
-.has_floor_motion .floor_deco {
-  --reveal_y: 16px;
+.has_floor_motion .is_from_right {
+  --reveal_x: 52px;
+  --reveal_y: 14px;
 }
 
-.has_floor_motion .floor_card.is_revealed,
-.has_floor_motion .floor_deco.is_revealed {
+.has_floor_motion .is_from_top {
+  --reveal_x: 0px;
+  --reveal_y: -38px;
+}
+
+/* 방향 규칙과 특이도가 같으므로 반드시 뒤에 와야 합니다. */
+.has_floor_motion .is_revealed {
+  --reveal_x: 0px;
   --reveal_y: 0px;
   opacity: 1;
 }
@@ -664,6 +680,7 @@
   /* JS 가 클래스를 붙이지 않지만, 붙은 뒤 설정이 바뀐 경우에도 가려지지 않게 합니다. */
   .has_floor_motion .floor_card,
   .has_floor_motion .floor_deco {
+    --reveal_x: 0px;
     --reveal_y: 0px;
     opacity: 1;
     transition: none;
