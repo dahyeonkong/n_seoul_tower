@@ -71,6 +71,12 @@ function initGiftShopFilter() {
     selectedCategory = button.getAttribute("data-category-filter");
     renderCategoryState();
     renderProducts();
+
+    /* 목록이 짧아지면 문서가 줄어 스크롤 위치가 푸터 쪽으로 밀립니다.
+       카테고리를 바꾸면 목록 처음부터 보이도록 화면 상단으로 되돌립니다.
+       부드러운 이동 여부는 common.css 의 scroll-behavior 를 따릅니다
+       (prefers-reduced-motion 에서는 즉시 이동). */
+    window.scrollTo(0, 0);
   }
 
   categoryList.addEventListener("click", handleCategoryClick);
