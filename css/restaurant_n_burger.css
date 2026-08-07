@@ -20,6 +20,11 @@
   --color_rest_cta: #424828; /* color/new_primary/800 */
   --color_rest_arrow_bg: rgba(30, 76, 67, 0.5);
   --color_rest_note: #d32f2f;
+  --color_menu_orange: #d4822a;
+  --color_menu_price: #ee964b;
+  --color_menu_copy: #7a5a30;
+  --color_menu_line: rgba(180, 110, 40, 0.2);
+  --color_menu_slot: rgba(212, 130, 42, 0.08);
   --subpage_hero_bg: var(--color_rest_hero_bg);
   --subpage_hero_image_mobile: min(78%, 420px);
   --subpage_hero_image_tablet: min(58%, 520px);
@@ -50,6 +55,30 @@
   position: relative;
 }
 
+.subpage_hero_image_reveal {
+  width: var(--subpage_hero_image_mobile, min(78%, 380px));
+  flex: 0 0 auto;
+  aspect-ratio: 1;
+}
+
+.subpage_hero_image_reveal .subpage_hero_image {
+  width: 100%;
+  animation: burger_hero_float 4s ease-in-out 1.1s infinite;
+  transform-origin: center;
+  will-change: transform;
+}
+
+@keyframes burger_hero_float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-0.35deg);
+  }
+
+  50% {
+    transform: translate3d(0, -18px, 0) rotate(0.35deg);
+  }
+}
+
 /* img 의 width/height 속성은 CSS 에서 지정한 값으로 취급되어 aspect-ratio 를 무력화합니다.
    비율은 CSS 로 제어하되 속성값은 CLS 방지용으로 그대로 두기 위해 height 를 auto 로 되돌립니다. */
 .burger_info_thumb img,
@@ -58,6 +87,55 @@
 .burger_best_type,
 .burger_menu_board img {
   height: auto;
+}
+
+/* 페이지 전용 오브젝트가 작은 화면에서 가로 스크롤을 만들지 않게 제한합니다. */
+.sub_content {
+  overflow: clip;
+}
+
+.burger_info_desc br {
+  display: none;
+}
+
+@media (max-width: 833px) {
+  .subpage_hero {
+    min-height: min(760px, 100svh);
+    padding-top: calc(var(--header_height) + 24px);
+  }
+
+  .burger_gallery_stage img {
+    aspect-ratio: 4 / 3;
+  }
+
+  .burger_best_card {
+    width: min(78vw, 280px);
+  }
+}
+
+@media (min-width: 834px) and (max-width: 1279px) {
+  .subpage_hero {
+    min-height: 760px;
+  }
+
+  .subpage_hero_image_reveal {
+    width: var(--subpage_hero_image_tablet, min(62%, 480px));
+  }
+
+  .burger_gallery_stage img {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (min-width: 1280px) {
+  .subpage_hero_image_reveal {
+    width: 32.6%;
+    max-width: 626px;
+  }
+
+  .burger_info_desc br {
+    display: initial;
+  }
 }
 
 /* ========================================================================== 
@@ -352,14 +430,19 @@
   margin-right: var(--page_pad);
 }
 
+.burger_best_center {
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
 .burger_best_list {
   display: flex;
+  flex: 0 0 auto;
+  width: max-content;
   gap: 12px;
   margin: 8px 0;
-  padding: 0 var(--page_pad);
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  overscroll-behavior-x: contain;
+  padding: 0;
 }
 
 .burger_best_card {
@@ -367,7 +450,6 @@
   width: 190px;
   border-radius: 10px;
   overflow: hidden;
-  scroll-snap-align: center;
 }
 
 .burger_best_card img {
@@ -405,7 +487,6 @@
   .burger_best_list {
     gap: 24px;
     margin: -14px 0 -18px;
-    padding: 0 0 0 4.17%;
   }
 
   .burger_best_card {
@@ -425,6 +506,14 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .subpage_hero_image_reveal .subpage_hero_image {
+    animation: none;
+    transform: none;
+    will-change: auto;
+  }
+}
+
 /* ==========================================================================
    6. full menu
    ========================================================================== */
@@ -439,14 +528,480 @@
 }
 
 .burger_menu_board {
-  border-radius: 10px;
-  overflow: hidden;
+  padding: 20px 12px;
+  border-radius: 6px;
+  overflow: clip;
+  background: linear-gradient(154deg, #faf7f0 8.5%, #f5e8cc 58.3%, #edd8a8 91.5%);
 }
 
-.burger_menu_board img {
+.burger_menu_header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 4px 14px;
+  border-bottom: 3px solid var(--color_menu_orange);
+}
+
+.burger_menu_mark {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 5px;
+  background-color: #272c1c;
+  color: #a4b465;
+  font-family: var(--font_title);
+  font-size: 38px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.burger_menu_title {
+  color: #212121;
+  font-family: var(--font_title);
+  font-size: clamp(24px, 7vw, 36px);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.burger_menu_kicker {
+  margin-top: 4px;
+  color: var(--color_menu_copy);
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.burger_menu_top_grid,
+.burger_menu_bottom_grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  margin-top: 22px;
+}
+
+.burger_menu_group {
+  min-width: 0;
+}
+
+.burger_menu_group_title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 36px;
+  padding: 7px 12px;
+  border-left: 5px solid var(--color_menu_orange);
+  border-radius: 4px;
+  background-color: var(--color_rest_cta);
+  color: var(--color_menu_orange);
+  font-family: var(--font_title);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.burger_menu_group_title b {
+  color: var(--color_menu_price);
+  font-size: 13px;
+}
+
+.burger_menu_product {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  min-height: 132px;
+  padding-block: 12px;
+  border-bottom: 1px solid var(--color_menu_line);
+}
+
+.burger_menu_image_slot,
+.burger_combo_image,
+.burger_drink_image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px dashed rgba(212, 130, 42, 0.3);
+  border-radius: 4px;
+  background-color: var(--color_menu_slot);
+}
+
+.burger_menu_image_slot {
+  width: 104px;
+  height: 104px;
+}
+
+.burger_menu_image_slot img {
+  width: 84%;
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+
+.burger_menu_product_info {
+  min-width: 0;
+}
+
+.burger_menu_product_info h4,
+.burger_meal_box h4,
+.burger_chicken_note h4,
+.burger_tower_cup h3 {
+  color: #212121;
+  font-family: var(--font_title);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.burger_menu_product_info h4 {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+}
+
+.burger_menu_number {
+  display: inline-flex;
+  flex: 0 0 22px;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  background-color: var(--color_rest_cta);
+  color: var(--color_menu_orange);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.burger_menu_description,
+.burger_chicken_note p,
+.burger_combo_info,
+.burger_tower_cup p {
+  margin-top: 7px;
+  color: var(--color_menu_copy);
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.burger_menu_price,
+.burger_drink_list dd,
+.burger_side_list dd {
+  color: var(--color_menu_price);
+  font-family: var(--font_title);
+  font-weight: 700;
+}
+
+.burger_menu_price {
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.burger_menu_badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+  margin-bottom: 5px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background-color: rgba(27, 92, 78, 0.4);
+  color: #ffffff;
+  font-family: var(--font_title);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.burger_menu_choice {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 5px 8px;
+  border: 1px solid rgba(212, 130, 42, 0.35);
+  color: var(--color_menu_orange);
+  font-size: 11px;
+  line-height: 1.1;
+}
+
+.burger_meal_box,
+.burger_chicken_note {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid rgba(78, 205, 196, 0.35);
+  border-radius: 4px;
+  background-color: rgba(240, 200, 140, 0.4);
+}
+
+.burger_meal_box h4,
+.burger_chicken_note h4 {
+  color: var(--color_rest_cta);
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.burger_meal_options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.burger_meal_option {
+  position: relative;
+  min-height: 112px;
+  padding: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(212, 130, 42, 0.35);
+  border-radius: 4px;
+  background-color: rgba(248, 228, 180, 0.55);
+}
+
+.burger_meal_option_head {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  color: var(--color_rest_cta);
+  font-family: var(--font_title);
+  font-size: 11px;
+}
+
+.burger_meal_option_head span {
+  color: #e8a020;
+  font-weight: 700;
+}
+
+.burger_meal_option ul {
+  margin-top: 8px;
+  padding-right: 48px;
+  color: var(--color_menu_copy);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.burger_meal_option img {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 48px;
+}
+
+.burger_chicken_note {
+  padding: 14px;
+  border-color: rgba(212, 130, 42, 0.35);
+  background-color: rgba(212, 130, 42, 0.1);
+}
+
+.burger_drink_list {
+  padding: 8px 10px 0;
+}
+
+.burger_drink_list > div,
+.burger_side_list > div,
+.burger_tower_cup dl > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--color_menu_line);
+}
+
+.burger_drink_list > div {
+  min-height: 34px;
+}
+
+.burger_drink_list dt,
+.burger_side_list dt,
+.burger_tower_cup dt {
+  color: #212121;
+  font-family: var(--font_title);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.burger_drink_list dd,
+.burger_side_list dd {
+  flex: 0 0 auto;
+  font-size: 11px;
+}
+
+.burger_drink_list small,
+.burger_tower_cup small {
+  display: block;
+  color: var(--color_menu_copy);
+  font-family: var(--font_body);
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.burger_menu_tap_title,
+.burger_beer_set_title {
+  margin-top: 20px;
+}
+
+.burger_drink_image {
   width: 100%;
-  height: auto;
-  aspect-ratio: 1600 / 2170;
+  margin-top: 20px;
+  padding: 18px;
+}
+
+.burger_drink_image img {
+  width: min(100%, 302px);
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+
+.burger_menu_product_simple .burger_menu_product_info {
+  align-self: center;
+}
+
+.burger_menu_extras {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.burger_menu_extras .burger_menu_group_title {
+  min-height: 36px;
+  font-size: 12px;
+}
+
+.burger_sauce_list {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.burger_sauce_list li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--color_menu_copy);
+  font-size: 11px;
+}
+
+.burger_sauce_list img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.burger_side_list {
+  margin-top: 10px;
+}
+
+.burger_side_list > div {
+  min-height: 32px;
+}
+
+.burger_combo {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(120px, 1fr);
+  gap: 16px;
+  align-items: start;
+  padding-top: 28px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--color_menu_line);
+}
+
+.burger_combo_image {
+  min-height: 210px;
+}
+
+.burger_combo_image img {
+  width: 88%;
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+
+.burger_combo_info ul {
+  display: grid;
+  gap: 5px;
+}
+
+.burger_combo_price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 14px;
+  color: var(--color_menu_copy);
+  font-family: var(--font_title);
+}
+
+.burger_combo_price del {
+  font-size: 14px;
+}
+
+.burger_combo_price strong {
+  color: var(--color_menu_price);
+  font-size: clamp(21px, 4vw, 28px);
+}
+
+.burger_beer_combo {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.burger_tower_cup {
+  padding: 16px;
+  border: 2px solid rgba(212, 130, 42, 0.35);
+  background-color: rgba(212, 130, 42, 0.1);
+  text-align: center;
+}
+
+.burger_tower_cup h3 {
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(78, 205, 196, 0.35);
+  color: var(--color_rest_cta);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.burger_tower_cup dl {
+  margin-top: 4px;
+  text-align: left;
+}
+
+.burger_tower_cup dl > div {
+  min-height: 54px;
+  border: 0;
+}
+
+.burger_tower_cup dd {
+  color: var(--color_menu_price);
+  font-family: var(--font_title);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.burger_tower_cup figure {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  padding: 14px;
+  border: 1px dashed rgba(212, 130, 42, 0.3);
+  border-radius: 4px;
+  background-color: var(--color_menu_slot);
+}
+
+.burger_tower_cup figure img {
+  width: min(100%, 220px);
+  object-fit: contain;
+}
+
+.burger_menu_disclaimer {
+  margin-top: 20px;
+  padding-top: 13px;
+  border-top: 1px solid var(--color_menu_line);
+  color: var(--color_menu_copy);
+  font-family: var(--font_title);
+  font-size: 10px;
+  line-height: 1.5;
+  text-align: center;
 }
 
 .burger_menu_note {
@@ -456,12 +1011,232 @@
   text-align: right;
 }
 
+@media (min-width: 834px) {
+  .burger_menu_board {
+    padding: 24px;
+  }
+
+  .burger_menu_header {
+    gap: 18px;
+    padding: 0 16px 18px;
+  }
+
+  .burger_menu_mark {
+    width: 72px;
+    height: 72px;
+    font-size: 48px;
+  }
+
+  .burger_menu_title {
+    font-size: 42px;
+  }
+
+  .burger_menu_kicker {
+    margin-top: 6px;
+    font-size: 14px;
+  }
+
+  .burger_menu_top_grid,
+  .burger_menu_bottom_grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 20px;
+    margin-inline: 16px;
+  }
+
+  .burger_menu_drinks,
+  .burger_tower_cup {
+    grid-column: 1 / -1;
+  }
+
+  .burger_menu_drinks {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 20px;
+  }
+
+  .burger_menu_drinks > .burger_menu_group_title:first-child,
+  .burger_menu_drinks > .burger_drink_list:first-of-type {
+    grid-column: 1;
+  }
+
+  .burger_menu_tap_title,
+  .burger_tap_list,
+  .burger_drink_image {
+    grid-column: 2;
+  }
+
+  .burger_menu_tap_title {
+    grid-row: 1;
+    margin-top: 0;
+  }
+
+  .burger_tap_list {
+    grid-row: 2;
+  }
+
+  .burger_drink_image {
+    grid-row: 3;
+  }
+
+  .burger_tower_cup {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.7fr) minmax(300px, 1.3fr);
+    align-items: center;
+    gap: 0 28px;
+  }
+
+  .burger_tower_cup > .burger_menu_badge,
+  .burger_tower_cup > h3,
+  .burger_tower_cup > dl,
+  .burger_tower_cup > p {
+    grid-column: 1;
+  }
+
+  .burger_tower_cup > figure {
+    grid-column: 2;
+    grid-row: 1 / span 5;
+  }
+}
+
 @media (min-width: 1280px) {
   .burger_menu_inner {
     gap: 10px;
   }
 
+  .burger_menu_board {
+    padding: 28px 24px;
+  }
+
   .burger_menu_note {
     font-size: 20px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .burger_menu_header {
+    padding-inline: 40px;
+  }
+
+  .burger_menu_mark {
+    width: 88px;
+    height: 88px;
+    font-size: 60px;
+  }
+
+  .burger_menu_title {
+    font-size: 48px;
+  }
+
+  .burger_menu_kicker {
+    font-size: 16px;
+  }
+
+  .burger_menu_top_grid,
+  .burger_menu_bottom_grid {
+    grid-template-columns: minmax(0, 1.538fr) minmax(0, 1.538fr) minmax(260px, 1fr);
+    gap: 20px;
+    margin-inline: 40px;
+  }
+
+  .burger_menu_bottom_grid {
+    grid-template-columns: minmax(0, 1.818fr) minmax(0, 1.818fr) minmax(260px, 1fr);
+  }
+
+  .burger_menu_drinks,
+  .burger_tower_cup {
+    display: block;
+    grid-column: auto;
+  }
+
+  .burger_menu_product {
+    grid-template-columns: 180px minmax(0, 1fr);
+    gap: 16px;
+    min-height: 209px;
+    padding: 14px 0 15px;
+  }
+
+  .burger_menu_image_slot {
+    width: 180px;
+    height: 180px;
+  }
+
+  .burger_menu_product_info h4,
+  .burger_meal_box h4,
+  .burger_chicken_note h4 {
+    font-size: 18px;
+  }
+
+  .burger_menu_description,
+  .burger_chicken_note p,
+  .burger_combo_info,
+  .burger_tower_cup p {
+    font-size: 14px;
+  }
+
+  .burger_menu_price {
+    font-size: 18px;
+  }
+
+  .burger_menu_choice {
+    font-size: 14px;
+  }
+
+  .burger_meal_box {
+    min-height: 315px;
+  }
+
+  .burger_meal_options {
+    margin-top: 48px;
+  }
+
+  .burger_meal_option {
+    min-height: 110px;
+  }
+
+  .burger_chicken_note {
+    margin-top: 14px;
+  }
+
+  .burger_drink_list {
+    padding-inline: 14px;
+  }
+
+  .burger_drink_list dt,
+  .burger_side_list dt {
+    font-size: 14px;
+  }
+
+  .burger_drink_list dd,
+  .burger_side_list dd {
+    font-size: 15px;
+  }
+
+  .burger_drink_image {
+    margin-top: 20px;
+  }
+
+  .burger_combo {
+    grid-template-columns: 326px minmax(0, 1fr);
+  }
+
+  .burger_combo_image {
+    min-height: 287px;
+  }
+
+  .burger_tower_cup {
+    padding: 18px;
+  }
+
+  .burger_tower_cup h3 {
+    font-size: 20px;
+  }
+
+  .burger_tower_cup figure img {
+    width: 203px;
+  }
+
+  .burger_menu_disclaimer {
+    margin-inline: 40px;
+    font-size: 12px;
   }
 }
