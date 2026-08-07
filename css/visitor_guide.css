@@ -275,10 +275,6 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   .guide_media {
     width: 100%;
   }
-
-  .guide_media {
-    border-radius: var(--radius_2xl);
-  }
 }
 
 /* 원 안에서의 이미지 크기·위치는 Figma 의 이미지 fill 값을 원 지름(400) 기준 %로 옮긴 것입니다.
@@ -674,11 +670,10 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   display: inline-flex;
   align-self: flex-start;
   gap: 8px;
-  min-height: 44px;
   margin-top: 4px;
   padding: 10px 16px;
   border-radius: var(--radius_round);
-  background-color: var(--color_primary_600);
+  background-color: #1b5c4e78;
   color: var(--color_text_white);
   font-weight: 400;
   line-height: 1.2;
