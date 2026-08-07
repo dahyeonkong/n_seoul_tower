@@ -55,30 +55,6 @@
   position: relative;
 }
 
-.subpage_hero_image_reveal {
-  width: var(--subpage_hero_image_mobile, min(78%, 380px));
-  flex: 0 0 auto;
-  aspect-ratio: 1;
-}
-
-.subpage_hero_image_reveal .subpage_hero_image {
-  width: 100%;
-  animation: burger_hero_float 4s ease-in-out 1.1s infinite;
-  transform-origin: center;
-  will-change: transform;
-}
-
-@keyframes burger_hero_float {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) rotate(-0.35deg);
-  }
-
-  50% {
-    transform: translate3d(0, -18px, 0) rotate(0.35deg);
-  }
-}
-
 /* img 의 width/height 속성은 CSS 에서 지정한 값으로 취급되어 aspect-ratio 를 무력화합니다.
    비율은 CSS 로 제어하되 속성값은 CLS 방지용으로 그대로 두기 위해 height 를 auto 로 되돌립니다. */
 .burger_info_thumb img,
@@ -118,21 +94,12 @@
     min-height: 760px;
   }
 
-  .subpage_hero_image_reveal {
-    width: var(--subpage_hero_image_tablet, min(62%, 480px));
-  }
-
   .burger_gallery_stage img {
     aspect-ratio: 16 / 9;
   }
 }
 
 @media (min-width: 1280px) {
-  .subpage_hero_image_reveal {
-    width: 32.6%;
-    max-width: 626px;
-  }
-
   .burger_info_desc br {
     display: initial;
   }
@@ -503,14 +470,6 @@
 
   .burger_best_card:last-child {
     width: 426px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .subpage_hero_image_reveal .subpage_hero_image {
-    animation: none;
-    transform: none;
-    will-change: auto;
   }
 }
 

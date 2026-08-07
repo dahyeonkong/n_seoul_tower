@@ -16,17 +16,6 @@ function initRestaurantScrollAnimations() {
 
   gsap.registerPlugin(ScrollTrigger);
 
-  gsap.from(".subpage_hero_image_reveal", {
-    autoAlpha: 0,
-    y: 72,
-    scale: 0.84,
-    rotation: -4,
-    duration: 1.25,
-    delay: 0.15,
-    ease: "back.out(1.35)",
-    clearProps: "transform,opacity,visibility"
-  });
-
   function revealFrom(targets, options) {
     if (!targets || targets.length === 0) {
       return;
