@@ -111,7 +111,7 @@
   padding: 88px var(--page_pad) 112px;
 }
 
-.floor_scene_t7 {
+.floor_scene_f5 {
   padding-top: 52px;
 }
 
@@ -153,6 +153,10 @@
 /* 카드를 flex 컨테이너로 두어 링크가 카드 높이를 항상 채우게 합니다.
    (min-height: 100% 는 높이가 auto 인 부모에서는 해석되지 않습니다.) */
 .floor_card {
+  /* --stagger_y 는 태블릿 지그재그 배치, --reveal_y 는 등장 모션이 씁니다.
+     두 값을 한 transform 에 합쳐 서로 덮어쓰지 않게 합니다. */
+  --stagger_y: 0px;
+  --reveal_y: 0px;
   display: flex;
   position: relative;
   z-index: 3;
@@ -162,6 +166,7 @@
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.96);
   overflow: hidden;
+  transform: translateY(calc(var(--stagger_y) + var(--reveal_y)));
 }
 
 .floor_card_link {
@@ -273,7 +278,36 @@
 /* 장식 오브젝트는 1280 이상에서만 배경으로 불러옵니다.
    그 아래 해상도에서는 요청 자체가 발생하지 않습니다. */
 .floor_deco {
+  --reveal_y: 0px;
   display: none;
+  transform: translateY(var(--reveal_y));
+}
+
+/* --------------------------------------------------------------------------
+   등장 모션
+
+   has_floor_motion 은 floor_guide.js 가 붙입니다. JS 가 없거나 reduced motion
+   이면 클래스가 붙지 않아 처음부터 전부 보입니다.
+   -------------------------------------------------------------------------- */
+.has_floor_motion .floor_card,
+.has_floor_motion .floor_deco {
+  opacity: 0;
+  transition: opacity 620ms var(--ease_out), transform 620ms var(--ease_out);
+  transition-delay: var(--reveal_delay, 0ms);
+}
+
+.has_floor_motion .floor_card {
+  --reveal_y: 24px;
+}
+
+.has_floor_motion .floor_deco {
+  --reveal_y: 16px;
+}
+
+.has_floor_motion .floor_card.is_revealed,
+.has_floor_motion .floor_deco.is_revealed {
+  --reveal_y: 0px;
+  opacity: 1;
 }
 
 /* --------------------------------------------------------------------------
@@ -292,7 +326,7 @@
     padding-block: 112px 136px;
   }
 
-  .floor_scene_t7 {
+  .floor_scene_f5 {
     padding-top: 72px;
   }
 
@@ -312,7 +346,7 @@
   }
 
   .floor_card:nth-of-type(even) {
-    transform: translateY(110px);
+    --stagger_y: 110px;
   }
 
   .floor_card_body {
@@ -332,7 +366,7 @@
     padding: 0;
   }
 
-  .floor_scene_t7 {
+  .floor_scene_f5 {
     padding-top: 0;
   }
 
@@ -342,7 +376,10 @@
     gap: 0;
   }
 
-  .floor_scene_t7 .floor_scene_inner {
+  /* 디자인의 첫 프레임은 1920 x 1331 로, 표준 1080 레이아웃 위에 제목용 251px 띠가
+     얹힌 구조입니다 (타워 위치가 846 - 595 = 251 만큼 내려가 있는 것으로 확인).
+     제목이 F5 로 옮겨졌으므로 이 높이도 F5 가 가집니다. */
+  .floor_scene_f5 .floor_scene_inner {
     aspect-ratio: 1920 / 1331;
   }
 
@@ -358,12 +395,12 @@
      그보다 좁아 글자가 가독성 하한에 걸리면 카드가 아래로 늘어나 잘리지 않습니다. */
   .floor_card,
   .floor_card:nth-of-type(even) {
+    --stagger_y: 0px;
     position: absolute;
     width: 21.4583%;
     height: auto;
     min-height: calc(521 * var(--u));
     margin: 0;
-    transform: none;
   }
 
   .floor_card_large {
@@ -430,11 +467,13 @@
     pointer-events: none;
   }
 
-  /* --- T7 (Figma F07, 캔버스 1920 x 1331) --- */
-  .floor_card_ngrill { top: 33.3584%; left: 16.3542%; }
+  /* --- T7 (Figma F07) ---
+     원본은 1331 캔버스이지만 첫 섹션이 아니게 되어 제목 띠 251px 을 뺀
+     표준 1080 캔버스 기준으로 환산했습니다. (예: 카드 y 444 → 193) */
+  .floor_card_ngrill { top: 17.8704%; left: 16.3542%; }
 
   .floor_deco_tea {
-    top: 25.7701%;
+    top: 8.5185%;
     left: 55.3646%;
     width: 12.9167%;
     aspect-ratio: 248 / 349;
@@ -442,7 +481,7 @@
   }
 
   .floor_deco_beef {
-    top: 70.6987%;
+    top: 63.8889%;
     left: 8.5938%;
     width: 13.6979%;
     aspect-ratio: 263 / 238;
@@ -450,7 +489,7 @@
   }
 
   .floor_deco_ngrill_photo {
-    top: 61.0819%;
+    top: 52.0370%;
     left: 63.0208%;
     width: 22.5521%;
     aspect-ratio: 433 / 237;
@@ -458,7 +497,7 @@
   }
 
   .floor_deco_ngrill_logo {
-    top: 80.3155%;
+    top: 75.7407%;
     left: 75%;
     width: 8.5417%;
     aspect-ratio: 164 / 38;
@@ -547,12 +586,14 @@
   .floor_card_terrace { top: 27.6852%; left: 52.2917%; }
   .floor_card_durum { top: 37.2222%; left: 75.4167%; }
 
-  /* --- F5 (Figma T05) --- */
-  .floor_card_gift { top: 18.9815%; left: 14.5313%; }
-  .floor_card_sweet { top: 22.0370%; left: 56.3542%; }
+  /* --- F5 (Figma T05) ---
+     첫 섹션이 되어 캔버스가 1331 로 늘었습니다. 제목 띠 251px 만큼 아래로 밀어
+     디자인의 1080 레이아웃을 그대로 유지합니다. (예: 카드 y 205 → 456) */
+  .floor_card_gift { top: 34.2600%; left: 14.5313%; }
+  .floor_card_sweet { top: 36.7393%; left: 56.3542%; }
 
   .floor_deco_popcorn {
-    top: 10.1852%;
+    top: 27.1225%;
     left: 67.1875%;
     width: 19.7396%;
     aspect-ratio: 379 / 347;
@@ -560,7 +601,7 @@
   }
 
   .floor_deco_sweetbar {
-    top: 74.8148%;
+    top: 79.5642%;
     left: 71.9271%;
     width: 15.7813%;
     aspect-ratio: 303 / 124;
@@ -617,6 +658,14 @@
   .floor_light,
   .tower_state_image,
   .floor_card_media img {
+    transition: none;
+  }
+
+  /* JS 가 클래스를 붙이지 않지만, 붙은 뒤 설정이 바뀐 경우에도 가려지지 않게 합니다. */
+  .has_floor_motion .floor_card,
+  .has_floor_motion .floor_deco {
+    --reveal_y: 0px;
+    opacity: 1;
     transition: none;
   }
 

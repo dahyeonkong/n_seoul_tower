@@ -10,8 +10,8 @@
     return;
   }
 
-  /* 디자인과 동일하게 최상층에서 시작합니다. */
-  const DEFAULT_FLOOR = "t7";
+  /* 아래층에서 시작해 위로 올라갑니다. */
+  const DEFAULT_FLOOR = "f5";
 
   let activeFloor = DEFAULT_FLOOR;
   let scrollFrame = 0;
@@ -104,9 +104,51 @@
     window.addEventListener("resize", handleViewportChange);
   }
 
+  /* 카드와 장식이 화면에 들어올 때 서서히 나타납니다.
+     같은 층 안에서는 순서대로 조금씩 늦게 등장합니다. */
+  function initRevealMotion() {
+    const revealTargets = Array.from(document.querySelectorAll(".floor_card, .floor_deco"));
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (prefersReducedMotion || revealTargets.length === 0 || !("IntersectionObserver" in window)) {
+      return;
+    }
+
+    floorSections.forEach((floorSection) => {
+      const sectionTargets = floorSection.querySelectorAll(".floor_card, .floor_deco");
+
+      sectionTargets.forEach((revealTarget, targetIndex) => {
+        revealTarget.style.setProperty("--reveal_delay", `${Math.min(targetIndex, 5) * 90}ms`);
+      });
+    });
+
+    /* 클래스를 붙이는 순간부터 숨겨지므로, 관찰을 시작하기 직전에 붙입니다. */
+    floorStage.classList.add("has_floor_motion");
+
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return;
+          }
+
+          entry.target.classList.add("is_revealed");
+          revealObserver.unobserve(entry.target);
+        });
+      },
+      {
+        rootMargin: "0px 0px -10% 0px",
+        threshold: 0.05
+      }
+    );
+
+    revealTargets.forEach((revealTarget) => revealObserver.observe(revealTarget));
+  }
+
   function initFloorGuide() {
     floorStage.dataset.activeFloor = activeFloor;
     initFloorObserver();
+    initRevealMotion();
     updateFloorFromViewport();
   }
 

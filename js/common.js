@@ -657,13 +657,13 @@ var QUICK_MENU_SECTIONS_BY_PAGE = {
     { label: "custom goods", href: "#goods_section" }
   ],
   "floor_guide.html": [
-    { label: "T7", href: "#floor_t7" },
-    { label: "T5", href: "#floor_t5" },
-    { label: "T4", href: "#floor_t4" },
-    { label: "T3", href: "#floor_t3" },
-    { label: "T2", href: "#floor_t2" },
+    { label: "F5", href: "#floor_f5" },
     { label: "T1", href: "#floor_t1" },
-    { label: "F5", href: "#floor_f5" }
+    { label: "T2", href: "#floor_t2" },
+    { label: "T3", href: "#floor_t3" },
+    { label: "T4", href: "#floor_t4" },
+    { label: "T5", href: "#floor_t5" },
+    { label: "T7", href: "#floor_t7" }
   ],
   "n_gift_shop.html": [],
   "restaurant_n_burger.html": [
