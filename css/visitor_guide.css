@@ -297,20 +297,13 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   transform: translate(0, -50%);
 }
 
-/* 시티투어버스(945:3895): 같은 크기에서 왼쪽으로 27px(-6.7%) 더 밀려 있습니다. */
-.guide_media_citytourbus img {
-  left: -6.7%;
+.guide_media_car img {
+  left: 0;
   width: 177.7%;
   transform: translate(0, -50%);
 }
 
-/* 자동차(945:3992): fill 이 900px(225%)로 확대되고 프레임이 -5.7도 회전해 있습니다. */
-.guide_media_car img {
-  top: 44.1%;
-  left: 27.9%;
-  width: 225%;
-  transform: translate(-50%, -50%) rotate(-5.7deg);
-}
+
 
 @media (min-width: 834px) {
   .guide_media img {
