@@ -23,6 +23,8 @@
   padding: calc(var(--header_height) + 24px) 0 40px;
   background-color: var(--color_bg_hero);
   overflow: hidden;
+  /* hero_video 의 blend 가 히어로 밖으로 번지지 않게 합성 범위를 가둡니다. */
+  isolation: isolate;
 }
 
 .hero_inner {
@@ -34,7 +36,9 @@
   height: 100%;
 }
 
-/* 히어로 비디오 — 기존 타워 이미지 크기와 무관하게 화면 전체를 채웁니다. */
+/* 히어로 비디오 — 기존 타워 이미지 크기와 무관하게 화면 전체를 채웁니다.
+   webm 이 알파 없이 검정 배경으로 인코딩되어 있어, screen 합성으로 검정을 걷어내고
+   히어로 배경색(--color_bg_hero)이 그대로 보이게 합니다. */
 .hero_video {
   position: absolute;
   inset: 0;
@@ -43,6 +47,7 @@
   height: 100vh;
   object-fit: cover;
   object-position: center;
+  mix-blend-mode: screen;
   pointer-events: none;
 }
 

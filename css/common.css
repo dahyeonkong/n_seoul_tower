@@ -1549,6 +1549,7 @@ html .course_page .course_description {
 .footer_logo img {
   width: 56px;
   height: auto;
+  filter: brightness(0) invert(1);
 }
 
 .footer_body {
