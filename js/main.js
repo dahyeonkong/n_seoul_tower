@@ -223,6 +223,14 @@ function renderEvents(events) {
   list.appendChild(fragment);
 }
 
+/* 곤돌라와 카드가 화면 밖으로 잘리지 않도록 path 좌우 끝에서 잘라내는 비율입니다. */
+var EVENT_PATH_EDGE_INSET = 0.08;
+
+/* 곤돌라가 화면에서 실제로 내려가는 세로 폭(뷰포트 높이 기준)입니다.
+   0 이면 세로 중앙 고정, 1 이면 화면 전체를 지나갑니다.
+   path 를 타고 내려가는 형상은 남기되 화면 밖으로는 나가지 않는 값입니다. */
+var EVENT_GONDOLA_BAND = 0.36;
+
 function initEventPathMotion() {
   var section = document.querySelector("#events_section");
   var sticky = document.querySelector("[data-events-sticky]");
@@ -238,8 +246,12 @@ function initEventPathMotion() {
   var desktopQuery = window.matchMedia("(min-width: 1280px)");
   var reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   var pathElement = null;
+  var pathViewBoxWidth = 1920;
+  var pathViewBoxHeight = 1045;
   var visibleStartLength = 0;
   var visibleEndLength = 0;
+  var pathTopY = 0;
+  var pathBottomY = 0;
   var isRenderRequested = false;
   var isCardView = false;
 
@@ -247,6 +259,7 @@ function initEventPathMotion() {
     section.classList.add("is_card_view");
     list.style.removeProperty("--event_path_x");
     list.style.removeProperty("--event_path_y");
+    sticky.style.removeProperty("--event_curve_y");
 
     items.forEach(function (item) {
       item.classList.remove("is_active");
@@ -259,6 +272,7 @@ function initEventPathMotion() {
     section.classList.add("has_static_events");
     list.style.removeProperty("--event_path_x");
     list.style.removeProperty("--event_path_y");
+    sticky.style.removeProperty("--event_curve_y");
 
     items.forEach(function (item) {
       item.classList.remove("is_active");
@@ -270,13 +284,18 @@ function initEventPathMotion() {
   function findVisiblePathRange() {
     var totalLength = pathElement.getTotalLength();
     var sampleCount = 800;
+    var insetX = pathViewBoxWidth * EVENT_PATH_EDGE_INSET;
     var firstVisibleLength = null;
     var lastVisibleLength = null;
 
     for (var index = 0; index <= sampleCount; index += 1) {
       var length = totalLength * index / sampleCount;
       var point = pathElement.getPointAtLength(length);
-      var isVisible = point.x >= 0 && point.x <= 1920 && point.y >= 0 && point.y <= 1045;
+      var isVisible =
+        point.x >= insetX &&
+        point.x <= pathViewBoxWidth - insetX &&
+        point.y >= 0 &&
+        point.y <= pathViewBoxHeight;
 
       if (isVisible && firstVisibleLength === null) {
         firstVisibleLength = length;
@@ -287,8 +306,19 @@ function initEventPathMotion() {
       }
     }
 
-    visibleStartLength = 0;
+    visibleStartLength = firstVisibleLength === null ? 0 : firstVisibleLength;
     visibleEndLength = lastVisibleLength === null ? totalLength : lastVisibleLength;
+
+    /* 실제로 지나가는 구간이 viewBox 세로의 일부뿐이므로, 그만큼 곡선을 더 늘려야
+       곡선이 스크롤과 같은 속도로 흘러갑니다. */
+    /* 진행률 0 은 path 의 끝(우상단), 진행률 1 은 시작(좌하단)입니다. */
+    pathTopY = pathElement.getPointAtLength(visibleEndLength).y;
+    pathBottomY = pathElement.getPointAtLength(visibleStartLength).y;
+
+    var travelRatio = Math.abs(pathBottomY - pathTopY) / pathViewBoxHeight;
+    var curveScale = travelRatio > 0.01 ? 1 / travelRatio : 1;
+
+    section.style.setProperty("--events_curve_scale", curveScale.toFixed(4));
   }
 
   function renderEventPathMotion() {
@@ -306,19 +336,28 @@ function initEventPathMotion() {
 
     section.classList.remove("has_static_events");
     var sectionRect = section.getBoundingClientRect();
-    var stickyRect = sticky.getBoundingClientRect();
-    var curveRect = curve.getBoundingClientRect();
-    var scrollTravel = Math.max(1, section.offsetHeight - sticky.offsetHeight);
+    var stageHeight = sticky.offsetHeight;
+    /* transform 이 걸린 곡선이라 getBoundingClientRect 대신 레이아웃 크기를 씁니다. */
+    var curveWidth = curve.offsetWidth;
+    var curveHeight = curve.offsetHeight;
+    var scrollTravel = Math.max(1, section.offsetHeight - stageHeight);
     var progress = Math.min(1, Math.max(0, -sectionRect.top / scrollTravel));
     var pathLength = visibleEndLength - (visibleEndLength - visibleStartLength) * progress;
     var point = pathElement.getPointAtLength(pathLength);
-    var pathX = curveRect.left - stickyRect.left + point.x * curveRect.width / 1920;
-    var pathY = curveRect.top - stickyRect.top + point.y * curveRect.height / 1045;
-    var pathPositionRatio = pathX / Math.max(1, stickyRect.width);
-    var activeIndex = pathPositionRatio > 0.697 ? 2 : pathPositionRatio > 0.394 ? 1 : 0;
+    var pathX = point.x * curveWidth / pathViewBoxWidth;
+    var pathY = point.y * curveHeight / pathViewBoxHeight;
+    var activeIndex = progress < 1 / 3 ? 2 : progress < 2 / 3 ? 1 : 0;
 
+    /* 곤돌라는 path 를 타고 내려가되, 화면에서의 세로 이동은 뷰포트 중앙을 기준으로
+       EVENT_GONDOLA_BAND 폭 안으로 압축합니다. 나머지 하강은 페이지 스크롤이 흡수합니다. */
+    var descent = pathBottomY - pathTopY;
+    var descentRatio = descent === 0 ? 0 : (point.y - pathTopY) / descent;
+    var gondolaY = stageHeight * (0.5 - EVENT_GONDOLA_BAND / 2 + EVENT_GONDOLA_BAND * descentRatio);
+
+    /* 곡선을 곤돌라 위치에 맞춰 반대로 밀어, 곤돌라가 늘 선 위에 놓이게 합니다. */
     list.style.setProperty("--event_path_x", pathX.toFixed(2) + "px");
-    list.style.setProperty("--event_path_y", pathY.toFixed(2) + "px");
+    list.style.setProperty("--event_path_y", gondolaY.toFixed(2) + "px");
+    sticky.style.setProperty("--event_curve_y", (gondolaY - pathY).toFixed(2) + "px");
 
     items.forEach(function (item, index) {
       var isActive = index === activeIndex;
@@ -377,6 +416,15 @@ function initEventPathMotion() {
       if (!sourcePath) {
         renderStaticEvents();
         return;
+      }
+
+      /* 곡선 에셋을 다시 export 해도 좌표 계산이 깨지지 않도록 viewBox 에서 읽습니다. */
+      var sourceSvg = svgDocument.querySelector("svg");
+      var viewBox = sourceSvg ? (sourceSvg.getAttribute("viewBox") || "").split(/[\s,]+/) : [];
+
+      if (viewBox.length === 4 && Number(viewBox[2]) > 0 && Number(viewBox[3]) > 0) {
+        pathViewBoxWidth = Number(viewBox[2]);
+        pathViewBoxHeight = Number(viewBox[3]);
       }
 
       var geometry = document.createElementNS("http://www.w3.org/2000/svg", "svg");

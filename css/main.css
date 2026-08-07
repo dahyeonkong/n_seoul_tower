@@ -488,10 +488,13 @@
 }
 
 
-/* Desktop scroll interaction: one gondola-card group follows the SVG path. */
+/* Desktop scroll interaction: one gondola-card group follows the SVG path.
+   곤돌라는 뷰포트 세로 중앙에 고정되고, path(곡선)가 스크롤에 맞춰 위로 흘러갑니다.
+   --events_scroll_travel 하나로 섹션 스크롤 길이와 곡선 높이를 함께 조절합니다. */
 @media (min-width: 1280px) {
   .events_section {
-    height: 300svh;
+    --events_scroll_travel: 300svh;
+    height: calc(100svh + var(--events_scroll_travel));
     min-height: 0;
   }
 
@@ -516,10 +519,16 @@
     overflow: hidden;
   }
 
+  /* 곡선을 스크롤 이동량만큼 세로로 늘려, 곡선이 페이지와 1:1 속도로 흘러가게 합니다. */
   .events_curve {
-    top: 60%;
-    transform: translateY(-50%);
+    top: 0;
+    width: 100%;
+    height: calc(var(--events_scroll_travel) * var(--events_curve_scale, 1));
+    object-fit: fill;
+    transform: translateY(var(--event_curve_y, 0px));
+    will-change: transform;
   }
+
   .events_list {
     position: absolute;
     inset: 0;
@@ -532,7 +541,8 @@
     width: 11.2%;
     opacity: 0;
     pointer-events: none;
-    transform: translate3d(var(--event_path_x, 0), var(--event_path_y, 0), 0) translate(-50%, 0);
+    /* -50%, -50% 로 곤돌라의 중심을 뷰포트 세로 중앙선에 맞춥니다. */
+    transform: translate3d(var(--event_path_x, 0), var(--event_path_y, 0), 0) translate(-50%, -50%);
     transition: opacity 240ms var(--ease_out);
     will-change: transform, opacity;
   }
