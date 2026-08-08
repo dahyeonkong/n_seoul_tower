@@ -179,18 +179,27 @@
       <section class="burger_gallery" id="burger_gallery" aria-labelledby="burger_gallery_title">
         <h2 class="visually_hidden" id="burger_gallery_title">N Burger interior</h2>
         <div class="burger_gallery_inner">
-          <figure class="burger_gallery_stage">
-            <img src="../assets/restaurant/restaurant_slide_banner.png"
-              alt="Interior of N Burger with counter seating and a large N BURGER wall graphic" width="1600"
-              height="673" loading="lazy">
-          </figure>
-          <!-- Figma slide_banner 에 이미지가 1장만 있어 실제 슬라이드는 만들지 않고
-               디자인의 화살표만 비활성 상태로 유지합니다. -->
-          <button class="burger_gallery_nav burger_gallery_nav_prev" type="button" disabled>
+          <div class="burger_gallery_stage" data-gallery-slider>
+            <div class="burger_gallery_track" id="burger_gallery_track">
+              <figure class="burger_gallery_slide is_active" data-gallery-slide>
+                <img src="../assets/restaurant/restaurant_slide_banner.png"
+                  alt="Interior of N Burger with counter seating and a large N BURGER wall graphic" width="1600"
+                  height="673" loading="lazy">
+              </figure>
+              <figure class="burger_gallery_slide" data-gallery-slide aria-hidden="true">
+                <img src="../assets/restaurant/restaurant_slide_banner.png"
+                  alt="Interior of N Burger with counter seating and a large N BURGER wall graphic" width="1600"
+                  height="673" loading="lazy">
+              </figure>
+            </div>
+          </div>
+          <button class="burger_gallery_nav burger_gallery_nav_prev" type="button" data-gallery-prev
+            aria-controls="burger_gallery_track">
             <img src="../assets/icon/chevron_left.svg" alt="" width="42" height="42">
             <span class="visually_hidden">Previous photo</span>
           </button>
-          <button class="burger_gallery_nav burger_gallery_nav_next" type="button" disabled>
+          <button class="burger_gallery_nav burger_gallery_nav_next" type="button" data-gallery-next
+            aria-controls="burger_gallery_track">
             <img src="../assets/icon/chevron_left.svg" alt="" width="42" height="42">
             <span class="visually_hidden">Next photo</span>
           </button>
