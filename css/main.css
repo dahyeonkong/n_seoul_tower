@@ -450,11 +450,16 @@
   max-width: none;
   height: auto;
 }
-
-@media (min-width: 500px) and (max-width: 833px) {
+@media (min-width: 390px) and (max-width: 541px) {
   .main_visual_tower {
     width: 40%;
-    bottom:30%;
+    bottom:26%;
+  }
+}
+@media (min-width: 542px) and (max-width: 833px) {
+  .main_visual_tower {
+    width: 40%;
+    bottom:20%;
   }
 }
 
@@ -574,6 +579,22 @@
     padding: 4px 12px;
   }
 }
+
+@media (max-width: 833px) {
+  .main_visual_inner {
+    position: absolute;
+    left: 50%;
+    bottom: 5%;
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 390px) {
+  .main_visual_inner {
+    bottom: 10%;
+  }
+}
+
 
 @media (min-width: 834px) {
   .main_visual {
