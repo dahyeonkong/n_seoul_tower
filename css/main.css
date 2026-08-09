@@ -291,6 +291,7 @@
   background-color: var(--color_point_400);
   opacity: 0.6;
   pointer-events: none;
+  animation: main_visual_glow_intro 1.3s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 
 /* 대형 타이포 — Figma 텍스트 벡터를 마스크로 사용하고 야경 사진으로 채웁니다.
@@ -298,15 +299,39 @@
    360px 에서는 화면이 짧을 때 타워가 제목을 덮지 않도록 타워보다 위에 둡니다. */
 .main_visual_title {
   position: relative;
-  z-index: 5;
+  z-index: 3;
   width: min(100% - var(--page_pad) * 2, var(--content_max));
   margin-inline: auto;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 7%,
+    #000 93%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 1%,
+    #000 93%,
+    transparent 100%
+  );
 }
 
-.main_visual_title_art {
+.main_visual_title_stage {
+  position: relative;
   display: block;
   width: 100%;
   aspect-ratio: 1581 / 468;
+  container-type: inline-size;
+}
+
+.main_visual_title_art {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
   background-color: var(--color_primary_800);
   background-image: url("../assets/back_img.png");
   background-repeat: no-repeat;
@@ -314,10 +339,92 @@
   background-size: cover;
   -webkit-mask-image: url("../assets/main_visual_title_mask.svg");
   mask-image: url("../assets/main_visual_title_mask.svg");
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
+  -webkit-mask-position: 0 0;
+  mask-position: 0 0;
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
+  will-change: transform, mask-position;
+}
+
+.main_visual_title_art_left {
+  clip-path: inset(0 50% 0 0);
+}
+
+.main_visual_title_art_right {
+  clip-path: inset(0 0 0 50%);
+}
+
+.main_visual_title_art_left {
+  animation:
+    main_visual_title_intro_left 1.3s cubic-bezier(0.22, 0.61, 0.36, 1) both,
+    main_visual_title_mask_marquee 15s linear 2.2s infinite;
+}
+
+.main_visual_title_art_right {
+  animation:
+    main_visual_title_intro_right 1.3s cubic-bezier(0.22, 0.61, 0.36, 1) both,
+    main_visual_title_mask_marquee 15s linear 2.2s infinite;
+}
+
+@keyframes main_visual_title_intro_left {
+  from {
+    transform: translateX(-100vw);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes main_visual_title_intro_right {
+  from {
+    transform: translateX(100vw);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes main_visual_title_mask_marquee {
+  from {
+    -webkit-mask-position: 0 0;
+    mask-position: 0 0;
+  }
+
+  to {
+    -webkit-mask-position: -100cqw 0;
+    mask-position: -100cqw 0;
+  }
+}
+
+@keyframes main_visual_glow_intro {
+  from {
+    opacity: 0.42;
+    transform: translate(-50%, 10%);
+  }
+
+  to {
+    opacity: 0.6;
+    transform: translate(-50%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .main_visual_glow,
+  .main_visual_title_art {
+    animation: none;
+  }
+
+  .main_visual_title_art {
+    transform: none;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: 0 0;
+    mask-position: 0 0;
+  }
 }
 
 /* 회전 타워 — 정사각 소스에서 타워 부분만 잘라 씁니다.
@@ -482,11 +589,6 @@
     width: 118%;
   }
 
-  /* 태블릿부터는 디자인 원본처럼 타워가 타이포 위에 겹칩니다. */
-  .main_visual_title {
-    z-index: 3;
-  }
-
   .main_visual_tower {
     width: 36%;
     bottom:-20%;
@@ -560,7 +662,7 @@
   .main_visual_title {
     position: absolute;
     left: 7.76%;
-    top: 31.94%;
+    top: 22%;
     width: 82.34%;
     margin-inline: 0;
   }
@@ -642,7 +744,7 @@
 
 @media (min-width: 1700px) {
   .main_visual_tower {
-    width: 25%;
+    width: 21%;
     left:50%;
     transform: translateX(-50%);
   }
