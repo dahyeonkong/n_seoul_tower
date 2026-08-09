@@ -257,6 +257,415 @@
 }
 
 /* ==========================================================================
+   1-2. hero (main_visual) — Figma main_visual 1920 x 1080 기준
+   데스크톱은 1920 프레임 좌표를 비율(%)로 환산해 겹침 구도를 재현하고,
+   1280 미만에서는 세로 스택 구조로 전환합니다.
+   ========================================================================== */
+.main_visual {
+  --main_visual_unit: 14px;
+  --main_visual_line: #333333;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+  min-height: 100svh;
+  /* 아래 여백은 우측 하단에 고정된 quick_menu(FAB) 높이를 피하려고 크게 잡았습니다.
+     BOOK NOW 가 FAB 에 가려 클릭되지 않는 문제를 막습니다. (FAB: 20 + 89 = 109px) */
+  padding: calc(var(--header_height) + 24px) 0 120px;
+  background-color: var(--color_bg_hero);
+  overflow: hidden;
+}
+
+/* 배경 원 — Figma Ellipse 39 (#ffd973 / 60%) */
+.main_visual_glow {
+  position: absolute;
+  left: 50%;
+  top: 24%;
+  z-index: 1;
+  width: 148%;
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background-color: var(--color_point_400);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* 대형 타이포 — Figma 텍스트 벡터를 마스크로 사용하고 야경 사진으로 채웁니다.
+   1280 미만에서는 정보 바와 같은 좌우 여백에 맞춥니다.
+   360px 에서는 화면이 짧을 때 타워가 제목을 덮지 않도록 타워보다 위에 둡니다. */
+.main_visual_title {
+  position: relative;
+  z-index: 5;
+  width: min(100% - var(--page_pad) * 2, var(--content_max));
+  margin-inline: auto;
+}
+
+.main_visual_title_art {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1581 / 468;
+  background-color: var(--color_primary_800);
+  background-image: url("../assets/back_img.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  -webkit-mask-image: url("../assets/main_visual_title_mask.svg");
+  mask-image: url("../assets/main_visual_title_mask.svg");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* 회전 타워 — 정사각 소스에서 타워 부분만 잘라 씁니다.
+   높이가 어떻게 변하든 타워 밑동이 히어로 하단에 붙도록 항상 bottom 기준입니다. */
+.main_visual_tower {
+  position: absolute;
+  left: 50%;
+  bottom: 40%;
+  z-index: 4;
+  display: block;
+  width: 50%;
+  aspect-ratio: 388.569 / 1104.584;
+  transform: translateX(-50%);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.main_visual_tower_img {
+  position: absolute;
+  left: -145.51%;
+  top: -18.77%;
+  width: 391.01%;
+  max-width: none;
+  height: auto;
+}
+
+@media (min-width: 500px) and (max-width: 833px) {
+  .main_visual_tower {
+    width: 40%;
+    bottom:30%;
+  }
+}
+
+.main_visual_inner {
+  position: relative;
+  z-index: 3;
+  transform: translateY(0);
+}
+
+/* 하단 정보 바
+   바 안 글자 크기는 --main_visual_text_scale 로 한 번에 조절합니다.
+   (라벨 / 값 / 단위 / BOOK NOW 전부 이 배율을 곱해서 씁니다) */
+.main_visual_bar {
+  --main_visual_text_scale: 1;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 16px;
+  border-radius: var(--radius_2xl);
+  background-color: rgba(255, 255, 255, 0.3);
+  color: var(--color_text);
+}
+
+.main_visual_group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.main_visual_item {
+  display: flex;
+  flex: 1 1 0;
+  align-items: flex-end;
+  gap: 12px;
+  min-width: 0;
+}
+
+.main_visual_item_ticket {
+  flex-wrap: wrap;
+}
+
+.main_visual_divider {
+  flex: 0 0 1px;
+  align-self: stretch;
+  min-height: 48px;
+  background-color: var(--main_visual_line);
+}
+
+.main_visual_weather_icon {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.main_visual_text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.main_visual_label {
+  font-size: calc(var(--fs_hero_label) * var(--main_visual_text_scale));
+  line-height: 1.2;
+}
+
+.main_visual_value,
+.main_visual_value_group {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.main_visual_value {
+  flex-wrap: wrap;
+  font-family: var(--font_title);
+  font-size: calc(var(--fs_hero_value) * var(--main_visual_text_scale));
+  font-weight: 300;
+  line-height: 1.2;
+}
+
+.main_visual_value_hours {
+  gap: 8px;
+}
+
+.main_visual_unit {
+  font-family: var(--font_body);
+  font-size: calc(var(--main_visual_unit) * var(--main_visual_text_scale));
+  font-weight: 200;
+  line-height: 1.2;
+}
+
+/* BOOK NOW — 공통 btn_stroke 를 히어로 배경에 맞춰 색상만 조정합니다. */
+.main_visual .btn_stroke {
+  border-color: var(--color_primary_600);
+  color: var(--color_primary_600);
+}
+
+.main_visual_book {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  font-size: calc(var(--fs_sm) * var(--main_visual_text_scale));
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .main_visual_divider {
+    display: none;
+  }
+
+  .btn_stroke.main_visual_book {
+    padding: 4px 12px;
+  }
+}
+
+@media (min-width: 834px) {
+  .main_visual {
+    --main_visual_unit: 16px;
+
+    /* 세로 1열이라 BOOK NOW 가 바 왼쪽에 놓입니다.
+       우측 하단 quick_menu(FAB) 와 가로로 겹치지 않으므로 아래 여백을 되돌립니다. */
+    padding-bottom: 40px;
+  }
+
+  .main_visual_glow {
+    top: 26%;
+    width: 118%;
+  }
+
+  /* 태블릿부터는 디자인 원본처럼 타워가 타이포 위에 겹칩니다. */
+  .main_visual_title {
+    z-index: 3;
+  }
+
+  .main_visual_tower {
+    width: 36%;
+    bottom:-20%;
+    left:50%;
+    transform: translateX(-50%);
+  }
+
+  /* 태블릿에서는 4개 항목을 세로 한 줄로 쌓습니다.
+     1280 이상에서 다시 가로 1행이 됩니다.
+     바 안 글자는 10% 줄입니다. (1280 이상에서 1 로 복귀) */
+  .main_visual_bar {
+    --main_visual_text_scale: 0.9;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 36px;
+    padding: 24px 20px;
+    width:40%;
+  }
+
+  .main_visual_group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 36px;
+  }
+
+  .main_visual_item {
+    flex: 0 0 auto;
+    gap: 20px;
+  }
+
+  .main_visual_value {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+
+  .main_visual_item_ticket {
+    flex-wrap: nowrap;
+  }
+
+  /* 가운데 구분선은 우선 숨깁니다. 1280 이상에서는 다시 표시합니다. */
+  .main_visual_divider {
+    display: none;
+  }
+
+  .main_visual_weather_icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .main_visual_text {
+    gap: 12px;
+  }
+}
+
+/* 데스크톱: 1920 프레임 좌표를 비율로 환산해 겹침 구도 재현 */
+@media (min-width: 1280px) {
+  .main_visual {
+    --main_visual_unit: 18px;
+
+    display: block;
+    height: 100vh;
+    min-height: 720px;
+    padding: 0;
+  }
+
+  .main_visual_glow {
+    top: 30.83%;
+    width: 86.56%;
+  }
+
+  .main_visual_title {
+    position: absolute;
+    left: 7.76%;
+    top: 31.94%;
+    width: 82.34%;
+    margin-inline: 0;
+  }
+
+  .main_visual_tower {
+    left: 32%;
+    width: 34.24%;
+    transform: none;
+    bottom:-31%;
+  }
+
+  .main_visual_inner {
+    position: absolute;
+    left: 50%;
+    bottom: 4.5vh;
+    transform: translateX(-50%);
+  }
+
+  .main_visual_bar {
+    /* 태블릿에서 10% 줄인 글자를 시안 크기로 되돌립니다. */
+    --main_visual_text_scale: 1;
+
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    /* 1920 미만에서는 바 폭이 줄어드는 만큼 간격을 좁혀 한 줄을 유지합니다. */
+    gap: 24px;
+    width:100%;
+  }
+
+  .main_visual_group {
+    flex: 0 1 auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .main_visual_item {
+    flex: 0 1 auto;
+    align-items: flex-end;
+    gap: 26px;
+  }
+  .main_visual_item.main_visual_item_ticket{
+    padding-right:60px;
+  }
+
+  .main_visual_item_ticket {
+    flex-wrap: nowrap;
+    gap: 19px;
+  }
+
+  .main_visual_divider {
+    display: block;
+    min-height: 68px;
+  }
+
+  .main_visual_weather_icon {
+    width: 74px;
+    height: 74px;
+  }
+
+  .main_visual_text {
+    gap: 17px;
+  }
+
+  .main_visual_value {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+}
+
+/* 시안 기준 폭 — 간격을 원본 값(36px)으로 되돌립니다. */
+@media (min-width: 1920px) {
+  .main_visual_bar,
+  .main_visual_group {
+    gap: 36px;
+  }
+}
+
+@media (min-width: 1700px) {
+  .main_visual_tower {
+    width: 25%;
+    left:50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   히어로 교체 토글
+   위쪽 .hero_section 블록은 이전 히어로 디자인이며 삭제하지 않고 보존합니다.
+   index.html 에서 legacy_hero 클래스가 붙은 섹션만 화면에서 제외됩니다.
+   .hero_section / .main_visual 이 모두 display 를 선언하므로,
+   이 규칙은 두 블록보다 뒤에 있어야 양방향 전환이 동작합니다. 위치를 옮기지 마세요.
+
+   [이전 디자인으로 되돌리기]
+   1. index.html 에서 legacy_hero 클래스를 .main_visual 섹션으로 옮깁니다.
+   2. 두 섹션의 id 를 맞바꿉니다.
+      hero_section <-> legacy_hero_section, hero_title <-> legacy_hero_title
+      (js/main.js 의 initHeroSectionJump 가 #hero_section 을 참조합니다.)
+   -------------------------------------------------------------------------- */
+.legacy_hero {
+  display: none;
+}
+
+/* ==========================================================================
    2. events
    ========================================================================== */
 .events_section {

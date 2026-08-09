@@ -1,6 +1,6 @@
 # PROJECT_CONTEXT
 
-마지막 갱신: 2026-08-06
+마지막 갱신: 2026-08-09
 
 ## 완료 내용
 
@@ -25,6 +25,119 @@ N SEOUL TOWER 메인 페이지 1종을 HTML / CSS / Vanilla JavaScript 로 구�
 9. Custom Goods (`668:8619`)
 10. 푸터 (`645:4572`)
 11. 섹션 이동 페이저 (`737:2667`, PRD 8.4 / 10.5)
+
+## 히어로 재작업 — main_visual (2026-08-09 변경)
+
+Figma `main_visual` 신규 시안 (파일 `pnPV0rtbTuA2PPO3SQJVUT`, node `1285:4525`, 1920 × 1080)
+으로 히어로를 교체했습니다. **이전 히어로는 삭제하지 않고 보존**되어 있습니다.
+
+### 구조
+
+`index.html` 에 히어로 섹션이 두 개 있습니다.
+
+| 섹션 | class | id | 상태 |
+| --- | --- | --- | --- |
+| 신규 | `main_visual` | `hero_section` / `hero_title` | 노출 |
+| 이전 | `hero_section legacy_hero` | `legacy_hero_section` / `legacy_hero_title` | `display: none` |
+
+`css/main.css` 의 `.legacy_hero { display: none; }` 한 줄이 토글 지점입니다.
+(`.hero_section` 이 `display: flex` 라서 `hidden` 속성만으로는 숨겨지지 않습니다.)
+
+### 이전 디자인으로 되돌리기
+
+1. `index.html` 에서 `legacy_hero` 클래스를 `.main_visual` 섹션으로 옮깁니다.
+2. 두 섹션의 id 를 맞바꿉니다. `hero_section` ↔ `legacy_hero_section`,
+   `hero_title` ↔ `legacy_hero_title`.
+   `js/main.js` 의 `initHeroSectionJump()` 가 `#hero_section` 을 참조하므로 필수입니다.
+
+CSS 는 양쪽 다 남아 있어 수정할 필요가 없습니다.
+(`.hero_section` ~ `.hero_weather_icon` = 이전 / `.main_visual*` = 신규)
+
+### 신규 히어로 레이아웃
+
+1920 기준 좌표를 비율로 환산했고, 실제 렌더 결과가 Figma 좌표와 일치합니다.
+
+| 요소 | Figma (1920 × 1080) | CSS |
+| --- | --- | --- |
+| 배경 원 `Ellipse 39` | x129 y333 1662² · `#ffd973` 60% | `left: 50%` / `top: 30.83%` / `width: 86.56%` |
+| 타이포 마스크 | x149 y345 1581 × 468 | `left: 7.76%` / `top: 31.94%` / `width: 82.34%` |
+| 회전 타워 | x729.5 y27 388.6 × 1104.6 | `left: 37.99%` / **`bottom: 0`** / `width: 20.24%` |
+| 정보 바 | x160 y897 1600 × 134.4 | `.page_container` + `bottom: 4.5vh` |
+
+- 타워는 모든 해상도에서 `bottom` 기준입니다. 시안은 `top: 27` 이지만,
+  뷰포트 높이가 달라져도 밑동이 히어로 하단에 붙도록 `bottom: 0` 으로 잡았습니다.
+  소스 GIF 아래쪽에 투명 여백이 있어 실제 밑동은 컨테이너 높이의 약 1.06% 위에 옵니다.
+- 하단 기준으로 바뀌면서 타워가 정보 바 영역까지 내려와, 1280 미만에서도
+  타워 폭을 키웠습니다 (360 은 `50%`, 834 는 `38%`).
+- 겹침 순서: 배경 원(1) → 정보 바(3) → 타워(4) → 타이포(5)
+  834 이상에서는 시안대로 타이포를 `z-index: 3` 으로 내려 타워가 위에 옵니다.
+  360 에서는 화면이 짧을 때 타워가 제목을 덮지 않도록 타이포를 위에 둡니다 (AGENTS 6.3).
+- 정보 바 구조는 해상도마다 다릅니다.
+  - 360 ~ 833: 2 × 2, 구분선 표시
+  - 834 ~ 1279: **세로 1열** (항목 4개를 위에서 아래로), 구분선 숨김
+  - 1280 이상: 가로 1행, 구분선 표시 (시안 구조)
+- 834 부터는 세로 1열이라 BOOK NOW 가 바 왼쪽에 놓여 FAB 와 가로로 겹치지 않습니다.
+  그래서 아래 여백을 134px → 40px 로 되돌렸습니다. 이 값이 없으면 1279 × 900 처럼
+  넓고 낮은 화면에서 히어로가 뷰포트보다 52px 높아집니다.
+
+### quick_menu(FAB) 충돌 회피 — 시안과 다른 결정
+
+시안에는 없지만 실제 사이트에는 우측 하단 고정 `quick_menu` 가 있어
+`BOOK NOW` 를 덮어 클릭이 막혔습니다. 아래처럼 피했습니다.
+
+- 1280 미만: 히어로 아래 여백을 키워 바 전체를 FAB 위로 올림
+  (360 은 `padding-bottom: 120px`, 834 은 `134px`)
+- 1280 이상: 바 우측 패딩으로 확보하려 했으나
+  (`padding-right: clamp(24px, calc(176px - (100vw - 1600px) / 2), 95px)`)
+  **현재 이 선언은 제거된 상태입니다.** 그 결과 1280 × 800 에서 FAB 가
+  BOOK NOW 우측 약 51px 을 다시 덮습니다. 1920 에서는 좌우 여백이 넓어 문제 없습니다.
+- 1280 ~ 1919 는 바 폭이 줄어 한 줄이 깨지므로 내부 gap 을 36 → 24px 로 좁혔고,
+  1920 이상에서 36px 로 되돌립니다.
+
+`css/main.css` 의 `.legacy_hero { display: none; }` 는 반드시
+`.hero_section` / `.main_visual` 블록보다 **뒤에** 있어야 합니다.
+두 블록 모두 `display` 를 선언하고 특정도가 같아서, 앞에 두면
+신규 → 이전 전환은 되지만 이전 → 신규 전환이 동작하지 않습니다.
+
+### 신규 에셋
+
+- `assets/main_visual_title_mask.svg` — 두 줄(`N SEOUL` / `TOWER`) 마스크, 1581 × 468
+- `assets/main_visual_turntable.gif` — 타워 회전, 1934 × 1934 / 25프레임 / **4.86MB**
+- `assets/main_visual_turntable.png` — 위 GIF 의 정지 프레임, 577KB
+  `<picture>` + `media="(prefers-reduced-motion: reduce)"` 로 전환합니다.
+
+재사용한 기존 에셋: `assets/back_img.png` (마스크 채움 — Figma 원본과 바이트 동일),
+`assets/icon/weather/sunny.svg` (Figma `sunny 1` 74.37² 와 동일한 파일)
+
+### 검증 결과 (Chrome, file:// 직접 실행)
+
+렌더 좌표를 Figma 좌표와 대조했고 1 ~ 2px 이내로 일치합니다 (1920 뷰포트,
+스크롤바 15px 제외한 clientWidth 1905 기준).
+
+| 뷰포트 | 가로 스크롤 | 정보 바 | BOOK NOW |
+| --- | --- | --- | --- |
+| 360 × 800 | 없음 | 2 × 2 / 320 × 247 | 높이 44px, FAB 와 겹침 없음 |
+| 834 × 1112 | 없음 | 2 × 2 / 739 × 188 | FAB 와 겹침 없음 |
+| 1280 × 800 | 없음 | 1행 / 1105 × 134 | FAB 까지 24px 여유 |
+| 1920 × 1080 | 없음 | 1행 / 1585 × 134 (시안 1600 × 134.4) | FAB 까지 33px 여유 |
+
+- 콘솔 오류 없음, 404 없음 (마스크 SVG / GIF / PNG / back_img / sunny 모두 200)
+- 히어로 토글 양방향 동작 확인 (legacy ↔ main_visual)
+- 중복 id 없음, 노출되는 `h1` 은 1개
+- `reset.css` 가 outline 을 제거하지 않아 `focus-visible` 링은 브라우저 기본값으로 동작
+
+미검증 항목
+
+- `prefers-reduced-motion: reduce` 실제 전환 (마크업만 확인, OS 설정 미적용)
+- 200% 확대, 스크린리더
+
+### 남은 문제
+
+- **타워 GIF 4.86MB** 가 첫 화면에서 로드됩니다. webm 또는 애니메이션 WebP 로
+  변환하면 크게 줄어들지만, 시안 에셋을 그대로 쓰기 위해 GIF 를 유지했습니다.
+- `assets/main_hero_vid.webm` (1.3MB) 는 이전 히어로에서도 주석 처리된 상태이며,
+  `index.html` 의 preload 도 함께 주석 처리했습니다. 사용처가 없습니다.
+- `assets/turn_tower.png`, `assets/hero_img.png` 는 현재 어디에서도 참조하지 않습니다.
 
 ## 헤더 토글 버튼 (2026-08-05 변경)
 
