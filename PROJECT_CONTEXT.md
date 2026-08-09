@@ -243,6 +243,55 @@ Figma `fixed_button` (**1072:1493**) 안의 컴포넌트 `chatbot` (**987:7708**
     나머지 두 아이콘과 같은 36 × 36 / `stroke: white` / `stroke-width: 1.2` 규격으로 맞췄습니다.
 - 신규 토큰: `--color_new_primary_800: #424828`, `--color_new_secondary_700: #3b432b`
 
+### 퀵 메뉴 호버·챗봇 패널 (2026-08-09 추가)
+
+사용자 요청으로 세 가지를 더했습니다. 셋 다 `common.css` 의 `floating quick menu` 블록과
+`common.js` 의 `initQuickMenu()` 안에서만 처리했고, 5개 페이지에 공통 적용됩니다.
+
+- **섹션 버튼 호버로 섹션 패널 열기.** 클릭 토글은 그대로 두고, 버튼과 패널을 함께 감싸는
+  `.quick_section` 에 `mouseenter` / `mouseleave` 를 걸었습니다. 패널이 버튼의 DOM 자식이라
+  패널 위에서는 닫히지 않습니다. 버튼과 패널 사이 16px 틈에서 호버가 끊기지 않도록
+  `.quick_section_menu::before` 로 투명한 연결 영역을 뒀습니다.
+  `matchMedia("(hover: hover) and (pointer: fine)")` 로 마우스 환경에서만 동작시켜,
+  터치에서 hover 상태가 남는 문제를 피했습니다.
+- **챗봇 버튼 안내 문구.** `.quick_action_tip` — 호버·`focus-visible` 에서 버튼 왼쪽에
+  "Ask me anything!" 을 띄웁니다. CSS 만으로 동작하고 `aria-hidden="true"` 입니다.
+- **챗봇 패널** (`.quick_chatbot`, `getQuickChatbotMarkup()`) — 채널톡형 위젯을 참고한 구조.
+  클릭하면 열리고 아이콘이 `icon_close.svg`(X)로 바뀝니다. 아이콘 교체는
+  `[aria-expanded="true"]` 선택자로 CSS 에서 처리합니다.
+  - 아이콘 전환은 `display` 대신 **두 아이콘을 겹쳐 두고 opacity + 90도 회전 + scale 로 교차**시킵니다
+    (`--duration` 320ms, `--ease_out`). `display` 는 전환 효과를 줄 수 없어서입니다.
+    가운데 정렬은 `inset: 0` + `margin: auto` 로 잡아 `transform` 은 모션에만 씁니다.
+    `prefers-reduced-motion` 에서는 공통 규칙이 전환을 없앱니다.
+  - 배치: **834px 이상은 버튼 왼쪽 옆**(`right: calc(100% + 16px)`, 340px),
+    그 아래는 폭이 부족해 **버튼 위쪽**(`bottom: calc(100% + 12px)`, 최대 320px)입니다.
+    두 경우 모두 X 버튼이 패널에 가리지 않습니다.
+  - 챗봇 패널과 섹션 패널은 같은 자리에 겹치므로 한쪽이 열리면 다른 쪽을 닫습니다.
+  - 문의 버튼은 연결 대상이 없어 기존 `data-pending-link` + `aria-disabled` 패턴입니다.
+  - 패널 글자는 `--fs_*` 대신 고정 px 입니다. 패널 폭이 해상도와 무관하게 고정이라
+    토큰을 쓰면 1280 이상에서 본문이 18px 로 커집니다(`.quick_section_link` 와 같은 방식).
+  - 문구는 운영 사실을 단정하지 않는 범위로만 썼습니다. 참고한 위젯의
+    "24시간 운영해요", "몇 분 내 답변" 같은 운영 약속은 넣지 않았습니다.
+  - 참고 이미지의 하단 탭바(홈/대화/설정)는 아이콘 에셋이 없어 넣지 않았습니다.
+
+## 히어로 → 이벤트 한 번에 이동 (2026-08-09 추가)
+
+`main.js` 의 `initHeroSectionJump()` 입니다. 메인 페이지 전용이라 `main.js` 에 뒀습니다.
+
+- 히어로가 화면을 채우고 있을 때(`hero.getBoundingClientRect().bottom > innerHeight * 0.9`)
+  아래로 한 번 스크롤하면 `#events_section` 상단으로 옮깁니다.
+- **Lenis 로 이동시킵니다.** 이 프로젝트는 `common.js` 가 Lenis 를 쓰고 있어서
+  직접 `scrollTo` 하면 Lenis 의 관성 스크롤과 서로 밀칩니다.
+  전역 `lenisInstance` 를 통해 `scrollTo(target, { lock: true })` 를 호출하고,
+  Lenis 가 없거나 실패하면 `scrollIntoView` 로 넘어갑니다
+  (`prefers-reduced-motion` 에서는 Lenis 가 아예 뜨지 않아 `behavior: "auto"` 로 즉시 이동).
+- 개입하지 않는 경우: 위로 스크롤 / `ctrl + 휠`(확대 축소) /
+  메뉴 오버레이로 `body` 가 잠긴 동안 / 히어로를 벗어난 뒤.
+- 이동 중 재발동은 `isJumping` 과 900ms 타이머로 막습니다.
+  트랙패드 관성으로 휠 이벤트가 연달아 들어와도 한 번만 이동합니다.
+- 터치는 `touchstart` / `touchmove` 를 **passive 로만** 듣고 24px 이상 밀었을 때 이동합니다.
+  `preventDefault` 를 쓰지 않아 기존 스크롤 동작을 막지 않습니다.
+
 ## 파일 구조
 
 ```text
@@ -434,3 +483,36 @@ JS 는 `ASSET_PATH = "./assets/"` 를 접두로 두고 데이터에 하위 경�
   (`js/main.js` 의 `giftShopItems` 가 삭제된 `n_gift_shop/gift1~8.png` 참조)
 - **미검증**: 화면 캡처 비교. 브라우저 패널이 프레임을 그리지 않아 스크린샷을 얻지 못했고,
   DOM 실측값으로만 시안과 대조했습니다. 회전 애니메이션도 규칙 적용만 확인했습니다
+
+### 퀵 메뉴 호버·챗봇 패널 (2026-08-09)
+
+이 환경에는 python 이 실제로 설치돼 있지 않아(스토어 스텁) 정적 서버를 띄우지 못했고,
+공통 CSS/JS 만 불러오는 임시 페이지를 `file://` 로 열어 확인한 뒤 삭제했습니다.
+프리뷰가 `index.html` 의 이전 스냅샷을 캐시해서 변경분이 반영되지 않았기 때문입니다.
+
+- 섹션 버튼 호버 → 패널 노출, 벗어나면 숨김, `aria-expanded` 복귀 확인
+- `.quick_action_tip` — 평소 `opacity 0 / visibility hidden`, 호버 시 노출(스크린샷으로 확인)
+- 챗봇 패널 실측 (애니메이션 끄고 측정)
+  - 360: 버튼 위쪽, 폭 307, 좌측 여백 19, 토글과 겹침 없음, 가로 스크롤 없음
+  - 834 / 1920: 버튼 왼쪽 옆, 버튼과 간격 15~16, 하단 정렬, 뷰포트 안에 들어옴
+- 동작: 재클릭으로 닫힘 / 재열기 / ESC 닫힘 + 포커스가 버튼으로 복귀 /
+  바깥 클릭 시 챗봇·퀵메뉴 함께 닫힘 — 모두 정상
+- 콘솔 오류 없음, 깨진 이미지 0건
+### 히어로 → 이벤트 한 번에 이동 (2026-08-09)
+
+`index.html` 사본을 `file://` 로 열어 확인한 뒤 삭제했습니다. Lenis 는 CDN 에서 정상 로드됐습니다.
+
+- 1280×800 에서 히어로 높이 = 뷰포트 800, 이벤트 섹션 상단 = 800
+- 아래로 휠 1회 → `lenis.scrollTo(#events_section, { lock: true })` 호출, `scrollY` 800 도달
+- 개입하지 않는 경우 확인 — 위로 휠 0회 / `ctrl + 휠` 0회 / `body` 잠금 중 0회 /
+  이벤트 상단에서 추가 휠 0회(그대로 아래로 스크롤)
+- 휠을 연속 3회 보내도 이동은 1회 (잠금 동작 확인)
+- 히어로로 돌아온 뒤 다시 아래로 휠 → 다시 1회 이동
+- 터치 — 5px 스와이프 0회, 60px 스와이프 1회
+- **미검증**: 실제 트랙패드·마우스 휠 감각, 실기기 터치, 화면 캡처 비교
+
+### 퀵 메뉴 챗봇 미검증 항목
+
+- **미검증**: 실제 페이지(`index.html`)에서의 확인, 섹션 패널 ↔ 챗봇 패널 상호 배타 동작
+  (임시 페이지에는 섹션 목록이 없어 섹션 버튼이 생성되지 않습니다), 화면 캡처 비교,
+  터치 기기 확인

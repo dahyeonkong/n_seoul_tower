@@ -169,7 +169,7 @@
     --fs_hero_label: 14px;
     --page_pad: 80px;
     --section_space: 160px;
-    --header_height: 96px;
+    --header_height: 86px;
   }
 }
 
@@ -526,7 +526,6 @@ html .course_page .course_description {
 }
 .site_header.is_scrolled {
   background-color: rgba(247, 244, 232, 0.7);
-  box-shadow: 0 1px 0 rgba(49, 50, 50, 0.12);
   -webkit-backdrop-filter: blur(1px);
   backdrop-filter: blur(1px);
 }
@@ -1237,6 +1236,7 @@ html .course_page .course_description {
 
 /* --- 액션 버튼 (977:5207 search / 977:5201 top) --- */
 .quick_action {
+  position: relative;
   display: flex;
   width: var(--quick_btn);
   height: var(--quick_btn);
@@ -1246,6 +1246,33 @@ html .course_page .course_description {
   background-color: var(--color_new_secondary_700);
   box-shadow: 0 0 7.86px 0.6px rgba(0, 0, 0, 0.1);
   transition: background-color var(--duration) var(--ease_out);
+}
+
+/* 챗봇 문의 버튼 호버 시 버튼 왼쪽에 안내 문구를 띄웁니다. */
+.quick_action_tip {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 12px);
+  padding: 8px 16px;
+  border-radius: var(--radius_round);
+  background-color: var(--color_surface);
+  box-shadow: 0 8px 24px rgba(33, 33, 33, 0.12);
+  color: var(--color_new_secondary_700);
+  font-family: var(--font_body);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity var(--duration) var(--ease_out);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.quick_action:hover .quick_action_tip,
+.quick_action:focus-visible .quick_action_tip {
+  opacity: 1;
+  visibility: visible;
 }
 
 .quick_action img {
@@ -1274,6 +1301,16 @@ html .course_page .course_description {
   background-color: var(--color_surface);
   box-shadow: 0 8px 24px rgba(33, 33, 33, 0.12);
   transform: translateY(-50%);
+}
+
+/* 버튼과 패널 사이 16px 틈에서 호버가 끊기지 않도록 투명한 연결 영역을 둡니다. */
+.quick_section_menu::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -16px;
+  bottom: 0;
+  width: 16px;
 }
 
 .quick_section_menu[hidden] {
@@ -1319,6 +1356,166 @@ html .course_page .course_description {
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
+}
+
+/* --- 챗봇 패널 ---
+   모바일은 폭이 부족해 버튼 위쪽으로, 834px 이상에서는 버튼 옆으로 펼칩니다.
+   두 경우 모두 X 로 바뀐 버튼이 패널에 가리지 않게 배치합니다. */
+.quick_chat {
+  position: relative;
+  display: flex;
+}
+
+/* 두 아이콘을 겹쳐 두고 opacity 와 회전으로 교차시킵니다.
+   display 전환은 전환 효과를 줄 수 없어 겹치는 방식을 씁니다.
+   inset + margin 으로 가운데를 맞춰 transform 은 모션에만 씁니다. */
+.quick_chat_icon {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  transition: opacity var(--duration) var(--ease_out), transform var(--duration) var(--ease_out);
+}
+
+.quick_chat_icon_close {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.6);
+}
+
+.quick_chat_toggle[aria-expanded="true"] .quick_chat_icon {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.6);
+}
+
+.quick_chat_toggle[aria-expanded="true"] .quick_chat_icon_close {
+  opacity: 1;
+  transform: rotate(0) scale(1);
+}
+
+.quick_chat_toggle[aria-expanded="true"] .quick_action_tip {
+  display: none;
+}
+
+.quick_chatbot {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 12px);
+  display: flex;
+  width: min(320px, calc(100vw - var(--quick_gap) * 2));
+  max-height: min(560px, calc(100vh - 220px));
+  flex-direction: column;
+  border-radius: var(--radius_xl);
+  background-color: var(--color_surface);
+  box-shadow: 0 12px 32px rgba(33, 33, 33, 0.18);
+  overflow: hidden;
+  text-align: left;
+}
+
+.quick_chatbot[hidden] {
+  display: none;
+}
+
+.quick_chatbot:not([hidden]) {
+  animation: quick_chatbot_reveal 320ms var(--ease_out) both;
+  transform-origin: bottom right;
+}
+
+@keyframes quick_chatbot_reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.quick_chatbot_header {
+  display: grid;
+  padding: 24px 24px 20px;
+  column-gap: 14px;
+  grid-template-columns: 56px 1fr;
+}
+
+.quick_chatbot_avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  grid-row: span 2;
+}
+
+.quick_chatbot_name {
+  align-self: end;
+  color: var(--color_text);
+  font-family: var(--font_title);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* 패널 폭이 해상도와 무관하게 고정이라, 섹션 패널처럼 글자도 고정값을 씁니다. */
+.quick_chatbot_status {
+  color: var(--color_gray_600);
+  font-family: var(--font_body);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.quick_chatbot_body {
+  padding: 16px;
+  background-color: var(--color_surface_goods);
+  overflow-y: auto;
+}
+
+.quick_chatbot_message {
+  display: flex;
+  padding: 16px;
+  border-radius: var(--radius_lg);
+  background-color: var(--color_surface);
+  box-shadow: 0 2px 8px rgba(33, 33, 33, 0.06);
+  gap: 10px;
+}
+
+.quick_chatbot_message_avatar {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 50%;
+}
+
+.quick_chatbot_message_content {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.quick_chatbot_message_name {
+  color: var(--color_gray_600);
+  font-family: var(--font_body);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.quick_chatbot_message_text {
+  color: var(--color_text);
+  font-family: var(--font_body);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.quick_chatbot_cta {
+  min-height: 44px;
+  margin-top: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius_md);
+  background-color: var(--color_new_primary_100);
+  font-family: var(--font_body);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
 }
 
 /* --- 토글 (987:7706 속성1=off) ---
@@ -1383,6 +1580,15 @@ html .course_page .course_description {
   .quick_menu {
     --quick_btn: 68px;
     --quick_gap: 28px;
+  }
+
+  /* 폭이 확보되면 시안처럼 버튼 옆(왼쪽)으로 펼칩니다. */
+  .quick_chatbot {
+    right: calc(100% + 16px);
+    bottom: 0;
+    width: 340px;
+    max-height: min(600px, calc(100vh - 220px));
+    transform-origin: bottom right;
   }
 }
 
