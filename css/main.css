@@ -813,7 +813,7 @@
 }
 
 .events_sticky {
-  position: relative;
+  /* position: relative; */
 }
 
 .events_head {
@@ -1092,6 +1092,8 @@
     align-items: flex-start;
     justify-content: flex-start;
     gap: 16px;
+    /* sticky 무대 밖에서도 기존 첫 화면 위치를 유지합니다. */
+    top: 13.56svh;
   }
 
   .events_view_toggle {
@@ -2168,6 +2170,58 @@
   overflow: hidden;
 }
 
+/* yul_tower_3d 모듈이 붙는 자리. 초기화 전(빈 상태)에는 자리를 차지하지 않습니다. */
+.tower_stack_3d:empty {
+  display: none;
+}
+
+/* 3D 조립이 켜지면 이미지 스택은 폴백으로만 남기고 감춥니다.
+   ScrollTrigger 핀이 잘리지 않도록 섹션의 높이·overflow 제약도 함께 풉니다. */
+.tower_section.is_tower_3d {
+  height: auto;
+  padding: 0;
+  z-index: 1;
+  background-color: transparent;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.tower_section.is_tower_3d .tower_stack_fallback {
+  display: none;
+}
+
+.tower_section.is_tower_3d .s3d__canvas {
+  will-change: transform, opacity;
+}
+
+/* JS가 조립 초반에 투명 → 배경색으로 전환해 Gift Shop이 갑자기 잘리지 않게 합니다. */
+.tower_section.is_tower_3d .s3d__stage {
+  background-color: transparent;
+  will-change: background-color;
+}
+
+/* 조립 완료 후 Custom Goods까지 3D 캔버스를 운반하는 짧은 전환 무대.
+   JS가 활성 구간에서만 hidden을 해제하므로 다른 섹션에는 남지 않습니다. */
+.tower_transition_layer {
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tower_transition_layer[hidden] {
+  display: none;
+}
+
+.tower_transition_layer .s3d__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  will-change: transform, opacity;
+}
+
 .tower_stack_list {
   position: relative;
   display: flex;
@@ -2307,6 +2361,7 @@
     top: 66.92%;
     --tilt: -6deg;
   }
+
 }
 
 /* ==========================================================================
@@ -2505,6 +2560,13 @@
     top: 4.38%;
     width: 57.6%;
     max-width: none;
+  }
+
+  /* 3D 모델이 같은 좌표에 도착하는 마지막 구간에서 실제 이미지로 교대합니다. */
+  .goods_section.has_tower_transition .goods_hero_img {
+    opacity: 0;
+    visibility: hidden;
+    will-change: opacity;
   }
 
   .goods_list {
