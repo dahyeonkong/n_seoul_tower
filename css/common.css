@@ -543,6 +543,12 @@ html .course_page .course_description {
   backdrop-filter: blur(0px);
 }
 
+.site_header_sub.is_scrolled {
+  background-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 .site_header_inner > * {
   pointer-events: auto;
 }
@@ -666,20 +672,18 @@ html .course_page .course_description {
 @media (min-width: 1280px) {
   /* 메인 헤더와 같은 높이와 수직 중심을 사용합니다. */
   .site_header_sub {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: transparent;
   }
 
   /* 데스크톱에서는 가로 GNB 가 오버레이를 대신합니다. */
   .site_header_sub .menu_toggle {
-    display: none;
+    display: inline-flex;
   }
 
   /* 시안 간격은 30 이지만 1280 에서는 메뉴가 로고에 붙어 버립니다.
      1440 미만에서만 간격을 좁히고 시안 폭(1440+)에서는 30 을 그대로 씁니다. */
   .site_gnb {
-    display: flex;
-    align-items: center;
-    gap: 20px;
+    display: none;
   }
 
   /* LNB 가 아래로 펼쳐져도 상단 라벨 줄만 헤더 높이를 차지하게 합니다. */
@@ -993,7 +997,7 @@ html .course_page .course_description {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  align-items: flex-start;
+  align-items: center;
   width: 219px;
   flex-shrink: 0;
 }
@@ -1104,6 +1108,38 @@ html .course_page .course_description {
   flex-direction: column;
   gap: 4px;
   align-items: center;
+}
+
+@media (max-width: 833px) {
+  .global_menu {
+    overflow-y: hidden;
+  }
+
+  .menu_brand {
+    align-self: center;
+    align-items: center;
+    width: 200px;
+  }
+
+  .menu_brand_logo img {
+    width: 120px;
+  }
+
+  .book_btn {
+    min-height: 44px;
+    padding: 10px 18px;
+    font-size: 18px;
+  }
+}
+
+@media (min-width: 834px) and (max-width: 1279px) {
+  .global_menu .global_menu_body {
+    gap: 48px;
+  }
+
+  .global_menu .gnb_title {
+    font-size: 24px;
+  }
 }
 
 @media (min-width: 834px) {

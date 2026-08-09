@@ -63,6 +63,33 @@ function initGiftShopFilter() {
     });
   }
 
+  function resetPageScroll() {
+    var hasLenis =
+      typeof lenisInstance !== "undefined" &&
+      lenisInstance &&
+      typeof lenisInstance.scrollTo === "function";
+
+    if (hasLenis) {
+      lenisInstance.stop();
+      lenisInstance.scrollTo(0, { immediate: true, force: true });
+    }
+
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    window.scrollTo(0, 0);
+
+    window.requestAnimationFrame(function () {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      window.scrollTo(0, 0);
+
+      if (hasLenis) {
+        lenisInstance.scrollTo(0, { immediate: true, force: true });
+        lenisInstance.start();
+      }
+    });
+  }
+
   function handleCategoryClick(event) {
     var button = event.target.closest("[data-category-filter]");
     if (!button) {
@@ -76,7 +103,7 @@ function initGiftShopFilter() {
        카테고리를 바꾸면 목록 처음부터 보이도록 화면 상단으로 되돌립니다.
        부드러운 이동 여부는 common.css 의 scroll-behavior 를 따릅니다
        (prefers-reduced-motion 에서는 즉시 이동). */
-    window.scrollTo(0, 0);
+    resetPageScroll();
   }
 
   categoryList.addEventListener("click", handleCategoryClick);
