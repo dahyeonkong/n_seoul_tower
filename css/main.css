@@ -581,6 +581,14 @@
 }
 
 @media (max-width: 833px) {
+  .main_visual_text .main_visual_value {
+    font-size: calc(var(--fs_hero_value) * var(--main_visual_text_scale) * 0.9);
+  }
+
+  .main_visual_text .main_visual_value .main_visual_unit {
+    font-size: calc(var(--main_visual_unit) * var(--main_visual_text_scale) * 0.9);
+  }
+
   .main_visual_inner {
     position: absolute;
     left: 50%;
