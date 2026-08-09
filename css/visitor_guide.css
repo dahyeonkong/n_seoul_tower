@@ -31,7 +31,7 @@
   --guide_media_size: min(76vw, 320px);
   --guide_stack_gap: 20px;
 
-  --fs_guide_lead: 18px;
+  --fs_guide_lead: 16px;
   --fs_guide_route: 20px;
 }
 
@@ -41,8 +41,8 @@
     --guide_media_size: 360px;
     --guide_stack_gap: 24px;
 
-    --fs_guide_lead: 22px;
-    --fs_guide_route: 24px;
+    --fs_guide_lead: 18px;
+    --fs_guide_route: 20px;
   }
 }
 
@@ -51,7 +51,7 @@
     --guide_section_pad: 180px;
     --guide_media_size: 400px;
 
-    --fs_guide_lead: 28px;
+    --fs_guide_lead: 18px;
     --fs_guide_route: 28px;
   }
 
@@ -76,6 +76,40 @@
 /* 탭 패널 — 선택되지 않은 패널은 화면과 접근성 트리에서 모두 제외합니다. */
 .guide_tabpanel[hidden] {
   display: none;
+}
+
+/* Desktop-only scroll reveal inspired by the reference service page. */
+@media (min-width: 1280px) {
+  .guide_section.has_scroll_motion > .guide_feature > :not(.guide_media_wrap),
+  .guide_section.has_scroll_motion > .guide_detail {
+    opacity: var(--guide_scroll_opacity, 1);
+    transform: translate3d(var(--guide_text_shift, 0), 0, 0);
+    will-change: transform, opacity;
+  }
+
+  .guide_section.has_scroll_motion > .guide_feature > .guide_media_wrap {
+    opacity: var(--guide_scroll_opacity, 1);
+    transform: translate3d(var(--guide_media_shift, 0), 0, 0)
+      scale(var(--guide_media_scale, 1));
+    will-change: transform, opacity;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guide_section.has_scroll_motion > .guide_feature > :not(.guide_media_wrap),
+  .guide_section.has_scroll_motion > .guide_feature > .guide_media_wrap,
+  .guide_section.has_scroll_motion > .guide_detail {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
+  }
+}
+
+@media (max-width: 1279px) {
+  .page_container.guide_sections.guide_tabpanel {
+    padding-bottom: 10%;
+  }
 }
 
 /* ==========================================================================
@@ -242,7 +276,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 /* 620px 는 데스크톱 본문 폭입니다. 그 아래에서는 컨테이너를 채웁니다. */
 .guide_lead {
   width: 100%;
-  font-size: var(--fs_body);
+  font-size: 16px;
   line-height: 1.18;
   color: var(--color_text);
 }
@@ -260,8 +294,6 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   display: block;
   width: var(--guide_media_size);
   height: var(--guide_media_size);
-  border-radius: 50%;
-  background-color: var(--color_guide_media_bg);
   overflow: hidden;
 }
 
@@ -295,7 +327,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 .guide_media_car img {
   left: 0;
   width: 177.7%;
-  transform: translate(0, -50%);
+  transform: translate(0, -50%) scaleX(-1);
 }
 
 
@@ -323,8 +355,8 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   background-color: var(--color_primary_600);
   color: var(--color_text_white);
   font-family: var(--font_body);
-  font-size: var(--fs_body);
-  font-weight: 600;
+  font-size: var(--fs_hero_label);
+  font-weight: 400;
   line-height: 1.3;
   text-align: center;
   transition: background-color var(--duration) var(--ease_out);
@@ -567,7 +599,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   margin-bottom: var(--guide_stack_gap);
   font-family: var(--font_body);
   font-size: var(--fs_body);
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.25;
   color: var(--color_text);
 }
@@ -632,7 +664,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   display: flex;
   flex-direction: column;
   font-size: 14px;
-  font-weight: 200;
+  font-weight: 300;
   line-height: 1.35;
   color: var(--color_text);
 }
@@ -693,7 +725,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   margin-bottom: var(--guide_stack_gap);
   padding-left: 27px;
   list-style: decimal;
-  font-size: var(--fs_body);
+  font-size: 16px;
   line-height: 1.18;
   color: var(--color_text);
 }
@@ -791,9 +823,6 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
     background-color: transparent;
   }
 
-  .guide_feature .guide_media_link {
-    display: none;
-  }
 
   .guide_section > .guide_detail {
     box-sizing: border-box;
@@ -830,6 +859,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
     /* 본문 행 수를 명시해야 이미지의 grid-row: 1 / -1 이 전체를 세로로 덮습니다.
        기본 3행(제목·설명·상세) + 안내 칩이 있는 섹션만 4행 */
     grid-template-rows: repeat(3, auto);
+    min-height: calc(100vh - 68px);
   }
 
   .guide_section:has(.guide_pill_row) {
@@ -878,12 +908,12 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
     left: 50%;
     margin-top: 0;
     transform: translate(-50%, -8px);
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .guide_pill {
     min-height: 40px;
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .guide_lead,

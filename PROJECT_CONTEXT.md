@@ -80,6 +80,43 @@ CSS 는 양쪽 다 남아 있어 수정할 필요가 없습니다.
   그래서 아래 여백을 134px → 40px 로 되돌렸습니다. 이 값이 없으면 1279 × 900 처럼
   넓고 낮은 화면에서 히어로가 뷰포트보다 52px 높아집니다.
 
+### 숫자 / 구분기호 폰트
+
+이 프로젝트의 "숫자는 GmarketSans" 규칙은 `@font-face` 의 `unicode-range` 로 구현되어
+있습니다. `GmarketSansNumber` 3종 모두 `unicode-range: U+0030-0039` 라서
+**숫자에만** 적용되고, 나머지 글자는 스택의 다음 폰트로 넘어갑니다.
+
+그래서 `-` 처럼 숫자 사이에 들어가는 기호는 `--font_title` 스택에서
+GmarketSans 를 건너뛰고 **Poppins** 로 렌더링되고 있었습니다.
+이를 Pretendard 로 되돌리는 토큰을 추가했습니다.
+
+```css
+--font_sep: "Pretendard", system-ui, sans-serif;
+```
+
+적용 대상은 히어로 운영시간의 `-` (`.main_visual_value_sep`, 시안값 Medium 500) 입니다.
+
+### Pretendard self-host (라틴 / 기호 구간)
+
+Pretendard 자체는 원래부터 `common.css` 첫 줄의 CDN `@import` 로 로드되고 있습니다.
+
+```css
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/...");
+```
+
+이 CDN CSS 는 굵기당 약 750KB 짜리 전체 한글 폰트를 받습니다. 화면에 실제로 쓰이는
+영문과 기호만 로컬에서 받도록, `@import` **뒤에** 라틴 구간 subset 을 다시 선언했습니다.
+
+- `fonts/woff2/Pretendard-{Regular,Medium}.subset.woff2` (각 약 20KB)
+- `fonts/woff/Pretendard-{Regular,Medium}.subset.woff` (각 약 25KB, 폴백)
+- 출처: npm `pretendard@1.3.9` 의 `woff2-dynamic-subset` 91번 조각
+  (`U+20-22, U+2c-39, U+41-5d, U+61-7b` 등 라틴 + 기호 + 자주 쓰는 한글 14자)
+- 라이선스: SIL OFL 1.1 — `fonts/Pretendard-OFL.txt`
+
+같은 family / weight 는 나중 선언이 이기므로 이 구간만 로컬 파일이 쓰이고,
+여기 없는 한글과 400 / 500 이외의 굵기는 그대로 CDN 파일이 담당합니다.
+브라우저 네트워크 탭에서 로컬 subset 2개만 요청되는 것을 확인했습니다.
+
 ### quick_menu(FAB) 충돌 회피 — 시안과 다른 결정
 
 시안에는 없지만 실제 사이트에는 우측 하단 고정 `quick_menu` 가 있어
@@ -138,6 +175,21 @@ CSS 는 양쪽 다 남아 있어 수정할 필요가 없습니다.
 - `assets/main_hero_vid.webm` (1.3MB) 는 이전 히어로에서도 주석 처리된 상태이며,
   `index.html` 의 preload 도 함께 주석 처리했습니다. 사용처가 없습니다.
 - `assets/turn_tower.png`, `assets/hero_img.png` 는 현재 어디에서도 참조하지 않습니다.
+
+## 서브페이지 탭 전환 시 패널로 이동 (2026-08-09 추가)
+
+`js/visitor_guide.js` 의 `initGuideTabs()` 에 `scrollToGuidePanel()` 을 추가했습니다.
+`subpage_tab` 을 눌러 다른 탭으로 바꾸면 새로 열린 패널
+(`page_container guide_sections guide_tabpanel` 등) 상단으로 스크롤합니다.
+
+- 클릭과 키보드(←/→, Home/End) 전환 모두 동작합니다.
+- 이미 열려 있는 탭을 다시 눌렀을 때는 움직이지 않습니다.
+- `common.js` 의 `initSubpageSectionJump()` 과 같은 방식으로
+  `window.lenisInstance.scrollTo()` 를 쓰고, 없으면 `scrollIntoView` 로 대체합니다.
+  도착 위치도 그 함수와 동일합니다 (패널 상단 = 뷰포트 상단, scrollY 678).
+- 실제 탭 전환이 있는 페이지는 `visitor_guide.html` 뿐입니다.
+  `restaurant_n_burger.html` / `brand_story.html` 의 `subpage_tab` 은
+  링크이거나 `data-pending-link` 비활성 버튼입니다.
 
 ## 헤더 토글 버튼 (2026-08-05 변경)
 
