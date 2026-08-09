@@ -776,6 +776,328 @@ function initTowerReveal() {
   });
 }
 
+/* 스크롤에 맞춰 양초가 한 단씩 쌓이는 3D 조립 (yul_tower_3d/scroll-stack-3d.js).
+   데스크톱에서만 켜고, 그 외에는 기존 이미지 스택을 그대로 씁니다.
+   모듈·three·gsap 이 없으면 초기화가 null 을 돌려주므로 이미지 스택이 남습니다. */
+function initTowerStack3D() {
+  var section = document.querySelector("#tower_section");
+  var mount = document.querySelector("[data-tower-3d]");
+  var goodsSection = document.querySelector("#goods_section");
+  var goodsHeroImage = goodsSection ? goodsSection.querySelector(".goods_hero_img") : null;
+
+  if (!section || !mount || !window.ScrollStack3D) {
+    return;
+  }
+
+  var desktopQuery = window.matchMedia("(min-width: 1280px)");
+  var stack = null;
+  var towerCanvas = null;
+  var towerStage = null;
+  var transitionLayer = null;
+  var transitionTrigger = null;
+  var assemblyTrigger = null;
+  var towerTransitionState = "";
+  var isTowerTransitionSyncRequested = false;
+
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  function interpolate(start, end, progress) {
+    return start + (end - start) * progress;
+  }
+
+  function createTowerTransitionLayer() {
+    if (transitionLayer) {
+      return transitionLayer;
+    }
+
+    transitionLayer = document.createElement("div");
+    transitionLayer.className = "tower_transition_layer";
+    transitionLayer.hidden = true;
+    transitionLayer.setAttribute("aria-hidden", "true");
+    document.body.appendChild(transitionLayer);
+    return transitionLayer;
+  }
+
+  function renderTowerTransition(progress) {
+    if (!towerCanvas || !goodsSection || !goodsHeroImage || !window.gsap) {
+      return;
+    }
+
+    var normalizedProgress = clamp(progress, 0, 1);
+    var goodsRect = goodsSection.getBoundingClientRect();
+    var heroRect = goodsHeroImage.getBoundingClientRect();
+    var startX = window.innerWidth * 0.16;
+    var targetX = heroRect.left + heroRect.width / 2 - window.innerWidth / 2;
+    var targetY = heroRect.top - goodsRect.top + heroRect.height / 2 - window.innerHeight / 2;
+    var motionProgress = normalizedProgress * normalizedProgress * (3 - 2 * normalizedProgress);
+    var imageProgress = clamp((normalizedProgress - 0.84) / 0.16, 0, 1);
+
+    window.gsap.set(towerCanvas, {
+      x: interpolate(startX, targetX, motionProgress),
+      y: interpolate(0, targetY, motionProgress),
+      scale: interpolate(1, 0.72, motionProgress),
+      autoAlpha: 1 - imageProgress
+    });
+    window.gsap.set(goodsHeroImage, { autoAlpha: imageProgress });
+  }
+
+  function activateTowerTransition(progress) {
+    var layer = createTowerTransitionLayer();
+
+    if (!towerCanvas || !layer) {
+      return;
+    }
+
+    layer.hidden = false;
+    if (towerCanvas.parentNode !== layer) {
+      layer.appendChild(towerCanvas);
+    }
+    renderTowerTransition(progress);
+  }
+
+  function completeTowerTransition() {
+    renderTowerTransition(1);
+    attachTowerCanvasToStage();
+  }
+
+  function attachTowerCanvasToStage() {
+    if (!towerCanvas || !towerStage || !window.gsap) {
+      return;
+    }
+
+    if (towerCanvas.parentNode !== towerStage) {
+      towerStage.insertBefore(towerCanvas, towerStage.firstChild);
+    }
+    if (transitionLayer) {
+      transitionLayer.hidden = true;
+    }
+  }
+
+  function settleTowerAssemblyProgress() {
+    if (!stack || !stack.timeline || !assemblyTrigger) {
+      return;
+    }
+
+    /* 숫자 scrub이 이전 위치를 뒤쫓고 있으면 현재 스크롤 진행률까지 즉시 정착시킵니다. */
+    var scrubTween = typeof assemblyTrigger.getTween === "function"
+      ? assemblyTrigger.getTween()
+      : null;
+
+    if (scrubTween) {
+      scrubTween.progress(1);
+    }
+    stack.timeline.progress(assemblyTrigger.progress, true);
+  }
+
+  function prepareTowerAssembly(shouldShowCanvas) {
+    attachTowerCanvasToStage();
+    settleTowerAssemblyProgress();
+    if (towerCanvas && window.gsap) {
+      /* x는 조립 timeline이 관리합니다. 핸드오프에서만 쓰는 속성만 초기화합니다. */
+      window.gsap.set(towerCanvas, {
+        y: 0,
+        scale: 1,
+        autoAlpha: shouldShowCanvas ? 1 : 0
+      });
+    }
+    if (goodsHeroImage && window.gsap) {
+      window.gsap.set(goodsHeroImage, { autoAlpha: 0 });
+    }
+  }
+
+  function syncTowerTransitionState() {
+    isTowerTransitionSyncRequested = false;
+
+    if (!assemblyTrigger || !transitionTrigger || !towerCanvas) {
+      return;
+    }
+
+    var scrollPosition = typeof assemblyTrigger.scroll === "function"
+      ? assemblyTrigger.scroll()
+      : window.scrollY;
+    var assemblyStart = assemblyTrigger.start;
+    var handoffStart = assemblyTrigger.end;
+    var handoffEnd = transitionTrigger.end;
+
+    if (
+      !Number.isFinite(assemblyStart) ||
+      !Number.isFinite(handoffStart) ||
+      !Number.isFinite(handoffEnd) ||
+      handoffEnd <= handoffStart
+    ) {
+      return;
+    }
+
+    if (scrollPosition < assemblyStart) {
+      if (towerTransitionState !== "before") {
+        prepareTowerAssembly(false);
+        towerTransitionState = "before";
+      }
+      return;
+    }
+
+    if (scrollPosition < handoffStart) {
+      if (towerTransitionState !== "assembly") {
+        prepareTowerAssembly(true);
+        towerTransitionState = "assembly";
+      }
+      return;
+    }
+
+    if (scrollPosition <= handoffEnd) {
+      towerTransitionState = "handoff";
+      activateTowerTransition((scrollPosition - handoffStart) / (handoffEnd - handoffStart));
+      return;
+    }
+
+    if (towerTransitionState !== "complete") {
+      completeTowerTransition();
+      towerTransitionState = "complete";
+    }
+  }
+
+  function requestTowerTransitionSync() {
+    if (isTowerTransitionSyncRequested) {
+      return;
+    }
+
+    isTowerTransitionSyncRequested = true;
+    window.requestAnimationFrame(syncTowerTransitionState);
+  }
+
+  function destroyTowerTransition() {
+    if (transitionTrigger) {
+      transitionTrigger.kill();
+      transitionTrigger = null;
+    }
+    window.removeEventListener("scroll", requestTowerTransitionSync);
+    window.removeEventListener("pageshow", requestTowerTransitionSync);
+
+    prepareTowerAssembly(false);
+    towerTransitionState = "";
+    isTowerTransitionSyncRequested = false;
+
+    if (transitionLayer) {
+      transitionLayer.remove();
+      transitionLayer = null;
+    }
+    if (goodsSection) {
+      goodsSection.classList.remove("has_tower_transition");
+    }
+    if (goodsHeroImage && window.gsap) {
+      window.gsap.set(goodsHeroImage, { clearProps: "opacity,visibility" });
+    }
+  }
+
+  function initTowerCanvasMotion() {
+    var canvas = mount.querySelector(".s3d__canvas");
+
+    if (
+      !stack ||
+      !stack.timeline ||
+      !canvas ||
+      !window.gsap
+    ) {
+      return;
+    }
+
+    towerCanvas = canvas;
+    towerStage = mount.querySelector(".s3d__stage");
+    assemblyTrigger = stack.timeline.scrollTrigger;
+    var assemblyDuration = stack.timeline.duration();
+
+    window.gsap.set(canvas, {
+      x: "20vw",
+      y: 0,
+      scale: 1,
+      autoAlpha: 1,
+      transformOrigin: "50% 50%"
+    });
+    window.gsap.set(towerStage, {
+      backgroundColor: "rgba(247, 244, 232, 0)"
+    });
+
+    /* Gift Shop을 부드럽게 덮은 뒤 오른쪽 → 왼쪽 → 오른쪽으로 조립합니다. */
+    stack.timeline
+      .to(towerStage, {
+        backgroundColor: "rgba(247, 244, 232, 1)",
+        duration: assemblyDuration * 0.14,
+        ease: "none"
+      }, 0)
+      .to(canvas, {
+        x: "-20vw",
+        duration: assemblyDuration * 0.48,
+        ease: "sine.inOut"
+      }, 0)
+      .to(canvas, {
+        x: "16vw",
+        duration: assemblyDuration * 0.42,
+        ease: "sine.inOut"
+      }, assemblyDuration * 0.48);
+
+    if (towerStage && goodsSection && goodsHeroImage && window.ScrollTrigger && assemblyTrigger) {
+      goodsSection.classList.add("has_tower_transition");
+      window.gsap.set(goodsHeroImage, { autoAlpha: 0 });
+
+      transitionTrigger = window.ScrollTrigger.create({
+        trigger: goodsSection,
+        /* 조립 핀이 풀리는 정확한 스크롤 좌표에서 핸드오프를 시작합니다. */
+        start: function () {
+          return assemblyTrigger.end;
+        },
+        end: "top top",
+        scrub: 0.6,
+        invalidateOnRefresh: true,
+        onEnter: requestTowerTransitionSync,
+        onUpdate: requestTowerTransitionSync,
+        onLeave: requestTowerTransitionSync,
+        onEnterBack: requestTowerTransitionSync,
+        onLeaveBack: requestTowerTransitionSync,
+        /* refresh 중에는 DOM을 옮기지 않고 다음 프레임에만 상태를 동기화합니다. */
+        onRefresh: requestTowerTransitionSync
+      });
+
+      /* Lenis 앵커 이동과 빠른 휠 스크롤도 실제 scroll 위치로 상태를 확정합니다. */
+      window.addEventListener("scroll", requestTowerTransitionSync, { passive: true });
+      window.addEventListener("pageshow", requestTowerTransitionSync);
+    }
+
+    window.ScrollTrigger.refresh();
+    requestTowerTransitionSync();
+  }
+
+  function renderTowerStackMode() {
+    if (desktopQuery.matches && !stack) {
+      stack = window.ScrollStack3D.init({
+        mount: mount,
+        /* 모듈 기본 오버레이(라벨·단계 목록·진행 레일)는 시안에 없어 끕니다. */
+        ui: false
+      });
+      section.classList.toggle("is_tower_3d", Boolean(stack));
+      initTowerCanvasMotion();
+      return;
+    }
+
+    if (!desktopQuery.matches && stack) {
+      destroyTowerTransition();
+      stack.destroy();
+      stack = null;
+      towerCanvas = null;
+      towerStage = null;
+      assemblyTrigger = null;
+      section.classList.remove("is_tower_3d");
+    }
+  }
+
+  if (typeof desktopQuery.addEventListener === "function") {
+    desktopQuery.addEventListener("change", renderTowerStackMode);
+  }
+
+  renderTowerStackMode();
+}
+
 /* --------------------------------------------------------------------------
    custom goods
    -------------------------------------------------------------------------- */
@@ -968,6 +1290,7 @@ function initMain() {
   initCourseScrollScene();
   initGiftTrackCursor();
   initTowerReveal();
+  initTowerStack3D();
   initRestaurantStackState();
 }
 

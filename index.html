@@ -46,6 +46,7 @@
        img 의 fetchpriority="high" 로 우선순위를 올립니다. -->
   <link rel="stylesheet" href="./css/reset.css">
   <link rel="stylesheet" href="./css/common.css">
+  <link rel="stylesheet" href="./yul_tower_3d/scroll-stack-3d.css">
   <link rel="stylesheet" href="./css/main.css">
 </head>
 <body>
@@ -321,16 +322,17 @@
 
       <!-- ===================== 2. events ===================== -->
       <section class="events_section" id="events_section" aria-labelledby="events_title">
+        <!-- 제목은 스크롤 흐름을 따라가고, 아래 곡선·곤돌라 무대만 sticky로 유지합니다. -->
+        <div class="page_container events_head">
+          <h2 class="section_title" id="events_title">Events</h2>
+          <div class="events_view_toggle" role="group" aria-label="Choose events view">
+            <button class="events_view_button is_active" type="button" data-events-view="motion" aria-pressed="true" aria-controls="events_list">Interactive View</button>
+            <button class="events_view_button" type="button" data-events-view="cards" aria-pressed="false" aria-controls="events_list">Card View</button>
+          </div>
+        </div>
+
         <div class="events_sticky" data-events-sticky>
           <img class="events_curve" src="./assets/event_path.svg" alt="" aria-hidden="true" width="1920" height="1045" loading="lazy">
-
-          <div class="page_container events_head">
-            <h2 class="section_title" id="events_title">Events</h2>
-            <div class="events_view_toggle" role="group" aria-label="Choose events view">
-              <button class="events_view_button is_active" type="button" data-events-view="motion" aria-pressed="true" aria-controls="events_list">Interactive View</button>
-              <button class="events_view_button" type="button" data-events-view="cards" aria-pressed="false" aria-controls="events_list">Card View</button>
-            </div>
-          </div>
 
           <ul class="events_list" id="events_list" data-events-list>
             <!-- renderEvents() -->
@@ -499,7 +501,10 @@
       <!-- ===================== 7. custom tower visual ===================== -->
       <section class="tower_section" id="tower_section" aria-labelledby="tower_title">
         <h2 class="visually_hidden" id="tower_title">Build your own N Seoul Tower candle</h2>
-        <div class="page_container">
+        <!-- yul_tower_3d 모듈이 이 안에 캔버스를 만듭니다. 초기화에 성공하면
+             아래 이미지 스택은 숨기고, 실패하거나 모션을 줄인 환경에서는 그대로 폴백으로 씁니다. -->
+        <div class="tower_stack_3d" data-tower-3d aria-hidden="true"></div>
+        <div class="page_container tower_stack_fallback">
           <ul class="tower_stack_list" data-tower-list aria-hidden="true">
             <!-- renderTowerStacks() -->
           </ul>
@@ -650,6 +655,13 @@
     <!-- 공통 퀵 메뉴: 페이지별 섹션 목록은 common.js 설정에서 관리합니다. -->
     <div data-quick-menu-mount></div>
   </div>
+
+  <!-- 커스텀 타워 3D 조립 (yul_tower_3d). three 는 모듈이 r128 기준으로 작성돼 버전을 고정합니다.
+       gsap 은 pages/restaurant_n_burger.html 과 같은 3.13.0 을 씁니다. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script src="./yul_tower_3d/scroll-stack-3d.js"></script>
 
   <script src="./js/common.js"></script>
   <script src="./js/main.js"></script>
