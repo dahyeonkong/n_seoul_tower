@@ -1380,11 +1380,49 @@
   object-position: 40% bottom;
 }
 
+/* 코스가 진행되는 동안 walk_bg 를 덮는 영상. 스크롤이 끝나면 사라집니다. */
+.course_scene_video {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 40% bottom;
+  transition: opacity 420ms var(--ease_out);
+  pointer-events: none;
+}
+
+/* 티켓을 건네는 곰 — 끝났을 때만 보이며 걷는 마스코트와 자리를 바꿉니다. */
+.course_scene_bear {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  z-index: 3;
+  width: 26%;
+  max-width: 220px;
+  height: auto;
+  opacity: 0;
+  transform: translateX(-50%);
+  transition: opacity 420ms var(--ease_out);
+  pointer-events: none;
+}
+
+.course_scene.is_course_end .course_scene_video,
+.course_scene.is_course_end .course_scene_char {
+  opacity: 0;
+}
+
+.course_scene.is_course_end .course_scene_bear {
+  opacity: 1;
+}
+
 .course_scene_char {
   position: absolute;
   bottom: 0;
   left: 50%;
-  z-index: 1;
+  z-index: 2;
+  transition: opacity 420ms var(--ease_out);
   display: block;
   width: 26%;
   height: auto;
@@ -1556,18 +1594,53 @@
 .pass_section {
   position: relative;
   padding: var(--section_space) 0;
-  overflow: hidden;
+  /* 티켓이 곰에게서 날아올 때 섹션 위쪽(코스 구간)까지 넘어가므로 잘라내지 않습니다.
+     가로 넘침은 .site_wrapper 의 overflow-x: clip 이 막아 줍니다. */
+  overflow: visible;
 }
 
-/* 코스 영역에서 떨어져 내려온 보조 티켓 */
-.pass_ticket_deco {
+/* --- 티켓 플립 (모든 해상도) ---
+   .pass_ticket 은 흐름에 남겨 컨테이너 높이를 만들고, 뒷면(ticket.png)만 위에 겹칩니다.
+   preserve-3d 요소에는 overflow 를 주면 3D 가 평탄화되므로 아무것도 걸지 않습니다.
+   1280 이상에서는 여기에 더해 곰에게서 날아오는 이동까지 붙습니다. */
+.pass_flip {
+  perspective: 1600px;
+}
+
+.pass_flip_inner {
+  position: relative;
+  transform-style: preserve-3d;
+  opacity: 0;
+  transform: translateY(-32px) rotateY(180deg) scale(0.55);
+  transition: opacity 320ms var(--ease_out),
+    transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1) 180ms;
+  will-change: transform, opacity;
+}
+
+.pass_flip.is_pass_revealed .pass_flip_inner {
+  opacity: 1;
+  transform: translateY(0) rotateY(0deg) scale(1);
+}
+
+/* TOP 버튼처럼 빠르게 지나갈 때는 회전 없이 결과만 보여 줍니다. */
+.pass_flip.is_pass_instant .pass_flip_inner {
+  transition: none;
+}
+
+.pass_flip .pass_ticket {
+  backface-visibility: hidden;
+}
+
+/* 뒷면 — ticket.png(829×552)는 앞면(1440×710)과 비율이 달라
+   contain 으로 원본 비율을 지키고 가운데 맞춥니다. */
+.pass_flip_back {
   position: absolute;
-  left: -6%;
-  top: 0;
-  z-index: 1;
-  width: 42%;
-  max-width: 546px;
-  opacity: 0.9;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
   pointer-events: none;
 }
 
@@ -1666,12 +1739,6 @@
     padding: 0;
   }
 
-  .pass_ticket_deco {
-    left: 4.69%;
-    top: 1.94%;
-    width: 28.44%;
-  }
-
   .pass_ticket {
     width: min(100%, 1440px);
     margin-inline: auto;
@@ -1688,6 +1755,40 @@
 
   .pass_texts {
     gap: 32px;
+  }
+
+  /* --- 곰에게서 티켓이 날아오는 구간 (1280 이상) ---
+     JS 가 매 프레임 --pass_flight_transform 을 계산해 넣습니다.
+     이동·확대·회전을 한 transform 으로 처리하므로 CSS 전환은 끕니다. */
+  .pass_flip.is_pass_flight .pass_flip_inner {
+    /* 코스 스크롤이 끝나 곰이 티켓을 건네기 전까지는 감춰 둡니다.
+       transform 은 매 프레임 JS 가 넣으므로 opacity 만 전환합니다. */
+    opacity: 0;
+    transition: opacity 260ms var(--ease_out);
+    transform: var(--pass_flight_transform, none);
+  }
+
+  .pass_flip.is_pass_flight.is_pass_flight_ready .pass_flip_inner {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pass_flip .pass_flip_inner,
+  .pass_flip.is_pass_flight .pass_flip_inner {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .pass_flip_back {
+    display: none;
+  }
+
+  .course_scene .course_scene_video,
+  .course_scene .course_scene_bear,
+  .course_scene .course_scene_char {
+    transition: none;
   }
 }
 

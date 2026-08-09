@@ -87,12 +87,10 @@
     }
 
     const floorObserver = new IntersectionObserver(
-      (entries) => {
-        const activeEntry = entries.find((entry) => entry.isIntersecting);
-
-        if (activeEntry) {
-          renderActiveFloor(activeEntry.target.dataset.floorSection);
-        }
+      () => {
+        /* IntersectionObserver entries의 순서는 층 순서와 같지 않을 수 있습니다.
+           변경 시점에 화면 중앙에 가장 가까운 층을 다시 계산해 깜빡임을 막습니다. */
+        handleViewportChange();
       },
       {
         rootMargin: "-48% 0px -48% 0px",
@@ -154,7 +152,7 @@
           revealTarget.classList.add(direction);
         }
 
-        revealTarget.style.setProperty("--reveal_delay", `${Math.min(targetIndex, 5) * 120}ms`);
+        revealTarget.style.setProperty("--reveal_delay", `${Math.min(targetIndex, 2) * 50}ms`);
       });
     });
 

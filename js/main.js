@@ -233,6 +233,13 @@ var EVENT_PATH_EDGE_INSET = 0.08;
    path 를 타고 내려가는 형상은 남기되 화면 밖으로는 나가지 않는 값입니다. */
 var EVENT_GONDOLA_BAND = 0.36;
 
+/* 코스 스크롤이 이 진행률을 넘으면 "끝난 것"으로 보고 티켓 건네는 곰으로 전환합니다. */
+var COURSE_END_PROGRESS = 0.97;
+
+/* 티켓이 곰에게서 날아오는 구간의 길이(뷰포트 높이 배수).
+   티켓 중심이 화면 중앙에 닿는 순간 비행이 끝나고 제자리에 놓입니다. */
+var PASS_FLIGHT_RANGE = 0.9;
+
 /* 곡선을 세로로 얼마나 늘릴지. 1 이면 곡선이 페이지와 1:1 로 흘러가지만 경사가 매우 가팔라집니다.
    가로 배율과 같아지는 지점(약 0.217)이 에셋에 그려진 원래 각도이고, 그보다 낮추면 더 완만해집니다. */
 var EVENT_CURVE_STEEPNESS = 0.217;
@@ -578,6 +585,48 @@ function renderCourses(courses) {
   list.appendChild(fragment);
 }
 
+/* 코스 배경 영상은 반복하지 않고, 섹션에 들어올 때마다 처음부터 한 번만 재생합니다.
+   autoplay 를 쓰면 사용자가 도착하기 전에 이미 끝나 마지막 프레임만 남습니다. */
+function initCourseSceneVideo() {
+  var scene = document.querySelector("[data-course-scene]");
+  var video = document.querySelector("[data-course-video]");
+
+  if (!scene || !video) {
+    return;
+  }
+
+  function playCourseVideo() {
+    video.currentTime = 0;
+    var played = video.play();
+
+    /* 자동재생이 막히면 첫 프레임이 그대로 남습니다. 오류로 처리하지 않습니다. */
+    if (played && typeof played.catch === "function") {
+      played.catch(function () {});
+    }
+  }
+
+  if (isReducedMotion() || !("IntersectionObserver" in window)) {
+    return;
+  }
+
+  var observer = new IntersectionObserver(
+    function handleCourseVideoIntersect(entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          playCourseVideo();
+          return;
+        }
+
+        video.pause();
+        video.currentTime = 0;
+      });
+    },
+    { threshold: 0 }
+  );
+
+  observer.observe(scene);
+}
+
 function initCourseScrollScene() {
   var section = document.querySelector("#course_section");
   var stage = document.querySelector("[data-course-scroll-stage]");
@@ -604,6 +653,9 @@ function initCourseScrollScene() {
     var stageRect = stage.getBoundingClientRect();
     var progress = Math.min(1, Math.max(0, -stageRect.top / scrollTravel));
     list.style.transform = "translate3d(0, " + -progress * maxListOffset + "px, 0)";
+    /* 코스 카드를 다 지나가면 영상과 걷는 마스코트를 감추고
+       walk_bg 위에 티켓을 건네는 곰을 보여 줍니다. */
+    scene.classList.toggle("is_course_end", progress >= COURSE_END_PROGRESS);
     isFrameRequested = false;
   }
 
@@ -779,6 +831,177 @@ function initTowerReveal() {
 /* 스크롤에 맞춰 양초가 한 단씩 쌓이는 3D 조립 (yul_tower_3d/scroll-stack-3d.js).
    데스크톱에서만 켜고, 그 외에는 기존 이미지 스택을 그대로 씁니다.
    모듈·three·gsap 이 없으면 초기화가 null 을 돌려주므로 이미지 스택이 남습니다. */
+/* 코스 구간이 끝나고 N Pass 섹션에 들어오면 티켓이 떨어져 내려와 뒤집힙니다.
+   섹션을 완전히 벗어날 때만 되돌려(threshold 0) 재진입하면 다시 재생하고,
+   TOP 버튼처럼 위로 빠르게 지나갈 때는 회전 없이 결과만 보여 줍니다. */
+function initPassTicketFlip() {
+  var section = document.querySelector("#pass_section");
+  var flip = document.querySelector("[data-pass-flip]");
+
+  if (!section || !flip) {
+    return;
+  }
+
+  var desktopQuery = window.matchMedia("(min-width: 1280px)");
+  var observer = null;
+  var lastScrollY = window.scrollY;
+  /* 첫 진입이 딥링크일 수도 있어 아래 방향으로 시작합니다. */
+  var isScrollingDown = true;
+  var isFlightActive = false;
+  var isFlightFrameRequested = false;
+
+  function revealPassTicket(isAnimated) {
+    flip.classList.toggle("is_pass_instant", !isAnimated);
+    flip.classList.add("is_pass_revealed");
+  }
+
+  function resetPassTicket() {
+    /* 화면 밖에서 되감기 모션이 재생되지 않도록 즉시 되돌립니다. */
+    flip.classList.add("is_pass_instant");
+    flip.classList.remove("is_pass_revealed");
+  }
+
+  function handlePassScroll() {
+    var currentScrollY = window.scrollY;
+
+    if (currentScrollY !== lastScrollY) {
+      isScrollingDown = currentScrollY > lastScrollY;
+      lastScrollY = currentScrollY;
+    }
+  }
+
+  function handlePassIntersect(entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        revealPassTicket(isScrollingDown);
+        return;
+      }
+
+      resetPassTicket();
+    });
+  }
+
+  /* --- 데스크톱: 곰에게서 티켓이 날아와 커지며 뒤집힙니다 ---
+     .pass_flip 은 변형이 없으므로 그 rect 가 곧 티켓의 "제자리"입니다.
+     매 프레임 곰 위치와 제자리 사이를 보간해 하나의 transform 으로 넣습니다. */
+  function renderPassFlight() {
+    var bear = document.querySelector("[data-course-bear]");
+    var scene = document.querySelector("[data-course-scene]");
+    var restRect = flip.getBoundingClientRect();
+    var viewportHeight = window.innerHeight;
+
+    /* 코스 스크롤이 끝나 곰이 티켓을 건네는 순간부터 티켓을 보여 줍니다. */
+    flip.classList.toggle(
+      "is_pass_flight_ready",
+      !scene || scene.classList.contains("is_course_end")
+    );
+
+    if (!bear || restRect.width === 0) {
+      flip.classList.remove("is_pass_flight");
+      revealPassTicket(false);
+      isFlightFrameRequested = false;
+      return;
+    }
+
+    var startRect = bear.getBoundingClientRect();
+    var restCenterY = restRect.top + restRect.height / 2;
+    var flightDistance = Math.max(1, viewportHeight * PASS_FLIGHT_RANGE);
+    var progress = Math.min(
+      1,
+      Math.max(0, 1 - (restCenterY - viewportHeight / 2) / flightDistance)
+    );
+
+    var startCenterX = startRect.left + startRect.width / 2;
+    var startCenterY = startRect.top + startRect.height / 2;
+    var restCenterX = restRect.left + restRect.width / 2;
+    var offsetX = (startCenterX - restCenterX) * (1 - progress);
+    var offsetY = (startCenterY - restCenterY) * (1 - progress);
+    var startScale = startRect.width / restRect.width;
+    var scale = startScale + (1 - startScale) * progress;
+    var angle = 180 * (1 - progress);
+
+    flip.style.setProperty(
+      "--pass_flight_transform",
+      "translate(" + offsetX.toFixed(2) + "px, " + offsetY.toFixed(2) + "px)" +
+        " scale(" + scale.toFixed(4) + ") rotateY(" + angle.toFixed(2) + "deg)"
+    );
+
+    isFlightFrameRequested = false;
+  }
+
+  function requestPassFlightRender() {
+    if (isFlightFrameRequested) {
+      return;
+    }
+
+    isFlightFrameRequested = true;
+    window.requestAnimationFrame(renderPassFlight);
+  }
+
+  function stopPassFlight() {
+    window.removeEventListener("scroll", requestPassFlightRender);
+    window.removeEventListener("resize", requestPassFlightRender);
+    flip.classList.remove("is_pass_flight");
+    flip.style.removeProperty("--pass_flight_transform");
+    isFlightActive = false;
+  }
+
+  function stopPassFlipObserver() {
+    if (!observer) {
+      return;
+    }
+
+    observer.disconnect();
+    observer = null;
+    window.removeEventListener("scroll", handlePassScroll);
+  }
+
+  function renderPassFlipMode() {
+    if (isReducedMotion()) {
+      stopPassFlight();
+      stopPassFlipObserver();
+      revealPassTicket(false);
+      return;
+    }
+
+    /* 데스크톱은 비행, 모바일·태블릿은 회전만 합니다. */
+    if (desktopQuery.matches) {
+      if (isFlightActive) {
+        return;
+      }
+
+      stopPassFlipObserver();
+      isFlightActive = true;
+      flip.classList.remove("is_pass_instant", "is_pass_revealed");
+      flip.classList.add("is_pass_flight");
+      window.addEventListener("scroll", requestPassFlightRender, { passive: true });
+      window.addEventListener("resize", requestPassFlightRender);
+      requestPassFlightRender();
+      return;
+    }
+
+    stopPassFlight();
+
+    if (observer || !("IntersectionObserver" in window)) {
+      if (!observer) {
+        revealPassTicket(false);
+      }
+      return;
+    }
+
+    resetPassTicket();
+    window.addEventListener("scroll", handlePassScroll, { passive: true });
+    observer = new IntersectionObserver(handlePassIntersect, { threshold: 0 });
+    observer.observe(section);
+  }
+
+  if (typeof desktopQuery.addEventListener === "function") {
+    desktopQuery.addEventListener("change", renderPassFlipMode);
+  }
+
+  renderPassFlipMode();
+}
+
 function initTowerStack3D() {
   var section = document.querySelector("#tower_section");
   var mount = document.querySelector("[data-tower-3d]");
@@ -798,6 +1021,7 @@ function initTowerStack3D() {
   var assemblyTrigger = null;
   var towerTransitionState = "";
   var isTowerTransitionSyncRequested = false;
+  var isSynchronizingTowerTransition = false;
 
   function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
@@ -875,7 +1099,7 @@ function initTowerStack3D() {
     }
   }
 
-  function settleTowerAssemblyProgress() {
+  function settleTowerAssemblyProgress(progress) {
     if (!stack || !stack.timeline || !assemblyTrigger) {
       return;
     }
@@ -888,12 +1112,12 @@ function initTowerStack3D() {
     if (scrubTween) {
       scrubTween.progress(1);
     }
-    stack.timeline.progress(assemblyTrigger.progress, true);
+    stack.timeline.progress(clamp(progress, 0, 1), true);
   }
 
-  function prepareTowerAssembly(shouldShowCanvas) {
+  function prepareTowerAssembly(shouldShowCanvas, progress) {
     attachTowerCanvasToStage();
-    settleTowerAssemblyProgress();
+    settleTowerAssemblyProgress(progress);
     if (towerCanvas && window.gsap) {
       /* x는 조립 timeline이 관리합니다. 핸드오프에서만 쓰는 속성만 초기화합니다. */
       window.gsap.set(towerCanvas, {
@@ -914,52 +1138,80 @@ function initTowerStack3D() {
       return;
     }
 
-    var scrollPosition = typeof assemblyTrigger.scroll === "function"
-      ? assemblyTrigger.scroll()
-      : window.scrollY;
-    var assemblyStart = assemblyTrigger.start;
-    var handoffStart = assemblyTrigger.end;
-    var handoffEnd = transitionTrigger.end;
+    isSynchronizingTowerTransition = true;
 
-    if (
-      !Number.isFinite(assemblyStart) ||
-      !Number.isFinite(handoffStart) ||
-      !Number.isFinite(handoffEnd) ||
-      handoffEnd <= handoffStart
-    ) {
-      return;
-    }
+    try {
+      /* Top 이동 직후에도 ScrollTrigger 상태를 실제 스크롤 위치와 먼저 맞춥니다. */
+      if (window.ScrollTrigger && typeof window.ScrollTrigger.update === "function") {
+        window.ScrollTrigger.update();
+      }
 
-    if (scrollPosition < assemblyStart) {
-      if (towerTransitionState !== "before") {
-        prepareTowerAssembly(false);
+      var scrollPosition = typeof assemblyTrigger.scroll === "function"
+        ? assemblyTrigger.scroll()
+        : window.scrollY;
+      var assemblyStart = assemblyTrigger.start;
+      var handoffStart = assemblyTrigger.end;
+      var handoffEnd = transitionTrigger.end;
+
+      if (
+        !Number.isFinite(assemblyStart) ||
+        !Number.isFinite(handoffStart) ||
+        !Number.isFinite(handoffEnd) ||
+        handoffStart <= assemblyStart ||
+        handoffEnd <= handoffStart
+      ) {
+        prepareTowerAssembly(false, 0);
         towerTransitionState = "before";
+        return;
       }
-      return;
-    }
 
-    if (scrollPosition < handoffStart) {
-      if (towerTransitionState !== "assembly") {
-        prepareTowerAssembly(true);
+      if (scrollPosition < assemblyStart) {
+        if (
+          towerTransitionState !== "before" ||
+          towerCanvas.parentNode !== towerStage ||
+          (transitionLayer && !transitionLayer.hidden)
+        ) {
+          prepareTowerAssembly(false, 0);
+        }
+        towerTransitionState = "before";
+        return;
+      }
+
+      if (scrollPosition < handoffStart) {
+        var assemblyProgress = (scrollPosition - assemblyStart) / (handoffStart - assemblyStart);
+
+        if (
+          towerTransitionState !== "assembly" ||
+          towerCanvas.parentNode !== towerStage ||
+          (transitionLayer && !transitionLayer.hidden)
+        ) {
+          prepareTowerAssembly(true, assemblyProgress);
+        }
         towerTransitionState = "assembly";
+        return;
       }
-      return;
-    }
 
-    if (scrollPosition <= handoffEnd) {
-      towerTransitionState = "handoff";
-      activateTowerTransition((scrollPosition - handoffStart) / (handoffEnd - handoffStart));
-      return;
-    }
+      if (scrollPosition <= handoffEnd) {
+        towerTransitionState = "handoff";
+        activateTowerTransition((scrollPosition - handoffStart) / (handoffEnd - handoffStart));
+        return;
+      }
 
-    if (towerTransitionState !== "complete") {
-      completeTowerTransition();
+      if (
+        towerTransitionState !== "complete" ||
+        towerCanvas.parentNode !== towerStage ||
+        (transitionLayer && !transitionLayer.hidden)
+      ) {
+        completeTowerTransition();
+      }
       towerTransitionState = "complete";
+    } finally {
+      isSynchronizingTowerTransition = false;
     }
   }
 
   function requestTowerTransitionSync() {
-    if (isTowerTransitionSyncRequested) {
+    if (isSynchronizingTowerTransition || isTowerTransitionSyncRequested) {
       return;
     }
 
@@ -975,9 +1227,10 @@ function initTowerStack3D() {
     window.removeEventListener("scroll", requestTowerTransitionSync);
     window.removeEventListener("pageshow", requestTowerTransitionSync);
 
-    prepareTowerAssembly(false);
+    prepareTowerAssembly(false, 0);
     towerTransitionState = "";
     isTowerTransitionSyncRequested = false;
+    isSynchronizingTowerTransition = false;
 
     if (transitionLayer) {
       transitionLayer.remove();
@@ -1068,6 +1321,16 @@ function initTowerStack3D() {
     requestTowerTransitionSync();
   }
 
+  /* common.js 의 Lenis 가 스크롤을 대신 움직이는데 인스턴스가 밖으로 열려 있지 않아
+     README 가 권장하는 연결(lenis.on("scroll", ScrollTrigger.update))을 쓸 수 없습니다.
+     갱신을 한 번이라도 놓치면 핀이 화면에 고정된 채 남아 다른 섹션을 덮으므로
+     스크롤마다 직접 갱신해 상태가 어긋나지 않게 합니다. */
+  function handleTowerScrollSync() {
+    if (window.ScrollTrigger) {
+      window.ScrollTrigger.update();
+    }
+  }
+
   function renderTowerStackMode() {
     if (desktopQuery.matches && !stack) {
       stack = window.ScrollStack3D.init({
@@ -1076,11 +1339,17 @@ function initTowerStack3D() {
         ui: false
       });
       section.classList.toggle("is_tower_3d", Boolean(stack));
+
+      if (stack) {
+        window.addEventListener("scroll", handleTowerScrollSync, { passive: true });
+      }
+
       initTowerCanvasMotion();
       return;
     }
 
     if (!desktopQuery.matches && stack) {
+      window.removeEventListener("scroll", handleTowerScrollSync);
       destroyTowerTransition();
       stack.destroy();
       stack = null;
@@ -1287,7 +1556,9 @@ function initMain() {
   renderCustomGoods(mainPageData.customGoodsItems);
 
   initHeroSectionJump();
+  initCourseSceneVideo();
   initCourseScrollScene();
+  initPassTicketFlip();
   initGiftTrackCursor();
   initTowerReveal();
   initTowerStack3D();

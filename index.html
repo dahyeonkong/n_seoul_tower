@@ -351,7 +351,20 @@
 
             <div class="course_scene" data-course-scene>
               <img class="course_scene_bg" src="./assets/guide_course/walk_bg.png" alt="" aria-hidden="true" width="2010" height="711" loading="lazy">
-              <iframe
+              <!-- 코스가 진행되는 동안에는 영상이 walk_bg 를 덮고, 스크롤이 끝나면 사라집니다. -->
+              <video
+                class="course_scene_video"
+                data-course-video
+                width="1280"
+                height="720"
+                muted
+                playsinline
+                preload="auto"
+                aria-hidden="true"
+              >
+                <source src="./assets/coures_nbear.mp4" type="video/mp4">
+              </video>
+              <!-- <iframe
                 class="course_scene_char"
                 src="./n_seoul_mascot_3d/embed.html"
                 title="제자리에서 걷는 N서울타워 3D 마스코트"
@@ -360,7 +373,18 @@
                 loading="lazy"
                 tabindex="-1"
                 aria-hidden="true"
-              ></iframe>
+              ></iframe> -->
+              <!-- 스크롤이 끝났을 때만 보이는, 티켓을 건네는 곰. 걷는 3D 마스코트와 자리를 바꿉니다. -->
+              <img
+                class="course_scene_bear"
+                data-course-bear
+                src="./assets/Angolmi_ticket.gif"
+                alt=""
+                aria-hidden="true"
+                width="608"
+                height="656"
+                loading="lazy"
+              >
               <ul class="course_list" data-course-list>
                 <!-- renderCourses() -->
               </ul>
@@ -371,22 +395,27 @@
 
       <!-- ===================== 4. n pass ===================== -->
       <section class="pass_section" id="pass_section" aria-labelledby="pass_title">
-        <img class="pass_ticket_deco" src="./assets/npass/ticket.png" alt="" aria-hidden="true" width="829" height="552" loading="lazy">
-
         <div class="page_container">
-          <div class="pass_ticket">
-            <div class="pass_inner">
-              <div class="pass_texts">
-                <div class="pass_head">
-                  <p class="pass_label">Skip the Wait, Enjoy More</p>
-                  <h2 class="pass_title" id="pass_title"><strong>N Pass</strong> Premium Experience</h2>
-                </div>
-                <div class="pass_desc">
-                  <p><strong>With N Pass,</strong> skip the elevator line and head straight to the observatory.</p>
-                  <p>Spend less time waiting and more time enjoying Seoul's breathtaking views.</p>
+          <!-- 코스 구간이 끝나면 티켓이 떨어져 내려와 뒤집히고, 뒷면(ticket.png)이
+               앞면인 N Pass 티켓으로 바뀝니다. 데스크톱에서만 동작합니다. -->
+          <div class="pass_flip" data-pass-flip>
+            <div class="pass_flip_inner">
+              <div class="pass_ticket">
+                <div class="pass_inner">
+                  <div class="pass_texts">
+                    <div class="pass_head">
+                      <p class="pass_label">Skip the Wait, Enjoy More</p>
+                      <h2 class="pass_title" id="pass_title"><strong>N Pass</strong> Premium Experience</h2>
+                    </div>
+                    <div class="pass_desc">
+                      <p><strong>With N Pass,</strong> skip the elevator line and head straight to the observatory.</p>
+                      <p>Spend less time waiting and more time enjoying Seoul's breathtaking views.</p>
+                    </div>
+                  </div>
+                  <a class="btn btn_yellow" href="https://naver.me/x0UEXKKZ" target="_blank" rel="noopener noreferrer">BOOKING</a>
                 </div>
               </div>
-              <a class="btn btn_yellow" href="https://naver.me/x0UEXKKZ" target="_blank" rel="noopener noreferrer">BOOKING</a>
+              <img class="pass_flip_back" src="./assets/npass/ticket.png" alt="" aria-hidden="true" width="829" height="552" loading="lazy">
             </div>
           </div>
         </div>

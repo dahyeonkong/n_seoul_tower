@@ -79,7 +79,7 @@
   /* 원본이 181 x 166 이라 정사각 프레임에 맞추면서 비율은 유지합니다. */
   object-fit: cover;
   transform: translateX(-50%);
-  transition: top 220ms var(--ease_out), width 220ms var(--ease_out), height 220ms var(--ease_out);
+  transition: top 200ms var(--ease_out), width 200ms var(--ease_out), height 200ms var(--ease_out);
 }
 
 .tower_state_image {
@@ -91,7 +91,7 @@
   height: calc(485 * var(--u));
   opacity: 0;
   transform: translateX(-50%);
-  transition: opacity 220ms var(--ease_out);
+  transition: opacity 200ms var(--ease_out);
 }
 
 .tower_state_image.is_active {
@@ -298,25 +298,25 @@
 .has_floor_motion .floor_card,
 .has_floor_motion .floor_deco {
   /* 기본은 아래에서 떠오릅니다. */
-  --reveal_y: 34px;
+  --reveal_y: 24px;
   opacity: 0;
-  transition: opacity 920ms var(--ease_out), transform 920ms var(--ease_out);
+  transition: opacity 560ms var(--ease_out), transform 560ms var(--ease_out);
   transition-delay: var(--reveal_delay, 0ms);
 }
 
 .has_floor_motion .is_from_left {
-  --reveal_x: -52px;
-  --reveal_y: 14px;
+  --reveal_x: -36px;
+  --reveal_y: 10px;
 }
 
 .has_floor_motion .is_from_right {
-  --reveal_x: 52px;
-  --reveal_y: 14px;
+  --reveal_x: 36px;
+  --reveal_y: 10px;
 }
 
 .has_floor_motion .is_from_top {
   --reveal_x: 0px;
-  --reveal_y: -38px;
+  --reveal_y: -28px;
 }
 
 /* 방향 규칙과 특이도가 같으므로 반드시 뒤에 와야 합니다. */
@@ -626,42 +626,22 @@
 }
 
 /* --------------------------------------------------------------------------
-   Wide desktop — 층마다 한 장씩 넘어가는 스크롤
+   Wide desktop
 
-   1600 부터 적용합니다. 그 아래에서는 디자인 캔버스가 화면 폭에 비례해 줄어드는데
-   고정 헤더 높이는 그대로라, 스냅으로 섹션을 화면 상단에 붙이면 제목과 카드가
-   헤더에 눌립니다. 1600 미만은 기존 일반 스크롤을 유지합니다.
+   각 층은 뷰포트 높이를 유지하되, 스크롤 감속은 Lenis에만 맡깁니다.
+   네이티브 scroll snap은 Lenis와 종료 위치를 중복 보정해 사용하지 않습니다.
    -------------------------------------------------------------------------- */
 @media (min-width: 1600px) {
-  /* 이 파일은 floor_guide 페이지에서만 로드되므로 html 선언 범위도 이 페이지에 한정됩니다.
-
-     scroll-padding-top 은 0 이어야 합니다. 헤더 높이만큼 넣으면 스냅 영역이
-     섹션(디자인 16:9)보다 작아져 "큰 요소" 규칙에 걸리고 스냅이 아예 동작하지 않습니다.
-     디자인도 각 프레임 상단에 헤더 띠를 포함하므로, 고정 헤더가 그 자리를 덮습니다. */
-  html {
-    scroll-snap-type: y mandatory;
-    scroll-padding-top: 0;
-  }
-
   .floor_scene {
     /* 한 층이 화면을 정확히 채우도록 합니다. 이 선언이 없으면 스크롤바 폭 때문에
        섹션이 뷰포트보다 낮아져 다음 층이 아래에 걸쳐 보입니다.
        .floor_scene_inner 는 디자인 비율을 유지하므로 카드 좌표는 그대로입니다. */
     min-height: 100svh;
-    /* reset.css 의 :target { scroll-margin-top: 120px } 을 무효화해
-       퀵메뉴 이동과 스냅 위치를 일치시킵니다. */
+    /* reset.css 의 :target 여백을 무효화해 퀵메뉴가 각 층 시작으로 이동하게 합니다. */
     scroll-margin-top: 0;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
   }
 
-  /* 스냅 지점이 없으면 mandatory 상태에서 푸터에 도달할 수 없습니다. */
-  .site_footer {
-    scroll-snap-align: start;
-  }
-
-  /* 스냅하면 섹션 상단이 뷰포트 상단에 붙어 고정 헤더가 그 위를 덮습니다.
-     1600 부근에서는 디자인 값이 헤더에 닿으므로 하한을 둡니다. 1920 에서는 디자인 값 그대로입니다. */
+  /* 1600 부근에서는 디자인 값이 헤더에 닿으므로 하한을 둡니다. */
   .floor_guide_heading {
     top: max(10.5184%, calc(var(--header_height) + 24px));
   }
@@ -686,9 +666,4 @@
     transition: none;
   }
 
-  /* 스냅은 사용자의 스크롤 의도와 무관하게 화면을 이동시키므로 해제합니다.
-     스냅이 없어도 모든 층 정보는 그대로 읽을 수 있습니다. */
-  html {
-    scroll-snap-type: none;
-  }
 }
