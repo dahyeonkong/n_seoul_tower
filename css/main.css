@@ -41,7 +41,6 @@
 
 .hero_inner {
   position: relative;
-  z-index: 2;
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -59,21 +58,36 @@
   height: 100vh;
   object-fit: cover;
   object-position: center;
-  mix-blend-mode: screen;
+  filter: url("#hero_remove_black");
   pointer-events: none;
+}
+
+.hero_video_filter {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
 }
 
 /* 대형 타이포 — Figma back_txt 벡터를 마스크로 사용하고 야경 사진으로 채움 */
 .hero_title {
   position: relative;
-  z-index: 2;
+  z-index: 0;
   order: 2;
-  width: 100%;
+  width: var(--hero_title_width, 100vw);
+  overflow: visible;
+}
+
+.hero_title_track {
+  display: flex;
+  width: max-content;
+  animation: hero_title_loop 18s linear infinite;
 }
 
 .hero_title_art {
   display: block;
-  width: 100%;
+  flex: 0 0 var(--hero_title_width, 100vw);
+  width: var(--hero_title_width, 100vw);
   aspect-ratio: 1830.09 / 476.02;
   background-color: var(--color_primary_800);
   background-image: url("../assets/back_img.png");
@@ -88,8 +102,20 @@
   mask-size: 100% 100%;
 }
 
+@keyframes hero_title_loop {
+  from {
+    transform: translateX(calc(-1 * var(--hero_title_width, 100vw)));
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
 /* 히어로 보조 정보 */
 .hero_info {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -177,10 +203,10 @@
   }
 
   .hero_title {
+    --hero_title_width: 95.32vw;
     position: absolute;
     left: 7.5%;
     top: 27.76%;
-    width: 95.32%;
   }
 
   .hero_info {
@@ -203,6 +229,13 @@
     width: auto;
     max-width: 34%;
     align-items: flex-end;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero_title_track {
+    animation: none;
+    transform: none;
   }
 }
 

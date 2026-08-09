@@ -845,14 +845,47 @@ function getQuickSectionMenuMarkup(sections, assetPath) {
   );
 }
 
+/* 챗봇 패널 — 버튼 옆(데스크톱 기준 왼쪽)으로 펼쳐집니다.
+   실제 상담 연결이 없으므로 문의 버튼은 비활성 상태로 둡니다 (AGENTS 10.6). */
+function getQuickChatbotMarkup(assetPath) {
+  return (
+    '<section class="quick_chatbot" id="quick_chatbot_panel" data-chatbot-panel ' +
+    'aria-label="N Seoul Tower chatbot" hidden>' +
+    '<header class="quick_chatbot_header">' +
+    '<img class="quick_chatbot_avatar" src="' + assetPath + 'icon/chatbot.png" alt="" width="56" height="56">' +
+    '<p class="quick_chatbot_name">N Seoul Tower</p>' +
+    '<p class="quick_chatbot_status">How can we help you?</p>' +
+    "</header>" +
+    '<div class="quick_chatbot_body">' +
+    '<article class="quick_chatbot_message">' +
+    '<img class="quick_chatbot_message_avatar" src="' + assetPath + 'icon/chatbot.png" alt="" width="32" height="32">' +
+    '<div class="quick_chatbot_message_content">' +
+    '<p class="quick_chatbot_message_name">N Seoul Tower</p>' +
+    '<p class="quick_chatbot_message_text">Hello, this is N Seoul Tower.</p>' +
+    '<p class="quick_chatbot_message_text">Select the type of your question and our chatbot will guide you.</p>' +
+    '<button class="quick_chatbot_cta" type="button" data-pending-link aria-disabled="true">Ask a question</button>' +
+    "</div>" +
+    "</article>" +
+    "</div>" +
+    "</section>"
+  );
+}
+
 function getQuickMenuMarkup(sections, assetPath) {
   return (
     '<div class="quick_menu" data-quick-menu>' +
     '<div class="quick_menu_actions" id="quick_menu_actions" data-quick-actions hidden>' +
-    '<button class="quick_action" type="button" data-pending-link aria-disabled="true">' +
-    '<img src="' + assetPath + 'icon/quick/chat.svg" alt="" width="36" height="36">' +
-    '<span class="visually_hidden">Search</span>' +
+    '<div class="quick_chat">' +
+    '<button class="quick_action quick_chat_toggle" type="button" data-chatbot-toggle ' +
+    'aria-expanded="false" aria-controls="quick_chatbot_panel">' +
+    '<img class="quick_chat_icon" src="' + assetPath + 'icon/quick/chat.svg" alt="" width="36" height="36">' +
+    '<img class="quick_chat_icon quick_chat_icon_close" src="' + assetPath + 'icon/icon_close.svg" ' +
+    'alt="" width="36" height="36">' +
+    '<span class="visually_hidden" data-chatbot-toggle-label>Open chatbot</span>' +
+    '<span class="quick_action_tip" aria-hidden="true">Ask me anything!</span>' +
     "</button>" +
+    getQuickChatbotMarkup(assetPath) +
+    "</div>" +
     getQuickSectionMenuMarkup(sections, assetPath) +
     '<a class="quick_action" href="#top">' +
     '<img src="' + assetPath + 'icon/quick/arrow_up.svg" alt="" width="36" height="36">' +
@@ -985,13 +1018,19 @@ function initQuickMenu() {
   var sectionButton = quickMenu.querySelector("[data-quick-section-button]");
   var sectionMenu = quickMenu.querySelector("[data-quick-section-menu]");
   var sectionItems = [];
+  var chatbotToggle = quickMenu.querySelector("[data-chatbot-toggle]");
+  var chatbotPanel = quickMenu.querySelector("[data-chatbot-panel]");
+  var chatbotToggleLabel = quickMenu.querySelector("[data-chatbot-toggle-label]");
 
   if (!toggleButton || !actions) {
     return;
   }
 
+  var hoverMediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+
   var isQuickMenuOpen = false;
   var isSectionMenuOpen = false;
+  var isChatbotOpen = false;
   var isTopActionVisible = false;
   var isTopActionFrameRequested = false;
   var isQuickSectionFrameRequested = false;
@@ -1119,6 +1158,38 @@ function initQuickMenu() {
     renderSectionMenuState();
   }
 
+  function renderChatbotState() {
+    if (!chatbotToggle || !chatbotPanel) {
+      return;
+    }
+    chatbotToggle.setAttribute("aria-expanded", String(isChatbotOpen));
+    chatbotPanel.hidden = !isChatbotOpen;
+    if (chatbotToggleLabel) {
+      chatbotToggleLabel.textContent = isChatbotOpen ? "Close chatbot" : "Open chatbot";
+    }
+  }
+
+  function closeChatbot(shouldRestoreFocus) {
+    if (!isChatbotOpen) {
+      return;
+    }
+    isChatbotOpen = false;
+    renderChatbotState();
+
+    if (shouldRestoreFocus && chatbotToggle) {
+      chatbotToggle.focus();
+    }
+  }
+
+  function handleChatbotToggle() {
+    isChatbotOpen = !isChatbotOpen;
+    /* 두 패널이 같은 자리에 겹치므로 섹션 패널은 함께 닫습니다. */
+    if (isChatbotOpen) {
+      closeSectionMenu();
+    }
+    renderChatbotState();
+  }
+
   function renderQuickMenuState() {
     toggleButton.setAttribute("aria-expanded", String(isQuickMenuOpen));
     actions.hidden = !isQuickMenuOpen;
@@ -1133,6 +1204,7 @@ function initQuickMenu() {
     }
     isQuickMenuOpen = false;
     closeSectionMenu();
+    closeChatbot(false);
     renderQuickMenuState();
 
     if (shouldRestoreFocus) {
@@ -1149,15 +1221,52 @@ function initQuickMenu() {
     renderQuickMenuState();
   }
 
-  function handleSectionMenuToggle() {
-    isSectionMenuOpen = !isSectionMenuOpen;
+  function openSectionMenu() {
+    if (isSectionMenuOpen) {
+      return;
+    }
+    isSectionMenuOpen = true;
+    closeChatbot(false);
     renderSectionMenuState();
+  }
+
+  function handleSectionMenuToggle() {
+    if (isSectionMenuOpen) {
+      closeSectionMenu();
+      return;
+    }
+    openSectionMenu();
   }
 
   toggleButton.addEventListener("click", handleQuickMenuToggle);
 
+  if (chatbotToggle && chatbotPanel) {
+    chatbotToggle.addEventListener("click", handleChatbotToggle);
+  }
+
   if (sectionButton) {
     sectionButton.addEventListener("click", handleSectionMenuToggle);
+
+    /* 마우스 환경에서는 섹션 버튼에 호버만 해도 패널이 열립니다.
+       버튼과 패널을 함께 감싸는 .quick_section 에 걸어 패널 위에서는 닫히지 않게 합니다.
+       hover 가 없는 터치 환경에서는 기존 클릭 동작만 사용합니다 (AGENTS 6.3). */
+    var sectionArea = sectionButton.closest(".quick_section");
+
+    if (sectionArea) {
+      sectionArea.addEventListener("mouseenter", function handleSectionPointerEnter() {
+        if (!hoverMediaQuery.matches) {
+          return;
+        }
+        openSectionMenu();
+      });
+
+      sectionArea.addEventListener("mouseleave", function handleSectionPointerLeave() {
+        if (!hoverMediaQuery.matches) {
+          return;
+        }
+        closeSectionMenu();
+      });
+    }
   }
 
   /* 섹션으로 이동한 뒤에는 패널이 화면을 가리지 않게 함께 닫습니다. */
@@ -1177,6 +1286,10 @@ function initQuickMenu() {
 
   document.addEventListener("keydown", function handleQuickEscape(event) {
     if (event.key !== "Escape") {
+      return;
+    }
+    if (isChatbotOpen) {
+      closeChatbot(true);
       return;
     }
     if (isSectionMenuOpen) {

@@ -170,6 +170,17 @@
 
       <!-- ===================== 1. hero ===================== -->
       <section class="hero_section" id="hero_section" aria-labelledby="hero_title">
+        <!-- <svg class="hero_video_filter" aria-hidden="true" focusable="false">
+          <filter id="hero_remove_black" color-interpolation-filters="sRGB">
+            <feColorMatrix
+              type="matrix"
+              values="1 0 0 0 0
+                      0 1 0 0 0
+                      0 0 1 0 0
+                      3 3 3 0 -0.18"
+            />
+          </filter>
+        </svg>
         <video
           class="hero_video"
           autoplay
@@ -180,7 +191,7 @@
           aria-hidden="true"
         >
           <source src="./assets/main_hero_vid.webm" type="video/webm">
-        </video>
+        </video> -->
         <div class="page_container hero_inner">
           <!-- 우측 상단: 날씨 / 대기 시간 -->
           <div class="hero_info hero_info_weather">
@@ -200,7 +211,10 @@
           </div>
 
           <h1 class="hero_title" id="hero_title">
-            <span class="hero_title_art" aria-hidden="true"></span>
+            <span class="hero_title_track" aria-hidden="true">
+              <span class="hero_title_art"></span>
+              <span class="hero_title_art"></span>
+            </span>
             <span class="visually_hidden">N Seoul Tower</span>
           </h1>
 
