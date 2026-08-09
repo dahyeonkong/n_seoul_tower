@@ -235,6 +235,8 @@ function initEventPathMotion() {
   var section = document.querySelector("#events_section");
   var sticky = document.querySelector("[data-events-sticky]");
   var curve = section ? section.querySelector(".events_curve") : null;
+  /* 곡선 지오메트리를 읽는 대상. SVG 를 불러오면 인라인 SVG 로 교체됩니다. */
+  var curveElement = curve;
   var list = section ? section.querySelector("[data-events-list]") : null;
   var items = list ? Array.from(list.querySelectorAll(".event_item")) : [];
   var viewButtons = section ? Array.from(section.querySelectorAll("[data-events-view]")) : [];
@@ -337,9 +339,11 @@ function initEventPathMotion() {
     section.classList.remove("has_static_events");
     var sectionRect = section.getBoundingClientRect();
     var stageHeight = sticky.offsetHeight;
-    /* transform 이 걸린 곡선이라 getBoundingClientRect 대신 레이아웃 크기를 씁니다. */
-    var curveWidth = curve.offsetWidth;
-    var curveHeight = curve.offsetHeight;
+    /* transform 이 걸린 곡선이라 getBoundingClientRect 는 쓸 수 없고,
+       인라인 SVG 는 offsetWidth 가 표준이 아니라 계산된 스타일에서 읽습니다. */
+    var curveStyle = window.getComputedStyle(curveElement);
+    var curveWidth = parseFloat(curveStyle.width);
+    var curveHeight = parseFloat(curveStyle.height);
     var scrollTravel = Math.max(1, section.offsetHeight - stageHeight);
     var progress = Math.min(1, Math.max(0, -sectionRect.top / scrollTravel));
     var pathLength = visibleEndLength - (visibleEndLength - visibleStartLength) * progress;
@@ -434,6 +438,37 @@ function initEventPathMotion() {
       pathElement.setAttribute("d", sourcePath.getAttribute("d"));
       geometry.appendChild(pathElement);
       section.appendChild(geometry);
+
+      /* 화면용 곡선을 인라인 SVG 로 다시 그립니다.
+         <img> 는 object-fit 으로 상자만 늘어나고 SVG 안쪽 좌표계는
+         preserveAspectRatio 기본값(xMidYMid meet)으로 비율을 유지한 채 가운데 정렬돼,
+         세로로 늘린 상자에서는 곤돌라 경로와 선이 어긋납니다. */
+      if (sourceSvg) {
+        var previousVector = section.querySelector(".events_curve_vector");
+        if (previousVector) {
+          previousVector.remove();
+        }
+
+        var vector = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        vector.setAttribute("class", "events_curve events_curve_vector");
+        vector.setAttribute("viewBox", sourceSvg.getAttribute("viewBox") || "");
+        vector.setAttribute("preserveAspectRatio", "none");
+        vector.setAttribute("aria-hidden", "true");
+        vector.setAttribute("focusable", "false");
+
+        Array.prototype.forEach.call(sourceSvg.childNodes, function (node) {
+          vector.appendChild(node.cloneNode(true));
+        });
+
+        /* 세로로 크게 늘어나므로 선 굵기는 배율의 영향을 받지 않게 고정합니다. */
+        Array.prototype.forEach.call(vector.querySelectorAll("path"), function (node) {
+          node.setAttribute("vector-effect", "non-scaling-stroke");
+        });
+
+        curve.insertAdjacentElement("afterend", vector);
+        curve.hidden = true;
+        curveElement = vector;
+      }
 
       findVisiblePathRange();
       requestEventPathRender();
