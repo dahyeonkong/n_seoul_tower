@@ -396,6 +396,10 @@
           end: '+=' + cfg.scrollLength,
           pin: cfg.pin ? dom.stage : false,
           pinSpacing: true,
+          // position: fixed 핀은 스무스 스크롤(Lenis 등)에서 갱신을 놓치면
+          // 화면에 고정된 채 남아 다른 섹션을 덮는다. transform 핀은 문서 흐름에
+          // 남으므로 그런 상태가 생기지 않는다.
+          pinType: 'transform',
           anticipatePin: 1,
           scrub: cfg.scrub,
           invalidateOnRefresh: true,
