@@ -325,7 +325,7 @@
 .main_visual_tower {
   position: absolute;
   left: 50%;
-  bottom: 0;
+  bottom: 40%;
   z-index: 4;
   display: block;
   width: 50%;
@@ -344,13 +344,25 @@
   height: auto;
 }
 
+@media (min-width: 500px) and (max-width: 833px) {
+  .main_visual_tower {
+    width: 40%;
+    bottom:30%;
+  }
+}
+
 .main_visual_inner {
   position: relative;
   z-index: 3;
+  transform: translateY(0);
 }
 
-/* 하단 정보 바 */
+/* 하단 정보 바
+   바 안 글자 크기는 --main_visual_text_scale 로 한 번에 조절합니다.
+   (라벨 / 값 / 단위 / BOOK NOW 전부 이 배율을 곱해서 씁니다) */
 .main_visual_bar {
+  --main_visual_text_scale: 1;
+
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -400,7 +412,7 @@
 }
 
 .main_visual_label {
-  font-size: var(--fs_hero_label);
+  font-size: calc(var(--fs_hero_label) * var(--main_visual_text_scale));
   line-height: 1.2;
 }
 
@@ -414,7 +426,7 @@
 .main_visual_value {
   flex-wrap: wrap;
   font-family: var(--font_title);
-  font-size: var(--fs_hero_value);
+  font-size: calc(var(--fs_hero_value) * var(--main_visual_text_scale));
   font-weight: 300;
   line-height: 1.2;
 }
@@ -425,7 +437,7 @@
 
 .main_visual_unit {
   font-family: var(--font_body);
-  font-size: var(--main_visual_unit);
+  font-size: calc(var(--main_visual_unit) * var(--main_visual_text_scale));
   font-weight: 200;
   line-height: 1.2;
 }
@@ -438,17 +450,31 @@
 
 .main_visual_book {
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   min-height: 44px;
+  font-size: calc(var(--fs_sm) * var(--main_visual_text_scale));
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .main_visual_divider {
+    display: none;
+  }
+
+  .btn_stroke.main_visual_book {
+    padding: 4px 12px;
+  }
 }
 
 @media (min-width: 834px) {
   .main_visual {
-    --main_visual_unit: 14px;
+    --main_visual_unit: 16px;
 
-    /* FAB: 28 + 94.4 = 122.4px */
-    padding-bottom: 134px;
+    /* 세로 1열이라 BOOK NOW 가 바 왼쪽에 놓입니다.
+       우측 하단 quick_menu(FAB) 와 가로로 겹치지 않으므로 아래 여백을 되돌립니다. */
+    padding-bottom: 40px;
   }
 
   .main_visual_glow {
@@ -468,31 +494,31 @@
     transform: translateX(-50%);
   }
 
-  /* 태블릿부터 정보 바를 데스크톱과 같은 1행 구조로 둡니다.
-     좁은 폭에 4개 항목을 한 줄로 넣어야 해서 간격을 데스크톱보다 좁힙니다. */
+  /* 태블릿에서는 4개 항목을 세로 한 줄로 쌓습니다.
+     1280 이상에서 다시 가로 1행이 됩니다.
+     바 안 글자는 10% 줄입니다. (1280 이상에서 1 로 복귀) */
   .main_visual_bar {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
+    --main_visual_text_scale: 0.9;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 36px;
     padding: 24px 20px;
+    width:40%;
   }
 
   .main_visual_group {
-    flex: 0 1 auto;
-    gap: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 36px;
   }
 
   .main_visual_item {
-    flex: 0 1 auto;
-    gap: 12px;
+    flex: 0 0 auto;
+    gap: 20px;
   }
 
-  /* 4개 항목을 한 줄에 넣으려면 값 글자를 데스크톱보다 줄여야 합니다.
-     값은 줄바꿈하지 않고, 라벨만 2줄까지 접히게 둡니다. */
   .main_visual_value {
     flex-wrap: nowrap;
-    font-size: 22px;
     white-space: nowrap;
   }
 
@@ -506,8 +532,8 @@
   }
 
   .main_visual_weather_icon {
-    width: 48px;
-    height: 48px;
+    width: 60px;
+    height: 60px;
   }
 
   .main_visual_text {
@@ -554,15 +580,21 @@
   }
 
   .main_visual_bar {
+    /* 태블릿에서 10% 줄인 글자를 시안 크기로 되돌립니다. */
+    --main_visual_text_scale: 1;
+
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     /* 1920 미만에서는 바 폭이 줄어드는 만큼 간격을 좁혀 한 줄을 유지합니다. */
     gap: 24px;
+    width:100%;
   }
 
   .main_visual_group {
     flex: 0 1 auto;
+    flex-direction: row;
+    align-items: center;
     gap: 24px;
   }
 
@@ -570,6 +602,9 @@
     flex: 0 1 auto;
     align-items: flex-end;
     gap: 26px;
+  }
+  .main_visual_item.main_visual_item_ticket{
+    padding-right:60px;
   }
 
   .main_visual_item_ticket {
@@ -602,6 +637,14 @@
   .main_visual_bar,
   .main_visual_group {
     gap: 36px;
+  }
+}
+
+@media (min-width: 1700px) {
+  .main_visual_tower {
+    width: 25%;
+    left:50%;
+    transform: translateX(-50%);
   }
 }
 
