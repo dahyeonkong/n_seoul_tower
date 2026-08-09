@@ -6,8 +6,17 @@
    js/common.js 가 담당합니다.
    ========================================================================== */
 
-/* 고정 스크롤은 시안이 있는 데스크톱에서만 씁니다. 그 아래는 5개가 그냥 쌓입니다. */
+/* 고정 스크롤은 시안이 있는 데스크톱에서만 씁니다. */
 var ABOUT_PINNED_QUERY = "(min-width: 1280px)";
+
+/* 태블릿(1132:2612)과 모바일(1137:3648) 시안은 스크롤 고정 대신 넘기는 슬라이더입니다.
+   화살표 / 좌우 스와이프 / 레일의 01~05 동그라미, 세 가지로 넘길 수 있습니다.
+   고정 스크롤 구간과 겹치지 않게 잡아 한 번에 하나만 동작합니다. */
+var ABOUT_SLIDER_QUERY = "(max-width: 1279.98px)";
+
+/* 스와이프로 인정할 최소 가로 이동 거리(px)입니다.
+   이보다 짧으면 넘기려던 게 아니라 그냥 누른 것으로 봅니다. */
+var ABOUT_SWIPE_MIN_DISTANCE = 50;
 
 /* 각 점이 레일 선 위의 어디에 놓이는지입니다 (선 길이 342.755 대비 %).
    시안 좌표(선 시작 125.03,54.23 / 기울기 103도)에 점 중심을 투영해 구했습니다.
@@ -54,9 +63,22 @@ function initAboutPanels() {
     return;
   }
 
+  var pager = section.querySelector("[data-about-pager]");
+  var prevButton = pager ? pager.querySelector("[data-about-prev]") : null;
+  var nextButton = pager ? pager.querySelector("[data-about-next]") : null;
+  var stepButtons = toArray(section.querySelectorAll("[data-about-step]"));
+  var currentLabel = pager ? pager.querySelector("[data-about-current]") : null;
+  var totalLabel = pager ? pager.querySelector("[data-about-total]") : null;
+  var viewport = section.querySelector("[data-about-viewport]");
+
   var pinnedQuery = window.matchMedia(ABOUT_PINNED_QUERY);
+  var sliderQuery = window.matchMedia(ABOUT_SLIDER_QUERY);
   var isPinned = false;
+  var isSliderOn = false;
   var isFrameRequested = false;
+  var swipePointerId = null;
+  var swipeStartX = 0;
+  var swipeStartY = 0;
   var activeIndex = -1;
   var railProgress = -1;
 
@@ -139,6 +161,13 @@ function initAboutPanels() {
   function renderScrollState() {
     isFrameRequested = false;
 
+    /* 고정 스크롤을 끈 뒤에도 예약해 둔 프레임은 한 번 더 실행됩니다.
+       그대로 두면 화면을 좁혀 태블릿으로 넘어간 직후 슬라이더가 막 정한 패널을
+       스크롤 위치로 덮어써 카운터와 화면이 어긋납니다. */
+    if (!isPinned) {
+      return;
+    }
+
     var lastIndex = panels.length - 1;
     /* 0~5 구간으로 펼쳐 정수부는 현재 패널, 소수부는 다음 패널로 넘어가는 정도입니다. */
     var scaled = readProgress() * panels.length;
@@ -181,19 +210,28 @@ function initAboutPanels() {
     renderScrollState();
   }
 
-  function disablePinnedScroll() {
-    if (isPinned) {
-      isPinned = false;
-      window.removeEventListener("scroll", handleAboutScroll);
-      window.removeEventListener("resize", handleAboutResize);
-    }
-    /* 쌓임 배치로 돌아가면 상태 class 가 남지 않게 정리합니다. */
+  /* 쌓임 배치로 돌아가면 상태 class 가 남지 않게 정리합니다.
+     HTML 의 첫 패널에 붙어 있는 is_active 도 여기서 걷힙니다. */
+  function resetPanels() {
     activeIndex = -1;
-    railProgress = -1;
     panels.forEach(function (panel) {
       panel.classList.remove("is_active");
       panel.classList.remove("is_previous");
     });
+  }
+
+  /* 켜져 있을 때만 정리합니다. 조건 없이 지우면 태블릿 슬라이더가 켜진 상태에서
+     모드 재확인이 돌 때 활성 패널까지 함께 지워집니다. */
+  function disablePinnedScroll() {
+    if (!isPinned) {
+      return;
+    }
+    isPinned = false;
+    window.removeEventListener("scroll", handleAboutScroll);
+    window.removeEventListener("resize", handleAboutResize);
+
+    railProgress = -1;
+    resetPanels();
     steps.forEach(function (step) {
       step.classList.remove("is_active");
       step.classList.remove("is_passed");
@@ -205,22 +243,189 @@ function initAboutPanels() {
     }
   }
 
-  function handlePinnedQueryChange() {
-    if (pinnedQuery.matches && !prefersReducedMotion()) {
-      enablePinnedScroll();
-    } else {
-      disablePinnedScroll();
+  /* ------------------------------------------------------------------------
+     태블릿 — 화살표로 넘기는 슬라이더 (1132:2612)
+     패널 전환은 데스크톱과 같은 renderActivePanel() 을 그대로 씁니다.
+     직전 패널이 .is_previous 로 남아 사진이 50% 로 깔리는 것도 동일합니다.
+     ------------------------------------------------------------------------ */
+  function padNumber(value) {
+    return value < 10 ? "0" + value : String(value);
+  }
+
+  /* 카운터와 화살표 활성 여부를 현재 인덱스에 맞춥니다.
+     전체 개수는 실제 패널 수에서 읽으므로 패널이 늘어도 따로 고칠 곳이 없습니다. */
+  function renderPager() {
+    if (currentLabel) {
+      currentLabel.textContent = padNumber(activeIndex + 1);
+    }
+    if (totalLabel) {
+      totalLabel.textContent = "/" + padNumber(panels.length);
+    }
+    if (prevButton) {
+      prevButton.disabled = activeIndex <= 0;
+    }
+    if (nextButton) {
+      nextButton.disabled = activeIndex >= panels.length - 1;
     }
   }
 
-  handlePinnedQueryChange();
-
-  if (typeof pinnedQuery.addEventListener === "function") {
-    pinnedQuery.addEventListener("change", handlePinnedQueryChange);
-  } else if (typeof pinnedQuery.addListener === "function") {
-    /* Safari 13 이하 */
-    pinnedQuery.addListener(handlePinnedQueryChange);
+  function goToPanel(index) {
+    var target = Math.min(Math.max(index, 0), panels.length - 1);
+    if (target === activeIndex) {
+      return;
+    }
+    renderActivePanel(target);
+    renderPager();
   }
+
+  function handlePrevClick() {
+    goToPanel(activeIndex - 1);
+  }
+
+  function handleNextClick() {
+    goToPanel(activeIndex + 1);
+  }
+
+  /* 레일의 01~05 동그라미를 눌러 바로 그 슬라이드로 갑니다. */
+  function handleStepClick(event) {
+    var index = Number(event.currentTarget.getAttribute("data-about-step"));
+    if (!isNaN(index)) {
+      goToPanel(index);
+    }
+  }
+
+  /* 데스크톱은 스크롤로 넘기므로 동그라미는 장식입니다.
+     눌리지도, 탭 이동으로 잡히지도 않게 막아 둡니다 (AGENTS 10.6). */
+  function renderStepButtons(canUse) {
+    stepButtons.forEach(function (button) {
+      button.disabled = !canUse;
+    });
+  }
+
+  /* 손가락을 뗀 자리와 짚은 자리를 비교해 넘길지 정합니다.
+     세로로 더 많이 움직였으면 페이지를 스크롤하려던 것으로 보고 넘기지 않습니다.
+     preventDefault 를 쓰지 않아 세로 스크롤은 평소대로 동작합니다
+     (가로만 JS 가 가져가도록 CSS 에서 touch-action: pan-y 를 줬습니다). */
+  function handleSwipeStart(event) {
+    /* 마우스는 왼쪽 버튼만 받습니다. */
+    if (event.pointerType === "mouse" && event.button !== 0) {
+      return;
+    }
+    swipePointerId = event.pointerId;
+    swipeStartX = event.clientX;
+    swipeStartY = event.clientY;
+  }
+
+  function handleSwipeEnd(event) {
+    if (swipePointerId === null || event.pointerId !== swipePointerId) {
+      return;
+    }
+    swipePointerId = null;
+
+    var moveX = event.clientX - swipeStartX;
+    var moveY = event.clientY - swipeStartY;
+
+    if (Math.abs(moveX) < ABOUT_SWIPE_MIN_DISTANCE || Math.abs(moveX) <= Math.abs(moveY)) {
+      return;
+    }
+
+    /* 오른쪽으로 끌면 이전, 왼쪽으로 끌면 다음입니다. */
+    goToPanel(moveX > 0 ? activeIndex - 1 : activeIndex + 1);
+  }
+
+  function handleSwipeCancel() {
+    swipePointerId = null;
+  }
+
+  /* 사진 위에서 끌면 브라우저 기본 이미지 드래그가 시작되고,
+     그러면 pointerup 대신 pointercancel 이 와서 스와이프가 끊깁니다. */
+  function handleSwipeDragStart(event) {
+    event.preventDefault();
+  }
+
+  function enableSlider() {
+    if (isSliderOn || !pager) {
+      return;
+    }
+    isSliderOn = true;
+    if (prevButton) {
+      prevButton.addEventListener("click", handlePrevClick);
+    }
+    if (nextButton) {
+      nextButton.addEventListener("click", handleNextClick);
+    }
+    if (viewport) {
+      viewport.addEventListener("pointerdown", handleSwipeStart, { passive: true });
+      viewport.addEventListener("pointerup", handleSwipeEnd, { passive: true });
+      viewport.addEventListener("pointercancel", handleSwipeCancel, { passive: true });
+      viewport.addEventListener("dragstart", handleSwipeDragStart);
+    }
+    stepButtons.forEach(function (button) {
+      button.addEventListener("click", handleStepClick);
+    });
+    renderStepButtons(true);
+    renderActivePanel(0);
+    renderPager();
+  }
+
+  function disableSlider() {
+    if (!isSliderOn) {
+      return;
+    }
+    isSliderOn = false;
+    if (prevButton) {
+      prevButton.removeEventListener("click", handlePrevClick);
+    }
+    if (nextButton) {
+      nextButton.removeEventListener("click", handleNextClick);
+    }
+    if (viewport) {
+      viewport.removeEventListener("pointerdown", handleSwipeStart);
+      viewport.removeEventListener("pointerup", handleSwipeEnd);
+      viewport.removeEventListener("pointercancel", handleSwipeCancel);
+      viewport.removeEventListener("dragstart", handleSwipeDragStart);
+    }
+    stepButtons.forEach(function (button) {
+      button.removeEventListener("click", handleStepClick);
+    });
+    renderStepButtons(false);
+    swipePointerId = null;
+    resetPanels();
+  }
+
+  /* 데스크톱 고정 스크롤 / 태블릿 슬라이더 / 모바일 쌓임 중 하나만 켭니다.
+     모션 최소화 설정에서도 슬라이더는 그대로 둡니다. 넘기기는 장식이 아니라
+     내용을 보는 유일한 수단이고, 움직임 자체는 CSS 쪽에서 없어집니다 (AGENTS 10.7). */
+  function handleModeChange() {
+    if (pinnedQuery.matches && !prefersReducedMotion()) {
+      disableSlider();
+      /* 슬라이더를 한 번도 켠 적이 없어도 동그라미는 잠가 둡니다. */
+      renderStepButtons(false);
+      enablePinnedScroll();
+      return;
+    }
+
+    disablePinnedScroll();
+
+    if (sliderQuery.matches) {
+      enableSlider();
+    } else {
+      disableSlider();
+      /* 모바일 쌓임 배치 — HTML 에 박혀 있는 첫 패널의 is_active 를 걷어 냅니다. */
+      resetPanels();
+    }
+  }
+
+  handleModeChange();
+
+  [pinnedQuery, sliderQuery].forEach(function (query) {
+    if (typeof query.addEventListener === "function") {
+      query.addEventListener("change", handleModeChange);
+    } else if (typeof query.addListener === "function") {
+      /* Safari 13 이하 */
+      query.addListener(handleModeChange);
+    }
+  });
 }
 
 /* --------------------------------------------------------------------------

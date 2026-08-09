@@ -37,10 +37,27 @@
   /* 타워가 딛고 선 언덕 (1180:5885) — 타원의 윗부분만 잘라 씁니다.
      시안 폭(2048)은 화면 끝에서 곡선이 바닥에 닿아 언덕이 사라집니다.
      타원을 화면 두 배로 넓혀 양 끝까지 언덕이 이어지게 했습니다. */
-  --brand_hill: #c8d2a3;
+  --brand_hill: #fcdea7;
   --hill_w: 200vw;
   --hill_h: min(16.15vw, 310px);
   --hill_top: min(5.26vw, 101px);
+
+  /* 모바일(1137:5824) 전용 — 왼쪽에서 따라 내려오는 타워.
+     값은 전부 시안 360 기준 실측입니다.
+       타워    131.258 × 317.633 x=12.371 · opacity 0.7
+       타워 1  y 259.8   타워 2  y 981
+     stage 는 타워를 담은 sticky 상자입니다. 높이를 391.8 로 잡으면 이동 구간이
+     723 이 되어 시안의 이동 거리(721.2)와 1.8 안에서 맞습니다.
+     시안에는 타워 밑동에 초록 띠(floor_line)가 깔려 있지만 뺐습니다(사용자 요청). */
+  --tower_w: 36.46vw;
+  --tower_stage_h: 108.83vw;
+  --tower_stage_pad: 13vw;
+  /* 타워가 화면 어디에 걸릴지는 시안(정지 화면)에 없는 값이라 여기서 정했습니다.
+     공용 헤더(84)와 화면 하단 탭(68) 사이 가용 영역 한가운데에 오도록 잡은
+     값입니다: 84 + (648 − 391.8) / 2 ≒ 212. 800 높이 기준 26vh 입니다. */
+  --tower_sticky_top: 26vh;
+  /* 글이 타워 위를 지나가도 읽히도록 반투명하게 둡니다 (시안 opacity 70%). */
+  --tower_opacity: 0.7;
 
   /* 공통 히어로·탭 컴포넌트 색상 */
   --subpage_hero_bg: var(--color_new_primary_400, #b6c384);
@@ -69,6 +86,23 @@
 .brand_about {
   position: relative;
   background-color: var(--brand_surface);
+}
+
+/* 히어로와 about 사이의 빈 띠 메우기.
+   공용 탭 바(.subpage_tabs)는 sticky 로 화면 하단에 붙지만 흐름상 자리는 그대로
+   차지합니다. 스크롤하면 그 자리가 비면서 크림색 바닥이 드러납니다.
+   공용 컴포넌트를 수정하지 않고, about 바로 위에 히어로와 같은 연두색 띠를 깔아 메웁니다.
+   높이에 1px 을 더한 것은 히어로와의 경계에 생기는 서브픽셀 틈을 막기 위한 것으로,
+   넘치는 1px 은 히어로의 같은 연두색 위에 겹치므로 보이지 않습니다. */
+.brand_about::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: calc(var(--brand_tab_h) + 1px);
+  background-color: var(--subpage_hero_bg);
+  pointer-events: none;
 }
 
 .about_viewport {
@@ -161,6 +195,11 @@
 
 /* 대각선 인디케이터는 209 × 424 고정 좌표 장식이라 좁은 폭에서는 숨깁니다. */
 .about_rail {
+  display: none;
+}
+
+/* 페이저도 태블릿(834~1279) 전용입니다. 레일과 같이 기본은 꺼 둡니다. */
+.about_pager {
   display: none;
 }
 
@@ -274,22 +313,35 @@
   mask: url("../assets/brand_story/Vector_15.svg") 0 0 / 100% 100% no-repeat;
 }
 
-/* 실루엣이 세로로 길어 영상을 세로 기준으로 채우고 좌우를 잘라 씁니다.
-   가운데(50%)로 두면 왼쪽 아래 모서리에 영상의 어두운 부분이 들어와서
-   조금 오른쪽으로 밀어 두었습니다. */
+/* 영상 배치는 시안 수치를 그대로 옮깁니다.
+   시안은 마스크 471 × 1134 안에 영상 781 × 1171 을 (-165, -37) 에 놓습니다.
+   마스크 크기 대비 비율로 환산해 화면 폭이 변해도 같은 구도가 유지되게 했습니다.
+     width  781 / 471  = 165.82%      left -165 / 471  = -35.03%
+     height 1171 / 1134 = 103.26%     top   -37 / 1134 =  -3.26%
+   영상 원본(512 × 768)과 시안 배치(781 × 1171)의 비율이 같아 왜곡이 없습니다.
+   object-fit: cover 는 반올림 오차만 흡수하는 안전장치입니다. */
 .tower_data_video {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  left: -35.03%;
+  top: -3.26%;
+  width: 165.82%;
+  /* 공용 리셋의 max-width: 100% 가 폭을 마스크 크기로 잘라버려 해제합니다. */
+  max-width: none;
+  height: 103.26%;
   object-fit: cover;
-  object-position: 40% center;
 }
 
 /* --------------------------------------------------------------------------
    tablet — 834
    -------------------------------------------------------------------------- */
 @media (min-width: 834px) {
+  /* 모바일 전용 sticky 래퍼를 걷어 냅니다. display: contents 면 상자가 사라져
+     .tower_data_media 가 다시 .tower_data_columns 의 직접 자식처럼 배치됩니다.
+     장식(aria-hidden)이라 접근성 트리에서 빠져도 잃는 정보가 없습니다. */
+  .tower_data_stage {
+    display: contents;
+  }
+
   .about_panel {
     gap: 40px;
     padding-bottom: 88px;
@@ -324,6 +376,785 @@
 
   .tower_data_column {
     gap: 56px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   mobile — 833 이하 (1137:3648)
+
+   about 은 사진이 위, 글이 아래인 슬라이더입니다. 넘기는 방법은 세 가지 —
+   레일의 01~05 동그라미 / 좌우 스와이프 / 화살표.
+   전환 방향은 태블릿과 같습니다(사진 왼쪽→오른쪽, 글 오른쪽→왼쪽).
+   좌표는 모바일 시안 360 폭 기준입니다.
+   -------------------------------------------------------------------------- */
+@media (max-width: 833.98px) {
+  .about_viewport {
+    /* 사진 높이. 시안 img(1137:5781) 291 × 287 / 360 */
+    --about_photo_h: 79.72vw;
+    /* 시안 About(1137:5780) 높이 628 / 360.
+       패널을 겹쳐 쌓으면 칸 높이가 가장 긴 05 번에 맞춰져 시안(01 기준)보다
+       55 커집니다. 높이를 시안으로 고정하고 페이저는 아래에 붙여 두면
+       어느 슬라이드에서도 페이저가 같은 자리를 지킵니다.
+       아래 여백은 페이저가 설 자리(44 + 8)입니다. 패널은 이 위에서 끝나므로
+       360 보다 좁아져 본문이 한 줄 늘어도 페이저를 밀고 내려갈 뿐 겹치지 않습니다. */
+    min-height: 174.44vw;
+    padding-bottom: 52px;
+    display: grid;
+    overflow: hidden;
+    /* 좌우 스와이프는 JS 가, 세로 스크롤은 브라우저가 처리합니다. */
+    touch-action: pan-y;
+  }
+
+  .about_panel {
+    grid-area: 1 / 1;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    visibility: hidden;
+    z-index: 0;
+    transition: visibility 0s linear 800ms;
+  }
+
+  .about_panel.is_previous {
+    visibility: visible;
+    z-index: 1;
+    transition-delay: 0s;
+  }
+
+  .about_panel.is_active {
+    visibility: visible;
+    z-index: 2;
+    transition-delay: 0s;
+  }
+
+  /* 아랫변이 짧은 사다리꼴. 시안 윗변 291 / 아랫변 240 (360 기준).
+     시안의 사진은 사다리꼴이 이미 이미지에 구워져 있어 아랫변 좌표가 없습니다.
+     윗변만 실측(291)에 맞추고 아랫변은 기존 값을 유지했습니다. */
+  .about_image_box {
+    width: 100%;
+    height: var(--about_photo_h);
+    flex: none;
+    clip-path: polygon(0 0, 80.83% 0, 66.67% 100%, 0 100%);
+  }
+
+  /* 폭을 사다리꼴 윗변(291)까지만 씁니다. 박스 폭(360)을 다 채우면 원본
+     2296 × 2695 가 가로에 맞춰 커지면서 세로가 32% 잘려 피사체가 크게 보입니다.
+     291 로 줄이면 확대율이 19.2% 낮아져 세로도 84% 까지 보입니다.
+     291 오른쪽은 clip-path 가 어차피 잘라내는 자리라 빈틈은 생기지 않습니다. */
+  .about_image {
+    width: 80.83%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: translateX(-100%);
+    transition: opacity 500ms var(--brand_ease), transform 0s linear 800ms;
+    will-change: transform, opacity;
+  }
+
+  .about_panel.is_previous .about_image {
+    opacity: 0.5;
+    transform: translateX(0);
+    transition: opacity 600ms var(--brand_ease), transform 0s;
+  }
+
+  .about_panel.is_active .about_image {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 400ms var(--brand_ease), transform 1000ms var(--brand_ease);
+  }
+
+  /* 배경 숫자는 사진 왼쪽 아래에 걸치고 화면 왼쪽으로 잘려 나갑니다.
+     시안 num(1137:5782) x=-20 y=209 · Gmarket Medium 80 / 1.2 · #FFD973 30% */
+  .about_number {
+    top: 58.06vw;
+    right: auto;
+    left: -5.56vw;
+    font-size: 22.22vw;
+    /* GmarketSans 는 300 이 Medium 입니다 (common.css 매핑). */
+    font-weight: 300;
+    line-height: 1.2;
+    opacity: 0;
+    transition: opacity 400ms var(--brand_ease);
+  }
+
+  /* 시안은 30% 지만 실물에서 너무 흐려 20%p 올렸습니다 (사용자 요청). */
+  .about_panel.is_active .about_number {
+    opacity: 0.5;
+    transition: opacity 700ms var(--brand_ease) 200ms;
+  }
+
+  /* 글은 사진 바로 아래. 시안 txt_wrap(1137:3968) x=30 y=287 폭 291.
+     사진 아래 24 부터 글이 시작하고 오른쪽은 39 가 남습니다. */
+  .about_text {
+    width: 100%;
+    padding: 24px 39px 0 30px;
+    gap: 24px;
+    transform: translateX(56px);
+    opacity: 0;
+    transition: opacity 280ms var(--brand_ease), transform 0s linear 800ms;
+    will-change: transform, opacity;
+  }
+
+  .about_panel.is_active .about_text {
+    transform: translateX(0);
+    opacity: 1;
+    transition: opacity 700ms var(--brand_ease) 260ms, transform 900ms var(--brand_ease) 260ms;
+  }
+
+  /* 크기는 모바일 시안(1137:3969 / 1137:3973)에서 그대로 읽은 값입니다.
+     base 의 clamp() 는 360 에서 최소값에 걸려 시안보다 큽니다. */
+  .about_title_box {
+    gap: 1.793px;
+  }
+
+  .about_eyebrow {
+    font-size: 14px;
+  }
+
+  .about_title {
+    font-size: 32px;
+  }
+
+  .about_subtitle {
+    font-size: 14px;
+  }
+
+  .about_body {
+    gap: 5.378px;
+  }
+
+  .about_lead {
+    font-size: 12px;
+  }
+
+  .about_desc {
+    font-size: 12px;
+  }
+
+  /* ---- 레일 : 사진 위 대각선. 눌러서 넘길 수 있습니다 ---- */
+  .about_rail {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: block;
+    /* 동그라미만 눌리고 사진 위 스와이프는 그대로 통과시킵니다. */
+    pointer-events: none;
+  }
+
+  .about_step {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 4.302px;
+  }
+
+  /* 점 다섯 개를 사진 사다리꼴의 대각선과 나란한 직선 위에 올립니다.
+     시안(1137:3976)의 점들은 사진보다 가파르게 누워 있어 아래로 갈수록 사진에서
+     멀어집니다. 사용자 요청으로 사진 대각선과 각도를 맞추고 20 을 띄웠습니다.
+
+       사진 대각선   (291, 0) → (240, 287)     기울기 −51 / 287 = −0.1777
+       바깥쪽 법선   (0.9846, 0.1750) × 20     → 평행선 (310.69, 3.5) → (259.69, 290.5)
+       점 중심       x = 310.69 − 0.1777 × (y − 3.5)
+
+       01 (293.79, 98.60)   02 (286.81, 137.86)  03 (279.84, 177.12)
+       04 (272.00, 221.22)  05 (264.17, 265.31)
+
+     세로 위치는 시안 그대로 두고 가로만 옮겼습니다.
+     left 는 점의 왼쪽 끝(중심 − 2.151), top 은 단계 상자의 위쪽(중심 − 10.756)입니다.
+     상자 높이는 숫자 원(21.511)이 정하고 점은 align-items 로 세로 가운데에 옵니다. */
+  .about_step:nth-child(1) { top: 24.40vw; left: 81.01%; }
+  .about_step:nth-child(2) { top: 35.31vw; left: 79.07%; }
+  .about_step:nth-child(3) { top: 46.21vw; left: 77.14%; }
+  .about_step:nth-child(4) { top: 58.46vw; left: 74.96%; }
+  .about_step:nth-child(5) { top: 70.71vw; left: 72.78%; }
+
+  .about_step_dot {
+    width: 4.302px;
+    height: 4.302px;
+    flex: none;
+    border-radius: 50%;
+    background-color: var(--brand_dot_idle);
+    transition: background-color 220ms linear;
+  }
+
+  .about_step.is_active .about_step_dot {
+    background-color: var(--brand_rail_fill);
+  }
+
+  .about_step_num {
+    display: grid;
+    width: 21.511px;
+    height: 21.511px;
+    flex: none;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--color_new_primary_200, #dbe1c1);
+    font-family: var(--font_title);
+    font-size: 11px;
+    /* GmarketSans 는 300 이 Medium 입니다 (common.css 매핑). */
+    font-weight: 300;
+  }
+
+  .about_step.is_active .about_step_num {
+    background-color: var(--color_new_primary_500, #a4b465);
+    color: var(--color_new_primary_50, #f6f7f0);
+  }
+
+  /* ---- 페이저 : 가운데 정렬 (시안 1339:6802) ----
+     시안은 16px 아이콘이 y=590 에 오고 프레임(628)까지 22 가 남습니다.
+     여기서는 손가락으로 누를 수 있도록 버튼을 44 × 44 로 두고(AGENTS 6.3),
+     아이콘이 시안과 같은 자리에 오도록 위아래 여백에서 (44 − 16) / 2 = 14 를 뺐습니다.
+     같은 이유로 가로 간격도 16 이 아니라 16 − 14 = 2 입니다. */
+  .about_pager {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .about_pager_button {
+    display: flex;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    cursor: pointer;
+  }
+
+  .about_pager_button:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .about_pager_icon {
+    display: block;
+    width: 16px;
+    height: 16px;
+    background-color: #ffa304;
+    -webkit-mask: url("../assets/icon/chevron_left.svg") center / contain no-repeat;
+    mask: url("../assets/icon/chevron_left.svg") center / contain no-repeat;
+  }
+
+  [data-about-next] .about_pager_icon {
+    transform: scaleX(-1);
+  }
+
+  /* 시안 카운트 폭 52.703 (Gmarket Medium 12 / 1.2).
+     폭을 고정해야 01 → 05 로 넘어가도 화살표가 좌우로 흔들리지 않습니다. */
+  .about_pager_count {
+    min-width: 52.703px;
+    font-family: var(--font_title);
+    font-size: 12px;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  /* 모바일 시안만 색이 다릅니다 (태블릿은 point600 / secondary200). */
+  .about_pager_current {
+    color: #ffa304;
+    font-weight: 300;
+  }
+
+  .about_pager_total {
+    color: #b1b1b1;
+    font-weight: 300;
+  }
+
+  /* ---- tower data : 글은 우측정렬 단일 컬럼, 타워는 왼쪽 (1137:5824) ----
+     시안 360 × 1327. 위 여백 117 / 왼쪽은 타워 기준 12.371 / 오른쪽 21.8.
+     PC·태블릿의 3단(제원 / 타워 / 제원)을 한 줄로 풀고, 타워는 글 뒤로 보냅니다. */
+  .tower_data {
+    padding: 32.5vw 6.06vw var(--brand_tab_h) 3.44vw;
+    /* 기본값인 overflow: hidden 은 스크롤 컨테이너를 만들어서, 그 안에 있는
+       타워의 position: sticky 가 전혀 움직이지 않습니다.
+       clip 은 넘친 부분을 자르기만 하고 스크롤 컨테이너를 만들지 않아
+       타워가 화면 기준으로 따라 내려옵니다. */
+    overflow: clip;
+  }
+
+  /* 모바일 시안에는 살구색 언덕이 없습니다. 섹션 바닥은 배경색 그대로 둡니다. */
+  .tower_data::after {
+    display: none;
+  }
+
+  /* 제목(1137:3759) 오른쪽 끝 337.6 · gap 2 */
+  .tower_data_head {
+    align-items: flex-end;
+    gap: 2px;
+    text-align: right;
+  }
+
+  .tower_data_eyebrow {
+    font-size: 12px;
+  }
+
+  .tower_data_title {
+    font-size: 32px;
+  }
+
+  /* 제목 묶음 ↔ 제원 사이. 시안 title_box(1137:3759)는 글자(57) 아래로 17.4 가
+     더 있는 높이 74.4 짜리 상자라, 글자 기준인 여기서는 그만큼 더합니다.
+     117 + 74.4 + 21.6 = 213 이 제원이 시작하는 자리입니다. */
+  .tower_data_inner {
+    gap: 39px;
+  }
+
+  /* 좌·우 컬럼을 한 줄로 이어 붙입니다. HTML 순서가 시안 순서와 같아
+     그대로 쌓기만 하면 됩니다. 두 컬럼 사이만 77.6 으로 벌어집니다.
+     행을 명시해야 타워가 두 컬럼 전체에 걸칩니다 — grid-template-rows 가 없으면
+     모든 행이 암시적이라 타워의 grid-row: 1 / -1 이 1행짜리로 줄어듭니다. */
+  .tower_data_columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-items: start;
+    gap: 77.6px;
+  }
+
+  .tower_data_column_left {
+    grid-row: 1;
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .tower_data_column_right {
+    grid-row: 2;
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  /* 글줄이 시안(폭 283.2)과 같은 자리에서 접히도록 폭을 제한하고 오른쪽으로 붙입니다.
+     타워 위를 지나가므로 쌓임 순서도 글이 위입니다. */
+  .tower_data_column {
+    position: relative;
+    z-index: 1;
+    grid-column: 1;
+    align-items: flex-end;
+    max-width: 78.67vw;
+    margin-left: auto;
+    gap: 48px;
+    text-align: right;
+  }
+
+  /* 좁은 묶음은 PC 시안에만 있는 규칙입니다. 여기서는 내용만큼만 차지합니다. */
+  .tower_data_group_narrow {
+    width: auto;
+  }
+
+  .tower_data_group {
+    gap: 14.4px;
+  }
+
+  .tower_data_item {
+    gap: 2.4px;
+  }
+
+  .tower_data_label {
+    font-size: 12px;
+  }
+
+  /* 시안은 값마다 줄바꿈이 박혀 있지만(각 줄이 별도 텍스트), HTML 은 PC·태블릿과
+     공유하므로 <br> 을 늘릴 수 없습니다. 대신 폭을 시안에서 가장 넓은 값 상자(196)로
+     묶어 같은 자리에서 접히게 했습니다. 이 폭에서 다섯 묶음의 높이가 모두 시안과
+     0.3 안에서 맞습니다. 폭이 늘면 줄이 붙어 버려 vw 가 아니라 px 로 고정합니다. */
+  .tower_data_value {
+    max-width: 196px;
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
+  /* 한 항목에 값이 여러 줄로 붙는 곳(Safety inspections)은 문단 사이가 20 입니다.
+     라벨↔값 간격(2.4)에 더해 17.6 만 벌립니다. */
+  .tower_data_value + .tower_data_value {
+    margin-top: 17.6px;
+  }
+
+  /* 시안의 마지막 묶음들은 글자보다 큰 고정 높이 상자라 아래가 비어 있습니다
+     (Safe wind speed 6.4 / Safety inspections 76.9). 이 빈 자리가 있어야
+     다음 묶음까지의 간격과 섹션 바닥(1327.8)이 시안과 맞고,
+     타워가 sticky 로 내려오는 거리도 시안의 721.2 와 일치합니다. */
+  .tower_data_column_left {
+    padding-bottom: 6.4px;
+  }
+
+  .tower_data_column_right {
+    padding-bottom: 76.9px;
+  }
+
+  /* ---- 타워 : 왼쪽에서 sticky 로 따라 내려옵니다 ---- */
+  /* 제원 전체 높이를 이동 구간으로 씁니다. 이 칸 안에서만 sticky 가 움직이므로
+     타워는 시안의 첫 자리(259.8)에서 걸린 뒤 마지막 자리(981)까지 내려와 멈춥니다.
+     아래쪽 여백 29 는 시안에서 밑동 아래 띠가 깔리던 자리입니다. 띠는 뺐지만
+     이 높이가 sticky 가 멈추는 지점을 정하므로 그대로 둡니다. */
+  .tower_data_stage {
+    position: sticky;
+    top: var(--tower_sticky_top);
+    z-index: 0;
+    grid-column: 1;
+    grid-row: 1 / -1;
+    align-self: start;
+    justify-self: start;
+    width: var(--tower_w);
+    height: var(--tower_stage_h);
+    padding-top: var(--tower_stage_pad);
+    pointer-events: none;
+  }
+
+  .tower_data_media {
+    order: 0;
+    width: 100%;
+    margin-inline: 0;
+    /* 글이 타워 위를 지나가도 읽히도록 반투명하게 둡니다 (시안 70%). */
+    opacity: var(--tower_opacity);
+  }
+}
+
+/* 레일 동그라미를 덮는 투명 버튼. 흐름에 끼어들지 않게 겹쳐 두고,
+   손가락으로 누르기 쉽도록 점보다 넉넉히 잡습니다 (AGENTS 6.3). */
+.about_step_button {
+  position: absolute;
+  inset: -10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.about_step_button:disabled {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   tablet — 834 ~ 1279 (1132:2612)
+
+   about 은 세로 스택이 아니라 화살표로 넘기는 슬라이더입니다.
+   PC 의 상하 엇갈림(사진 위→아래 / 텍스트 아래→위)을 좌우로 옮겨,
+   사진은 왼쪽에서 오른쪽으로, 텍스트는 오른쪽에서 왼쪽으로 들어옵니다.
+   덮인 사진이 50% 로 깔려 남는 것은 PC 와 같습니다.
+   페이저(숫자·화살표)는 패널이 바뀌어도 자리를 지킵니다.
+
+   towerData 는 PC 와 같은 3단(제원 / 타워 / 제원) 구성입니다.
+   좌표는 태블릿 시안(834 폭) 캡처에서 읽은 값이라 미세 조정이 필요할 수 있습니다.
+   -------------------------------------------------------------------------- */
+@media (min-width: 834px) and (max-width: 1279.98px) {
+  /* ---- about : 화살표 슬라이더 ---- */
+  /* 패널을 같은 그리드 칸에 겹쳐 쌓습니다. 절대배치가 아니라 칸 높이가
+     가장 긴 패널에 맞춰지므로 본문이 긴 05 번에서도 글이 잘리지 않습니다. */
+  .about_viewport {
+    /* 패널과 사진이 함께 쓰는 높이 기준입니다. 시안 484 / 834 */
+    --about_panel_h: 58.03vw;
+    display: grid;
+    overflow: hidden;
+    /* 좌우 스와이프는 JS 가 처리하고 세로 스크롤은 브라우저에 그대로 맡깁니다. */
+    touch-action: pan-y;
+  }
+
+  .about_panel {
+    grid-area: 1 / 1;
+    flex-direction: row;
+    /* 글은 위에서부터 쌓습니다. 가운데 정렬이면 본문 길이에 따라 시작 높이가
+       패널마다 달라져 시안과 어긋납니다. */
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0;
+    /* 폭 관련 값은 전부 % 로 통일합니다. vw 는 스크롤바를 포함하고 % 는 포함하지
+       않아서, 섞어 쓰면 페이저가 텍스트 왼쪽 끝과 어긋납니다. 시안 67 / 834 */
+    padding: 0 8.03% 0 0;
+    min-height: var(--about_panel_h);
+    visibility: hidden;
+    z-index: 0;
+    /* 자식들이 다 사라진 뒤에 숨깁니다. */
+    transition: visibility 0s linear 800ms;
+  }
+
+  .about_panel.is_previous {
+    visibility: visible;
+    z-index: 1;
+    transition-delay: 0s;
+  }
+
+  .about_panel.is_active {
+    visibility: visible;
+    z-index: 2;
+    transition-delay: 0s;
+  }
+
+  /* 사다리꼴 비율은 PC 와 같은 변수를 씁니다.
+     자식의 % 는 패널 전체가 아니라 오른쪽 여백을 뺀 콘텐츠 박스(시안 767) 기준으로
+     계산되므로, 시안 값을 그 폭으로 나눠 넣습니다. 사진 440 / 767 */
+  .about_image_box {
+    width: 57.37%;
+    /* height: 100% 로 두면 패널 높이가 아직 정해지기 전이라 비율이 무시되고
+       사진 원본 높이(507px)가 오히려 패널을 밀어올립니다. 기준을 직접 줍니다. */
+    height: var(--about_panel_h);
+    flex: none;
+    clip-path: polygon(0 0, 100% 0, var(--brand_image_bottom) 100%, 0 100%);
+  }
+
+  /* 대기 중인 사진은 왼쪽에 물러나 있습니다.
+     transform 을 되돌리는 건 다 사라진 뒤(800ms)라 되감기가 보이지 않습니다. */
+  .about_image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: translateX(-100%);
+    transition: opacity 500ms var(--brand_ease), transform 0s linear 800ms;
+    will-change: transform, opacity;
+  }
+
+  /* 덮인 사진 — 움직이지 않고 50% 로만 물러납니다. */
+  .about_panel.is_previous .about_image {
+    opacity: 0.5;
+    transform: translateX(0);
+    transition: opacity 600ms var(--brand_ease), transform 0s;
+  }
+
+  /* 들어오는 사진 — 왼쪽에서 오른쪽으로 밀려들어와 이전 사진을 덮습니다. */
+  .about_panel.is_active .about_image {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 400ms var(--brand_ease), transform 1000ms var(--brand_ease);
+  }
+
+  /* 배경 숫자는 자리를 지키고 밝기만 바뀝니다. */
+  .about_number {
+    top: 8%;
+    right: auto;
+    left: 75.4%;
+    font-size: 13.54vw;
+    opacity: 0;
+    transition: opacity 400ms var(--brand_ease);
+  }
+
+  .about_panel.is_active .about_number {
+    opacity: 0.2;
+    transition: opacity 700ms var(--brand_ease) 200ms;
+  }
+
+  /* 텍스트는 오른쪽에서 왼쪽으로 들어옵니다. 사진이 자리잡은 뒤 시작합니다.
+     폭은 사진과 같은 기준입니다. 시안 308 / 767 */
+  .about_text {
+    width: 40.16%;
+    flex: none;
+    gap: 20px;
+    padding-inline: 0;
+    /* 글이 시작하는 높이. 시안 116 / 834 */
+    padding-top: 13.9vw;
+    transform: translateX(56px);
+    opacity: 0;
+    transition: opacity 280ms var(--brand_ease), transform 0s linear 800ms;
+    will-change: transform, opacity;
+  }
+
+  .about_panel.is_active .about_text {
+    transform: translateX(0);
+    opacity: 1;
+    transition: opacity 700ms var(--brand_ease) 260ms, transform 900ms var(--brand_ease) 260ms;
+  }
+
+  /* 모바일용 clamp() 는 834 에서 최대값(24px)에 걸려 PC(1280 에서 17px)보다
+     오히려 커집니다. 태블릿 시안(1344:1950)에서 각 문구의 렌더 폭을 재고
+     현재 폭과의 비로 역산한 값입니다. 본문이 가장 긴 05 번 기준으로 맞췄습니다.
+     부제목과 리드문은 시안에서 한 줄이라, 두 줄로 접히지 않는 크기가 기준입니다. */
+  .about_title_box {
+    gap: 0;
+  }
+
+  .about_eyebrow {
+    font-size: 14px;
+  }
+
+  .about_title {
+    font-size: 32px;
+  }
+
+  .about_subtitle {
+    font-size: 14px;
+  }
+
+  .about_body {
+    gap: 10px;
+  }
+
+  .about_lead {
+    font-size: 14px;
+  }
+
+  .about_desc {
+    font-size: 14px;
+  }
+
+  /* ---- about 페이저 ---- */
+  .about_pager {
+    position: absolute;
+    left: 55.04%;
+    /* 가장 긴 05 번 본문 아래에 고정됩니다. */
+    bottom: 12px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .about_pager_button {
+    display: flex;
+    /* 터치 영역 44 × 44 를 확보합니다 (AGENTS 6.3). */
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    cursor: pointer;
+  }
+
+  .about_pager_button:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  /* 공용 chevron 아이콘은 stroke 가 흰색으로 고정돼 있어 그대로 쓰면 안 보입니다.
+     공용 에셋을 수정하지 않고 mask 로 불러 색만 입힙니다 (타워 마스크와 같은 방식). */
+  .about_pager_icon {
+    display: block;
+    width: 22px;
+    height: 22px;
+    background-color: var(--color_point_600, #ffc52d);
+    -webkit-mask: url("../assets/icon/chevron_left.svg") center / contain no-repeat;
+    mask: url("../assets/icon/chevron_left.svg") center / contain no-repeat;
+  }
+
+  /* 다음 화살표는 같은 아이콘을 좌우로 뒤집어 씁니다.
+     공용 chevron_right.svg 는 viewBox 가 24 라, 42 인 왼쪽 것과 같은 22px 로
+     줄이면 선 굵기가 1.83px 대 1.05px 로 달라 보입니다. 하나만 써서 맞춥니다. */
+  [data-about-next] .about_pager_icon {
+    transform: scaleX(-1);
+  }
+
+  .about_pager_count {
+    min-width: 4.5em;
+    font-family: var(--font_title);
+    font-size: 18px;
+    text-align: center;
+  }
+
+  /* 굵기는 둘 다 Medium 이고, 현재 번호와 전체 수는 색으로만 구분합니다.
+     ⚠ common.css 의 GmarketSansNumber 는 weight 매핑이 통상과 다릅니다.
+     200 = Light / 300 = Medium / 500 = Bold 이므로 Medium 은 300 입니다. */
+  .about_pager_current {
+    color: var(--color_point_600, #ffc52d);
+    font-weight: 300;
+  }
+
+  .about_pager_total {
+    color: var(--color_new_secondary_200, #b7bea9);
+    font-weight: 300;
+  }
+
+  /* ---- tower data : PC 와 같은 3단 배치 ---- */
+  /* 시안 섹션 높이 1059 / 834. PC 와 마찬가지로 화면 하단 고정 탭에 가려지는
+     만큼(--brand_tab_h)을 더 확보해, 언덕 곡선이 탭에 덮여도 온전히 보입니다. */
+  .tower_data {
+    min-height: calc(126.98vw + var(--brand_tab_h));
+    /* 언덕이 드러나는 높이. 시안은 섹션 바닥에서 91 위(1059 − 968)입니다. */
+    --hill_top: 10.91vw;
+    /* 시안은 좌우 여백이 다릅니다. 왼쪽 41 / 오른쪽 86 (834 기준).
+       오른쪽이 넓어야 오른쪽 컬럼 본문이 시안과 같은 폭(191)에서 접힙니다. */
+    padding-left: 4.92vw;
+    padding-right: 10.31vw;
+  }
+
+  .tower_data_head {
+    width: 34.23%;
+    align-items: flex-end;
+    gap: 4px;
+    text-align: right;
+  }
+
+  /* 좌 / 가운데(타워 자리) / 우 — 태블릿 시안 실측 비율입니다.
+     PC 비율(472:499:329)은 좌우가 비대칭이라 가운데 칸이 오른쪽으로 밀립니다.
+     시안은 왼쪽 컬럼이 283 에서 끝나고 오른쪽 컬럼이 557 에서 시작해
+     가운데가 420(프레임 중앙 417)에 옵니다. */
+  .tower_data_columns {
+    display: grid;
+    grid-template-columns: 242fr 274fr 191fr;
+    align-items: start;
+    gap: 0;
+  }
+
+  .tower_data_column_left {
+    grid-column: 1;
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .tower_data_column_right {
+    grid-column: 3;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .tower_data_group_narrow {
+    width: 44.07%;
+  }
+
+  /* about 과 같은 이유로 여기도 모바일 clamp() 가 834 에서 최대값에 걸립니다.
+     태블릿 시안(1132:3521)에서 각 문구의 렌더 폭을 재고 역산한 값입니다. */
+  .tower_data_title {
+    font-size: 32px;
+  }
+
+  .tower_data_eyebrow {
+    font-size: 14px;
+  }
+
+  .tower_data_label {
+    font-size: 15px;
+  }
+
+  .tower_data_value {
+    font-size: 13px;
+  }
+
+  /* 묶음 사이 / 항목 사이 / 라벨↔값 간격 (시안 실측) */
+  .tower_data_column {
+    gap: 48px;
+  }
+
+  .tower_data_group {
+    gap: 20px;
+  }
+
+  .tower_data_item {
+    gap: 4px;
+  }
+
+  /* 타워는 가운데 칸 위에 올려 밑동이 언덕에 닿게 합니다.
+     834 블록의 grid-row: 1 / span 2 를 되돌려야 해서 auto 로 되돌립니다.
+     폭은 시안 300 / 834 입니다. */
+  .tower_data_media {
+    position: absolute;
+    /* 시안에서 타워 밑동은 섹션 바닥에서 84 위(1059 − 975)입니다.
+       실물에서 조금 높아 보여 10px 내렸습니다. */
+    bottom: calc(10.07vw + var(--brand_tab_h) - 10px);
+    left: 50%;
+    z-index: 1;
+    order: 0;
+    grid-row: auto;
+    width: 35.97vw;
+    margin-inline: 0;
+    transform: translateX(-50%);
   }
 }
 
@@ -651,7 +1482,8 @@
   }
 
   /* 영상은 페이지 가운데에 두고, 타워 밑동이 언덕에 물리도록 띄웁니다.
-     시안에서 마스크 아래가 섹션 바닥에서 50 떠 있습니다 (1095:14757, y 327). */
+     시안에서 마스크 아래가 섹션 바닥에서 50 떠 있습니다 (1095:14757, y 327).
+     시안(1095:14723)에서 타워는 프레임 정중앙이므로 좌우 보정값을 두지 않습니다. */
   .tower_data_media {
     position: absolute;
     bottom: calc(min(2.6vw, 50px) + var(--brand_tab_h));
