@@ -31,7 +31,7 @@
   --guide_media_size: min(76vw, 320px);
   --guide_stack_gap: 20px;
 
-  --fs_guide_lead: 18px;
+  --fs_guide_lead: 16px;
   --fs_guide_route: 20px;
 }
 
@@ -41,8 +41,8 @@
     --guide_media_size: 360px;
     --guide_stack_gap: 24px;
 
-    --fs_guide_lead: 22px;
-    --fs_guide_route: 24px;
+    --fs_guide_lead: 18px;
+    --fs_guide_route: 20px;
   }
 }
 
@@ -51,7 +51,7 @@
     --guide_section_pad: 180px;
     --guide_media_size: 400px;
 
-    --fs_guide_lead: 28px;
+    --fs_guide_lead: 18px;
     --fs_guide_route: 28px;
   }
 
@@ -64,6 +64,24 @@
   height: auto;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .guide_media.has_pointer_tilt,
+  .course_visual.has_pointer_tilt {
+    transform: perspective(900px)
+      rotateX(var(--pointer_tilt_x, 0deg))
+      rotateY(var(--pointer_tilt_y, 0deg));
+    transform-origin: center;
+    transition: transform 260ms var(--ease_out);
+    will-change: transform;
+  }
+
+  .guide_media.has_pointer_tilt.is_tilt_active,
+  .course_visual.has_pointer_tilt.is_tilt_active {
+    transition-duration: 80ms;
+    transition-timing-function: linear;
+  }
+}
+
 .sub_content {
   position: relative;
 }
@@ -73,9 +91,61 @@
   scroll-margin-top: 24px;
 }
 
+/* 두 탭 패널의 인트로 시작선을 동일하게 맞춥니다. */
+#panel_getting_here {
+  padding-top: 76px;
+}
+
+@media (min-width: 1280px) {
+  #panel_getting_here {
+    padding-top: 120px;
+  }
+}
+
 /* 탭 패널 — 선택되지 않은 패널은 화면과 접근성 트리에서 모두 제외합니다. */
 .guide_tabpanel[hidden] {
   display: none;
+}
+
+/* Desktop-only scroll reveal inspired by the reference service page. */
+@media (min-width: 1280px) {
+  .guide_section.has_scroll_motion > .guide_feature > :not(.guide_media_wrap),
+  .guide_section.has_scroll_motion > .guide_detail {
+    opacity: var(--guide_scroll_opacity, 1);
+    transform: translate3d(var(--guide_text_shift, 0), 0, 0);
+    will-change: transform, opacity;
+  }
+
+  .guide_section.has_scroll_motion > .guide_feature > .guide_media_wrap {
+    opacity: var(--guide_scroll_opacity, 1);
+    transform: translate3d(var(--guide_media_shift, 0), 0, 0)
+      scale(var(--guide_media_scale, 1));
+    will-change: transform, opacity;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guide_section.has_scroll_motion > .guide_feature > :not(.guide_media_wrap),
+  .guide_section.has_scroll_motion > .guide_feature > .guide_media_wrap,
+  .guide_section.has_scroll_motion > .guide_detail {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
+  }
+
+  .guide_media.has_pointer_tilt,
+  .course_visual.has_pointer_tilt {
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+}
+
+@media (max-width: 1279px) {
+  .page_container.guide_sections.guide_tabpanel {
+    padding-bottom: 10%;
+  }
 }
 
 /* ==========================================================================
@@ -242,8 +312,8 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 /* 620px 는 데스크톱 본문 폭입니다. 그 아래에서는 컨테이너를 채웁니다. */
 .guide_lead {
   width: 100%;
-  font-size: var(--fs_body);
-  line-height: 1.18;
+  font-size: 16px;
+  line-height: 1.3;
   color: var(--color_text);
 }
 
@@ -260,8 +330,6 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   display: block;
   width: var(--guide_media_size);
   height: var(--guide_media_size);
-  border-radius: 50%;
-  background-color: var(--color_guide_media_bg);
   overflow: hidden;
 }
 
@@ -295,7 +363,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 .guide_media_car img {
   left: 0;
   width: 177.7%;
-  transform: translate(0, -50%);
+  transform: translate(0, -50%) scaleX(-1);
 }
 
 
@@ -323,8 +391,8 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   background-color: var(--color_primary_600);
   color: var(--color_text_white);
   font-family: var(--font_body);
-  font-size: var(--fs_body);
-  font-weight: 600;
+  font-size: var(--fs_hero_label);
+  font-weight: 400;
   line-height: 1.3;
   text-align: center;
   transition: background-color var(--duration) var(--ease_out);
@@ -518,6 +586,45 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   margin-top: 24px;
 }
 
+@media (max-width: 833px) {
+  .guide_info_button {
+    width: 100%;
+  }
+
+  .cable_info {
+    left: 50%;
+    width: 90vw;
+    max-width: 90vw;
+    translate: -50% 0;
+  }
+
+  .cable_info_title {
+    font-size: 21.6px;
+  }
+
+  .cable_info_hours {
+    font-size: 16.2px;
+  }
+
+  .cable_info_notice,
+  .cable_info_footnote,
+  .cable_info_label {
+    font-size: 12.6px;
+  }
+
+  .cable_info_table thead th {
+    font-size: 16.2px;
+  }
+
+  .cable_info_table tbody th {
+    font-size: 14.4px;
+  }
+
+  .cable_info_table tbody td {
+    font-size: 12.6px;
+  }
+}
+
 @media (max-width: 479px) {
   .cable_info {
     padding: 20px;
@@ -536,17 +643,17 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   }
 
   .cable_info_table thead th {
-    font-size: 14px;
+    font-size: 12.6px;
   }
 
   .cable_info_table tbody th {
-    font-size: 13px;
+    font-size: 11.7px;
     line-height: 1.2;
     white-space: normal;
   }
 
   .cable_info_table tbody td {
-    font-size: 12px;
+    font-size: 10.8px;
   }
 }
 
@@ -567,7 +674,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   margin-bottom: var(--guide_stack_gap);
   font-family: var(--font_body);
   font-size: var(--fs_body);
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.25;
   color: var(--color_text);
 }
@@ -632,7 +739,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   display: flex;
   flex-direction: column;
   font-size: 14px;
-  font-weight: 200;
+  font-weight: 300;
   line-height: 1.35;
   color: var(--color_text);
 }
@@ -691,11 +798,10 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   flex-direction: column;
   gap: 8px;
   margin-bottom: var(--guide_stack_gap);
-  padding-left: 27px;
-  list-style: decimal;
-  font-size: var(--fs_body);
-  line-height: 1.18;
+  font-size: 16px;
+  line-height: 1.2;
   color: var(--color_text);
+  font-weight: 300;
 }
 
 .guide_steps:last-child {
@@ -791,9 +897,6 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
     background-color: transparent;
   }
 
-  .guide_feature .guide_media_link {
-    display: none;
-  }
 
   .guide_section > .guide_detail {
     box-sizing: border-box;
@@ -830,6 +933,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
     /* 본문 행 수를 명시해야 이미지의 grid-row: 1 / -1 이 전체를 세로로 덮습니다.
        기본 3행(제목·설명·상세) + 안내 칩이 있는 섹션만 4행 */
     grid-template-rows: repeat(3, auto);
+    min-height: calc(100vh - 68px);
   }
 
   .guide_section:has(.guide_pill_row) {
@@ -878,12 +982,12 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
     left: 50%;
     margin-top: 0;
     transform: translate(-50%, -8px);
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .guide_pill {
     min-height: 40px;
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .guide_lead,
