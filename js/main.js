@@ -198,8 +198,10 @@ function renderEvents(events) {
     var gondola = createElement("img", "event_gondola");
     gondola.src = ASSET_PATH + "Angolmi_cable.gif";
     gondola.alt = "";
-    gondola.width = "auto";
-    gondola.height = 301;
+    /* Angolmi_cable.gif 원본 크기. "auto" 를 넣으면 width 가 0 이 되어 비율 힌트가 깨지고,
+       이미지가 로드되기 전 높이가 어긋납니다. */
+    gondola.width = 560;
+    gondola.height = 704;
     gondola.loading = "lazy";
     gondola.setAttribute("aria-hidden", "true");
     item.appendChild(gondola);
@@ -231,10 +233,16 @@ var EVENT_PATH_EDGE_INSET = 0.08;
    path 를 타고 내려가는 형상은 남기되 화면 밖으로는 나가지 않는 값입니다. */
 var EVENT_GONDOLA_BAND = 0.36;
 
+/* 곡선을 세로로 얼마나 늘릴지. 1 이면 곡선이 페이지와 1:1 로 흘러가지만 경사가 매우 가팔라집니다.
+   가로 배율과 같아지는 지점(약 0.217)이 에셋에 그려진 원래 각도이고, 그보다 낮추면 더 완만해집니다. */
+var EVENT_CURVE_STEEPNESS = 0.217;
+
 function initEventPathMotion() {
   var section = document.querySelector("#events_section");
   var sticky = document.querySelector("[data-events-sticky]");
   var curve = section ? section.querySelector(".events_curve") : null;
+  /* 곡선 지오메트리를 읽는 대상. SVG 를 불러오면 인라인 SVG 로 교체됩니다. */
+  var curveElement = curve;
   var list = section ? section.querySelector("[data-events-list]") : null;
   var items = list ? Array.from(list.querySelectorAll(".event_item")) : [];
   var viewButtons = section ? Array.from(section.querySelectorAll("[data-events-view]")) : [];
@@ -316,9 +324,27 @@ function initEventPathMotion() {
     pathBottomY = pathElement.getPointAtLength(visibleStartLength).y;
 
     var travelRatio = Math.abs(pathBottomY - pathTopY) / pathViewBoxHeight;
-    var curveScale = travelRatio > 0.01 ? 1 / travelRatio : 1;
+    var curveScale = travelRatio > 0.01 ? EVENT_CURVE_STEEPNESS / travelRatio : 1;
 
     section.style.setProperty("--events_curve_scale", curveScale.toFixed(4));
+  }
+
+  /* 그립(선이 걸리는 지점) 아래로 늘어지는 콘텐츠의 최대 높이입니다.
+     곤돌라 몸통과 카드를 모두 재고, 구간이 바뀔 때 흔들리지 않도록 전체 최댓값을 씁니다.
+     보정값은 CSS 의 --event_gondola_hook 하나만 보도록 계산된 값에서 읽습니다. */
+  function getContentHeightBelowHook() {
+    var maxBelowHook = 0;
+
+    items.forEach(function (item) {
+      var hook = parseFloat(window.getComputedStyle(item).getPropertyValue("--event_gondola_hook"));
+      var hookOffset = item.offsetHeight * (isNaN(hook) ? 0 : hook) / 100;
+
+      Array.prototype.forEach.call(item.children, function (child) {
+        maxBelowHook = Math.max(maxBelowHook, hookOffset + child.offsetTop + child.offsetHeight);
+      });
+    });
+
+    return maxBelowHook;
   }
 
   function renderEventPathMotion() {
@@ -337,9 +363,11 @@ function initEventPathMotion() {
     section.classList.remove("has_static_events");
     var sectionRect = section.getBoundingClientRect();
     var stageHeight = sticky.offsetHeight;
-    /* transform 이 걸린 곡선이라 getBoundingClientRect 대신 레이아웃 크기를 씁니다. */
-    var curveWidth = curve.offsetWidth;
-    var curveHeight = curve.offsetHeight;
+    /* transform 이 걸린 곡선이라 getBoundingClientRect 는 쓸 수 없고,
+       인라인 SVG 는 offsetWidth 가 표준이 아니라 계산된 스타일에서 읽습니다. */
+    var curveStyle = window.getComputedStyle(curveElement);
+    var curveWidth = parseFloat(curveStyle.width);
+    var curveHeight = parseFloat(curveStyle.height);
     var scrollTravel = Math.max(1, section.offsetHeight - stageHeight);
     var progress = Math.min(1, Math.max(0, -sectionRect.top / scrollTravel));
     var pathLength = visibleEndLength - (visibleEndLength - visibleStartLength) * progress;
@@ -349,10 +377,16 @@ function initEventPathMotion() {
     var activeIndex = progress < 1 / 3 ? 2 : progress < 2 / 3 ? 1 : 0;
 
     /* 곤돌라는 path 를 타고 내려가되, 화면에서의 세로 이동은 뷰포트 중앙을 기준으로
-       EVENT_GONDOLA_BAND 폭 안으로 압축합니다. 나머지 하강은 페이지 스크롤이 흡수합니다. */
+       EVENT_GONDOLA_BAND 폭 안으로 압축합니다. 나머지 하강은 페이지 스크롤이 흡수합니다.
+       그립이 선에 걸린 채 몸통과 카드가 아래로 매달리므로, 둘 다 화면에 들어오도록
+       이동 구간을 위로 밀고 그래도 모자라면 폭을 좁힙니다. */
     var descent = pathBottomY - pathTopY;
     var descentRatio = descent === 0 ? 0 : (point.y - pathTopY) / descent;
-    var gondolaY = stageHeight * (0.5 - EVENT_GONDOLA_BAND / 2 + EVENT_GONDOLA_BAND * descentRatio);
+    var contentBelowHook = getContentHeightBelowHook();
+    var lowestHookY = Math.max(0, stageHeight - contentBelowHook);
+    var bandHeight = Math.min(stageHeight * EVENT_GONDOLA_BAND, lowestHookY);
+    var bandStart = Math.max(0, Math.min((stageHeight - bandHeight) / 2, lowestHookY - bandHeight));
+    var gondolaY = bandStart + bandHeight * descentRatio;
 
     /* 곡선을 곤돌라 위치에 맞춰 반대로 밀어, 곤돌라가 늘 선 위에 놓이게 합니다. */
     list.style.setProperty("--event_path_x", pathX.toFixed(2) + "px");
@@ -434,6 +468,56 @@ function initEventPathMotion() {
       pathElement.setAttribute("d", sourcePath.getAttribute("d"));
       geometry.appendChild(pathElement);
       section.appendChild(geometry);
+
+      /* 화면용 곡선을 인라인 SVG 로 다시 그립니다.
+         <img> 는 object-fit 으로 상자만 늘어나고 SVG 안쪽 좌표계는
+         preserveAspectRatio 기본값(xMidYMid meet)으로 비율을 유지한 채 가운데 정렬돼,
+         세로로 늘린 상자에서는 곤돌라 경로와 선이 어긋납니다. */
+      if (sourceSvg) {
+        var previousVector = section.querySelector(".events_curve_vector");
+        if (previousVector) {
+          previousVector.remove();
+        }
+
+        var vector = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        var skippedAttributes = ["width", "height", "class", "style", "id", "preserveAspectRatio"];
+
+        /* 원본 루트의 표현 속성을 그대로 가져옵니다.
+           특히 fill="none" 이 빠지면 열린 곡선이 닫히면서 검정으로 칠해집니다. */
+        Array.prototype.forEach.call(sourceSvg.attributes, function (attribute) {
+          if (attribute.name.indexOf("xmlns") === 0) {
+            return;
+          }
+
+          if (skippedAttributes.indexOf(attribute.name) !== -1) {
+            return;
+          }
+
+          vector.setAttribute(attribute.name, attribute.value);
+        });
+
+        vector.setAttribute("class", "events_curve events_curve_vector");
+        vector.setAttribute("preserveAspectRatio", "none");
+        vector.setAttribute("aria-hidden", "true");
+        vector.setAttribute("focusable", "false");
+
+        if (!vector.getAttribute("viewBox")) {
+          vector.setAttribute("viewBox", "0 0 " + pathViewBoxWidth + " " + pathViewBoxHeight);
+        }
+
+        Array.prototype.forEach.call(sourceSvg.childNodes, function (node) {
+          vector.appendChild(node.cloneNode(true));
+        });
+
+        /* 세로로 크게 늘어나므로 선 굵기는 배율의 영향을 받지 않게 고정합니다. */
+        Array.prototype.forEach.call(vector.querySelectorAll("path"), function (node) {
+          node.setAttribute("vector-effect", "non-scaling-stroke");
+        });
+
+        curve.insertAdjacentElement("afterend", vector);
+        curve.hidden = true;
+        curveElement = vector;
+      }
 
       findVisiblePathRange();
       requestEventPathRender();

@@ -379,6 +379,76 @@ function readStoredLanguage() {
 }
 
 /* --------------------------------------------------------------------------
+   탭이 있는 서브페이지 첫 화면 → 다음 섹션 이동
+   첫 화면에서 아래로 한 번 스크롤하면 탭 다음 콘텐츠로 이동합니다.
+   -------------------------------------------------------------------------- */
+function initSubpageSectionJump() {
+  var hero = document.querySelector(".subpage_hero.has_scroll_indicator");
+  var tabs = document.querySelector(".subpage_tabs");
+  var nextSection = tabs ? tabs.nextElementSibling : null;
+
+  if (!hero || !tabs || !nextSection) {
+    return;
+  }
+
+  var JUMP_LOCK_TIME = 900;
+  var SWIPE_THRESHOLD = 24;
+  var isJumping = false;
+  var unlockTimer = 0;
+  var touchStartY = 0;
+
+  function canJump() {
+    return !isJumping && window.scrollY <= 12 && document.body.style.overflow !== "hidden";
+  }
+
+  function unlockJump() {
+    isJumping = false;
+  }
+
+  function scrollToNextSection() {
+    isJumping = true;
+    window.clearTimeout(unlockTimer);
+    unlockTimer = window.setTimeout(unlockJump, JUMP_LOCK_TIME);
+
+    if (lenisInstance && typeof lenisInstance.scrollTo === "function") {
+      lenisInstance.scrollTo(nextSection, { lock: true, onComplete: unlockJump });
+      return;
+    }
+
+    nextSection.scrollIntoView({
+      behavior: isReducedMotion() ? "auto" : "smooth",
+      block: "start"
+    });
+  }
+
+  function handleSubpageWheel(event) {
+    if (event.ctrlKey || event.deltaY <= 0 || !canJump()) {
+      return;
+    }
+
+    event.preventDefault();
+    scrollToNextSection();
+  }
+
+  function handleSubpageTouchStart(event) {
+    touchStartY = event.touches[0].clientY;
+  }
+
+  function handleSubpageTouchMove(event) {
+    if (!canJump() || touchStartY - event.touches[0].clientY < SWIPE_THRESHOLD) {
+      return;
+    }
+
+    event.preventDefault();
+    scrollToNextSection();
+  }
+
+  window.addEventListener("wheel", handleSubpageWheel, { passive: false });
+  window.addEventListener("touchstart", handleSubpageTouchStart, { passive: true });
+  window.addEventListener("touchmove", handleSubpageTouchMove, { passive: false });
+}
+
+/* --------------------------------------------------------------------------
    언어 선택
    메뉴 오버레이와 서브 페이지 헤더가 같은 동작을 쓰므로 한 곳에서 처리합니다.
    마크업이 달라도 [data-language-button] 의 부모를 기준으로 삼습니다.
@@ -1313,6 +1383,7 @@ function initCommon() {
   initImageFallback();
   initLanguageSelectors();
   initStickyHeader();
+  initSubpageSectionJump();
   initGlobalMenu();
   initFamilySite();
   initQuickMenu();
