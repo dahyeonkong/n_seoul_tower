@@ -694,6 +694,12 @@
   pointer-events: none;
 }
 
+/* main.js 가 인라인 SVG 로 교체하면 원본 <img> 를 숨깁니다.
+   reset.css 의 img { display: block } 이 [hidden] 기본 동작보다 우선하므로 직접 지정합니다. */
+.events_curve[hidden] {
+  display: none;
+}
+
 .events_path_geometry {
   position: absolute;
   width: 0;
@@ -961,12 +967,13 @@
     overflow: hidden;
   }
 
-  /* 곡선을 스크롤 이동량만큼 세로로 늘려, 곡선이 페이지와 1:1 속도로 흘러가게 합니다. */
+  /* 곡선을 스크롤 이동량만큼 세로로 늘려, 곡선이 페이지와 1:1 속도로 흘러가게 합니다.
+     실제로 늘어나는 것은 main.js 가 만드는 인라인 SVG(preserveAspectRatio="none") 입니다.
+     원본 <img> 는 상자만 늘어나고 내부 좌표계는 비율을 유지해 경로와 어긋납니다. */
   .events_curve {
     top: 0;
     width: 100%;
     height: calc(var(--events_scroll_travel) * var(--events_curve_scale, 1));
-    object-fit: fill;
     transform: translateY(var(--event_curve_y, 0px));
     will-change: transform;
   }
