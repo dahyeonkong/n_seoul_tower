@@ -831,6 +831,8 @@
 
 .event_gondola {
   width: 40%;
+  /* height 를 지정하지 않으면 width/height 속성이 표현 힌트로 남아 세로가 눌립니다. */
+  height: auto;
   max-width: 150px;
   margin: 0 auto -6%;
   pointer-events: none;
@@ -1078,6 +1080,9 @@
     height: calc(var(--events_scroll_travel) * var(--events_curve_scale, 1));
     transform: translateY(var(--event_curve_y, 0px));
     will-change: transform;
+    /* 곡선이 완만해지면 viewBox 밖 구간도 이어져 보여야 합니다.
+       .events_sticky 의 overflow: hidden 이 화면 밖은 잘라 줍니다. */
+    overflow: visible;
   }
 
   .events_list {
@@ -1092,8 +1097,12 @@
     width: 11.2%;
     opacity: 0;
     pointer-events: none;
-    /* -50%, -50% 로 곤돌라의 중심을 뷰포트 세로 중앙선에 맞춥니다. */
-    transform: translate3d(var(--event_path_x, 0), var(--event_path_y, 0), 0) translate(-50%, -50%);
+    /* 선이 곤돌라 그립(이미지 상단 중앙)에 걸리도록 맞춥니다.
+       Angolmi_cable.gif 는 위쪽에 24/704 = 3.41% 의 투명 여백이 있어 그만큼 끌어올립니다.
+       (가로 중심은 이미지 중심과 0.5px 차이라 보정하지 않습니다.) */
+    --event_gondola_hook: -3.41%;
+    transform: translate3d(var(--event_path_x, 0), var(--event_path_y, 0), 0)
+      translate(-50%, var(--event_gondola_hook));
     transition: opacity 240ms var(--ease_out);
     will-change: transform, opacity;
   }
@@ -1108,8 +1117,10 @@
     position: relative;
     top: auto;
     left: auto;
-    width: 130%;
-    transform: translateX(-11.538%);
+    /* 169% = 기존 130% 의 1.3 배. 좌우로 넘치는 만큼 되밀어 곤돌라를 가운데 둡니다.
+       ((169 - 100) / 2) / 169 = 20.4142% */
+    width: 169%;
+    transform: translateX(-20.4142%);
   }
 
   .event_item[data-event-slot] .event_card {
@@ -1118,20 +1129,10 @@
     width: 192%;
   }
 
+  /* 1번 구간만 카드를 곤돌라 왼쪽에 붙입니다. 2·3번은 기본값(오른쪽)을 씁니다. */
   .event_item[data-event-slot="1"] .event_card {
     right: 88%;
     left: auto;
-  }
-
-  .event_item[data-event-slot="2"] .event_card {
-    top: 82%;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .event_item[data-event-slot="2"]:hover .event_card,
-  .event_item[data-event-slot="2"]:focus-within .event_card {
-    transform: translate(-50%, -4px);
   }
 
   .event_item[data-event-slot="3"] .event_card {
