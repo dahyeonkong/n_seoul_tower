@@ -29,8 +29,39 @@ function initGuideTabs() {
     })[0];
   }
 
+  /* 탭을 눌러 다른 패널로 바꾸면 새 패널 상단으로 올려줍니다.
+     탭 목록은 sticky 라 스크롤한 뒤에도 계속 보입니다. */
+  function scrollToGuidePanel(selectedTab) {
+    var panel = document.getElementById(selectedTab.getAttribute("aria-controls"));
+
+    if (!panel) return;
+
+    var lenis = window.lenisInstance;
+
+    if (lenis && typeof lenis.scrollTo === "function") {
+      lenis.scrollTo(panel);
+      return;
+    }
+
+    var prefersReducedMotion =
+      typeof window.isReducedMotion === "function" && window.isReducedMotion();
+
+    panel.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "start"
+    });
+  }
+
   function handleGuideTabClick(event) {
-    renderGuideTab(event.currentTarget);
+    var tab = event.currentTarget;
+    var wasSelected = tab.getAttribute("aria-selected") === "true";
+
+    renderGuideTab(tab);
+
+    /* 이미 열려 있는 탭을 다시 누른 경우에는 화면을 움직이지 않습니다. */
+    if (!wasSelected) {
+      scrollToGuidePanel(tab);
+    }
   }
 
   function handleGuideTabKeydown(event) {
@@ -46,6 +77,7 @@ function initGuideTabs() {
     event.preventDefault();
     renderGuideTab(tabs[nextIndex]);
     tabs[nextIndex].focus();
+    scrollToGuidePanel(tabs[nextIndex]);
   }
 
   /* 숨겨진 패널 안의 앵커(#speed_course 등)로 들어온 경우 해당 탭을 먼저 엽니다.
@@ -166,9 +198,72 @@ function initCableCarInformation() {
   });
 }
 
+function initGuideScrollMotion() {
+  var desktopMedia = window.matchMedia("(min-width: 1280px)");
+  var reducedMotionMedia = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var sections = Array.prototype.slice.call(
+    document.querySelectorAll("#panel_getting_here .guide_section")
+  );
+  var frameId = 0;
+
+  if (sections.length === 0) return;
+
+  function clearMotion() {
+    sections.forEach(function (section) {
+      section.classList.remove("has_scroll_motion");
+      section.style.removeProperty("--guide_scroll_progress");
+      section.style.removeProperty("--guide_scroll_opacity");
+      section.style.removeProperty("--guide_media_scale");
+      section.style.removeProperty("--guide_text_shift");
+      section.style.removeProperty("--guide_media_shift");
+    });
+  }
+
+  function renderMotion() {
+    frameId = 0;
+
+    if (!desktopMedia.matches || reducedMotionMedia.matches) {
+      clearMotion();
+      return;
+    }
+
+    var viewportHeight = window.innerHeight;
+
+    sections.forEach(function (section) {
+      var rect = section.getBoundingClientRect();
+      var motionStart = viewportHeight * 0.9;
+      var motionEnd = viewportHeight * 0.28;
+      var travel = Math.max(motionStart - motionEnd, 1);
+      var progress = Math.min(1, Math.max(0, (motionStart - rect.top) / travel));
+      var easedProgress = progress * progress * (3 - 2 * progress);
+      var shift = (1 - easedProgress) * 140;
+      var textDirection = section.classList.contains("guide_section_media_first") ? 1 : -1;
+
+      section.classList.add("has_scroll_motion");
+      section.style.setProperty("--guide_scroll_progress", easedProgress.toFixed(4));
+      section.style.setProperty("--guide_scroll_opacity", (0.06 + easedProgress * 0.94).toFixed(4));
+      section.style.setProperty("--guide_media_scale", (0.84 + easedProgress * 0.16).toFixed(4));
+      section.style.setProperty("--guide_text_shift", (shift * textDirection).toFixed(2) + "px");
+      section.style.setProperty("--guide_media_shift", (shift * textDirection * -1).toFixed(2) + "px");
+    });
+  }
+
+  function requestMotionRender() {
+    if (frameId) return;
+    frameId = window.requestAnimationFrame(renderMotion);
+  }
+
+  window.addEventListener("scroll", requestMotionRender, { passive: true });
+  window.addEventListener("resize", requestMotionRender);
+  desktopMedia.addEventListener("change", requestMotionRender);
+  reducedMotionMedia.addEventListener("change", requestMotionRender);
+  renderMotion();
+}
+
 function initVisitorGuidePage() {
   initGuideTabs();
   initCableCarInformation();
+  initGuideScrollMotion();
 }
 
 if (document.readyState === "loading") {

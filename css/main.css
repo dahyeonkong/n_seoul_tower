@@ -547,6 +547,13 @@
   gap: 8px;
 }
 
+/* 숫자만 GmarketSans 로 두고, 사이의 구분기호는 Pretendard 로 되돌립니다.
+   굵기는 시안값(Pretendard Medium)을 따릅니다. */
+.main_visual_value_sep {
+  font-family: var(--font_sep);
+  font-weight: 500;
+}
+
 .main_visual_unit {
   font-family: var(--font_body);
   font-size: calc(var(--main_visual_unit) * var(--main_visual_text_scale));
