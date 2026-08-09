@@ -129,6 +129,7 @@
   --content_max: 1600px;
   --section_space: 88px;
   --header_height: 64px;
+  --subpage_tabs_height: 68px;
 
   /* motion */
   --ease_out: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -1174,7 +1175,7 @@ html .course_page .course_description {
 
   position: fixed;
   right: calc(var(--quick_gap) + var(--scrollbar_gap, 0px));
-  bottom: var(--quick_gap);
+  bottom: 10%;
   z-index: 100;
   display: flex;
   flex-direction: column;
@@ -1335,7 +1336,7 @@ html .course_page .course_description {
   border-bottom: 1px solid var(--color_line_goods);
   color: var(--color_text);
   font-family: var(--font_body);
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.3;
   text-transform: capitalize;
   transition: color var(--duration) var(--ease_out);
@@ -1638,10 +1639,10 @@ html .course_page .course_description {
 }
 
 .sub_content > .subpage_hero.has_scroll_indicator {
-  height: 100vh;
-  height: 100dvh;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: calc(100vh - var(--subpage_tabs_height));
+  height: calc(100dvh - var(--subpage_tabs_height));
+  min-height: calc(100vh - var(--subpage_tabs_height));
+  min-height: calc(100dvh - var(--subpage_tabs_height));
   max-height: none;
 }
 
@@ -1677,24 +1678,25 @@ html .course_page .course_description {
 
 .subpage_tabs {
   position: sticky;
-  top: calc(100vh - 100px);
-  top: calc(100dvh - 100px);
+  top: calc(100vh - var(--subpage_tabs_height));
+  top: calc(100dvh - var(--subpage_tabs_height));
   z-index: 90;
-  min-height: 100px;
+  min-height: var(--subpage_tabs_height);
   background-color: var(--subpage_tab_bg, #c8d2a3);
 }
 
 .subpage_tabs_list {
   display: flex;
   width: min(100% - var(--page_pad) * 2, var(--content_max));
-  min-height: 100px;
+  min-height: var(--subpage_tabs_height);
   margin-inline: auto;
-  padding-block: 18px;
+  padding-block: 6px;
   align-items: center;
-  justify-content: center;
-  justify-content: safe center;
+  justify-content: flex-start;
   gap: 16px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
   scroll-snap-type: x proximity;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
@@ -1712,8 +1714,8 @@ html .course_page .course_description {
 
 .subpage_tab {
   display: inline-flex;
-  min-height: 64px;
-  padding: 12px 20px;
+  min-height: 48px;
+  padding: 4px 18px 4px 12px;
   align-items: center;
   justify-content: center;
   gap: 10px;
@@ -1722,7 +1724,7 @@ html .course_page .course_description {
   background-color: var(--color_surface);
   color: var(--subpage_tab_ink, #3b432b);
   font-family: var(--font_body);
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.3;
   white-space: nowrap;
   transition: background-color var(--duration) var(--ease_out),
@@ -1731,8 +1733,8 @@ html .course_page .course_description {
 
 .subpage_tab_icon {
   display: grid;
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   flex-shrink: 0;
   border-radius: 50%;
   place-items: center;
@@ -1740,8 +1742,8 @@ html .course_page .course_description {
 }
 
 .subpage_tab_icon img {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
 
 .subpage_tab:hover {
@@ -1778,18 +1780,18 @@ html .course_page .course_description {
   }
 
   .subpage_tabs_list {
-    gap: 24px;
+    gap: 12px;
   }
 
-}
-
-@media (min-width: 843px) {
-  .subpage_tab {
-    font-size: 14px;
-  }
 }
 
 @media (min-width: 1280px) {
+  .subpage_tabs_list {
+    justify-content: center;
+    justify-content: safe center;
+    gap: 16px;
+  }
+
   .subpage_hero {
     height: calc(95vw * 1080 / 1920);
     min-height: 760px;
