@@ -176,6 +176,27 @@ Pretendard 자체는 원래부터 `common.css` 첫 줄의 CDN `@import` 로 로�
   `index.html` 의 preload 도 함께 주석 처리했습니다. 사용처가 없습니다.
 - `assets/turn_tower.png`, `assets/hero_img.png` 는 현재 어디에서도 참조하지 않습니다.
 
+## Getting Here 패널 인트로 (2026-08-09 추가)
+
+`pages/visitor_guide.html` 의 Getting Here 패널 맨 위에
+Recommended Courses 패널과 같은 `course_intro` 블록을 추가했습니다.
+
+```html
+<div class="course_intro">
+  <h3>Getting Here</h3>
+  <p>Find your best way<br>to reach N Seoul Tower</p>
+  <span>Choose the easiest route and start your journey with ease.</span>
+</div>
+```
+
+스타일은 새로 만들지 않고 `css/course.css` 의 기존 `course_intro` 선택자에
+`.guide_sections .course_intro` 를 함께 묶었습니다. 선언 내용은 그대로이고
+선택자만 추가했으므로 Recommended Courses 쪽 렌더 결과는 변하지 않습니다
+(1280 기준 폭 920 / h3 20px / p 52px / span 22px 로 확인).
+
+`--course_ink` 는 `.course_page` 안에서만 정의되므로
+`var(--course_ink, var(--color_text))` 폴백을 넣었습니다.
+
 ## 서브페이지 탭 전환 시 패널로 이동 (2026-08-09 추가)
 
 `js/visitor_guide.js` 의 `initGuideTabs()` 에 `scrollToGuidePanel()` 을 추가했습니다.
