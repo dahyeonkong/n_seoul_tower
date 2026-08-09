@@ -543,6 +543,12 @@ html .course_page .course_description {
   backdrop-filter: blur(0px);
 }
 
+.site_header_sub.is_scrolled {
+  background-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 .site_header_inner > * {
   pointer-events: auto;
 }
@@ -666,7 +672,7 @@ html .course_page .course_description {
 @media (min-width: 1280px) {
   /* 메인 헤더와 같은 높이와 수직 중심을 사용합니다. */
   .site_header_sub {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: transparent;
   }
 
   /* 데스크톱에서는 가로 GNB 가 오버레이를 대신합니다. */
