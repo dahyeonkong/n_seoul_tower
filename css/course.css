@@ -365,6 +365,527 @@
   }
 }
 
+/* Date Course object layers
+   위치와 크기는 기준 캔버스(1086 × 1448) 대비 비율로 관리합니다. */
+.course_page #date_course .course_date_object {
+  --date_heart_left: 25.5%;
+  --date_heart_top: 69.5%;
+  --date_heart_width: 11.97%;
+  --date_heart_origin_x: 50%;
+  --date_heart_origin_y: 4%;
+
+  position: relative;
+  height: 92%;
+  aspect-ratio: 1086 / 1448;
+  flex: 0 0 auto;
+}
+
+.course_page #date_course .course_date_object img {
+  display: block;
+  max-width: none;
+  max-height: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.course_page #date_course .course_date_base {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.course_page #date_course .course_date_heart {
+  position: absolute;
+  top: var(--date_heart_top);
+  left: var(--date_heart_left);
+  z-index: 2;
+  width: var(--date_heart_width);
+  height: auto;
+  transform: rotate(0deg);
+  transform-origin: var(--date_heart_origin_x) var(--date_heart_origin_y);
+  transition: transform 320ms ease-in-out;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .course_page #date_course .course_date_object:hover .course_date_heart {
+    animation: course_date_heart_swing 2.6s ease-in-out infinite;
+  }
+}
+
+@keyframes course_date_heart_swing {
+  0% { transform: rotate(0deg); }
+  12% { transform: rotate(-12deg); }
+  24% { transform: rotate(10deg); }
+  36% { transform: rotate(-7deg); }
+  48% { transform: rotate(5deg); }
+  58% { transform: rotate(0deg); }
+  72% { transform: rotate(-2deg); }
+  86% { transform: rotate(2deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course_page #date_course .course_date_object:hover .course_date_heart {
+    animation: none;
+  }
+}
+
+/* Family Course object layers
+   기존 합성 이미지의 가족 위치를 기준 캔버스(1086 × 1448) 비율로 유지합니다. */
+.course_page #family_course .course_family_object {
+  --family_icon_left: 31.03%;
+  --family_icon_top: 67.96%;
+  --family_icon_width: 34.71%;
+
+  position: relative;
+  height: 92%;
+  aspect-ratio: 1086 / 1448;
+  flex: 0 0 auto;
+}
+
+.course_page #family_course .course_family_object img {
+  display: block;
+  max-width: none;
+  max-height: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.course_page #family_course .course_family_base {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.course_page #family_course .course_family_icon {
+  position: absolute;
+  top: var(--family_icon_top);
+  left: var(--family_icon_left);
+  z-index: 2;
+  width: var(--family_icon_width);
+  height: auto;
+  transform: translateY(0) rotate(0deg) scale(1);
+  transform-origin: bottom center;
+  transition: transform 280ms ease-in-out;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .course_page #family_course .course_family_object:hover .course_family_icon {
+    animation: course_family_walk 2.2s ease-in-out infinite;
+  }
+}
+
+@keyframes course_family_walk {
+  0% { transform: translateY(0) rotate(0deg) scale(1); }
+  12.5% { transform: translateY(-6px) rotate(-1.5deg) scale(1.02); }
+  25% { transform: translateY(-2px) rotate(1.5deg) scale(1.03); }
+  37.5% { transform: translateY(-5px) rotate(-1deg) scale(1.02); }
+  50% { transform: translateY(0) rotate(0deg) scale(1); }
+  62.5% { transform: translateY(-1.5px) rotate(-0.35deg) scale(1.005); }
+  75% { transform: translateY(0) rotate(0.25deg) scale(1); }
+  87.5% { transform: translateY(-1px) rotate(-0.2deg) scale(1.003); }
+  100% { transform: translateY(0) rotate(0deg) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course_page #family_course .course_family_object:hover .course_family_icon {
+    animation: none;
+  }
+}
+
+/* Food Course object layers
+   효과용 소금통은 기준 캔버스(1086 × 1448) 비율로 스테이크 왼쪽 위에 배치합니다. */
+.course_page #food_course .course_food_object {
+  --food_salt_left: 36%;
+  --food_salt_top: 47%;
+  --food_salt_width: 18.51%;
+
+  position: relative;
+  height: 92%;
+  aspect-ratio: 1086 / 1448;
+  flex: 0 0 auto;
+}
+
+.course_page #food_course .course_food_object img {
+  display: block;
+  max-width: none;
+  max-height: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.course_page #food_course .course_food_base {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.course_page #food_course .course_food_salt {
+  position: absolute;
+  top: var(--food_salt_top);
+  left: var(--food_salt_left);
+  z-index: 2;
+  width: var(--food_salt_width);
+  height: auto;
+  opacity: 0;
+  transform: translateY(-5px) rotate(0deg);
+  transform-origin: center;
+}
+
+.course_page #food_course .course_food_grains {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.course_page #food_course .course_food_grain {
+  --food_grain_x: clamp(7px, 0.85vw, 15px);
+  --food_grain_y: clamp(18px, 2vw, 34px);
+
+  position: absolute;
+  top: 57.5%;
+  left: 49.5%;
+  width: clamp(2px, 0.24vw, 4px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: rgba(255, 250, 231, 0.96);
+  box-shadow: 0 0 2px rgba(112, 87, 51, 0.35);
+  opacity: 0;
+}
+
+.course_page #food_course .course_food_grain:nth-child(2),
+.course_page #food_course .course_food_grain:nth-child(5),
+.course_page #food_course .course_food_grain:nth-child(8) {
+  left: 51.5%;
+  --food_grain_x: clamp(2px, 0.35vw, 7px);
+  --food_grain_y: clamp(21px, 2.35vw, 40px);
+}
+
+.course_page #food_course .course_food_grain:nth-child(3),
+.course_page #food_course .course_food_grain:nth-child(6),
+.course_page #food_course .course_food_grain:nth-child(9) {
+  top: 59%;
+  left: 53%;
+  --food_grain_x: clamp(-10px, -0.55vw, -4px);
+  --food_grain_y: clamp(16px, 1.75vw, 30px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .course_page #food_course .course_food_object:hover .course_food_salt {
+    animation: course_food_salt_tap 850ms ease-in-out 1 both;
+  }
+
+  .course_page #food_course .course_food_object:hover .course_food_grain {
+    animation: course_food_grain_fall 360ms ease-in 1 both;
+    animation-delay: 180ms;
+  }
+
+  .course_page #food_course .course_food_object:hover .course_food_grain:nth-child(n + 4) {
+    animation-delay: 390ms;
+  }
+
+  .course_page #food_course .course_food_object:hover .course_food_grain:nth-child(n + 7) {
+    animation-delay: 610ms;
+  }
+}
+
+@keyframes course_food_salt_tap {
+  0% { opacity: 0; transform: translateY(-5px) rotate(0deg); }
+  12% { opacity: 1; transform: translateY(0) rotate(0deg); }
+  30% { opacity: 1; transform: translateY(3px) rotate(3deg); }
+  45% { opacity: 1; transform: translateY(0) rotate(0deg); }
+  60% { opacity: 1; transform: translateY(3px) rotate(3deg); }
+  75% { opacity: 1; transform: translateY(0) rotate(0deg); }
+  88% { opacity: 1; transform: translateY(2px) rotate(2deg); }
+  100% { opacity: 0; transform: translateY(0) rotate(0deg); }
+}
+
+@keyframes course_food_grain_fall {
+  0% { opacity: 0; transform: translate(0, -3px) scale(0.7); }
+  18% { opacity: 1; }
+  78% { opacity: 0.9; }
+  100% {
+    opacity: 0;
+    transform: translate(var(--food_grain_x), var(--food_grain_y)) scale(0.45);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course_page #food_course .course_food_object:hover .course_food_salt,
+  .course_page #food_course .course_food_object:hover .course_food_grain {
+    animation: none;
+  }
+}
+
+/* History & Culture Course object layers
+   페이지와 병아리는 기준 캔버스(1086 × 1448) 비율로 배치합니다. */
+.course_page #history_culture_course .course_history_object {
+  --history_page_left: 31%;
+  --history_page_top: 62%;
+  --history_page_width: 24.4%;
+  --history_chick_left: 68.7%;
+  --history_chick_top: 54.5%;
+  --history_chick_width: 5.06%;
+
+  position: relative;
+  height: 92%;
+  aspect-ratio: 1086 / 1448;
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+.course_page #history_culture_course .course_history_object img {
+  display: block;
+  max-width: none;
+  max-height: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.course_page #history_culture_course .history_base {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.course_page #history_culture_course .course_history_book,
+.course_page #history_culture_course .history_chick {
+  position: absolute;
+}
+
+.course_page #history_culture_course .course_history_book {
+  top: var(--history_page_top);
+  left: var(--history_page_left);
+  z-index: 3;
+  width: var(--history_page_width);
+  aspect-ratio: 265 / 254;
+  perspective: 900px;
+  pointer-events: none;
+}
+
+.course_page #history_culture_course .history_page {
+  width: 100%;
+  height: auto;
+  opacity: 0;
+  backface-visibility: hidden;
+  transform: rotateY(0deg);
+  transform-origin: 5% 50%;
+  transform-style: preserve-3d;
+}
+
+.course_page #history_culture_course .history_chick {
+  top: var(--history_chick_top);
+  left: var(--history_chick_left);
+  z-index: 2;
+  width: var(--history_chick_width);
+  height: auto;
+  opacity: 0;
+  transform: translateY(12px) scale(0.85);
+  transform-origin: bottom center;
+  transition: opacity 240ms ease-in-out, transform 320ms ease-in-out;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .course_page #history_culture_course .course_history_object:hover .history_page {
+    animation: course_history_page_flip 950ms ease-in-out 1 both;
+  }
+
+  .course_page #history_culture_course .course_history_object:hover .history_chick {
+    animation: course_history_chick_pop 780ms ease-out 280ms 1 both;
+  }
+}
+
+@keyframes course_history_page_flip {
+  0% { opacity: 0; transform: rotateY(0deg); }
+  15% { opacity: 1; transform: rotateY(-18deg); }
+  30% { opacity: 1; transform: rotateY(-45deg); }
+  55% { opacity: 1; transform: rotateY(-90deg); }
+  75% { opacity: 1; transform: rotateY(-135deg); }
+  100% { opacity: 0; transform: rotateY(-170deg); }
+}
+
+@keyframes course_history_chick_pop {
+  0% { opacity: 0; transform: translateY(12px) scale(0.8); }
+  20% { opacity: 1; transform: translateY(-10px) scale(1.05); }
+  45% { opacity: 1; transform: translateY(-18px) scale(1.02); }
+  65% { opacity: 1; transform: translateY(-8px) scale(0.98); }
+  85% { opacity: 1; transform: translateY(-13px) scale(1); }
+  100% { opacity: 1; transform: translateY(-10px) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course_page #history_culture_course .course_history_object:hover .history_page,
+  .course_page #history_culture_course .course_history_object:hover .history_chick {
+    animation: none;
+  }
+}
+
+/* Photo Spot Course object layers
+   light.png의 발광 중심(약 57% / 36%)을 카메라 렌즈 중심에 맞춥니다. */
+.course_page #photo_spot_course .course_photo_object {
+  --photo_lens_x: 49.5%;
+  --photo_lens_y: 55.8%;
+  --photo_light_width: 55%;
+  --photo_light_focus_x: 57%;
+  --photo_light_focus_y: 36%;
+  --photo_light_offset_x: -57%;
+  --photo_light_offset_y: -36%;
+
+  position: relative;
+  height: 92%;
+  aspect-ratio: 1086 / 1448;
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+.course_page #photo_spot_course .course_photo_object img {
+  display: block;
+  max-width: none;
+  max-height: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.course_page #photo_spot_course .course_photo_base {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.course_page #photo_spot_course .course_photo_light {
+  position: absolute;
+  top: var(--photo_lens_y);
+  left: var(--photo_lens_x);
+  z-index: 3;
+  width: var(--photo_light_width);
+  height: auto;
+  mix-blend-mode: screen;
+  opacity: 0;
+  transform: translate(var(--photo_light_offset_x), var(--photo_light_offset_y)) scale(0.45);
+  transform-origin: var(--photo_light_focus_x) var(--photo_light_focus_y);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .course_page #photo_spot_course .course_photo_object:hover .course_photo_light {
+    animation: course_photo_flash 850ms ease-out 1 both;
+  }
+}
+
+@keyframes course_photo_flash {
+  0% {
+    opacity: 0;
+    transform: translate(var(--photo_light_offset_x), var(--photo_light_offset_y)) scale(0.35);
+  }
+  12% {
+    opacity: 1;
+    transform: translate(var(--photo_light_offset_x), var(--photo_light_offset_y)) scale(0.85);
+  }
+  22% {
+    opacity: 1;
+    transform: translate(var(--photo_light_offset_x), var(--photo_light_offset_y)) scale(1.15);
+  }
+  35% {
+    opacity: 0.75;
+    transform: translate(var(--photo_light_offset_x), var(--photo_light_offset_y)) scale(1);
+  }
+  55% {
+    opacity: 0.25;
+    transform: translate(var(--photo_light_offset_x), var(--photo_light_offset_y)) scale(0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--photo_light_offset_x), var(--photo_light_offset_y)) scale(0.75);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course_page #photo_spot_course .course_photo_object:hover .course_photo_light {
+    animation: none;
+  }
+}
+
+/* Running Course object layers
+   캐릭터는 반응형 캔버스를 기준으로 산책로 중앙의 여러 경유점을 따라 이동합니다. */
+.course_page #running_course .course_run_object {
+  position: relative;
+  height: 92%;
+  aspect-ratio: 1086 / 1448;
+  flex: 0 0 auto;
+  overflow: visible;
+  container-type: size;
+}
+
+.course_page #running_course .course_run_object img {
+  display: block;
+  max-width: none;
+  max-height: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.course_page #running_course .course_run_base {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.course_page #running_course .course_run_character_path {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  display: block;
+  width: 11.05%;
+  aspect-ratio: 120 / 152;
+  opacity: 0;
+  transform: translate(33.2cqw, 47.7cqh);
+  transition: transform 400ms ease-out, opacity 80ms ease-out;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.course_page #running_course .course_run_character {
+  width: 100%;
+  height: auto;
+  transform-origin: bottom center;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .course_page #running_course .course_run_object:hover .course_run_character_path {
+    opacity: 1;
+    animation: course_run_path_walk 2.2s linear 1 forwards;
+  }
+
+  .course_page #running_course .course_run_object:hover .course_run_character {
+    animation: course_run_step 350ms ease-in-out infinite;
+  }
+}
+
+@keyframes course_run_path_walk {
+  0% { transform: translate(33.2cqw, 47.7cqh); }
+  25% { transform: translate(28.6cqw, 51.2cqh); }
+  50% { transform: translate(24cqw, 57.2cqh); }
+  75% { transform: translate(34cqw, 65.5cqh); }
+  100% { transform: translate(43.8cqw, 74.8cqh); }
+}
+
+@keyframes course_run_step {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-2px) rotate(1deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course_page #running_course .course_run_object:hover .course_run_character_path,
+  .course_page #running_course .course_run_object:hover .course_run_character {
+    animation: none;
+  }
+
+  .course_page #running_course .course_run_character_path {
+    transition: none;
+  }
+}
+
 .course_page .course_text {
   display: flex;
   grid-column: 2;
