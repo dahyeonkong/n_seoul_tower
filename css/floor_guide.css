@@ -94,9 +94,10 @@
   /* Keep the 181 × 166 source ratio so the bloom stays concentric with the core. */
   aspect-ratio: 181 / 166;
   background: url("../assets/floorguide/circle03.png") center / 100% 100% no-repeat;
-  /* hue-rotate 로 노란 원을 바깥에서 주황빛으로 밀어 중심부와 색 온도 차를 만듭니다. */
-  filter: blur(calc(26 * var(--u))) saturate(1.75) hue-rotate(-14deg);
-  opacity: 0.6;
+  /* 바깥 확산광은 노란빛으로 둡니다. 위에 얹히는 중심부만 주황으로 돌려서
+     안쪽 주황 -> 바깥 노랑으로 서서히 풀리게 만듭니다. */
+  filter: blur(calc(26 * var(--u))) saturate(2.1) hue-rotate(-6deg);
+  opacity: 0.62;
   transform: translateX(-50%);
   pointer-events: none;
   transition: top 200ms var(--ease_out), width 200ms var(--ease_out);
@@ -111,10 +112,11 @@
   height: auto;
   /* Preserve the 181 × 166 source ratio so the light is not cropped horizontally. */
   object-fit: contain;
-  /* blur 로 원반의 딱딱한 경계를 녹여 확산광과 이어지게 합니다.
-     채도는 배경 위에서 노랗게 보일 만큼만 올리고, opacity 로 농도를 낮춥니다. */
-  filter: blur(calc(13 * var(--u))) saturate(2.1) brightness(1.04);
-  opacity: 0.7;
+  /* hue-rotate 로 중심부를 주황으로 돌립니다.
+     blur 를 확산광의 약 2/3 까지 키워야 주황에서 노랑으로 넘어가는 구간이
+     넓어져 경계 없이 서서히 섞입니다. opacity 로 전체 농도를 낮춥니다. */
+  filter: blur(calc(19 * var(--u))) saturate(2.8) brightness(1.04) hue-rotate(-38deg);
+  opacity: 0.75;
   transform: translateX(-50%);
   transition: top 200ms var(--ease_out), width 200ms var(--ease_out);
 }
