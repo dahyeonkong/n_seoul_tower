@@ -2817,7 +2817,6 @@
   background-size: 0 100%;
   transition: background-size 420ms var(--ease_out),
     background-color var(--duration) var(--ease_out),
-    border-color var(--duration) var(--ease_out),
     color var(--duration) var(--ease_out);
 }
 
@@ -2865,11 +2864,13 @@
 @media (hover: hover) {
   .restaurant_all .restaurant_more.is_revealed:hover {
     background-size: 100% 100%;
+    border-color: #809875;
   }
 }
 
 .restaurant_all .restaurant_more.is_revealed:focus-visible {
   background-size: 100% 100%;
+  border-color: #809875;
 }
 @media (min-width: 834px) {
   .restaurant_section {
