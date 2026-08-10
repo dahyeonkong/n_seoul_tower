@@ -1,23 +1,48 @@
 (function initIntro() {
+  const introScreen = document.querySelector(".intro_screen");
   const introVideo = document.querySelector("[data-intro-video]");
-  const skipButton = document.querySelector("[data-intro-skip]");
+  const cursorSkip = document.querySelector("[data-intro-cursor]");
+  const isPreview = new URLSearchParams(window.location.search).has("preview");
+  let isNavigating = false;
 
-  if (!introVideo || !skipButton) {
+  if (!introScreen || !introVideo || !cursorSkip) {
     return;
   }
 
   function goToMain() {
+    if (isNavigating) {
+      return;
+    }
+
+    isNavigating = true;
     window.location.replace("./index.html?intro=complete");
   }
 
-  introVideo.addEventListener("ended", goToMain, { once: true });
-  skipButton.addEventListener("click", goToMain);
+  if (isPreview) {
+    introVideo.loop = true;
+  } else {
+    introVideo.addEventListener("ended", goToMain, { once: true });
+  }
+  introScreen.addEventListener("click", goToMain);
+
+  introScreen.addEventListener("pointermove", function handlePointerMove(event) {
+    if (event.pointerType !== "mouse") {
+      return;
+    }
+
+    cursorSkip.classList.add("is_active");
+    cursorSkip.style.transform = "translate3d(" + event.clientX + "px, " + event.clientY + "px, 0) translate3d(-50%, -50%, 0)";
+  });
+
+  introScreen.addEventListener("pointerleave", function handlePointerLeave() {
+    cursorSkip.classList.remove("is_active");
+  });
 
   const playIntro = introVideo.play();
 
   if (playIntro) {
     playIntro.catch(function handlePlayError() {
-      skipButton.focus();
+      cursorSkip.focus();
     });
   }
 }());
