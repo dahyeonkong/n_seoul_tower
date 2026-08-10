@@ -30,7 +30,13 @@
      rot            열린 상태 회전각(도)
      rotClosed      닫힌 상태 회전각 — 열린 상태와 다를 때만 적습니다
      flipY          Figma 의 상하 반전
-     blur / opacity 전경 심도 표현
+     opacity        전경 심도 표현
+
+     전경 흐림(Figma 의 layer blur)은 CSS filter 로 걸지 않고 에셋에 미리 구워둡니다.
+     파일명이 *_blur.webp 인 것들이 그렇습니다. filter: blur() 는 매 프레임 재계산이라
+     19개가 동시에 날아오를 때 프레임을 떨어뜨렸습니다. 시안도 01/02 양쪽 모두
+     흐림이 걸려 있어서, 구워두는 쪽이 오히려 시안에 가깝습니다.
+     굽는 반경 = Figma 의 blur 값 x (에셋 실제 폭 / 씬에서의 표시 폭) 입니다.
      fill           [left%, top%, width%, height%] — Figma 의 이미지 필이 단순
                     "꽉 채우기"가 아닐 때만 적습니다. 생략하면 object-fit: cover.
      delay          팡 터질 때의 순서(초). 되돌아갈 때는 자동으로 역순입니다.
@@ -61,8 +67,8 @@
      -------------------------------------------------------------------------- */
   const ENVELOPE_BASE = '../assets/main_visual/';
   const ENVELOPE = {
-    back: { src: ENVELOPE_BASE + 'envelope_back.png', box: [231.87, 366.05, 1457, 1054.65] },
-    front: { src: ENVELOPE_BASE + 'envelope_front.png', box: [231, 120.01, 1457, 1457] },
+    back: { src: ENVELOPE_BASE + 'envelope_back.webp', box: [231.87, 366.05, 1457, 1054.65] },
+    front: { src: ENVELOPE_BASE + 'envelope_front.webp', box: [231, 120.01, 1457, 1457] },
   };
 
   /* 첫 진입 후 닫힌 상태를 보여주는 시간. 이후 재진입부터는 REPLAY_HOLD 만 기다립니다. */
@@ -207,7 +213,6 @@
       el.style.setProperty('--mv_sc', (cw / ow).toFixed(5));
       el.style.setProperty('--mv_rot_open', `${rotOpen}deg`);
       el.style.setProperty('--mv_rot_closed', `${rotClosed}deg`);
-      el.style.setProperty('--mv_blur', `${item.blur ?? 0}px`);
       el.style.setProperty('--mv_opacity', `${item.opacity ?? 1}`);
       el.style.setProperty('--mv_z', `${z}`);
 
