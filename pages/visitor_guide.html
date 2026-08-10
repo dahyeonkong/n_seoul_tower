@@ -122,11 +122,12 @@
 
             <figure class="guide_media_wrap">
               <span class="guide_media guide_media_bus">
-                <span class="bus_object">
-                  <img class="bus_image" src="../assets/guide_course/guide/visit_bus.png"
+                <span class="visit_bus_object">
+                  <img class="visit_bus base_bus" src="../assets/guide_course/guide/visit_bus.png"
                     alt="Namsan shuttle bus in pink livery with the tower bear character at the wheel" width="1672"
                     height="941" loading="lazy">
-                  <span class="bus_smoke" aria-hidden="true"></span>
+                  <img class="visit_bus motion_bus" src="../assets/guide_course/guide/bus_start.png" alt="" width="1672"
+                    height="941" loading="lazy" aria-hidden="true">
                 </span>
               </span>
             </figure>
@@ -283,10 +284,12 @@
             </p>
 
             <figure class="guide_media_wrap">
-              <span class="guide_media">
-                <img src="../assets/guide_course/guide/visit_cablecar.png"
-                  alt="Namsan cable car cabin carrying the tower bear character" width="1448" height="1086"
-                  loading="lazy">
+              <span class="guide_media guide_media_cablecar">
+                <span class="cablecar_object" role="img"
+                  aria-label="Namsan cable car cabin carrying the tower bear character">
+                  <img class="cablecar_image" src="../assets/guide_course/guide/visit_cablecar.png" alt=""
+                    width="1448" height="1086" loading="lazy" aria-hidden="true">
+                </span>
               </span>
               <!-- TODO: 공식 케이블카 사이트 주소는 미확정입니다. 디자인의 주차 안내에 적힌 도메인을 임시 사용했습니다. -->
               <a class="guide_media_link" href="https://namsancablecar.com/" target="_blank" rel="noopener noreferrer">
@@ -343,8 +346,14 @@
 
             <figure class="guide_media_wrap">
               <span class="guide_media guide_media_citytourbus">
-                <img src="../assets/guide_course/guide/visit_citytourbus.png"
-                  alt="Red double-decker Seoul City Tour Bus" width="1672" height="941" loading="lazy">
+                <span class="course_bus_object">
+                  <img class="course_bus_base" src="../assets/guide_course/guide/visit_citytourbus.png"
+                    alt="Red double-decker Seoul City Tour Bus" width="1672" height="941" loading="lazy">
+                  <img class="bus_bear bus_bear_left" src="../assets/guide_course/guide/charac_airpods 2.png"
+                    alt="" width="242" height="306" loading="lazy" aria-hidden="true">
+                  <img class="bus_bear bus_bear_right" src="../assets/guide_course/guide/charac_airpods 3.png"
+                    alt="" width="225" height="284" loading="lazy" aria-hidden="true">
+                </span>
               </span>
               <!-- TODO: 공식 시티투어버스 사이트 주소가 Figma 에 없습니다. 아래 주소는 미확정 임시 값입니다. -->
               <a class="guide_media_link" href="https://www.seoulcitybus.com/" target="_blank"
@@ -426,8 +435,14 @@
 
             <figure class="guide_media_wrap">
               <span class="guide_media guide_media_car">
-                <img src="../assets/guide_course/guide/visit_car.png" alt="Red passenger car seen from the front"
-                  width="1448" height="1086" loading="lazy">
+                <span class="visit_car_object">
+                  <span class="visit_car_group">
+                    <img class="visit_car" src="../assets/guide_course/guide/visit_car.png"
+                      alt="White passenger car seen from the front" width="2324" height="1416" loading="lazy">
+                    <img class="charac_sit" src="../assets/guide_course/guide/charac_sit.png" alt="" width="385"
+                      height="414" loading="lazy" aria-hidden="true">
+                  </span>
+                </span>
               </span>
             </figure>
           </div>
