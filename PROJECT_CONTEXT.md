@@ -967,3 +967,126 @@ Figma `main_visual` 3종(1373:1769 = 1440x1080 / 1373:1827 = 834x1080 / 1373:188
 - **미검증**: 실제 휠로 연속 스크롤했을 때의 체감과 `initHeroSectionJump` 점프 중의 재생,
   834 / 360 실측, 물감이 덮은 동안 헤더(z 120)와 퀵메뉴 FAB(z 60)가 위에 떠 있는데
   FAB 의 "CLICK ME" 글자가 초록 위에서 잘 보이는지 (`data-quick-dark` 목록에 없음)
+
+### 물감 전환 속도 조정 (2026-08-10, 위 항목 수정)
+
+번지는 시작점은 유지하고 퍼지는 속도만 늦췄습니다. 세 군데를 고쳤습니다.
+
+- **가속 곡선을 거의 등속으로**: `1 - (1-g)^1.8` → `1 - (1-g)^1.2`.
+  지수가 크면 초반에 확 퍼져 순식간에 덮여 버립니다.
+- **번지는 구간을 늘림**: `BLEED_COVER_PROGRESS` 0.65 → 0.88.
+- **걷히는 시점을 당김**: `BLEED_FADE_PROGRESS` 0.8 → 0.55.
+  화면이 다 덮이는 지점(약 0.45) 바로 뒤에 둬서 초록만 오래 보이는 구간을 없앴습니다.
+- **점프 시간을 늘림**: `initHeroSectionJump` 의 Lenis `scrollTo` 에 `duration: 2.2` 를
+  넘깁니다(기존은 Lenis 기본값 약 1.2 초). 물감 전환이 이 이동 사이에 재생되므로,
+  진행률 구간만 바꿔서는 체감 속도가 바뀌지 않습니다.
+  `JUMP_LOCK_TIME` 도 `JUMP_DURATION * 1000 + 200` 으로 함께 따라갑니다.
+
+**검증 결과** (캐시 무력화 임시 사본으로 확인 후 삭제)
+
+- 1440 x 900 에서 진행률별 실측 — 0.12 / 0.25 / 0.40 / 0.55 / 0.75 / 0.95 에서
+  크기 1276 → 2127 → 3246 → 4433 → 6067 → 7221px 로 **거의 등간격** 증가 (등속 확인)
+- 불투명도 — 0.55 까지 1, 0.75 에서 0.555, 0.95 에서 0.11 로 계획대로 걷힘
+- `is_full` 이 막바지에 켜져 모서리 빈틈 없음
+- 진행률 0.25 화면 캡처 — 이전보다 확연히 덜 퍼진 상태 확인
+- **미검증**: 실제 휠로 스크롤했을 때의 체감 속도. `duration: 2.2` 가 적당한지는
+  직접 굴려 보고 조정이 필요할 수 있습니다
+
+### 물감이 다 찬 뒤 멈추는 구간 추가 (2026-08-10, 위 항목 수정)
+
+다 채운 뒤 잠시 멈췄다가 걷히도록 구간을 나눴습니다.
+
+- `BLEED_COVER_PROGRESS` 0.88 → **0.5**.
+  여기서 크기 증가가 끝나고 `is_full` 로 마스크도 벗겨져 통색이 됩니다.
+- `BLEED_FADE_PROGRESS` 0.55 → **0.78**.
+  0.5 ~ 0.78 사이가 아무것도 변하지 않는 정지 구간입니다.
+- `JUMP_DURATION` 2.2 → **2.6 초**. 세 구간이 모두 이 시간 안에 들어갑니다.
+
+**최종 타임라인** (2.6 초 기준)
+
+| 진행률 | 시간 | 상태 |
+|---|---|---|
+| 0 ~ 0.5 | 약 1.30 초 | 티켓 뒤에서 번져 나감 |
+| 0.5 ~ 0.78 | 약 0.73 초 | **꽉 찬 색으로 정지** |
+| 0.78 ~ 1.0 | 약 0.57 초 | 걷히며 events 등장 |
+
+`is_full` 이 0.5 에서 켜지므로 정지 구간에는 마스크가 `none` 이 되어
+크기 값이 바뀌어도 화면은 완전히 고정된 통색입니다.
+
+**검증 결과** (캐시 무력화 임시 사본으로 확인 후 삭제)
+
+- 진행률별 실측 — 0.15(size 2280, op 1, full false) / 0.35(4577, 1, false) /
+  0.50(6152, 1, **full true**) / 0.72(op 1, full true) / 0.88(op 0.545) / 0.97(op 0.135)
+- 0.50 ~ 0.78 구간에서 불투명도 1, `mask-image: none` 유지 → 정지 확인
+- 진행률 0.62 화면 캡처 — 화면 전체가 #809975 통색, 티켓만 위에 남음
+- **미검증**: 실제 휠 스크롤에서의 체감. 멈춤이 길거나 짧으면
+  `BLEED_FADE_PROGRESS` 로, 전체 속도는 `JUMP_DURATION` 으로 조절합니다
+
+### 배경 잔디를 ::before 로 분리하고 30% 로 낮춤 (2026-08-10)
+
+`grass_img.png` 를 섹션에 직접 넣던 것을 가상 요소로 옮기고 `opacity: 0.3` 을 걸었습니다.
+
+**변경 파일**
+
+- `css/main.css` — `.events_section` / `.goods_section` 의 background-image 계열 선언을
+  각각 `::before` 로 옮기고, 두 섹션에 `isolation: isolate` 추가
+
+**구현**
+
+```css
+.events_section {
+  isolation: isolate;          /* 아래 z-index: -1 을 이 섹션 안에 가둡니다 */
+  background-color: var(--color_bg);
+}
+
+.events_section::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background-image: url("../assets/grass_img.png");
+  background-position: center bottom;
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  opacity: 0.3;
+  pointer-events: none;
+}
+```
+
+**주요 판단**
+
+- **`isolation: isolate` 와 `z-index: -1` 조합을 썼습니다.** 가상 요소를 `z-index: 0`
+  으로 두면 `.goods_list` 처럼 position 이 없는 in-flow 콘텐츠가 그 아래로 깔려 가려집니다.
+  `z-index: -1` 은 섹션 배경색 위 · 콘텐츠 아래에 정확히 놓이지만, 섹션이 쌓임 맥락을
+  만들지 않으면 body 배경 뒤로 빠져 안 보입니다. 그래서 `isolation: isolate` 를 함께 넣었습니다.
+  덕분에 `.goods_list` 등 자식에는 손대지 않았습니다.
+- `background-attachment: fixed` 와 `background-size` 등 나머지 값은 그대로 옮겨
+  보이는 위치·크기는 변하지 않고 흐림만 달라집니다.
+
+**검증 결과** (캐시 무력화 임시 사본으로 확인 후 삭제)
+
+- 두 섹션 모두 — 섹션 자체 `background-image: none`, `::before` 의
+  `opacity 0.3` / `z-index -1` / `position absolute` / `background-attachment fixed` 확인
+- goods 섹션 화면 캡처 — 잔디가 흐리게 깔리고 상품 카드 4개가 그 위에 정상 노출
+  (position 없는 `.goods_list` 가 가려지지 않음)
+- events 섹션 화면 캡처 — 제목·뷰 전환 버튼·곡선·곤돌라 모두 잔디 위에 정상 노출
+- **미검증**: 834 / 360 실측, 흐림 30% 가 시안 의도와 맞는지
+
+### goods 섹션 배경 잔디 제거 (2026-08-10, 위 항목 수정)
+
+`.goods_section::before` 의 배경 잔디를 뺐습니다. `.events_section` 은 그대로 둡니다.
+
+- `.goods_section::before` 규칙 전체 삭제
+- 가상 요소용으로 넣었던 `.goods_section` 의 `isolation: isolate` 도 함께 제거
+  (다른 용도가 없어 남길 이유가 없습니다)
+- 섹션에 직접 넣었던 예전 background-image 도 복원하지 않았습니다.
+  `.goods_section` 은 `background-color: var(--color_bg)` 만 남습니다.
+
+**검증 결과** (캐시 무력화 임시 사본으로 확인 후 삭제)
+
+- `.goods_section` — `background-image: none`, `isolation: auto`,
+  `::before` 의 `content: none` (규칙 없음) 확인
+- `.events_section` — `::before` 의 grass_img / `opacity 0.3` / `isolation: isolate` 유지 확인
+- goods 섹션 화면 캡처 — 잔디 없이 크림 배경, 상품 카드 4개 정상 노출
+- `css/main.css` 에 남은 `grass_img` 참조는 events 쪽 1건뿐
