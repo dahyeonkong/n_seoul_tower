@@ -1255,7 +1255,7 @@ html .course_page .course_description {
 
   position: fixed;
   right: calc(var(--quick_gap) + var(--scrollbar_gap, 0px));
-  bottom: 5%;
+  bottom: 9%;
   z-index: 100;
   display: flex;
   flex-direction: column;
@@ -1513,10 +1513,16 @@ html .course_page .course_description {
 }
 
 .quick_chatbot_header {
+  position: relative;
   display: grid;
   padding: 24px 24px 20px;
   column-gap: 14px;
   grid-template-columns: 56px 1fr;
+}
+
+.quick_chatbot_brand,
+.quick_chatbot_close {
+  display: none;
 }
 
 .quick_chatbot_avatar {
@@ -1597,6 +1603,151 @@ html .course_page .course_description {
   font-size: 15px;
   font-weight: 600;
   text-align: center;
+}
+
+@media (max-width: 833px) {
+  body.has_mobile_chatbot {
+    overflow: hidden;
+  }
+
+  .quick_menu.is_chatbot_open {
+    z-index: 1000;
+  }
+
+  .quick_menu.is_chatbot_open .quick_menu_actions {
+    animation: none;
+    transform: none;
+  }
+
+  .quick_chatbot {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-height: none;
+    border-radius: 0;
+    background-color: var(--color_surface_goods);
+    box-shadow: none;
+  }
+
+  .quick_chatbot:not([hidden]) {
+    animation-duration: 240ms;
+    transform-origin: center;
+  }
+
+  .quick_chatbot_header {
+    display: grid;
+    min-height: 226px;
+    padding: max(24px, env(safe-area-inset-top)) 24px 28px;
+    align-content: end;
+    column-gap: 12px;
+    grid-template-columns: 48px 1fr;
+    background:
+      radial-gradient(circle at 18% 0%, rgba(182, 195, 132, 0.3), transparent 42%),
+      linear-gradient(150deg, #eef5df 0%, #f7f4e8 72%);
+  }
+
+  .quick_chatbot_brand {
+    position: absolute;
+    top: max(36px, calc(env(safe-area-inset-top) + 12px));
+    left: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--color_new_secondary_600);
+    font-family: var(--font_title);
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+
+  .quick_chatbot_brand_eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+  }
+
+  .quick_chatbot_brand_name {
+    margin-top: 4px;
+    font-size: clamp(24px, 8vw, 34px);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+  }
+
+  .quick_chatbot_close {
+    position: absolute;
+    top: max(20px, env(safe-area-inset-top));
+    right: 20px;
+    display: flex;
+    width: 48px;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--color_new_secondary_600);
+  }
+
+  .quick_chatbot_close img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .quick_chatbot_avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  .quick_chatbot_name {
+    font-size: 22px;
+  }
+
+  .quick_chatbot_status {
+    font-size: 13px;
+  }
+
+  .quick_chatbot_body {
+    min-height: 0;
+    padding: 20px 20px calc(32px + env(safe-area-inset-bottom));
+    flex: 1;
+  }
+
+  .quick_chatbot_message {
+    width: 100%;
+    padding: 20px 16px;
+    border-radius: var(--radius_2xl);
+    box-shadow: 0 8px 24px rgba(33, 33, 33, 0.06);
+    gap: 12px;
+  }
+
+  .quick_chatbot_message_avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .quick_chatbot_message_content {
+    flex: 1;
+  }
+
+  .quick_chatbot_message_name {
+    color: var(--color_new_secondary_700);
+    font-size: 14px;
+  }
+
+  .quick_chatbot_message_text {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .quick_chatbot_cta {
+    width: 100%;
+    min-height: 52px;
+    margin-top: 14px;
+    border-radius: var(--radius_round);
+    background-color: var(--color_new_primary_500);
+    color: var(--color_primary_800);
+    font-size: 16px;
+  }
 }
 
 /* --- 토글 (987:7706 속성1=off) ---
