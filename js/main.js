@@ -730,41 +730,6 @@ function renderGiftItems(items) {
   track.appendChild(fragment);
 }
 
-function initGiftTrackCursor() {
-  var track = document.querySelector("[data-gift-track]");
-  var cursor = document.querySelector("[data-gift-cursor]");
-
-  if (!track || !cursor) {
-    return;
-  }
-
-  function handleGiftPointerMove(event) {
-    cursor.style.transform = "translate3d(" + (event.clientX - 50) + "px, " + (event.clientY - 50) + "px, 0)";
-  }
-
-  function handleGiftPointerEnter(event) {
-    handleGiftPointerMove(event);
-    cursor.classList.add("is_visible");
-  }
-
-  function handleGiftPointerLeave() {
-    cursor.classList.remove("is_visible");
-  }
-
-  function handleGiftTrackClick(event) {
-    if (event.target.closest(".gift_card_link")) {
-      return;
-    }
-
-    window.location.href = "./pages/n_gift_shop.html";
-  }
-
-  track.addEventListener("pointerenter", handleGiftPointerEnter);
-  track.addEventListener("pointermove", handleGiftPointerMove);
-  track.addEventListener("pointerleave", handleGiftPointerLeave);
-  track.addEventListener("click", handleGiftTrackClick);
-}
-
 /* --------------------------------------------------------------------------
    custom tower visual
    -------------------------------------------------------------------------- */
@@ -1073,17 +1038,23 @@ function initTowerStack3D() {
     return clamp(targetHeight / renderedHeight, 0.05, 1);
   }
 
-  function getTowerSlotOffset(scale) {
+  /* 전환 중에는 캔버스가 뷰포트 고정 레이어에, 안착 뒤에는 섹션 안에 들어갑니다.
+     두 좌표계의 원점이 다르므로 어느 쪽을 기준으로 잴지 골라야 같은 화면 위치가 나옵니다.
+     예전에는 항상 섹션 기준으로 재서, 섹션 상단이 뷰포트 상단에 정확히 맞물리는
+     한 지점에서만 두 값이 같았습니다. 그래서 전환이 그 지점에서만 끝날 수 있었습니다. */
+  function getTowerSlotOffset(scale, shouldUseViewportOrigin) {
     var goodsRect = goodsSection.getBoundingClientRect();
     var slotRect = goodsHeroSlot.getBoundingClientRect();
     /* 100vw 는 스크롤바를 포함해 window.innerWidth 와 어긋날 수 있어 캔버스 실제 배치 크기로 잽니다. */
     var canvasWidth = towerCanvas.offsetWidth || window.innerWidth;
     var canvasHeight = towerCanvas.offsetHeight || window.innerHeight;
+    var originLeft = shouldUseViewportOrigin ? 0 : goodsRect.left;
+    var originTop = shouldUseViewportOrigin ? 0 : goodsRect.top;
 
     return {
-      x: slotRect.left - goodsRect.left + slotRect.width / 2 - canvasWidth / 2,
+      x: slotRect.left - originLeft + slotRect.width / 2 - canvasWidth / 2,
       /* 타워는 캔버스 중앙보다 아래에 그려지므로, 줄인 배율만큼 되올려 자리 중앙에 맞춥니다. */
-      y: slotRect.top - goodsRect.top + slotRect.height / 2 - canvasHeight / 2 -
+      y: slotRect.top - originTop + slotRect.height / 2 - canvasHeight / 2 -
         canvasHeight * TOWER_RENDER_CENTER_RATIO * scale
     };
   }
@@ -1095,7 +1066,9 @@ function initTowerStack3D() {
 
     var normalizedProgress = clamp(progress, 0, 1);
     var dockScale = getTowerDockScale();
-    var offset = getTowerSlotOffset(dockScale);
+    /* 고정 레이어 위에서 그리므로 뷰포트 기준으로 잽니다. 자리가 화면 어디에 있든
+       진행률 1 에서 안착 위치와 정확히 겹치므로, 전환이 끝나는 지점을 자유롭게 정할 수 있습니다. */
+    var offset = getTowerSlotOffset(dockScale, true);
     var startX = window.innerWidth * 0.16;
     var motionProgress = normalizedProgress * normalizedProgress * (3 - 2 * normalizedProgress);
 
@@ -1473,7 +1446,11 @@ function initTowerStack3D() {
         start: function () {
           return assemblyTrigger.end;
         },
-        end: "top top",
+        /* 섹션 상단이 뷰포트 상단에 닿는 "top top" 에서 끝내면, 안착 지점이 곧 해제 지점이라
+           조금만 위로 스크롤해도 타워가 곧바로 위 섹션으로 되돌아갑니다. 게다가 그 위치에서는
+           자리 윗부분이 고정 헤더에 가립니다. 화면 25% 지점에서 끝내면 헤더를 확실히 비켜나고,
+           그만큼(뷰포트의 25%)이 위로 스크롤해도 안착 상태가 유지되는 여유 구간이 됩니다. */
+        end: "top 25%",
         scrub: towerScrollScrub,
         invalidateOnRefresh: true,
         onEnter: requestTowerTransitionSync,
@@ -1853,7 +1830,6 @@ function initMain() {
   initCourseSceneVideo();
   initCourseScrollScene();
   initPassTicketFlip();
-  initGiftTrackCursor();
   initTowerReveal();
   initTowerStack3D();
   initRestaurantStackState();
