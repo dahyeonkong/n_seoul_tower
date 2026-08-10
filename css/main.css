@@ -3380,6 +3380,20 @@
   overflow: hidden;
 }
 
+/* 마우스가 있는 환경에서만 확대합니다.
+   터치에서는 탭한 뒤 hover 상태가 남아 카드가 커진 채로 굳습니다. */
+@media (hover: hover) and (pointer: fine) {
+  .goods_card {
+    transition: transform var(--duration) var(--ease_out);
+  }
+
+  .goods_card:hover {
+    /* 커진 카드가 옆 카드나 안착한 3D 타워 캔버스(z-index 1)에 가리지 않게 올립니다. */
+    z-index: 3;
+    transform: scale(1.1);
+  }
+}
+
 .goods_card_media {
   position: relative;
   z-index: 2;
