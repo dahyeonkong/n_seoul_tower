@@ -2,7 +2,7 @@
    main_visual pop interaction
    --------------------------------------------------------------------------
    레이아웃 속성(left/top/width/height)은 JS 가 처음 한 번만 심어두고,
-   재생 중에는 transform / filter / opacity 만 바뀝니다. 합성 단계에서만
+   재생 중에는 transform / opacity 만 바뀝니다. 합성 단계에서만
    처리되니 풀페이지 크기에서도 프레임이 떨어지지 않습니다.
 
    상태
@@ -93,7 +93,7 @@
   z-index: var(--mv_z, 1);
   transform-origin: center;
   pointer-events: none;
-  will-change: transform, filter;
+  will-change: transform;
 }
 
 /* 포물선의 세로 성분. 바깥(.mv_object)이 가로, 안쪽(.mv_object_inner)이 세로를
@@ -160,12 +160,10 @@
    -------------------------------------------------------------------------- */
 .mv_object {
   transform: translateX(var(--mv_dx));
-  filter: blur(0);
   opacity: 1;
 
   transition:
     transform var(--mv_dur_in) var(--mv_in_x) var(--mv_delay_in),
-    filter 0.5s ease-out var(--mv_delay_in),
     opacity 0.4s ease-out var(--mv_delay_in);
 }
 
@@ -180,12 +178,10 @@
    -------------------------------------------------------------------------- */
 .is_open .mv_object {
   transform: translateX(0);
-  filter: blur(var(--mv_blur));
   opacity: var(--mv_opacity);
 
   transition:
     transform var(--mv_dur_out) var(--mv_out_x) var(--mv_delay_out),
-    filter 0.8s ease-out var(--mv_delay_out),
     opacity 0.5s ease-out var(--mv_delay_out);
 }
 
