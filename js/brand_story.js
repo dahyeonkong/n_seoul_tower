@@ -434,26 +434,56 @@ function initAboutPanels() {
    -------------------------------------------------------------------------- */
 function initTowerVideo() {
   var video = document.querySelector("[data-tower-video]");
+
   if (!video) {
     return;
   }
 
-  if (prefersReducedMotion()) {
-    video.removeAttribute("autoplay");
-    video.pause();
-    return;
+  var REVERSE_END_TIME = 3;
+  var REVERSE_PLAYBACK_RATE = 0.7;
+  var REVERSE_FRAME_INTERVAL = 1000 / 30;
+  var reverseEndTime = REVERSE_END_TIME;
+  var reversePlayhead = reverseEndTime;
+  var lastFrameTime = 0;
+
+  function renderTowerVideoReverse(timestamp) {
+    if (!lastFrameTime) {
+      lastFrameTime = timestamp;
+    }
+
+    var elapsed = timestamp - lastFrameTime;
+
+    if (elapsed >= REVERSE_FRAME_INTERVAL) {
+      reversePlayhead -= (elapsed / 1000) * REVERSE_PLAYBACK_RATE;
+
+      if (reversePlayhead <= 0) {
+        reversePlayhead = reverseEndTime;
+      }
+
+      video.currentTime = reversePlayhead;
+      lastFrameTime = timestamp;
+    }
+
+    window.requestAnimationFrame(renderTowerVideoReverse);
   }
 
-  var playRequest = video.play();
-  if (playRequest && typeof playRequest.catch === "function") {
-    playRequest.catch(function handleAutoplayBlocked() {
-      /* 브라우저 정책으로 막힌 경우입니다. 오류가 아니므로 상태만 남겨 둡니다.
-         멈춰 있어도 첫 프레임이 타워 모양으로 보이며 정보 손실은 없습니다.
-         autoplay 속성이 뒤늦게 재생을 시작하는 경우가 있어 실제 상태를 다시 확인합니다. */
-      if (video.paused) {
-        video.setAttribute("data-autoplay-blocked", "true");
-      }
-    });
+  function handleTowerVideoReady() {
+    video.pause();
+    reverseEndTime = Math.min(REVERSE_END_TIME, video.duration || REVERSE_END_TIME);
+    reversePlayhead = reverseEndTime;
+    video.currentTime = reversePlayhead;
+
+    if (prefersReducedMotion()) {
+      return;
+    }
+
+    window.requestAnimationFrame(renderTowerVideoReverse);
+  }
+
+  if (video.readyState >= 1) {
+    handleTowerVideoReady();
+  } else {
+    video.addEventListener("loadedmetadata", handleTowerVideoReady, { once: true });
   }
 }
 
