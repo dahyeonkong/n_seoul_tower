@@ -332,15 +332,19 @@
 
             <div class="course_scene" data-course-scene>
               <img class="course_scene_bg" src="./assets/guide_course/walk_bg.png" alt="" aria-hidden="true" width="2010" height="711" loading="lazy">
-              <!-- 코스가 진행되는 동안에는 영상이 walk_bg 를 덮고, 스크롤이 끝나면 사라집니다. -->
+              <!-- 코스가 진행되는 동안 반복 재생하고, 스크롤이 끝나면 현재 프레임에서 멈춥니다. -->
               <video
                 class="course_scene_video"
                 data-course-video
                 width="1280"
                 height="720"
                 muted
+                loop
                 playsinline
                 preload="auto"
+                controlslist="nodownload nofullscreen noremoteplayback"
+                disablepictureinpicture
+                disableremoteplayback
                 aria-hidden="true"
               >
                 <source src="./assets/guide_course/road_bg.mp4" type="video/mp4">
@@ -350,7 +354,7 @@
                 data-course-flight-origin
                 src="./n_seoul_mascot_3d/embed.html"
                 title="제자리에서 걷는 N서울타워 3D 마스코트"
-                width="262"
+                width="500"
                 height="283"
                 loading="lazy"
                 tabindex="-1"

@@ -233,8 +233,14 @@ var EVENT_PATH_EDGE_INSET = 0.08;
    path 를 타고 내려가는 형상은 남기되 화면 밖으로는 나가지 않는 값입니다. */
 var EVENT_GONDOLA_BAND = 0.36;
 
-/* 코스 스크롤이 이 진행률을 넘으면 캐릭터를 감추고 다음 섹션으로 전환합니다. */
-var COURSE_END_PROGRESS = 0.97;
+/* 마지막 코스 카드가 정확히 도착한 시점에 영상 정지와 캐릭터 종료 동작을 실행합니다. */
+var COURSE_END_PROGRESS = 1;
+
+/* 손 흔들기 최대 구간에서 측정한 iframe 내부 손바닥 중심 좌표입니다. */
+var COURSE_WAVE_HAND_ANCHOR_X = 0.85;
+var COURSE_WAVE_HAND_ANCHOR_Y = 0.29;
+/* iframe 좌우 여백 확장 전 캐릭터의 시각 폭 비율로 티켓 시작 크기를 유지합니다. */
+var COURSE_CHARACTER_VISUAL_ASPECT = 262 / 283;
 
 /* iframe 곰 위치에서 N Pass 제자리까지 티켓이 이동하는 스크롤 범위입니다. */
 var PASS_FLIGHT_RANGE = 0.9;
@@ -728,8 +734,7 @@ function initHeroVisualVideo() {
   }
 }
 
-/* 코스 배경 영상은 반복하지 않고, 섹션에 들어올 때마다 처음부터 한 번만 재생합니다.
-   autoplay 를 쓰면 사용자가 도착하기 전에 이미 끝나 마지막 프레임만 남습니다. */
+/* 코스 배경 영상은 스크롤이 끝날 때까지 반복하고, 종료 시 현재 프레임에서 멈춥니다. */
 function initCourseSceneVideo() {
   var scene = document.querySelector("[data-course-scene]");
   var video = document.querySelector("[data-course-video]");
@@ -738,8 +743,16 @@ function initCourseSceneVideo() {
     return;
   }
 
+  video.loop = true;
+  video.controls = false;
+  video.removeAttribute("controls");
+  video.disablePictureInPicture = true;
+
   function playCourseVideo() {
-    video.currentTime = 0;
+    if (scene.classList.contains("is_course_end")) {
+      return;
+    }
+
     var played = video.play();
 
     /* 자동재생이 막히면 첫 프레임이 그대로 남습니다. 오류로 처리하지 않습니다. */
@@ -761,7 +774,10 @@ function initCourseSceneVideo() {
         }
 
         video.pause();
-        video.currentTime = 0;
+
+        if (!scene.classList.contains("is_course_end")) {
+          video.currentTime = 0;
+        }
       });
     },
     { threshold: 0 }
@@ -776,6 +792,8 @@ function initCourseScrollScene() {
   var sticky = document.querySelector("[data-course-sticky]");
   var scene = document.querySelector("[data-course-scene]");
   var list = document.querySelector("[data-course-list]");
+  var video = document.querySelector("[data-course-video]");
+  var character = scene ? scene.querySelector(".course_scene_char") : null;
 
   if (!section || !stage || !sticky || !scene || !list) {
     return;
@@ -791,13 +809,62 @@ function initCourseScrollScene() {
   var scrollTravel = 1;
   var maxListOffset = 0;
   var isFrameRequested = false;
+  var hasCourseEnded = false;
+  var courseWaveRetryCount = 0;
+  var courseWaveRetryTimer = 0;
+
+  function triggerCourseCharacterWave() {
+    if (!character || !character.contentWindow) {
+      return;
+    }
+
+    var characterDocument = character.contentDocument;
+    var characterCanvas = characterDocument
+      ? characterDocument.querySelector("[data-mascot-canvas]")
+      : null;
+    var isCharacterReady = characterCanvas && characterCanvas.dataset.motion;
+
+    if (!isCharacterReady) {
+      if (courseWaveRetryCount < 30) {
+        courseWaveRetryCount += 1;
+        window.clearTimeout(courseWaveRetryTimer);
+        courseWaveRetryTimer = window.setTimeout(triggerCourseCharacterWave, 100);
+      }
+      return;
+    }
+
+    courseWaveRetryCount = 0;
+    window.clearTimeout(courseWaveRetryTimer);
+    var waveEvent = new character.contentWindow.KeyboardEvent("keydown", {
+      key: "3",
+      bubbles: true,
+      cancelable: true
+    });
+    characterDocument.dispatchEvent(waveEvent);
+  }
+
+  function finishCourseScene() {
+    if (hasCourseEnded) {
+      return;
+    }
+
+    hasCourseEnded = true;
+    scene.classList.add("is_course_end");
+
+    if (video) {
+      video.pause();
+    }
+
+    triggerCourseCharacterWave();
+  }
 
   function renderCourseScroll() {
     var stageRect = stage.getBoundingClientRect();
     var progress = Math.min(1, Math.max(0, -stageRect.top / scrollTravel));
     list.style.transform = "translate3d(0, " + -progress * maxListOffset + "px, 0)";
-    /* 코스 카드를 다 지나가면 영상과 걷는 마스코트를 감춥니다. */
-    scene.classList.toggle("is_course_end", progress >= COURSE_END_PROGRESS);
+    if (progress >= COURSE_END_PROGRESS) {
+      finishCourseScene();
+    }
     isFrameRequested = false;
   }
 
@@ -1018,12 +1085,13 @@ function initPassTicketFlip() {
       Math.max(0, 1 - (restCenterY - viewportHeight / 2) / flightDistance)
     );
 
-    var startCenterX = startRect.left + startRect.width / 2;
-    var startCenterY = startRect.top + startRect.height / 2;
+    var startCenterX = startRect.left + startRect.width * COURSE_WAVE_HAND_ANCHOR_X;
+    var startCenterY = startRect.top + startRect.height * COURSE_WAVE_HAND_ANCHOR_Y;
     var restCenterX = restRect.left + restRect.width / 2;
     var offsetX = (startCenterX - restCenterX) * (1 - progress);
     var offsetY = (startCenterY - restCenterY) * (1 - progress);
-    var startScale = startRect.width / restRect.width;
+    var startVisualWidth = startRect.height * COURSE_CHARACTER_VISUAL_ASPECT;
+    var startScale = startVisualWidth / restRect.width;
     var scale = startScale + (1 - startScale) * progress;
     var angle = 180 * (1 - progress);
 
