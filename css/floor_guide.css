@@ -67,7 +67,39 @@
   width: 100%;
   height: calc(485 * var(--u));
   overflow: visible;
-  opacity: 0.34;
+}
+
+/* 조명 확산광.
+   circle03.png 은 단색 원반 두 개로 된 평면 에셋이라 그대로 쓰면 번짐이 없습니다.
+   그래서 같은 에셋을 두 겹으로 씁니다.
+   - ::before : 2.3 배로 키우고 강하게 흐려 바깥으로 퍼지는 따뜻한 확산광
+   - .floor_light : 원래 크기 그대로 두고 채도만 올린 밝은 중심부
+
+   --bloom_scale 은 중심부 대비 확산광의 배율이고,
+   --bloom_offset 은 두 겹의 세로 중심을 맞추기 위한 값입니다.
+   에셋 비율이 181 x 166 이므로 높이는 너비의 0.917 배이고,
+   중심을 맞추려면 (0.917 * bloom_scale - 0.917) / 2 만큼 위로 올려야 합니다. */
+.floor_tower_visual {
+  --bloom_scale: 2.3;
+  --bloom_offset: 0.596;
+}
+
+.floor_tower_visual::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: calc((var(--light_top) - var(--light_size) * var(--bloom_offset)) * var(--u));
+  left: 50%;
+  width: calc(var(--light_size) * var(--bloom_scale) * var(--u));
+  /* Keep the 181 × 166 source ratio so the bloom stays concentric with the core. */
+  aspect-ratio: 181 / 166;
+  background: url("../assets/floorguide/circle03.png") center / 100% 100% no-repeat;
+  /* hue-rotate 로 노란 원을 바깥에서 주황빛으로 밀어 중심부와 색 온도 차를 만듭니다. */
+  filter: blur(calc(26 * var(--u))) saturate(1.75) hue-rotate(-14deg);
+  opacity: 0.6;
+  transform: translateX(-50%);
+  pointer-events: none;
+  transition: top 200ms var(--ease_out), width 200ms var(--ease_out);
 }
 
 .floor_light {
@@ -79,6 +111,10 @@
   height: auto;
   /* Preserve the 181 × 166 source ratio so the light is not cropped horizontally. */
   object-fit: contain;
+  /* blur 로 원반의 딱딱한 경계를 녹여 확산광과 이어지게 합니다.
+     채도는 배경 위에서 노랗게 보일 만큼만 올리고, opacity 로 농도를 낮춥니다. */
+  filter: blur(calc(13 * var(--u))) saturate(2.1) brightness(1.04);
+  opacity: 0.7;
   transform: translateX(-50%);
   transition: top 200ms var(--ease_out), width 200ms var(--ease_out);
 }
@@ -95,8 +131,10 @@
   transition: opacity 200ms var(--ease_out);
 }
 
+/* 기존에는 .floor_tower_visual 에 opacity 를 걸어 타워와 조명이 함께 흐려졌습니다.
+   조명만 밝게 남기려고 타워 이미지 쪽으로 옮겼고, 최종 농도는 동일합니다. */
 .tower_state_image.is_active {
-  opacity: 1;
+  opacity: 0.34;
 }
 
 /* --------------------------------------------------------------------------
@@ -335,7 +373,7 @@
     --u: 0.8px;
   }
 
-  .floor_tower_visual {
+  .tower_state_image.is_active {
     opacity: 0.72;
   }
 
@@ -653,6 +691,7 @@
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .floor_light,
+  .floor_tower_visual::before,
   .tower_state_image,
   .floor_card_media img {
     transition: none;
@@ -699,7 +738,6 @@
   .floor_tower_visual {
     width: min(74vw, 266px);
     height: min(116vw, 470px);
-    opacity: 0.65;
   }
 
   .tower_state_image {
@@ -708,7 +746,13 @@
     object-fit: contain;
   }
 
-  .floor_light {
+  .tower_state_image.is_active {
+    opacity: 0.65;
+  }
+
+  /* 좁은 화면에서 확산광이 뷰포트를 넘지 않게 타워 영역 안으로 묶습니다. */
+  .floor_light,
+  .floor_tower_visual::before {
     max-width: 100%;
   }
 
