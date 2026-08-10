@@ -233,12 +233,12 @@ var EVENT_PATH_EDGE_INSET = 0.08;
    path 를 타고 내려가는 형상은 남기되 화면 밖으로는 나가지 않는 값입니다. */
 var EVENT_GONDOLA_BAND = 0.36;
 
-/* 코스 스크롤이 이 진행률을 넘으면 "끝난 것"으로 보고 티켓 건네는 곰으로 전환합니다. */
+/* 코스 스크롤이 이 진행률을 넘으면 캐릭터를 감추고 다음 섹션으로 전환합니다. */
 var COURSE_END_PROGRESS = 0.97;
 
-/* 티켓이 곰에게서 날아오는 구간의 길이(뷰포트 높이 배수).
-   티켓 중심이 화면 중앙에 닿는 순간 비행이 끝나고 제자리에 놓입니다. */
+/* iframe 곰 위치에서 N Pass 제자리까지 티켓이 이동하는 스크롤 범위입니다. */
 var PASS_FLIGHT_RANGE = 0.9;
+
 
 /* 곡선을 세로로 얼마나 늘릴지. 1 이면 곡선이 페이지와 1:1 로 흘러가지만 경사가 매우 가팔라집니다.
    가로 배율과 같아지는 지점(약 0.217)이 에셋에 그려진 원래 각도이고, 그보다 낮추면 더 완만해집니다. */
@@ -795,8 +795,7 @@ function initCourseScrollScene() {
     var stageRect = stage.getBoundingClientRect();
     var progress = Math.min(1, Math.max(0, -stageRect.top / scrollTravel));
     list.style.transform = "translate3d(0, " + -progress * maxListOffset + "px, 0)";
-    /* 코스 카드를 다 지나가면 영상과 걷는 마스코트를 감추고
-       walk_bg 위에 티켓을 건네는 곰을 보여 줍니다. */
+    /* 코스 카드를 다 지나가면 영상과 걷는 마스코트를 감춥니다. */
     scene.classList.toggle("is_course_end", progress >= COURSE_END_PROGRESS);
     isFrameRequested = false;
   }
@@ -872,41 +871,6 @@ function renderGiftItems(items) {
   track.appendChild(fragment);
 }
 
-function initGiftTrackCursor() {
-  var track = document.querySelector("[data-gift-track]");
-  var cursor = document.querySelector("[data-gift-cursor]");
-
-  if (!track || !cursor) {
-    return;
-  }
-
-  function handleGiftPointerMove(event) {
-    cursor.style.transform = "translate3d(" + (event.clientX - 50) + "px, " + (event.clientY - 50) + "px, 0)";
-  }
-
-  function handleGiftPointerEnter(event) {
-    handleGiftPointerMove(event);
-    cursor.classList.add("is_visible");
-  }
-
-  function handleGiftPointerLeave() {
-    cursor.classList.remove("is_visible");
-  }
-
-  function handleGiftTrackClick(event) {
-    if (event.target.closest(".gift_card_link")) {
-      return;
-    }
-
-    window.location.href = "./pages/n_gift_shop.html";
-  }
-
-  track.addEventListener("pointerenter", handleGiftPointerEnter);
-  track.addEventListener("pointermove", handleGiftPointerMove);
-  track.addEventListener("pointerleave", handleGiftPointerLeave);
-  track.addEventListener("click", handleGiftTrackClick);
-}
-
 /* --------------------------------------------------------------------------
    custom tower visual
    -------------------------------------------------------------------------- */
@@ -973,7 +937,7 @@ function initTowerReveal() {
 /* 스크롤에 맞춰 양초가 한 단씩 쌓이는 3D 조립 (yul_tower_3d/scroll-stack-3d.js).
    데스크톱에서만 켜고, 그 외에는 기존 이미지 스택을 그대로 씁니다.
    모듈·three·gsap 이 없으면 초기화가 null 을 돌려주므로 이미지 스택이 남습니다. */
-/* 코스 구간이 끝나고 N Pass 섹션에 들어오면 티켓이 떨어져 내려와 뒤집힙니다.
+/* N Pass 섹션에 들어오면 티켓이 나타나 뒤집힙니다.
    섹션을 완전히 벗어날 때만 되돌려(threshold 0) 재진입하면 다시 재생하고,
    TOP 버튼처럼 위로 빠르게 지나갈 때는 회전 없이 결과만 보여 줍니다. */
 function initPassTicketFlip() {
@@ -1023,29 +987,29 @@ function initPassTicketFlip() {
     });
   }
 
-  /* --- 데스크톱: 곰에게서 티켓이 날아와 커지며 뒤집힙니다 ---
+  /* --- 데스크톱: iframe 곰 위치에서 티켓이 날아와 커지며 뒤집힙니다 ---
      .pass_flip 은 변형이 없으므로 그 rect 가 곧 티켓의 "제자리"입니다.
      매 프레임 곰 위치와 제자리 사이를 보간해 하나의 transform 으로 넣습니다. */
   function renderPassFlight() {
-    var bear = document.querySelector("[data-course-bear]");
+    var flightOrigin = document.querySelector("[data-course-flight-origin]");
     var scene = document.querySelector("[data-course-scene]");
     var restRect = flip.getBoundingClientRect();
     var viewportHeight = window.innerHeight;
 
-    /* 코스 스크롤이 끝나 곰이 티켓을 건네는 순간부터 티켓을 보여 줍니다. */
+    /* 코스 스크롤이 끝나 코스가 끝나는 순간부터 티켓을 보여 줍니다. */
     flip.classList.toggle(
       "is_pass_flight_ready",
       !scene || scene.classList.contains("is_course_end")
     );
 
-    if (!bear || restRect.width === 0) {
-      flip.classList.remove("is_pass_flight");
+    if (!flightOrigin || restRect.width === 0) {
+      flip.classList.remove("is_pass_flight", "is_pass_back_visible");
       revealPassTicket(false);
       isFlightFrameRequested = false;
       return;
     }
 
-    var startRect = bear.getBoundingClientRect();
+    var startRect = flightOrigin.getBoundingClientRect();
     var restCenterY = restRect.top + restRect.height / 2;
     var flightDistance = Math.max(1, viewportHeight * PASS_FLIGHT_RANGE);
     var progress = Math.min(
@@ -1061,6 +1025,8 @@ function initPassTicketFlip() {
     var startScale = startRect.width / restRect.width;
     var scale = startScale + (1 - startScale) * progress;
     var angle = 180 * (1 - progress);
+
+    flip.classList.toggle("is_pass_back_visible", angle > 90);
 
     flip.style.setProperty(
       "--pass_flight_transform",
@@ -1083,7 +1049,7 @@ function initPassTicketFlip() {
   function stopPassFlight() {
     window.removeEventListener("scroll", requestPassFlightRender);
     window.removeEventListener("resize", requestPassFlightRender);
-    flip.classList.remove("is_pass_flight");
+    flip.classList.remove("is_pass_flight", "is_pass_back_visible");
     flip.style.removeProperty("--pass_flight_transform");
     isFlightActive = false;
   }
@@ -1215,17 +1181,23 @@ function initTowerStack3D() {
     return clamp(targetHeight / renderedHeight, 0.05, 1);
   }
 
-  function getTowerSlotOffset(scale) {
+  /* 전환 중에는 캔버스가 뷰포트 고정 레이어에, 안착 뒤에는 섹션 안에 들어갑니다.
+     두 좌표계의 원점이 다르므로 어느 쪽을 기준으로 잴지 골라야 같은 화면 위치가 나옵니다.
+     예전에는 항상 섹션 기준으로 재서, 섹션 상단이 뷰포트 상단에 정확히 맞물리는
+     한 지점에서만 두 값이 같았습니다. 그래서 전환이 그 지점에서만 끝날 수 있었습니다. */
+  function getTowerSlotOffset(scale, shouldUseViewportOrigin) {
     var goodsRect = goodsSection.getBoundingClientRect();
     var slotRect = goodsHeroSlot.getBoundingClientRect();
     /* 100vw 는 스크롤바를 포함해 window.innerWidth 와 어긋날 수 있어 캔버스 실제 배치 크기로 잽니다. */
     var canvasWidth = towerCanvas.offsetWidth || window.innerWidth;
     var canvasHeight = towerCanvas.offsetHeight || window.innerHeight;
+    var originLeft = shouldUseViewportOrigin ? 0 : goodsRect.left;
+    var originTop = shouldUseViewportOrigin ? 0 : goodsRect.top;
 
     return {
-      x: slotRect.left - goodsRect.left + slotRect.width / 2 - canvasWidth / 2,
+      x: slotRect.left - originLeft + slotRect.width / 2 - canvasWidth / 2,
       /* 타워는 캔버스 중앙보다 아래에 그려지므로, 줄인 배율만큼 되올려 자리 중앙에 맞춥니다. */
-      y: slotRect.top - goodsRect.top + slotRect.height / 2 - canvasHeight / 2 -
+      y: slotRect.top - originTop + slotRect.height / 2 - canvasHeight / 2 -
         canvasHeight * TOWER_RENDER_CENTER_RATIO * scale
     };
   }
@@ -1237,7 +1209,9 @@ function initTowerStack3D() {
 
     var normalizedProgress = clamp(progress, 0, 1);
     var dockScale = getTowerDockScale();
-    var offset = getTowerSlotOffset(dockScale);
+    /* 고정 레이어 위에서 그리므로 뷰포트 기준으로 잽니다. 자리가 화면 어디에 있든
+       진행률 1 에서 안착 위치와 정확히 겹치므로, 전환이 끝나는 지점을 자유롭게 정할 수 있습니다. */
+    var offset = getTowerSlotOffset(dockScale, true);
     var startX = window.innerWidth * 0.16;
     var motionProgress = normalizedProgress * normalizedProgress * (3 - 2 * normalizedProgress);
 
@@ -1615,7 +1589,11 @@ function initTowerStack3D() {
         start: function () {
           return assemblyTrigger.end;
         },
-        end: "top top",
+        /* 섹션 상단이 뷰포트 상단에 닿는 "top top" 에서 끝내면, 안착 지점이 곧 해제 지점이라
+           조금만 위로 스크롤해도 타워가 곧바로 위 섹션으로 되돌아갑니다. 게다가 그 위치에서는
+           자리 윗부분이 고정 헤더에 가립니다. 화면 25% 지점에서 끝내면 헤더를 확실히 비켜나고,
+           그만큼(뷰포트의 25%)이 위로 스크롤해도 안착 상태가 유지되는 여유 구간이 됩니다. */
+        end: "top 25%",
         scrub: towerScrollScrub,
         invalidateOnRefresh: true,
         onEnter: requestTowerTransitionSync,
@@ -1997,7 +1975,6 @@ function initMain() {
   initCourseSceneVideo();
   initCourseScrollScene();
   initPassTicketFlip();
-  initGiftTrackCursor();
   initTowerReveal();
   initTowerStack3D();
   initRestaurantStackState();

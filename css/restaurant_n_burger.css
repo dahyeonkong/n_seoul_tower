@@ -434,6 +434,7 @@
   position: relative;
   padding-top: var(--rest_section_gap);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .burger_best_type {
@@ -444,9 +445,11 @@
 }
 
 .burger_best_type_frame {
+  position: relative;
   width: min(calc(100% - var(--page_pad) * 2), 1600px);
   margin-inline: auto;
   overflow: hidden;
+  z-index: 1;
 }
 
 .burger_best_type_top {
@@ -459,11 +462,13 @@
 }
 
 .burger_best_center {
+  position: relative;
   display: flex;
   justify-content: center;
   width: min(calc(100% - var(--page_pad) * 2), 1600px);
   margin-inline: auto;
   overflow: hidden;
+  z-index: 2;
 }
 
 .burger_best_list {

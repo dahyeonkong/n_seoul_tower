@@ -1982,28 +1982,9 @@
   pointer-events: none;
 }
 
-/* 티켓을 건네는 곰 — 끝났을 때만 보이며 걷는 마스코트와 자리를 바꿉니다. */
-.course_scene_bear {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  z-index: 3;
-  width: 26%;
-  max-width: 220px;
-  height: auto;
-  opacity: 0;
-  transform: translateX(-50%);
-  transition: opacity 420ms var(--ease_out);
-  pointer-events: none;
-}
-
 .course_scene.is_course_end .course_scene_video,
 .course_scene.is_course_end .course_scene_char {
   opacity: 0;
-}
-
-.course_scene.is_course_end .course_scene_bear {
-  opacity: 1;
 }
 
 .course_scene_char {
@@ -2217,10 +2198,17 @@
   transition: none;
 }
 
-.pass_flip .pass_ticket {
+.pass_flip .pass_ticket,
+.pass_flip_back {
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
+.pass_flip .pass_ticket {
+  transform: rotateY(0deg);
+}
 /* 뒷면 — ticket.png(829×552)는 앞면(1440×710)과 비율이 달라
    contain 으로 원본 비율을 지키고 가운데 맞춥니다. */
 .pass_flip_back {
@@ -2229,7 +2217,8 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  backface-visibility: hidden;
+  z-index: 1;
+  -webkit-transform: rotateY(180deg);
   transform: rotateY(180deg);
   pointer-events: none;
 }
@@ -2349,6 +2338,7 @@
     gap: 32px;
   }
 
+
   /* --- 곰에게서 티켓이 날아오는 구간 (1280 이상) ---
      JS 가 매 프레임 --pass_flight_transform 을 계산해 넣습니다.
      이동·확대·회전을 한 transform 으로 처리하므로 CSS 전환은 끕니다. */
@@ -2362,6 +2352,20 @@
 
   .pass_flip.is_pass_flight.is_pass_flight_ready .pass_flip_inner {
     opacity: 1;
+  }
+
+  .pass_flip.is_pass_flight .pass_ticket,
+  .pass_flip.is_pass_flight .pass_flip_back {
+    -webkit-backface-visibility: visible;
+    backface-visibility: visible;
+  }
+
+  .pass_flip.is_pass_flight.is_pass_back_visible .pass_ticket {
+    visibility: hidden;
+  }
+
+  .pass_flip.is_pass_flight:not(.is_pass_back_visible) .pass_flip_back {
+    visibility: hidden;
   }
 }
 
@@ -2379,7 +2383,6 @@
   }
 
   .course_scene .course_scene_video,
-  .course_scene .course_scene_bear,
   .course_scene .course_scene_char {
     transition: none;
   }
@@ -2821,13 +2824,14 @@
   gap: 20px;
 }
 
-.gift_track_wrap {
-  position: relative;
-  width: 100%;
+/* 세로 배치라 stretch 되지 않도록 글자 폭만큼만 잡습니다. */
+.gift_head_more {
+  align-self: flex-start;
+  background-color: var(--color_new_primary_600);
 }
 
-.gift_cursor {
-  display: none;
+.gift_track_wrap {
+  width: 100%;
 }
 
 .gift_track {
@@ -2868,11 +2872,6 @@
 
 .gift_card_media>img {
   object-fit: contain;
-}
-
-.gift_more {
-  align-self: center;
-  margin: 0 var(--page_pad);
 }
 
 @media (min-width: 834px) {
@@ -2954,61 +2953,6 @@
   .gift_card:focus-within {
     transform: rotate(0deg) translateY(-6px);
     box-shadow: 0 12px 32px rgba(49, 50, 50, 0.12);
-  }
-
-  .gift_more {
-    position: absolute;
-    left: 66%;
-    top: 43px;
-    z-index: 3;
-    margin: 0;
-  }
-}
-
-@media (min-width: 1280px) and (hover: hover) and (pointer: fine) {
-
-  .gift_track,
-  .gift_track * {
-    cursor: none;
-  }
-
-  .gift_cursor {
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 100;
-    display: grid;
-    place-items: center;
-    width: 100px;
-    height: 100px;
-    border: 1px solid #262626;
-    border-radius: 50px;
-    background: rgba(190, 190, 190, 0.2);
-    color: #262626;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    backdrop-filter: blur(4.4px);
-    -webkit-backdrop-filter: blur(4.4px);
-    transition: opacity 160ms ease, visibility 160ms ease;
-  }
-
-  .gift_cursor.is_visible {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .gift_cursor svg {
-    width: 56px;
-    height: 40px;
-  }
-
-  .gift_cursor path {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 3;
-    stroke-linecap: round;
-    stroke-linejoin: round;
   }
 }
 
@@ -3295,8 +3239,9 @@
 }
 
 /* 전환이 끝난 캔버스는 Custom Goods 섹션 안으로 옮겨져 섹션과 함께 스크롤됩니다.
-   전환이 끝나는 순간 섹션 상단과 뷰포트 상단이 맞물리므로 좌표계가 그대로 이어집니다. */
-.goods_section>.s3d__canvas {
+   좌표는 getTowerSlotOffset() 이 두 좌표계(고정 레이어 / 섹션) 각각의 기준으로 다시 재므로
+   섹션이 화면 어디에 있든 옮겨 붙는 순간 위치가 이어집니다. */
+.goods_section > .s3d__canvas {
   position: absolute;
   left: 0;
   top: 0;
