@@ -740,3 +740,211 @@ JS 는 `ASSET_PATH = "./assets/"` 를 접두로 두고 데이터에 하위 경�
 - **미검증**: 실제 페이지(`index.html`)에서의 확인, 섹션 패널 ↔ 챗봇 패널 상호 배타 동작
   (임시 페이지에는 섹션 목록이 없어 섹션 버튼이 생성되지 않습니다), 화면 캡처 비교,
   터치 기기 확인
+
+### 공통 푸터 컴포넌트 + brand_story 퀵 메뉴/챗봇 공용화 (2026-08-10)
+
+푸터가 6개 페이지에 각각 복붙돼 있어 내용이 갈라졌고(floor_guide 만 family site 가
+영문 2그룹, index/brand_story 만 일부 요소가 다름), brand_story 만 퀵 메뉴를
+직접 하드코딩해 챗봇 패널이 아예 없었습니다. 둘 다 공통 컴포넌트로 정리했습니다.
+
+**변경 파일**
+
+- `js/common.js` — `getFooterMarkup()` / `renderCommonFooter()` / `FAMILY_SITE_GROUPS` /
+  `FOOTER_SNS_ITEMS` / `escapeHtml()` 추가, `initCommon()` 에 `renderCommonFooter()` 등록,
+  `QUICK_MENU_SECTIONS_BY_PAGE` 에 `brand_story.html` (about / tower data) 추가
+- `index.html`, `pages/*.html` 6개 — 푸터 마크업을 `<div data-common-footer>` 마운트로 교체
+- `pages/brand_story.html` — 하드코딩한 퀵 메뉴를 `<div data-quick-menu-mount>` 로 교체
+
+**주요 판단**
+
+- 푸터 기준은 **brand_story 버전**입니다. `top` 버튼(`assets/icon/arrow_up.png`)과
+  타워 실루엣(`assets/footer_tower.png`)을 포함해 6개 페이지가 완전히 같은 마크업과
+  같은 에셋을 씁니다. 페이지별 옵션 분기는 두지 않았습니다.
+- 그 결과 index 를 포함한 5개 페이지에 **`top` 버튼과 타워 실루엣이 새로 노출됩니다.**
+  기존에는 5개 페이지 모두 `footer_deco` 가 주석 처리돼 있었고 `top` 버튼도 없었습니다.
+- family site 목록은 다수인 한글 5그룹 14링크로 통일했습니다. floor_guide 의 영문
+  2그룹 버전은 항목이 빠진 축약본이라 폐기했습니다 — **floor_guide 푸터에 보이는
+  글자가 바뀝니다.**
+- `.top_button` 은 어느 CSS 에도 스타일이 없어 아이콘 위 `top` 텍스트가 세로로 쌓입니다
+  (기존 brand_story 와 동일한 모양). 시안 확인 후 `common.css` 에 스타일을 넣을지
+  결정이 필요합니다.
+- index 는 `.goods_deco_tower` 와 `.footer_deco` 가 세로로 이어져 타워 이미지가
+  두 번 나옵니다. 실측상 푸터(`z-index: 2`)가 위를 덮어 겹쳐 보이지는 않습니다.
+- 푸터가 JS 렌더링으로 바뀌어 JS 없이는 노출되지 않습니다. 헤더(`data-sub-header`)가
+  이미 같은 방식이라 기존 패턴을 따랐습니다.
+
+**검증 결과** (`file://` 로 6개 페이지 직접 열어 확인)
+
+- lint / test / build: 정적 HTML 프로젝트라 `package.json` 이 없어 미실행
+- 6개 페이지 전부 — 푸터 렌더 성공, 마운트 div 제거됨, `top` 버튼 1개 / 타워 실루엣 1개 /
+  family site 링크 14개 / SNS 3개 동일, 깨진 이미지 0건, 콘솔 오류 없음
+- 에셋 경로 — 루트(`index.html`)와 `pages/` 양쪽에서 `getCommonAssetPath()` 로
+  `assets/icon/arrow_up.png`, `assets/footer_tower.png` 모두 정상 해석
+- family site 드롭다운 — 열기 / 바깥 클릭 닫기 / ESC 닫기 정상
+- brand_story — 챗봇 토글·패널 노출 정상, 퀵 섹션 링크 `#brand_about` / `#tower_data`
+  실제 대상 존재 확인
+- `n_gift_shop` 사이드바의 `.site_footer` 참조 — common.js 가 먼저 DOMContentLoaded 를
+  등록하므로 푸터가 항상 먼저 생성됨, 실제로 `sidebar.style.top` 계산 동작 확인
+- 360 / 1280 — 푸터 렌더 확인, 가로 스크롤 없음
+- **미검증**: 834 / 1920 화면 캡처 비교, 키보드 Tab 순서 재확인, 실기기 터치.
+  브라우저 패널이 프레임을 그리지 않아 최종 상태는 DOM 실측으로만 확인했습니다
+
+### index.html 히어로(main_visual) 반응형 시안 반영 (2026-08-10)
+
+Figma `main_visual` 3종(1373:1769 = 1440x1080 / 1373:1827 = 834x1080 / 1373:1885 = 360x1030)을
+기준으로 히어로를 다시 맞췄습니다. 세 프레임 모두 히어로 한 섹션만 다룹니다.
+
+**변경 파일**
+
+- `index.html` — 히어로 마크업
+- `css/main.css` — `.main_visual` 기본(360) / `@media 834` 전면 수정, `@media 1280` 신규
+- `js/main.js` — `initHeroVisualVideo()` 추가
+
+**해상도별 확정값**
+
+| | 360 | 834 | 1440 |
+|---|---|---|---|
+| 타이틀 | 1줄 32px | 2줄 86px | 2줄 118px (1280~ clamp 104~136) |
+| 태그라인 | 14 | 24 | 28 |
+| copy | 흐름배치 left 40 / top 464 | left 52.28% / top 16.2% / w 41.49% | left 59.44% / top 16.2% / w 36.11% |
+| 티켓 | 초록 바 #809975 r8 | 블롭 left 55.16% / top 63.06% | 블롭 left 71.88% / top 57.13% |
+| info | 세로 1열 + 가로 구분선 | 세로 1열, left 5.16% / top 60.93% | 가로 1행 + 세로 구분선, left 32px / top 80.74% |
+| 기온 | 24+14 | 36+28 | 32+24 |
+| 날씨 아이콘 | 42 | 74.37 | 74.37 |
+| 라벨/값/단위 | 13/18/13 | 14/28/18 | 14/28/18 |
+
+**주요 판단**
+
+- **히어로 사진을 `assets/hero_vid.mp4` 로 교체했습니다.** `assets/main_visual_photo.png`
+  는 git 이력에 한 번도 없던 404 참조였습니다. Figma 레이어 이름도 `hero_vid` 라
+  영상이 원래 의도로 보입니다. `img` → `video`(autoplay muted loop playsinline).
+- **날씨 아이콘을 `assets/icon/weather/sunny.svg` 로 교체했습니다.** 기존
+  `main_visual_weather.png` 도 404 였고, sunny.svg 는 legacy 히어로가 쓰던 실제 에셋입니다.
+  시안대로 정사각 74.37(360 에서 42)으로 맞췄습니다.
+- **정보 패널 배경(`rgba(255,255,255,.34)`)을 제거했습니다.** 세 시안 모두 배경이 없습니다.
+- **1280~1919 구간을 1440 시안으로 새로 만들고, 기존 `@media 1920` 히어로 블록은
+  그대로 뒀습니다.** 그동안 1440 에서 834 태블릿 레이아웃이 걸려 타이틀이 3줄로 깨졌습니다.
+- **타이틀에 `white-space: nowrap` 과 폭 기반 상한을 걸었습니다.** 시안 서체 Poppins
+  SemiBold 가 저장소에 없어 `--font_display`(GmarketSansNumber)로 대체되는데 폭이 넓어
+  같은 px 로는 줄바꿈이 생깁니다. "N SEOUL" 실측 폭이 font-size x 4.36 이라 이를 기준으로
+  360 은 `clamp(22px, 12.2vw - 11px, 32px)`, 834 는 `clamp(86px, 10.31vw, 104px)`,
+  1280 이상은 `clamp(104px, 8.19vw, 136px)` 로 잡았습니다.
+- **구 히어로 CSS 블록(`css/main.css` 260~740행)이 살아있는 class 를 오염시킵니다.**
+  `.main_visual_divider` 의 `min-height: 48px`, `.main_visual` 의 `gap: 32px` /
+  `justify-content: space-between` 이 새 규칙을 덮어써서, 새 규칙에서 각각
+  `min-height: 0` / `gap: 0` / `justify-content: flex-start` 로 되돌렸습니다.
+  이 블록은 지금 마크업에 없는 `.main_visual_bar` / `.main_visual_group` /
+  `.main_visual_tower` 등을 위한 죽은 코드라 별도 정리가 필요합니다.
+- 태그라인의 강제 `<br>` 을 제거했습니다 (AGENTS 4.2). 폭에 따라 자연 줄바꿈합니다.
+- reduced motion 에서 히어로 영상을 멈추고 첫 프레임만 남깁니다 (AGENTS 10.7).
+
+**시안과 달라 남겨둔 것**
+
+- 버튼 문구가 시안은 세 해상도 모두 `BOOK NOW`, 구현은 `BOOKING` 입니다.
+  해상도와 무관한 카피라 이번 범위에서 제외했습니다.
+- 대기시간 단위가 시안은 소문자 `min`, 구현은 `Min` 입니다. 위와 같은 이유로 두었습니다.
+
+**검증 결과** (`file://` 로 index.html 직접 열어 DOM 실측)
+
+- lint / test / build: 정적 HTML 프로젝트라 `package.json` 이 없어 미실행
+- 360 — copy(40,464,280) / 타이틀 32px 1줄 / 티켓 바 y559 h69 #809975 / info y658 배경 없음 /
+  기온 24 / 아이콘 42 / 값 18 / (KST) 숨김 / 사진 박스 (-210,-1,856x482) — 시안과 1px 이내
+- 834 — copy(428,175,340) / 타이틀 86px 2줄 / 티켓(452,681,335) / info(42,658,437) 세로 1열 /
+  구분선 389x1 / 기온 36 / 아이콘 74 / 값 28
+- 1280 — 타이틀 104px 2줄 / info 가로 1행 / 구분선 1x68 / 섹션 800 안에 모두 들어감
+- 1440 — copy(847,175,514) / 타이틀 116.7px / 티켓(1024,617,337) / info(32,872) — 시안 대비 오차 1% 이내
+- 1920 — 기존 블록이 정상 동작 (타이틀 136px, copy 1226, info 138/888)
+- 네 해상도 모두 가로 스크롤 없음, 깨진 이미지 0건, 콘솔 오류 없음
+- `js/main.js` 구문 파싱 통과, `initHeroVisualVideo` 가 `initMain` 에서 호출됨
+- **미검증**: 실제 브라우저에서의 영상 autoplay 동작(프리뷰에서는 정책상 일시정지 상태로 로드),
+  reduced motion 실제 토글, 키보드 Tab 순서, 모바일에서 quick_menu FAB 가 info 하단 항목과
+  겹치는 문제(기존 이슈, 시안 범위 밖)
+
+### Events 카드 전환에 정지 구간 추가 (2026-08-10)
+
+데스크톱(1280 이상) 이벤트 섹션에서 곤돌라와 카드가 스크롤 내내 한 번도 멈추지 않아
+카드를 읽을 틈이 없었습니다. 카드 한 장이 맡는 구간을 `이동 → 정지 → 교체` 로 나눴습니다.
+
+**변경 파일**
+
+- `js/main.js` — `EVENT_CARD_HOLD` 상수 추가, `renderEventPathMotion()` 진행률 재매핑
+- `css/main.css` — `--events_curve_travel` 신설, `--events_scroll_travel` 300svh → 500svh
+
+**구현**
+
+- 스크롤 진행률을 카드 수로 나누고, 각 구간의 앞 60% 에서 이동을 끝낸 뒤
+  나머지 40%(`EVENT_CARD_HOLD`)는 `holdProgress` 를 고정해 장면을 멈춰 세웁니다.
+  곡선 위치와 곤돌라 좌표가 모두 `holdProgress` 에서 나오므로 함께 멈춥니다.
+- 카드 교체(`activeIndex`)는 원래 `progress` 기준을 유지해 "쉬고 나서 교체" 순서가 됩니다.
+  하드코딩된 `progress < 1/3 ? 2 : ...` 를 `cardCount - 1 - segmentIndex` 로 일반화해
+  카드 수가 바뀌어도 동작합니다 (3장 기준 결과 동일).
+- 섹션 높이 400svh → 600svh. 카드당 이동 100svh(속도 변화 없음) + 정지 66.7svh.
+
+**주요 판단**
+
+- **곡선 높이를 스크롤 길이에서 분리했습니다.** `.events_curve` 높이가
+  `--events_scroll_travel` 를 따라가고 있어서, 스크롤만 늘리면 `preserveAspectRatio="none"`
+  SVG 가 세로로 1.67배 늘어나 곡선이 가팔라집니다. `--events_curve_travel: 300svh` 를
+  새로 두고 곡선은 이 값만 보게 해 기존 기울기를 유지했습니다.
+- 쉬는 시간을 바꾸려면 두 값을 함께 고쳐야 합니다 —
+  `EVENT_CARD_HOLD` 와 `--events_scroll_travel = --events_curve_travel / (1 - EVENT_CARD_HOLD)`.
+  양쪽 주석에 서로를 명시했습니다.
+
+**검증 결과** (`file://` 로 index.html 열어 스크롤 위치를 강제하며 실측)
+
+- lint / test / build: 정적 HTML 프로젝트라 `package.json` 이 없어 미실행
+- 1440x900 — 섹션 5400px / 무대 900px / 이동량 4500px(500svh) 확인
+- 정지 구간 확인 — 진행률 0.560 과 0.667 에서 `--event_path_y` 가 196.22 / 196.63 으로 동일,
+  0.916 과 1.000 에서 350.56 으로 동일. 이동 구간(0.150 → 0.280 → 0.773)에서는
+  75.60 → 95.15 → 269.93 으로 정상 변화
+- 카드 교체 지점 — 진행률 1/3, 2/3 에서 active index 2 → 1 → 0 순으로 전환
+- 곡선 높이 865.35px = 300svh(2700) x scale(0.3205) — 변경 전과 동일, 기울기 유지
+- 곤돌라 그립이 곡선 위에 붙어 있는 것 화면으로 확인
+- 834 — `has_static_events` 유지, active 0개, inert 없음, 가로 스크롤 없음
+- 콘솔 오류 없음
+- **미검증**: 실제 휠/트랙패드로 연속 스크롤했을 때의 체감(프리뷰에서 Lenis 가
+  프로그램 스크롤을 가로채 위치를 강제하는 방식으로만 확인), 1920 실측, "cards" 토글 재확인
+
+### Events 카드 사이 빈 구간 (2026-08-10, 위 항목 수정)
+
+앞선 "정지 구간 추가" 를 두 번 고쳤습니다.
+
+1. 쉬는 동안 카드가 보이면 전환이 흐릿하다 → 쉬는 구간에서 카드를 감춥니다.
+2. 곤돌라까지 멈추니 스크롤이 막힌 것처럼 느껴진다 → **위치 고정을 없앴습니다.**
+   곤돌라는 스크롤 내내 계속 흐르고, 카드만 사라졌다 나타납니다.
+
+**최종 동작**
+
+- `EVENT_CARD_HOLD` → `EVENT_CARD_GAP` 으로 이름과 의미를 바꿨습니다.
+  "장면이 멈추는 비율" 이 아니라 "카드를 감춘 채 다음 카드를 기다리는 비율" 입니다.
+- `holdProgress` 재매핑을 제거해 `pathLength` 가 다시 `progress` 를 그대로 씁니다.
+  **곤돌라와 곡선은 어느 구간에서도 멈추지 않습니다.**
+- 카드 구간의 뒤 40% 에서 `.event_item` 에 `is_resting` 을 붙이고,
+  `.event_item.is_resting .event_card { opacity: 0 }` 로 카드만 240ms 페이드 아웃합니다.
+- 마지막 구간(`segmentIndex === cardCount - 1`)은 뒤에 나올 카드가 없어 감추지 않습니다.
+  섹션이 빈 곤돌라로 끝나지 않습니다.
+- 스크롤을 막는 코드는 없습니다. scroll lock, `preventDefault`, `overflow: hidden`
+  어느 것도 쓰지 않았고 페이지는 항상 정상 스크롤됩니다.
+
+**구간 배치** (카드 3장, GAP 0.4)
+
+| 진행률 | 상태 |
+|---|---|
+| 0.00 ~ 0.19 | card2 보임 |
+| 0.20 ~ 0.33 | card2 숨김 (빈 곤돌라) |
+| 0.33 ~ 0.52 | card1 보임 |
+| 0.53 ~ 0.66 | card1 숨김 (빈 곤돌라) |
+| 0.67 ~ 1.00 | card0 보임 (마지막이라 숨김 없음) |
+
+**검증 결과**
+
+- 캐시 무력화한 임시 사본(`_verify_tmp.html`)으로 최신 JS 를 강제 로드해 확인 후 삭제
+- 로드된 실제 `EVENT_CARD_GAP`(0.4)과 카드 수(3)로 진행률 0~1 을 31 등분해 스윕한 결과가
+  위 표와 정확히 일치
+- `.event_item.is_resting .event_card { opacity: 0 }` 규칙이 `@media (min-width: 1280px)`
+  안에 존재하고 선택자가 실제 카드와 매칭됨(`card.matches(...)` true), 카드의
+  `transition-property` 에 `opacity` 포함 확인
+- `js/main.js` 구문 파싱 통과, 남은 `EVENT_CARD_HOLD` / `holdProgress` 참조 없음
+- **미검증**: 실제 스크롤 재생. 프리뷰가 `js/main.js` 를 캐시하고 Lenis 가 프로그램 스크롤을
+  되돌리며 브라우저 패널이 프레임을 그리지 않아, 스크롤을 실제로 흘려보내며 눈으로 확인하지
+  못했습니다. 화면 캡처 비교와 1920 실측도 미실행입니다

@@ -84,18 +84,6 @@
     --burger_gallery_ratio: 4 / 3;
   }
 
-  .burger_best_center .burger_best_list {
-    width: 100%;
-    padding-inline: var(--page_pad);
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    box-sizing: border-box;
-  }
-
-  .burger_best_center .burger_best_card {
-    width: min(78vw, 280px);
-  }
 }
 
 @media (min-width: 834px) and (max-width: 1279px) {
@@ -314,13 +302,15 @@
   position: relative;
   aspect-ratio: var(--burger_gallery_ratio, 1600 / 673);
   border-radius: 10px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .burger_gallery_track {
   position: relative;
   width: 100%;
   height: 100%;
+  border-radius: inherit;
+  overflow: hidden;
 }
 
 .burger_gallery_slide {
@@ -390,6 +380,36 @@
   cursor: not-allowed;
 }
 
+.burger_gallery_pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.burger_gallery_pagination_button {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 1px solid #cccccc;
+  border-radius: 50%;
+  background-color: transparent;
+  transition: width var(--duration) var(--ease_out), border-radius var(--duration) var(--ease_out),
+    background-color var(--duration) var(--ease_out);
+}
+
+.burger_gallery_pagination_button.is_active {
+  width: 28px;
+  border-radius: 999px;
+  background-color: var(--color_rest_cta);
+}
+
+.burger_gallery_pagination_button:focus-visible {
+  outline: 2px solid var(--color_rest_cta);
+  outline-offset: 3px;
+}
+
 @media (min-width: 1280px) {
   .burger_gallery_nav {
     width: 68px;
@@ -414,6 +434,7 @@
   position: relative;
   padding-top: var(--rest_section_gap);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .burger_best_type {
@@ -423,69 +444,69 @@
   pointer-events: none;
 }
 
+.burger_best_type_frame {
+  position: relative;
+  width: min(calc(100% - var(--page_pad) * 2), 1600px);
+  margin-inline: auto;
+  overflow: hidden;
+  z-index: 1;
+}
+
 .burger_best_type_top {
   width: min(78%, 940px);
-  margin-left: var(--page_pad);
 }
 
 .burger_best_type_bottom {
   width: min(84%, 1002px);
   margin-left: auto;
-  margin-right: var(--page_pad);
 }
 
 .burger_best_center {
+  position: relative;
   display: flex;
   justify-content: center;
+  width: min(calc(100% - var(--page_pad) * 2), 1600px);
+  margin-inline: auto;
   overflow: hidden;
+  z-index: 2;
 }
 
 .burger_best_list {
-  display: flex;
-  flex: 0 0 auto;
-  width: max-content;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  width: 100%;
+  gap: clamp(12px, 1.25vw, 24px);
   margin: 8px 0;
   padding: 0;
 }
 
 .burger_best_card {
-  flex: 0 0 auto;
-  width: 190px;
-  border-radius: 10px;
+  --burger_best_card_radius: 10px;
+
+  min-width: 0;
+  width: 100%;
+  aspect-ratio: 396 / 683;
+  border-radius: var(--burger_best_card_radius);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .burger_best_card img {
+  display: block;
   width: 100%;
-  aspect-ratio: 396 / 683;
+  height: 100%;
+  aspect-ratio: auto;
+  border-radius: var(--burger_best_card_radius);
   object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
-.burger_best_card:last-child img {
-  aspect-ratio: 426 / 683;
-}
-
-@media (min-width: 834px) {
-  .burger_best_card {
-    width: 240px;
-  }
-}
-
-/* 데스크톱: 1760 폭 안에서 5장이 이어지고 마지막 카드가 잘리는 Figma 구성을 유지 */
+/* 데스크톱: 1600px 콘텐츠 그리드 안에 5개 배너를 균등 배치 */
 @media (min-width: 1280px) {
   .burger_best {
     padding-top: var(--rest_section_gap);
-  }
-
-  .burger_best_type_top {
-    width: 48.96%;
-    margin-left: 4.17%;
-  }
-
-  .burger_best_type_bottom {
-    width: 52.19%;
-    margin-right: 4.17%;
   }
 
   .burger_best_list {
@@ -493,20 +514,76 @@
     margin: -14px 0 -18px;
   }
 
+  .burger_best_center {
+    overflow: visible;
+  }
+}
+
+@media (min-width: 834px) and (hover: hover) and (pointer: fine) {
   .burger_best_card {
-    width: 396px;
+    transition: transform 0.38s var(--ease_out), box-shadow 0.38s var(--ease_out);
+    will-change: transform;
   }
 
-  .burger_best_card:nth-child(3) {
-    width: 397px;
+  .burger_best_card img {
+    transition: transform 0.48s var(--ease_out);
   }
 
-  .burger_best_card:nth-child(4) {
-    width: 399px;
+  .burger_best_card:hover {
+    transform: translateY(-8px) scale(1.018);
+    box-shadow: 0 18px 38px rgba(34, 49, 71, 0.2);
   }
 
-  .burger_best_card:last-child {
-    width: 426px;
+  .burger_best_card:hover img {
+    transform: scale(1.035);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .burger_best_card,
+  .burger_best_card img {
+    transition: none;
+  }
+}
+
+@media (max-width: 833px) {
+  .burger_best_center {
+    width: 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .burger_best_center.is_dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+  }
+
+  .burger_best_center::-webkit-scrollbar {
+    display: none;
+  }
+
+  .burger_best_list {
+    display: flex;
+    align-items: flex-start;
+    flex: 0 0 auto;
+    width: max-content;
+    gap: 16px;
+    padding-inline: calc(50vw - min(39vw, 140px));
+  }
+
+  .burger_best_card.swiper_slide {
+    flex: 0 0 auto;
+    width: min(78vw, 280px);
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
   }
 }
 
