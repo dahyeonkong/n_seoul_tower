@@ -45,7 +45,7 @@
   <meta name="twitter:image" content="https://dahyeonkong.github.io/n_seoul_tower/assets/restaurant/n_burger_thum.png">
   <meta name="twitter:image:alt" content="N서울타워 N버거">
 
-  <link rel="preload" as="image" href="../assets/main_restaurant/pop/envelope_outer.png">
+  <link rel="preload" as="image" href="../assets/main_visual/envelope_front.png">
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/common.css">
   <link rel="stylesheet" href="../css/main_visual.css">
@@ -64,10 +64,11 @@
 
       <!-- ===================== 1. restaurant hero ===================== -->
       <!-- 편지 봉투에서 오브젝트가 팡 터져 나오는 인터랙션입니다.
-           오브젝트 DOM 은 js/main_visual.js 가 SCENE 데이터로 만들어 넣습니다.
+           오브젝트 DOM 은 js/main_visual.js(엔진)가 js/main_visual_restaurant.js 의
+           좌표 데이터로 만들어 넣습니다.
            스크롤로 화면을 벗어나면 역순으로 봉투 안에 되돌아갔다가 다시 재생됩니다. -->
       <section class="subpage_hero has_scroll_indicator mv_visual" aria-labelledby="rest_hero_title"
-        data-mv-root>
+        data-mv-root data-mv-scene="restaurant">
         <!-- 1280 미만(태블릿/모바일)은 인터랙션 없이 기존 이미지만 보여줍니다. -->
         <img class="subpage_hero_image mv_fallback" src="../assets/restaurant/restaurant_visual_img.png"
           alt="Illustrated 3D scene of the N Seoul Tower restaurant floor" width="1334" height="1334">
@@ -535,6 +536,7 @@
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
   <script src="../js/main_visual.js"></script>
+  <script src="../js/main_visual_restaurant.js"></script>
   <script src="../js/restaurant_n_burger.js"></script>
 </body>
 
