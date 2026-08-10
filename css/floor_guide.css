@@ -53,7 +53,8 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  width: calc(249 * var(--u));
+  /* width: calc(249 * var(--u)); */
+  width: 100%;
   height: 100svh;
   margin-inline: auto;
   pointer-events: none;
@@ -65,7 +66,7 @@
   position: relative;
   width: 100%;
   height: calc(485 * var(--u));
-  overflow: hidden;
+  overflow: visible;
   opacity: 0.34;
 }
 
@@ -75,11 +76,11 @@
   top: calc(var(--light_top) * var(--u));
   left: 50%;
   width: calc(var(--light_size) * var(--u));
-  height: calc(var(--light_size) * var(--u));
-  /* 원본이 181 x 166 이라 정사각 프레임에 맞추면서 비율은 유지합니다. */
-  object-fit: cover;
+  height: auto;
+  /* Preserve the 181 × 166 source ratio so the light is not cropped horizontally. */
+  object-fit: contain;
   transform: translateX(-50%);
-  transition: top 200ms var(--ease_out), width 200ms var(--ease_out), height 200ms var(--ease_out);
+  transition: top 200ms var(--ease_out), width 200ms var(--ease_out);
 }
 
 .tower_state_image {
@@ -691,14 +692,14 @@
     z-index: 0;
     width: 100%;
     height: auto;
-    opacity: 0.52;
+    opacity: 1;
     align-items: center;
   }
 
   .floor_tower_visual {
     width: min(74vw, 266px);
     height: min(116vw, 470px);
-    opacity: 0.42;
+    opacity: 0.65;
   }
 
   .tower_state_image {
