@@ -450,19 +450,6 @@
   max-width: none;
   height: auto;
 }
-@media (min-width: 390px) and (max-width: 541px) {
-  .main_visual_tower {
-    width: 40%;
-    bottom:26%;
-  }
-}
-@media (min-width: 542px) and (max-width: 833px) {
-  .main_visual_tower {
-    width: 40%;
-    bottom:20%;
-  }
-}
-
 .main_visual_inner {
   position: relative;
   z-index: 3;
@@ -577,40 +564,6 @@
   white-space: nowrap;
 }
 
-@media (max-width: 600px) {
-  .main_visual_divider {
-    display: none;
-  }
-
-  .btn_stroke.main_visual_book {
-    padding: 4px 12px;
-  }
-}
-
-@media (max-width: 833px) {
-  .main_visual_text .main_visual_value {
-    font-size: calc(var(--fs_hero_value) * var(--main_visual_text_scale) * 0.9);
-  }
-
-  .main_visual_text .main_visual_value .main_visual_unit {
-    font-size: calc(var(--main_visual_unit) * var(--main_visual_text_scale) * 0.9);
-  }
-
-  .main_visual_inner {
-    position: absolute;
-    left: 50%;
-    bottom: 5%;
-    transform: translateX(-50%);
-  }
-}
-
-@media (max-width: 390px) {
-  .main_visual_inner {
-    bottom: 10%;
-  }
-}
-
-
 @media (min-width: 834px) {
   .main_visual {
     --main_visual_unit: 16px;
@@ -680,7 +633,7 @@
 }
 
 /* 데스크톱: 1920 프레임 좌표를 비율로 환산해 겹침 구도 재현 */
-@media (min-width: 1280px) {
+@media (min-width: 1920px) {
   .main_visual {
     --main_visual_unit: 18px;
 
@@ -778,7 +731,7 @@
   }
 }
 
-@media (min-width: 1700px) {
+@media (min-width: 1920px) {
   .main_visual_tower {
     width: 21%;
     left:50%;
@@ -801,6 +754,422 @@
    -------------------------------------------------------------------------- */
 .legacy_hero {
   display: none;
+}
+
+/* Figma 1285:4418 — 360px 기본 레이아웃 */
+.main_visual {
+  position: relative;
+  display: grid;
+  min-height: 100svh;
+  padding: calc(var(--header_height) + 28px) var(--page_pad) 28px;
+  align-content: start;
+  flex-direction: initial;
+  justify-content: initial;
+  gap: 24px;
+  background-color: #ffe8aa;
+  color: #111111;
+  overflow: hidden;
+}
+
+.main_visual_photo {
+  position: relative;
+  width: calc(100% + var(--page_pad) * 2);
+  height: clamp(300px, 48svh, 430px);
+  margin-left: calc(-1 * var(--page_pad));
+  order: 2;
+  -webkit-mask: url("../assets/main_visual_photo.svg") center / 118% 118% no-repeat;
+  mask: url("../assets/main_visual_photo.svg") center / 118% 118% no-repeat;
+}
+
+.main_visual_photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 43% center;
+}
+
+.main_visual_copy {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  max-width: 520px;
+  flex-direction: column;
+  order: 1;
+  gap: 16px;
+}
+
+.main_visual_title {
+  position: static;
+  display: flex;
+  width: auto;
+  margin: 0;
+  flex-direction: column;
+  color: #111111;
+  font-family: var(--font_display);
+  font-size: clamp(48px, 15vw, 64px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.94;
+  text-transform: uppercase;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.main_visual_title_line {
+  width: 100%;
+  height: 1px;
+}
+
+.main_visual_tagline {
+  color: rgba(0, 0, 0, 0.8);
+  font-family: var(--font_body);
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.main_visual_ticket {
+  position: absolute;
+  right: -22px;
+  top: 52%;
+  z-index: 3;
+  width: 150px;
+  aspect-ratio: 1;
+}
+
+.main_visual_ticket_shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.main_visual_ticket_content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  padding: 24px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  text-align: center;
+}
+
+.main_visual_label {
+  font-family: var(--font_body);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.main_visual_ticket_price {
+  display: flex;
+  margin-top: 4px;
+  align-items: flex-end;
+  font-family: var(--font_title);
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1.2;
+}
+
+.main_visual_ticket_price span {
+  font-family: var(--font_body);
+  font-size: 10px;
+  font-weight: 200;
+}
+
+.main_visual .main_visual_book {
+  min-height: 36px;
+  margin-top: 16px;
+  padding: 8px 14px;
+  border-color: #ffffff;
+  color: #ffffff;
+  font-size: 11px;
+}
+
+.main_visual_info {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  padding: 18px 16px;
+  border-radius: var(--radius_2xl);
+  order: 3;
+  background-color: rgba(255, 255, 255, 0.34);
+  gap: 20px 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.main_visual_weather {
+  display: grid;
+  align-items: center;
+  gap: 10px 12px;
+  grid-column: 1 / -1;
+  grid-template-columns: auto 1fr 58px;
+}
+
+.main_visual_temperature,
+.main_visual_info_value {
+  color: #333333;
+  font-family: var(--font_title);
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.main_visual_temperature span {
+  font-family: var(--font_body);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.main_visual_weather_text {
+  display: flex;
+  flex-direction: column;
+  color: #333333;
+  font-family: var(--font_body);
+  font-size: 11px;
+  gap: 3px;
+  line-height: 1.2;
+}
+
+.main_visual_weather_icon {
+  width: 58px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.main_visual_divider {
+  display: none;
+}
+
+.main_visual_info_item {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.main_visual_info_value {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  font-size: 20px;
+}
+
+.main_visual_info_value span {
+  font-family: var(--font_body);
+  font-size: 11px;
+  font-weight: 200;
+}
+
+.main_visual_info_value b {
+  padding-inline: 3px;
+  font-family: var(--font_sep);
+  font-weight: 500;
+}
+
+@media (min-width: 834px) {
+  .main_visual {
+    display: grid;
+    min-height: 100svh;
+    padding: calc(var(--header_height) + 48px) 40px 40px;
+    grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .main_visual_photo {
+    position: absolute;
+    left: -13%;
+    top: 0;
+    width: 76%;
+    height: 76%;
+    margin: 0;
+    -webkit-mask: url("../assets/main_visual_photo.svg") center top / 110% 138% no-repeat;
+    mask: url("../assets/main_visual_photo.svg") center top / 110% 138% no-repeat;
+  }
+
+  .main_visual_copy {
+    width: 100%;
+    max-width: 430px;
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .main_visual_title {
+    font-size: clamp(76px, 10vw, 104px);
+  }
+
+  .main_visual_tagline {
+    font-size: 24px;
+  }
+
+  .main_visual_ticket {
+    right: 4%;
+    top: auto;
+    bottom: 22%;
+    width: 220px;
+  }
+
+  .main_visual_ticket_content {
+    padding: 42px;
+  }
+
+  .main_visual_ticket_price {
+    font-size: 26px;
+  }
+
+  .main_visual_ticket_price span {
+    font-size: 14px;
+  }
+
+  .main_visual_info {
+    display: flex;
+    width: min(100%, 760px);
+    padding: 24px;
+    align-items: center;
+    align-self: end;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    gap: 22px;
+  }
+
+  .main_visual_weather {
+    display: flex;
+    flex: 1 1 300px;
+    gap: 18px;
+  }
+
+  .main_visual_weather_icon {
+    width: 74px;
+    height: 48px;
+  }
+
+  .main_visual_divider {
+    display: block;
+    width: 1px;
+    height: 68px;
+    flex: 0 0 1px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .main_visual {
+    display: block;
+    height: 100vh;
+    min-height: 900px;
+    padding: 0;
+  }
+
+  .main_visual_photo {
+    left: -364px;
+    top: 0;
+    width: 1640px;
+    height: 922px;
+    -webkit-mask: url("../assets/main_visual_photo.svg") -159.841px -589.04px / 1581.956px 1433.967px no-repeat;
+    mask: url("../assets/main_visual_photo.svg") -159.841px -589.04px / 1581.956px 1433.967px no-repeat;
+  }
+
+  .main_visual_photo img {
+    object-position: center;
+  }
+
+  .main_visual_copy {
+    position: absolute;
+    left: 64.38%;
+    top: 16.2%;
+    width: 27.08%;
+    max-width: none;
+    gap: 36px;
+  }
+
+  .main_visual_title {
+    font-size: 136px;
+    line-height: 1;
+  }
+
+  .main_visual_tagline {
+    font-size: 32px;
+  }
+
+  .main_visual_ticket {
+    left: 73.7%;
+    right: auto;
+    top: 57.13%;
+    bottom: auto;
+    width: 17.76%;
+  }
+
+  .main_visual_ticket_content {
+    padding: 72px;
+  }
+
+  .main_visual_label {
+    font-size: 14px;
+  }
+
+  .main_visual_ticket_price {
+    font-size: 32px;
+  }
+
+  .main_visual_ticket_price span {
+    font-size: 18px;
+  }
+
+  .main_visual .main_visual_book {
+    min-height: 44px;
+    margin-top: 36px;
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+
+  .main_visual_info {
+    position: absolute;
+    left: 7.24%;
+    top: 82.22%;
+    width: auto;
+    padding: 30px 24px;
+    border-radius: 24px;
+    background-color: transparent;
+    gap: 36px;
+  }
+
+  .main_visual_weather {
+    width: 389px;
+    flex: 0 0 389px;
+    gap: 36px;
+  }
+
+  .main_visual_temperature {
+    font-size: 36px;
+  }
+
+  .main_visual_temperature span {
+    font-size: 28px;
+  }
+
+  .main_visual_weather_text {
+    font-size: 14px;
+    gap: 4px;
+  }
+
+  .main_visual_weather_icon {
+    width: 96px;
+    height: 60px;
+  }
+
+  .main_visual_info_item {
+    gap: 12px;
+  }
+
+  .main_visual_info_value {
+    font-size: 28px;
+  }
+
+  .main_visual_info_value span {
+    font-size: 18px;
+  }
 }
 
 /* ==========================================================================

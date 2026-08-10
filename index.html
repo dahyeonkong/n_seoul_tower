@@ -172,81 +172,55 @@
 
     <main class="main_content" id="main_content">
 
-      <!-- ===================== 1. hero (main_visual) =====================
-           Figma main_visual (1920 x 1080) 기준으로 교체한 히어로입니다.
-           이전 디자인은 아래 .legacy_hero 섹션에 그대로 보존되어 있습니다.
-           되돌리는 방법은 css/main.css 의 "히어로 교체 토글" 주석을 참고하세요.
-           ================================================================= -->
+      <!-- ===================== 1. hero (main_visual) ===================== -->
       <section class="main_visual" id="hero_section" aria-labelledby="hero_title">
-        <!-- 배경 원 (Figma Ellipse 39) -->
-        <span class="main_visual_glow" aria-hidden="true"></span>
+        <div class="main_visual_photo" aria-hidden="true">
+          <img src="./assets/main_visual_photo.png" alt="" width="1276" height="922" fetchpriority="high">
+        </div>
 
-        <h1 class="main_visual_title" id="hero_title">
-          <span class="main_visual_title_stage" aria-hidden="true">
-            <span class="main_visual_title_art main_visual_title_art_left"></span>
-            <span class="main_visual_title_art main_visual_title_art_right"></span>
-          </span>
-          <span class="visually_hidden">N Seoul Tower</span>
-        </h1>
+        <div class="main_visual_copy">
+          <h1 class="main_visual_title" id="hero_title">
+            <span>N Seoul</span>
+            <span>Tower</span>
+          </h1>
+          <img class="main_visual_title_line" src="./assets/main_visual_line.svg" alt="" width="520" height="1" aria-hidden="true">
+          <p class="main_visual_tagline">a special moment in the heart<br>of seoul</p>
+        </div>
 
-        <!-- 회전 타워 — reduced motion 에서는 정지 이미지로 대체합니다. -->
-        <picture class="main_visual_tower">
-          <source media="(prefers-reduced-motion: reduce)" srcset="./assets/main_visual_turntable.png" type="image/png">
-          <img
-            class="main_visual_tower_img"
-            src="./assets/main_visual_turntable.png"
-            alt=""
-            aria-hidden="true"
-            width="1934"
-            height="1934"
-            fetchpriority="high"
-            decoding="async"
-          >
-        </picture>
+        <div class="main_visual_ticket">
+          <img class="main_visual_ticket_shape" src="./assets/main_visual_ticket.png" alt="" width="1000" height="1000" aria-hidden="true">
+          <div class="main_visual_ticket_content">
+            <p class="main_visual_label">Ticket Price</p>
+            <p class="main_visual_ticket_price">29,000<span>KRW</span></p>
+            <a class="btn_stroke main_visual_book" href="https://naver.me/x0UEXKKZ" target="_blank" rel="noopener noreferrer">BOOKING</a>
+          </div>
+        </div>
 
-        <div class="page_container main_visual_inner">
-          <div class="main_visual_bar">
-            <div class="main_visual_group">
-              <div class="main_visual_item main_visual_item_weather">
-                <img class="main_visual_weather_icon" src="./assets/icon/weather/sunny.svg" alt="" aria-hidden="true" width="74" height="74">
-                <div class="main_visual_text">
-                  <p class="main_visual_label">sunny</p>
-                  <p class="main_visual_value">28<span class="main_visual_unit">°C</span></p>
-                </div>
-              </div>
-
-              <span class="main_visual_divider" aria-hidden="true"></span>
-
-              <div class="main_visual_item">
-                <div class="main_visual_text">
-                  <p class="main_visual_label">Hours</p>
-                  <p class="main_visual_value main_visual_value_hours">
-                    <span class="main_visual_value_group">10:00<span class="main_visual_unit">AM</span></span>
-                    <span class="main_visual_value_sep">-</span>
-                    <span class="main_visual_value_group">10:30<span class="main_visual_unit">PM</span></span>
-                  </p>
-                </div>
-              </div>
+        <div class="main_visual_info" aria-label="Current visitor information">
+          <div class="main_visual_weather">
+            <p class="main_visual_temperature">28<span>°C</span></p>
+            <div class="main_visual_weather_text">
+              <p>Yongsan, Seoul</p>
+              <p>Sunny</p>
+              <p>Sunset Time 07:25 PM</p>
             </div>
+            <img class="main_visual_weather_icon" src="./assets/main_visual_weather.png" alt="Sunny with some clouds" width="96" height="60">
+          </div>
 
-            <div class="main_visual_group">
-              <div class="main_visual_item">
-                <div class="main_visual_text">
-                  <p class="main_visual_label">Observatory wait time</p>
-                  <p class="main_visual_value">45<span class="main_visual_unit">Min</span></p>
-                </div>
-              </div>
+          <img class="main_visual_divider" src="./assets/main_visual_divider.svg" alt="" width="1" height="68" aria-hidden="true">
 
-              <span class="main_visual_divider" aria-hidden="true"></span>
+          <div class="main_visual_info_item">
+            <p class="main_visual_label">Visiting Hours</p>
+            <p class="main_visual_info_value">
+              10:00<span>AM</span><b>-</b>10:30<span>PM(KST)</span>
+            </p>
+          </div>
 
-              <div class="main_visual_item main_visual_item_ticket">
-                <div class="main_visual_text">
-                  <p class="main_visual_label">Ticket Price</p>
-                  <p class="main_visual_value">29,000<span class="main_visual_unit">KRW</span></p>
-                </div>
-                <a class="btn_stroke main_visual_book" href="https://naver.me/x0UEXKKZ" target="_blank" rel="noopener noreferrer">BOOK NOW</a>
-              </div>
-            </div>
+          <img class="main_visual_divider" src="./assets/main_visual_divider.svg" alt="" width="1" height="68" aria-hidden="true">
+
+          <div class="main_visual_info_item">
+            <p class="main_visual_label">Observatory wait time</p>
+            <p class="main_visual_info_value">45<span>Min</span></p>
           </div>
         </div>
       </section>

@@ -2249,9 +2249,10 @@ html .course_page .course_description {
   justify-content: space-between;
 }
 
+/* 360 에서 14px 을 유지하다가 1280 부근에서 상한 18px 에 닿습니다. */
 .footer_copyright {
   padding: 4px 8px;
-  font-size: var(--fs_sm);
+  font-size: clamp(var(--fs_sm), 1.4vw, 18px);
   line-height: 1.4;
   color: rgba(249, 249, 249, 0.6);
 }
@@ -2279,16 +2280,6 @@ html .course_page .course_description {
 
 .footer_sns_link:hover {
   opacity: 0.7;
-}
-
-.footer_deco {
-  position: absolute;
-  left: 41.32%;
-  top: 8.8%;
-  z-index: 0;
-  width: 31%;
-  opacity: 0.5;
-  pointer-events: none;
 }
 
 @media (min-width: 834px) {
@@ -2333,13 +2324,7 @@ html .course_page .course_description {
     font-size: 18px;
   }
 
-  .footer_copyright {
-    font-size: 24px;
-  }
-
-  .footer_deco {
-    width: 300px;
-  }
+  /* .footer_copyright 는 위쪽 clamp 로 처리합니다. */
 }
 
 /* --------------------------------------------------------------------------
