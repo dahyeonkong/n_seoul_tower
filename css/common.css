@@ -475,10 +475,10 @@ html .course_page .course_description {
 }
 
 /* 링크 목적지가 확정되지 않은 CTA — 클릭은 막지 않고 회색 텍스트로만 구분합니다. */
-[data-pending-link][aria-disabled="true"],
+/* [data-pending-link][aria-disabled="true"],
 [data-pending-link][aria-disabled="true"]:hover {
   color: #999;
-}
+} */
 
 /* 어두운 배경 위(글로벌 메뉴 / 푸터 / 퀵메뉴 / 레스토랑 배너)에서는 밝은 회색을 사용합니다. */
 .global_menu [data-pending-link][aria-disabled="true"],

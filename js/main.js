@@ -608,6 +608,92 @@ function renderCourses(courses) {
   list.appendChild(fragment);
 }
 
+/* 물감이 배어 나오는 구간입니다. 반투명 블롭에서 진한 색으로 자연스럽게 넘어갑니다. */
+var BLEED_APPEAR_PROGRESS = 0.08;
+/* 물감이 화면을 완전히 덮는 진행률입니다. 이 뒤로는 꽉 찬 색만 남습니다. */
+var BLEED_COVER_PROGRESS = 0.65;
+/* 이 진행률부터 물감이 걷히면서 events 섹션이 드러납니다. */
+var BLEED_FADE_PROGRESS = 0.8;
+/* 블롭은 원이 아니라 오목한 데가 있어 실제 반지름이 상자의 절반보다 훨씬 짧습니다.
+   가장 좁은 방향까지 화면 모서리를 덮으려면 대각선 길이의 4.5 배는 되어야 합니다. */
+var BLEED_COVER_MARGIN = 4.5;
+
+/* 히어로에서 아래로 스크롤하면 티켓 뒤에서 물감이 번져 화면을 덮고,
+   다 덮은 뒤 걷히면서 events 섹션이 시작됩니다.
+   스크롤 위치만 보고 그리므로 휠, 드래그, 키보드 어느 쪽이든 같게 동작합니다. */
+function initHeroVisualBleed() {
+  var hero = document.getElementById("hero_section");
+  var bleed = document.querySelector("[data-visual-bleed]");
+  var ticket = document.querySelector(".main_visual_ticket");
+
+  if (!hero || !bleed || !ticket) {
+    return;
+  }
+
+  var isFrameRequested = false;
+
+  function renderBleed() {
+    isFrameRequested = false;
+
+    if (isReducedMotion()) {
+      bleed.style.opacity = "0";
+      return;
+    }
+
+    var heroRect = hero.getBoundingClientRect();
+    var exitDistance = Math.max(1, heroRect.height);
+    var progress = Math.min(1, Math.max(0, -heroRect.top / exitDistance));
+
+    /* 히어로가 제자리에 있거나 이미 다 지나갔으면 그릴 것이 없습니다. */
+    if (progress <= 0 || progress >= 1) {
+      bleed.style.opacity = "0";
+      return;
+    }
+
+    var ticketRect = ticket.getBoundingClientRect();
+    var originX = ticketRect.left + ticketRect.width / 2;
+    var originY = ticketRect.top + ticketRect.height / 2;
+
+    /* 번지는 시작점에서 가장 먼 화면 모서리까지 닿아야 빈틈이 없습니다. */
+    var farX = Math.max(originX, window.innerWidth - originX);
+    var farY = Math.max(originY, window.innerHeight - originY);
+    var coverSize = Math.sqrt(farX * farX + farY * farY) * BLEED_COVER_MARGIN;
+
+    var growth = Math.min(1, progress / BLEED_COVER_PROGRESS);
+    /* 번지기 시작할 때 조금 빠르고 끝에서 잦아듭니다.
+       지수를 3 으로 두면 너무 앞쪽에 몰려 순식간에 덮여 버립니다. */
+    var easedGrowth = 1 - Math.pow(1 - growth, 1.8);
+    var size = ticketRect.width + (coverSize - ticketRect.width) * easedGrowth;
+
+    /* 시작 순간 반투명 블롭 위로 진한 색이 튀어 보이지 않게 살짝 배어들게 합니다. */
+    var appear = Math.min(1, progress / BLEED_APPEAR_PROGRESS);
+    var fade =
+      progress <= BLEED_FADE_PROGRESS
+        ? 1
+        : 1 - (progress - BLEED_FADE_PROGRESS) / (1 - BLEED_FADE_PROGRESS);
+
+    bleed.style.setProperty("--bleed_size", size.toFixed(1) + "px");
+    bleed.style.setProperty("--bleed_x", originX.toFixed(1) + "px");
+    bleed.style.setProperty("--bleed_y", originY.toFixed(1) + "px");
+    bleed.style.opacity = Math.max(0, Math.min(appear, fade)).toFixed(3);
+    /* 다 번진 뒤에는 마스크를 벗겨 모서리에 블롭의 오목한 부분이 남지 않게 합니다. */
+    bleed.classList.toggle("is_full", growth >= 1);
+  }
+
+  function requestBleedRender() {
+    if (isFrameRequested) {
+      return;
+    }
+
+    isFrameRequested = true;
+    window.requestAnimationFrame(renderBleed);
+  }
+
+  window.addEventListener("scroll", requestBleedRender, { passive: true });
+  window.addEventListener("resize", requestBleedRender);
+  requestBleedRender();
+}
+
 /* 히어로 영상은 autoplay 로 돌지만, reduced motion 에서는 첫 프레임만 남깁니다.
    설정을 도중에 바꿔도 따라가도록 변경 이벤트까지 듣습니다 (AGENTS 10.7). */
 function initHeroVisualVideo() {
@@ -1885,6 +1971,7 @@ function initMain() {
 
   initHeroSectionJump();
   initHeroVisualVideo();
+  initHeroVisualBleed();
   initCourseSceneVideo();
   initCourseScrollScene();
   initPassTicketFlip();
