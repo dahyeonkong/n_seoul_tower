@@ -1239,7 +1239,8 @@ function initTowerReveal() {
 /* 스크롤에 맞춰 양초가 한 단씩 쌓이는 3D 조립 (yul_tower_3d/scroll-stack-3d.js).
    데스크톱에서만 켜고, 그 외에는 기존 이미지 스택을 그대로 씁니다.
    모듈·three·gsap 이 없으면 초기화가 null 을 돌려주므로 이미지 스택이 남습니다. */
-/* N Pass 섹션에 들어오면 티켓이 나타나 뒤집힙니다.
+/* N Pass 섹션에 들어오면 태블릿에서는 티켓이 나타나 뒤집힙니다.
+   모바일은 인터랙션 없이 앞면을 바로 보여 주고, 데스크톱은 코스에서 날아옵니다.
    섹션을 완전히 벗어날 때만 되돌려(threshold 0) 재진입하면 다시 재생하고,
    TOP 버튼처럼 위로 빠르게 지나갈 때는 회전 없이 결과만 보여 줍니다. */
 function initPassTicketFlip() {
@@ -1251,6 +1252,7 @@ function initPassTicketFlip() {
   }
 
   var desktopQuery = window.matchMedia("(min-width: 1280px)");
+  var mobileQuery = window.matchMedia("(max-width: 833px)");
   var observer = null;
   var lastScrollY = window.scrollY;
   /* 첫 진입이 딥링크일 수도 있어 아래 방향으로 시작합니다. */
@@ -1368,14 +1370,14 @@ function initPassTicketFlip() {
   }
 
   function renderPassFlipMode() {
-    if (isReducedMotion()) {
+    if (isReducedMotion() || mobileQuery.matches) {
       stopPassFlight();
       stopPassFlipObserver();
       revealPassTicket(false);
       return;
     }
 
-    /* 데스크톱은 비행, 모바일·태블릿은 회전만 합니다. */
+    /* 데스크톱은 비행, 태블릿은 회전만 합니다. */
     if (desktopQuery.matches) {
       if (isFlightActive) {
         return;
@@ -1408,6 +1410,7 @@ function initPassTicketFlip() {
 
   if (typeof desktopQuery.addEventListener === "function") {
     desktopQuery.addEventListener("change", renderPassFlipMode);
+    mobileQuery.addEventListener("change", renderPassFlipMode);
   }
 
   renderPassFlipMode();
