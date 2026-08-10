@@ -1022,6 +1022,7 @@ function initTowerStack3D() {
   var towerTransitionState = "";
   var isTowerTransitionSyncRequested = false;
   var isSynchronizingTowerTransition = false;
+  var isRefreshingTowerBounds = false;
 
   function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
@@ -1099,12 +1100,15 @@ function initTowerStack3D() {
     }
   }
 
-  function settleTowerAssemblyProgress(progress) {
+  function settleTowerAssemblyProgress() {
     if (!stack || !stack.timeline || !assemblyTrigger) {
       return;
     }
 
-    /* 숫자 scrub이 이전 위치를 뒤쫓고 있으면 현재 스크롤 진행률까지 즉시 정착시킵니다. */
+    /* 숫자 scrub이 이전 위치를 뒤쫓고 있으면 현재 스크롤이 가리키는 값까지 즉시 정착시킵니다.
+       timeline.progress()를 직접 쓰면 ScrollTrigger는 그 사실을 알지 못해, 스크롤이 다시
+       움직이기 전까지 트리거 진행률과 타임라인이 어긋난 채로 굳습니다. 조립이 끝나지 않았는데
+       완성으로 보이거나 그 반대가 되는 원인이라 scrub 트윈만 정착시키고 값은 건드리지 않습니다. */
     var scrubTween = typeof assemblyTrigger.getTween === "function"
       ? assemblyTrigger.getTween()
       : null;
@@ -1112,12 +1116,80 @@ function initTowerStack3D() {
     if (scrubTween) {
       scrubTween.progress(1);
     }
-    stack.timeline.progress(clamp(progress, 0, 1), true);
   }
 
-  function prepareTowerAssembly(shouldShowCanvas, progress) {
+  /* ScrollTrigger.refresh() 는 측정 과정에서 타임라인을 끝 상태로 돌려놓고 되돌리지 않는
+     경우가 있습니다. 그러면 진행률은 0인데 조립만 완성된 채로 굳고, 스크롤 진행률이 다시
+     바뀌기 전까지 scrub 이 바로잡지 못합니다. 창 크기 변경처럼 우리가 부르지 않은 refresh
+     뒤에도 같은 일이 생기므로 refresh 마다 트리거가 보고하는 값으로 다시 붙입니다.
+     추측한 값이 아니라 트리거 자신의 진행률이라 둘이 어긋날 여지가 없습니다. */
+  function syncTowerAssemblyToTrigger() {
+    if (!stack || !stack.timeline || !assemblyTrigger) {
+      return;
+    }
+
+    stack.timeline.progress(clamp(assemblyTrigger.progress, 0, 1), true);
+  }
+
+  function setTowerScrollPosition(position) {
+    var lenis = window.lenisInstance;
+
+    /* Lenis 가 살아 있으면 window.scrollTo 는 다음 프레임에 되돌려지므로 Lenis 로 옮깁니다. */
+    if (lenis && typeof lenis.scrollTo === "function") {
+      lenis.scrollTo(position, { immediate: true, force: true });
+      return;
+    }
+    window.scrollTo(0, position);
+  }
+
+  /* 지연 로딩 이미지, 폰트 교체, 코스 스테이지 높이 재계산처럼 타워 위쪽 레이아웃이 초기화
+     이후에 바뀌면 ScrollTrigger가 잡아 둔 픽셀 좌표가 실제 위치와 어긋납니다. 그대로 두면
+     섹션이 화면에 보이기도 전에 조립 구간을 지나쳐 완성된 타워만 남으므로 다시 재게 합니다. */
+  function syncTowerTriggerBounds() {
+    if (!assemblyTrigger || !towerStage || !window.ScrollTrigger || isRefreshingTowerBounds) {
+      return;
+    }
+
+    /* stage 자체는 핀 구간 안팎에서 transform 으로 밀려 있어 위치를 신뢰할 수 없습니다.
+       ScrollTrigger 가 끼워 넣은 pin-spacer 는 문서 흐름에 그대로 남아 있어서
+       어느 스크롤 위치에서든 조립 시작 좌표와 직접 비교할 수 있습니다. */
+    var spacer = towerStage.parentNode;
+    var reference = spacer && spacer.classList && spacer.classList.contains("pin-spacer")
+      ? spacer
+      : towerStage;
+    var referenceTop = reference.getBoundingClientRect().top + window.scrollY;
+
+    if (Math.abs(referenceTop - assemblyTrigger.start) <= 2) {
+      return;
+    }
+
+    /* 핀이 걸린 트리거는 스크롤된 상태에서 refresh 하면 스크롤 양만큼 또 어긋나게 잽니다.
+       최상단으로 되돌린 뒤 재고 곧바로 원래 위치로 복귀시켜 한 프레임 안에 끝냅니다.
+       html 의 scroll-behavior: smooth 가 남아 있으면 이 이동이 애니메이션으로 처리돼
+       측정도 복귀도 실패하므로, 이 구간에서만 즉시 이동으로 바꿉니다. */
+    var restorePosition = window.scrollY;
+    var root = document.documentElement;
+    var previousScrollBehavior = root.style.scrollBehavior;
+
+    isRefreshingTowerBounds = true;
+    root.style.scrollBehavior = "auto";
+    setTowerScrollPosition(0);
+    window.ScrollTrigger.refresh();
+    setTowerScrollPosition(restorePosition);
+    root.style.scrollBehavior = previousScrollBehavior;
+
+    /* 좌표가 바뀌었으니 복귀한 스크롤 위치 기준으로 진행률을 다시 계산시킨 뒤 붙입니다. */
+    window.ScrollTrigger.update();
+    syncTowerAssemblyToTrigger();
+
+    window.requestAnimationFrame(function () {
+      isRefreshingTowerBounds = false;
+    });
+  }
+
+  function prepareTowerAssembly(shouldShowCanvas) {
     attachTowerCanvasToStage();
-    settleTowerAssemblyProgress(progress);
+    settleTowerAssemblyProgress();
     if (towerCanvas && window.gsap) {
       /* x는 조립 timeline이 관리합니다. 핸드오프에서만 쓰는 속성만 초기화합니다. */
       window.gsap.set(towerCanvas, {
@@ -1146,6 +1218,9 @@ function initTowerStack3D() {
         window.ScrollTrigger.update();
       }
 
+      /* 좌표를 읽기 전에 실제 레이아웃과 어긋나 있지 않은지 먼저 확인합니다. */
+      syncTowerTriggerBounds();
+
       var scrollPosition = typeof assemblyTrigger.scroll === "function"
         ? assemblyTrigger.scroll()
         : window.scrollY;
@@ -1160,7 +1235,7 @@ function initTowerStack3D() {
         handoffStart <= assemblyStart ||
         handoffEnd <= handoffStart
       ) {
-        prepareTowerAssembly(false, 0);
+        prepareTowerAssembly(false);
         towerTransitionState = "before";
         return;
       }
@@ -1171,21 +1246,19 @@ function initTowerStack3D() {
           towerCanvas.parentNode !== towerStage ||
           (transitionLayer && !transitionLayer.hidden)
         ) {
-          prepareTowerAssembly(false, 0);
+          prepareTowerAssembly(false);
         }
         towerTransitionState = "before";
         return;
       }
 
       if (scrollPosition < handoffStart) {
-        var assemblyProgress = (scrollPosition - assemblyStart) / (handoffStart - assemblyStart);
-
         if (
           towerTransitionState !== "assembly" ||
           towerCanvas.parentNode !== towerStage ||
           (transitionLayer && !transitionLayer.hidden)
         ) {
-          prepareTowerAssembly(true, assemblyProgress);
+          prepareTowerAssembly(true);
         }
         towerTransitionState = "assembly";
         return;
@@ -1224,13 +1297,18 @@ function initTowerStack3D() {
       transitionTrigger.kill();
       transitionTrigger = null;
     }
+    if (window.ScrollTrigger && typeof window.ScrollTrigger.removeEventListener === "function") {
+      window.ScrollTrigger.removeEventListener("refresh", syncTowerAssemblyToTrigger);
+    }
     window.removeEventListener("scroll", requestTowerTransitionSync);
     window.removeEventListener("pageshow", requestTowerTransitionSync);
+    window.removeEventListener("load", requestTowerTransitionSync);
 
-    prepareTowerAssembly(false, 0);
+    prepareTowerAssembly(false);
     towerTransitionState = "";
     isTowerTransitionSyncRequested = false;
     isSynchronizingTowerTransition = false;
+    isRefreshingTowerBounds = false;
 
     if (transitionLayer) {
       transitionLayer.remove();
@@ -1312,9 +1390,14 @@ function initTowerStack3D() {
         onRefresh: requestTowerTransitionSync
       });
 
+      /* 창 크기 변경 등 GSAP 이 스스로 부르는 refresh 뒤에도 조립 상태를 다시 붙입니다. */
+      window.ScrollTrigger.addEventListener("refresh", syncTowerAssemblyToTrigger);
+
       /* Lenis 앵커 이동과 빠른 휠 스크롤도 실제 scroll 위치로 상태를 확정합니다. */
       window.addEventListener("scroll", requestTowerTransitionSync, { passive: true });
       window.addEventListener("pageshow", requestTowerTransitionSync);
+      /* 지연 로딩 이미지까지 다 들어온 뒤 좌표가 밀려 있으면 이때 바로잡습니다. */
+      window.addEventListener("load", requestTowerTransitionSync);
     }
 
     window.ScrollTrigger.refresh();
