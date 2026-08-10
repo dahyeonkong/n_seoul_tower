@@ -17,9 +17,11 @@
    -------------------------------------------------------------------------- */
 .main_content {
   /* 원본 --color_text_hero #eab451 → #fff5dc 위 1.74:1 (미달) */
-  --color_text_hero_aa: #86672e; /* 4.84:1 (배경 #fff5dc) / 5.26:1 (비디오 최대 밝기) */
+  --color_text_hero_aa: #86672e;
+  /* 4.84:1 (배경 #fff5dc) / 5.26:1 (비디오 최대 밝기) */
   /* 원본 btn_stroke 테두리 --color_point_400 #ffd973 → 1.25:1 (미달) */
-  --color_hero_stroke_aa: #9c8546; /* 3.30:1 */
+  --color_hero_stroke_aa: #9c8546;
+  /* 3.30:1 */
 }
 
 /* ==========================================================================
@@ -302,20 +304,16 @@
   z-index: 3;
   width: min(100% - var(--page_pad) * 2, var(--content_max));
   margin-inline: auto;
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 7%,
-    #000 93%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 1%,
-    #000 93%,
-    transparent 100%
-  );
+  -webkit-mask-image: linear-gradient(to right,
+      transparent 0,
+      #000 7%,
+      #000 93%,
+      transparent 100%);
+  mask-image: linear-gradient(to right,
+      transparent 0,
+      #000 1%,
+      #000 93%,
+      transparent 100%);
 }
 
 .main_visual_title_stage {
@@ -413,6 +411,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .main_visual_glow,
   .main_visual_title_art {
     animation: none;
@@ -450,6 +449,7 @@
   max-width: none;
   height: auto;
 }
+
 .main_visual_inner {
   position: relative;
   z-index: 3;
@@ -580,8 +580,8 @@
 
   .main_visual_tower {
     width: 36%;
-    bottom:-20%;
-    left:50%;
+    bottom: -20%;
+    left: 50%;
     transform: translateX(-50%);
   }
 
@@ -594,7 +594,7 @@
     align-items: flex-start;
     gap: 36px;
     padding: 24px 20px;
-    width:40%;
+    width: 40%;
   }
 
   .main_visual_group {
@@ -660,7 +660,7 @@
     left: 32%;
     width: 34.24%;
     transform: none;
-    bottom:-31%;
+    bottom: -31%;
   }
 
   .main_visual_inner {
@@ -679,7 +679,7 @@
     justify-content: space-between;
     /* 1920 미만에서는 바 폭이 줄어드는 만큼 간격을 좁혀 한 줄을 유지합니다. */
     gap: 24px;
-    width:100%;
+    width: 100%;
   }
 
   .main_visual_group {
@@ -694,8 +694,9 @@
     align-items: flex-end;
     gap: 26px;
   }
-  .main_visual_item.main_visual_item_ticket{
-    padding-right:60px;
+
+  .main_visual_item.main_visual_item_ticket {
+    padding-right: 60px;
   }
 
   .main_visual_item_ticket {
@@ -725,6 +726,7 @@
 
 /* 시안 기준 폭 — 간격을 원본 값(36px)으로 되돌립니다. */
 @media (min-width: 1920px) {
+
   .main_visual_bar,
   .main_visual_group {
     gap: 36px;
@@ -734,7 +736,7 @@
 @media (min-width: 1920px) {
   .main_visual_tower {
     width: 21%;
-    left:50%;
+    left: 50%;
     transform: translateX(-50%);
   }
 }
@@ -756,32 +758,40 @@
   display: none;
 }
 
-/* Figma 1285:4418 — 360px 기본 레이아웃 */
+/* Figma 1373:1885 — 360 x 1030 기준.
+   사진이 화면 폭을 꽉 채우고, 그 아래로 copy > 티켓 바 > 정보 패널이 세로로 쌓입니다.
+   시안 좌우 여백은 40px 이라 --page_pad(모바일 20px) 대신 별도 값을 씁니다. */
 .main_visual {
+  --main_visual_pad: 40px;
   position: relative;
-  display: grid;
+  display: flex;
   min-height: 100svh;
-  padding: calc(var(--header_height) + 28px) var(--page_pad) 28px;
-  align-content: start;
-  flex-direction: initial;
-  justify-content: initial;
-  gap: 24px;
+  /* 시안에서 copy 상단이 464 / 1030 지점입니다. */
+  padding: 45.05svh var(--main_visual_pad) 40px;
+  flex-direction: column;
+  align-items: stretch;
+  /* 위쪽 구 히어로 블록의 gap 32px / space-between 을 되돌립니다. */
+  justify-content: flex-start;
+  gap: 0;
   background-color: #ffe8aa;
   color: #111111;
   overflow: hidden;
 }
 
+/* hero_vid 박스와 마스크 위치를 시안 비율 그대로 옮겼습니다.
+   마스크 크기 96.49% x 155.48% 는 세 해상도가 모두 같고, 위치만 달라집니다. */
 .main_visual_photo {
-  position: relative;
-  width: calc(100% + var(--page_pad) * 2);
-  height: clamp(300px, 48svh, 430px);
-  margin-left: calc(-1 * var(--page_pad));
-  order: 2;
-  -webkit-mask: url("../assets/main_visual_photo.svg") center / 118% 118% no-repeat;
-  mask: url("../assets/main_visual_photo.svg") center / 118% 118% no-repeat;
+  position: absolute;
+  left: -58.29vw;
+  top: -0.13svh;
+  width: 237.81vw;
+  height: 46.75svh;
+  margin: 0;
+  -webkit-mask: url("../assets/main_visual_photo.svg") -277.5% 115.11% / 96.49% 155.48% no-repeat;
+  mask: url("../assets/main_visual_photo.svg") -277.5% 115.11% / 96.49% 155.48% no-repeat;
 }
 
-.main_visual_photo img {
+.main_visual_photo video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -792,25 +802,31 @@
   position: relative;
   z-index: 2;
   display: flex;
-  max-width: 520px;
+  min-width: 0;
+  max-width: 100%;
   flex-direction: column;
-  order: 1;
-  gap: 16px;
+  gap: 12px;
 }
 
+/* 360 에서는 시안대로 "N SEOUL TOWER" 가 한 줄입니다.
+   시안 서체(Poppins)가 저장소에 없어 GmarketSansNumber 로 대체되는데 폭이 더 넓습니다.
+   줄을 유지하려고 좌우 여백에 맞춘 상한을 겁니다. */
 .main_visual_title {
   position: static;
   display: flex;
   width: auto;
   margin: 0;
-  flex-direction: column;
+  flex-direction: row;
   color: #111111;
   font-family: var(--font_display);
-  font-size: clamp(48px, 15vw, 64px);
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  line-height: 0.94;
+  font-size: clamp(22px, calc(12.2vw - 11px), 32px);
+  font-weight: 600;
+  gap: 8px;
+  letter-spacing: -0.06em;
+  line-height: 1;
   text-transform: uppercase;
+  flex-wrap: wrap;
+  overflow-wrap: anywhere;
   -webkit-mask-image: none;
   mask-image: none;
 }
@@ -821,106 +837,121 @@
 }
 
 .main_visual_tagline {
+  max-width: 100%;
   color: rgba(0, 0, 0, 0.8);
   font-family: var(--font_body);
-  font-size: 18px;
+  font-size: 14px;
   line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
+/* 360 에서 티켓은 블롭이 아니라 가로로 긴 초록 바입니다 (1373:1934). */
 .main_visual_ticket {
-  position: absolute;
-  right: -22px;
-  top: 52%;
+  position: relative;
   z-index: 3;
-  width: 150px;
-  aspect-ratio: 1;
+  width: 100%;
+  margin-top: 18px;
+  border-radius: 8px;
+  aspect-ratio: auto;
+  background-color: #809975;
 }
 
 .main_visual_ticket_shape {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  display: none;
 }
 
 .main_visual_ticket_content {
-  position: absolute;
-  inset: 0;
+  position: static;
   display: flex;
-  padding: 24px;
-  flex-direction: column;
+  padding: 12px 18px;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
   color: #ffffff;
-  text-align: center;
+  gap: 28px;
+  text-align: left;
+}
+
+.main_visual_ticket_text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .main_visual_label {
   font-family: var(--font_body);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
   line-height: 1.2;
 }
 
 .main_visual_ticket_price {
   display: flex;
-  margin-top: 4px;
   align-items: flex-end;
   font-family: var(--font_title);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 300;
+  gap: 2px;
   line-height: 1.2;
 }
 
 .main_visual_ticket_price span {
   font-family: var(--font_body);
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 200;
 }
 
 .main_visual .main_visual_book {
-  min-height: 36px;
-  margin-top: 16px;
-  padding: 8px 14px;
+  min-height: 44px;
+  padding: 12px 20px;
   border-color: #ffffff;
+  border-radius: 100px;
   color: #ffffff;
-  font-size: 11px;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
+/* 정보 패널은 시안에 배경이 없습니다. 항목 사이를 가로 구분선으로 나눕니다. */
 .main_visual_info {
   position: relative;
   z-index: 4;
-  display: grid;
-  padding: 18px 16px;
+  display: flex;
+  margin-top: 30px;
+  padding: 30px 0;
   border-radius: var(--radius_2xl);
-  order: 3;
-  background-color: rgba(255, 255, 255, 0.34);
-  gap: 20px 16px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  flex-direction: column;
+  justify-content: center;
+  background-color: transparent;
+  gap: 28px;
 }
 
 .main_visual_weather {
-  display: grid;
+  display: flex;
+  padding-inline: 8px;
   align-items: center;
-  gap: 10px 12px;
-  grid-column: 1 / -1;
-  grid-template-columns: auto 1fr 58px;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .main_visual_temperature,
 .main_visual_info_value {
   color: #333333;
   font-family: var(--font_title);
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 300;
   line-height: 1.2;
   white-space: nowrap;
 }
 
+.main_visual_temperature {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
 .main_visual_temperature span {
   font-family: var(--font_body);
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 500;
 }
 
@@ -929,128 +960,262 @@
   flex-direction: column;
   color: #333333;
   font-family: var(--font_body);
-  font-size: 11px;
-  gap: 3px;
+  font-size: 13px;
+  gap: 4px;
   line-height: 1.2;
+  font-weight: 300;
 }
 
 .main_visual_weather_icon {
-  width: 58px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   object-fit: contain;
 }
 
+/* main_visual_divider.svg 는 preserveAspectRatio="none" 이라
+   가로 1px 선과 세로 1px 선 양쪽으로 늘여 쓸 수 있습니다.
+   위쪽 구 히어로 블록이 같은 class 에 min-height 48px 을 걸어둬서 함께 풉니다. */
 .main_visual_divider {
-  display: none;
+  display: block;
+  width: 100%;
+  height: 1px;
+  min-height: 0;
+  flex: 0 0 auto;
+  align-self: auto;
 }
 
 .main_visual_info_item {
   display: flex;
   min-width: 0;
+  padding-inline: 8px;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .main_visual_info_value {
   display: flex;
   align-items: flex-end;
   gap: 2px;
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .main_visual_info_value span {
   font-family: var(--font_body);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 200;
 }
 
 .main_visual_info_value b {
-  padding-inline: 3px;
+  margin-inline: 6px;
   font-family: var(--font_sep);
-  font-weight: 500;
+  font-weight: 300;
 }
 
+/* 360 시안에는 (KST) 표기가 없습니다. */
+.main_visual_kst {
+  display: none;
+}
+
+/* Figma 1373:1827 — 834 x 1080 기준.
+   사진은 좌상단에 깔고 copy / 정보 패널 / 티켓 블롭을 시안 좌표에 맞춰 배치합니다.
+   정보 패널은 360 과 같은 세로 1열 구조를 유지하고 크기만 키웁니다. */
 @media (min-width: 834px) {
   .main_visual {
-    display: grid;
+    display: block;
     min-height: 100svh;
-    padding: calc(var(--header_height) + 48px) 40px 40px;
-    grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
-    grid-template-rows: auto 1fr auto;
+    padding: 0;
   }
 
+  /* hero_vid: left -427.46 / top -21.07 / 1218.29 x 685.29 */
   .main_visual_photo {
-    position: absolute;
-    left: -13%;
-    top: 0;
-    width: 76%;
-    height: 76%;
-    margin: 0;
-    -webkit-mask: url("../assets/main_visual_photo.svg") center top / 110% 138% no-repeat;
-    mask: url("../assets/main_visual_photo.svg") center top / 110% 138% no-repeat;
+    left: -51.25%;
+    top: -1.95%;
+    width: 146.08%;
+    height: 63.45%;
   }
 
+  /* left 436 / top 175 / width 346 */
   .main_visual_copy {
-    width: 100%;
-    max-width: 430px;
-    grid-column: 2;
-    grid-row: 1;
+    position: absolute;
+    left: 52.28%;
+    top: 16.2%;
+    width: 41.49%;
+    margin-top: 0;
+    gap: 36px;
   }
 
+  /* 834 시안이 86px. 1280 블록(104px 시작)과 이어지도록 상한을 둡니다. */
   .main_visual_title {
-    font-size: clamp(76px, 10vw, 104px);
+    flex-direction: column;
+    font-size: clamp(86px, 10.31vw, 104px);
   }
 
-  .main_visual_tagline {
-    font-size: 24px;
-  }
 
+  /* left 460 / top 681 / 341 x 339 */
   .main_visual_ticket {
-    right: 4%;
-    top: auto;
-    bottom: 22%;
-    width: 220px;
+    position: absolute;
+    left: 55.16%;
+    top: 63.06%;
+    width: 40.89%;
+    margin-top: 0;
+    border-radius: 0;
+    aspect-ratio: 341 / 339;
+    background-color: transparent;
+    overflow: hidden;
+  }
+
+  /* 시안(1373:1875)은 블롭 원본을 165.43% x 154.68% 로 키워
+     left -39.9% / top -29.15% 에 놓고 프레임 밖을 잘라냅니다. 불투명도는 50%. */
+  .main_visual_ticket_shape {
+    position: absolute;
+    display: block;
+    left: -39.9%;
+    top: -29.15%;
+    width: 165.43%;
+    height: 154.68%;
+    max-width: none;
+    object-fit: fill;
+    opacity: 0.5;
   }
 
   .main_visual_ticket_content {
-    padding: 42px;
+    position: absolute;
+    inset: 0;
+    flex-direction: column;
+    gap: 28px;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .main_visual_ticket_text {
+    align-items: center;
+  }
+
+  .main_visual_label {
+    font-size: 16px;
   }
 
   .main_visual_ticket_price {
-    font-size: 26px;
+    font-size: 32px;
   }
 
   .main_visual_ticket_price span {
-    font-size: 14px;
+    font-size: 18px;
   }
 
+  .main_visual .main_visual_book {
+    font-size: 16px;
+  }
+
+  /* left 43 / top 658 / weather_wrap 389 + 좌우 패딩 24 */
   .main_visual_info {
-    display: flex;
-    width: min(100%, 760px);
-    padding: 24px;
-    align-items: center;
-    align-self: end;
-    grid-column: 1 / -1;
-    grid-row: 3;
-    gap: 22px;
+    position: absolute;
+    left: 5.16%;
+    top: 60.93%;
+    width: 437px;
+    margin-top: 0;
+    padding: 30px 24px;
   }
 
   .main_visual_weather {
-    display: flex;
-    flex: 1 1 300px;
-    gap: 18px;
+    padding-inline: 0;
+    justify-content: flex-start;
+    gap: 36px;
   }
 
+  .main_visual_temperature {
+    font-size: 36px;
+  }
+
+  .main_visual_temperature span {
+    font-size: 28px;
+  }
+
+
   .main_visual_weather_icon {
-    width: 74px;
-    height: 48px;
+    width: 74.37px;
+    height: 74.37px;
+  }
+
+  .main_visual_info_item {
+    padding-inline: 0;
+  }
+
+
+
+
+  .main_visual_info_value b {
+    font-weight: 500;
+  }
+
+  .main_visual_kst {
+    display: inline;
+  }
+}
+
+/* Figma 1373:1769 — 1440 x 1080 기준.
+   여기서부터 정보 패널이 가로 1행 + 세로 구분선 구조로 바뀝니다.
+   1440 을 기준값으로 두고 1280~1919 구간을 vw 로 이어지게 했습니다. */
+@media (min-width: 1280px) {
+
+  /* hero_vid: left -447.94 / top -16 / 1463.69 x 823.32 */
+  .main_visual_photo {
+    left: -31.11%;
+    top: -1.48%;
+    width: 101.65%;
+    height: 76.23%;
+    -webkit-mask-position: -277.5% 103.23%;
+    mask-position: -277.5% 103.23%;
+  }
+
+  /* left 856 / top 175 / width 520 */
+  .main_visual_copy {
+    left: 59.44%;
+    top: 16.2%;
+    width: 36.11%;
+  }
+
+  .main_visual_tagline {
+    font-size: clamp(24px, 1.1vw, 28px);
+  }
+
+  /* left 1035 / top 617 / 341 x 339 */
+  .main_visual_ticket {
+    left: 71.88%;
+    top: 57.13%;
+    width: 23.68%;
+  }
+
+  /* left 32 / top 872 — 가로 1행 */
+  .main_visual_info {
+    left: 32px;
+    top: 80%;
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 36px;
+  }
+
+  .main_visual_weather {
+    width: 389px;
+    flex: 0 0 389px;
+  }
+
+  .main_visual_temperature {
+    font-size: 32px;
+  }
+
+  .main_visual_temperature span {
+    font-size: 24px;
   }
 
   .main_visual_divider {
-    display: block;
     width: 1px;
     height: 68px;
     flex: 0 0 1px;
+  }
+  .main_visual_ticket_content{
+    gap:0;
   }
 }
 
@@ -1071,7 +1236,7 @@
     mask: url("../assets/main_visual_photo.svg") -159.841px -589.04px / 1581.956px 1433.967px no-repeat;
   }
 
-  .main_visual_photo img {
+  .main_visual_photo video {
     object-position: center;
   }
 
@@ -1085,13 +1250,10 @@
   }
 
   .main_visual_title {
-    font-size: 136px;
+    font-size: 96px;
     line-height: 1;
   }
 
-  .main_visual_tagline {
-    font-size: 32px;
-  }
 
   .main_visual_ticket {
     left: 73.7%;
@@ -1101,9 +1263,7 @@
     width: 17.76%;
   }
 
-  .main_visual_ticket_content {
-    padding: 72px;
-  }
+
 
   .main_visual_label {
     font-size: 14px;
@@ -1126,12 +1286,12 @@
 
   .main_visual_info {
     position: absolute;
-    left: 7.24%;
-    top: 82.22%;
+    left: 9%;
+    top: 78%;
     width: auto;
     padding: 30px 24px;
-    border-radius: 24px;
-    background-color: transparent;
+    border-radius: 8px;
+    background-color: #ffe8aabe;
     gap: 36px;
   }
 
@@ -1150,7 +1310,6 @@
   }
 
   .main_visual_weather_text {
-    font-size: 14px;
     gap: 4px;
   }
 
@@ -1163,13 +1322,7 @@
     gap: 12px;
   }
 
-  .main_visual_info_value {
-    font-size: 28px;
-  }
 
-  .main_visual_info_value span {
-    font-size: 18px;
-  }
 }
 
 /* ==========================================================================
@@ -1181,9 +1334,7 @@
   overflow: clip;
 }
 
-.events_sticky {
-  /* position: relative; */
-}
+
 
 .events_head {
   position: relative;
@@ -1298,6 +1449,7 @@
   line-height: 1.2;
   text-transform: capitalize;
 }
+
 .events_view_toggle {
   display: none;
   align-items: center;
@@ -1327,6 +1479,7 @@
 }
 
 @media (max-width: 1279px) {
+
   .events_curve,
   .event_gondola {
     display: none;
@@ -1450,7 +1603,12 @@
    --events_scroll_travel 하나로 섹션 스크롤 길이와 곡선 높이를 함께 조절합니다. */
 @media (min-width: 1280px) {
   .events_section {
-    --events_scroll_travel: 300svh;
+    /* 곡선 높이의 기준. 스크롤 길이와 분리해 두어야 스크롤을 늘려도
+       곡선이 세로로 늘어나 가팔라지지 않습니다. */
+    --events_curve_travel: 300svh;
+    /* 카드 사이에 빈 구간(main.js 의 EVENT_CARD_GAP)이 들어가므로 스크롤을 길게 잡습니다.
+       카드당 166.7svh — 앞 100svh 는 카드가 보이고, 뒤 66.7svh 는 곤돌라만 흐릅니다. */
+    --events_scroll_travel: 500svh;
     height: calc(100svh + var(--events_scroll_travel));
     min-height: 0;
   }
@@ -1484,7 +1642,7 @@
   .events_curve {
     top: 0;
     width: 100%;
-    height: calc(var(--events_scroll_travel) * var(--events_curve_scale, 1));
+    height: calc(var(--events_curve_travel) * var(--events_curve_scale, 1));
     transform: translateY(var(--event_curve_y, 0px));
     will-change: transform;
     /* 곡선이 완만해지면 viewBox 밖 구간도 이어져 보여야 합니다.
@@ -1508,8 +1666,7 @@
        Angolmi_cable.gif 는 위쪽에 24/704 = 3.41% 의 투명 여백이 있어 그만큼 끌어올립니다.
        (가로 중심은 이미지 중심과 0.5px 차이라 보정하지 않습니다.) */
     --event_gondola_hook: -3.41%;
-    transform: translate3d(var(--event_path_x, 0), var(--event_path_y, 0), 0)
-      translate(-50%, var(--event_gondola_hook));
+    transform: translate3d(var(--event_path_x, 0), var(--event_path_y, 0), 0) translate(-50%, var(--event_gondola_hook));
     transition: opacity 240ms var(--ease_out);
     will-change: transform, opacity;
   }
@@ -1518,6 +1675,19 @@
     z-index: 2;
     opacity: 1;
     pointer-events: auto;
+  }
+
+  /* 곤돌라가 멈춰 쉬는 동안에는 카드를 감춥니다.
+     다음 카드가 빈 곤돌라에서 새로 등장해 전환이 분명해집니다. */
+  .event_item .event_card {
+    transition: opacity 240ms var(--ease_out),
+      box-shadow var(--duration) var(--ease_out),
+      transform var(--duration) var(--ease_out);
+  }
+
+  .event_item.is_resting .event_card {
+    opacity: 0;
+    pointer-events: none;
   }
 
   .event_item[data-event-slot] .event_gondola {
@@ -1871,7 +2041,8 @@
   line-height: 1.2;
   /* 카드가 walk_bg.png 위 반투명면(37%)에 올라가 실제 배경이 #a8b178~#cdd89d 입니다.
      원본 --color_course_sub_1 #6f8148 은 이 범위에서 1.88:1 (미달) */
-  color: var(--color_new_secondary_700); /* 4.56:1 (가장 어두운 배경 기준) */
+  color: var(--color_new_secondary_700);
+  /* 4.56:1 (가장 어두운 배경 기준) */
 }
 
 .course_card_media {
@@ -2054,7 +2225,8 @@
   font-size: var(--fs_h2_label);
   line-height: 1.3;
   /* 원본 --color_new_primary_500 #a4b465 → 티켓 배경(#ece6df) 위 1.82:1 (미달) */
-  color: var(--color_new_secondary_600); /* 6.03:1 */
+  color: var(--color_new_secondary_600);
+  /* 6.03:1 */
 }
 
 .pass_title {
@@ -2081,14 +2253,15 @@
   color: var(--color_primary_600);
 }
 
-.pass_desc p + p {
+.pass_desc p+p {
   margin-top: 10px;
 }
 
 /* N Pass CTA — 디자인의 노란 배경(#f8ac22)은 유지하고 흰 글자만 교체합니다.
    원본 #ffffff on #f8ac22 = 1.92:1 (미달) */
 .pass_inner .btn_yellow {
-  color: var(--color_primary_800); /* 8.41:1, hover(#e09512) 6.53:1 */
+  color: var(--color_primary_800);
+  /* 8.41:1, hover(#e09512) 6.53:1 */
 }
 
 @media (min-width: 834px) {
@@ -2143,6 +2316,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .pass_flip .pass_flip_inner,
   .pass_flip.is_pass_flight .pass_flip_inner {
     opacity: 1;
@@ -2643,7 +2817,7 @@
   background-color: #f2f0ee;
 }
 
-.gift_card_media > img {
+.gift_card_media>img {
   object-fit: contain;
 }
 
@@ -2733,6 +2907,7 @@
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(calc(-50% - 14px));
   }
@@ -3053,7 +3228,7 @@
   background-color: transparent;
 }
 
-.goods_card_media > img {
+.goods_card_media>img {
   object-fit: contain;
 }
 

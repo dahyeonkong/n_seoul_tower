@@ -244,6 +244,13 @@ var PASS_FLIGHT_RANGE = 0.9;
    가로 배율과 같아지는 지점(약 0.217)이 에셋에 그려진 원래 각도이고, 그보다 낮추면 더 완만해집니다. */
 var EVENT_CURVE_STEEPNESS = 0.217;
 
+/* 카드 한 장이 맡는 구간 중, 카드를 감춘 채 다음 카드를 기다리는 비율입니다.
+   0 이면 카드가 끊김 없이 이어지고, 0.4 면 구간의 뒤 40% 동안 곤돌라만 남아
+   다음 카드가 빈 곤돌라에서 새로 등장합니다.
+   곤돌라는 이 구간에도 계속 움직이므로 스크롤이 멈춘 것처럼 보이지 않습니다.
+   1 미만이어야 합니다. */
+var EVENT_CARD_GAP = 0.4;
+
 function initEventPathMotion() {
   var section = document.querySelector("#events_section");
   var sticky = document.querySelector("[data-events-sticky]");
@@ -278,6 +285,7 @@ function initEventPathMotion() {
 
     items.forEach(function (item) {
       item.classList.remove("is_active");
+      item.classList.remove("is_resting");
       item.removeAttribute("aria-hidden");
       item.inert = false;
     });
@@ -291,6 +299,7 @@ function initEventPathMotion() {
 
     items.forEach(function (item) {
       item.classList.remove("is_active");
+      item.classList.remove("is_resting");
       item.removeAttribute("aria-hidden");
       item.inert = false;
     });
@@ -377,11 +386,19 @@ function initEventPathMotion() {
     var curveHeight = parseFloat(curveStyle.height);
     var scrollTravel = Math.max(1, section.offsetHeight - stageHeight);
     var progress = Math.min(1, Math.max(0, -sectionRect.top / scrollTravel));
+
+    /* 스크롤을 카드 수만큼 나눠 어느 카드 구간인지, 그 안에서 얼마나 왔는지 구합니다.
+       곤돌라 위치는 원래대로 progress 를 그대로 따라가므로 스크롤 내내 계속 흐릅니다. */
+    var cardCount = items.length;
+    var segmentIndex = Math.min(cardCount - 1, Math.floor(progress * cardCount));
+    var segmentLocal = progress * cardCount - segmentIndex;
+
     var pathLength = visibleEndLength - (visibleEndLength - visibleStartLength) * progress;
     var point = pathElement.getPointAtLength(pathLength);
     var pathX = point.x * curveWidth / pathViewBoxWidth;
     var pathY = point.y * curveHeight / pathViewBoxHeight;
-    var activeIndex = progress < 1 / 3 ? 2 : progress < 2 / 3 ? 1 : 0;
+    /* 카드 교체는 구간 경계에서 일어납니다. 카드가 감춰진 뒤 바뀌므로 전환이 겹치지 않습니다. */
+    var activeIndex = cardCount - 1 - segmentIndex;
 
     /* 곤돌라는 path 를 타고 내려가되, 화면에서의 세로 이동은 뷰포트 중앙을 기준으로
        EVENT_GONDOLA_BAND 폭 안으로 압축합니다. 나머지 하강은 페이지 스크롤이 흡수합니다.
@@ -400,9 +417,15 @@ function initEventPathMotion() {
     list.style.setProperty("--event_path_y", gondolaY.toFixed(2) + "px");
     sticky.style.setProperty("--event_curve_y", (gondolaY - pathY).toFixed(2) + "px");
 
+    /* 구간의 뒤쪽 EVENT_CARD_GAP 만큼은 카드를 감춰, 다음 카드가 빈 곤돌라에서
+       새로 등장하게 합니다. 마지막 구간은 뒤에 나올 카드가 없어 감추지 않습니다. */
+    var isResting =
+      segmentLocal >= 1 - EVENT_CARD_GAP && segmentIndex < cardCount - 1;
+
     items.forEach(function (item, index) {
       var isActive = index === activeIndex;
       item.classList.toggle("is_active", isActive);
+      item.classList.toggle("is_resting", isResting);
       item.setAttribute("aria-hidden", String(!isActive));
       item.inert = !isActive;
     });
@@ -583,6 +606,39 @@ function renderCourses(courses) {
 
   list.textContent = "";
   list.appendChild(fragment);
+}
+
+/* 히어로 영상은 autoplay 로 돌지만, reduced motion 에서는 첫 프레임만 남깁니다.
+   설정을 도중에 바꿔도 따라가도록 변경 이벤트까지 듣습니다 (AGENTS 10.7). */
+function initHeroVisualVideo() {
+  var video = document.querySelector(".main_visual_photo video");
+
+  if (!video) {
+    return;
+  }
+
+  var motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  function renderHeroVideoState() {
+    if (motionQuery.matches) {
+      video.pause();
+      video.currentTime = 0;
+      return;
+    }
+
+    var played = video.play();
+
+    /* 브라우저가 자동재생을 막으면 첫 프레임이 남습니다. 오류로 보지 않습니다. */
+    if (played && typeof played.catch === "function") {
+      played.catch(function () {});
+    }
+  }
+
+  renderHeroVideoState();
+
+  if (typeof motionQuery.addEventListener === "function") {
+    motionQuery.addEventListener("change", renderHeroVideoState);
+  }
 }
 
 /* 코스 배경 영상은 반복하지 않고, 섹션에 들어올 때마다 처음부터 한 번만 재생합니다.
@@ -1827,6 +1883,7 @@ function initMain() {
   renderCustomGoods(mainPageData.customGoodsItems);
 
   initHeroSectionJump();
+  initHeroVisualVideo();
   initCourseSceneVideo();
   initCourseScrollScene();
   initPassTicketFlip();

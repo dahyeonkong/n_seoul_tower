@@ -234,9 +234,9 @@ function getSubHeaderMarkup() {
           <ul class="language_menu" id="language_menu" data-language-menu hidden>
             <li><button class="language_option" type="button" data-language="en" aria-current="true">English</button>
             </li>
-            <li><button class="language_option" type="button" data-language="ko">Korean</button></li>
-            <li><button class="language_option" type="button" data-language="ja">Japanese</button></li>
-            <li><button class="language_option" type="button" data-language="zh">Chinese</button></li>
+            <li><button class="language_option" type="button" data-language="ko" disabled>Korean</button></li>
+            <li><button class="language_option" type="button" data-language="ja" disabled>Japanese</button></li>
+            <li><button class="language_option" type="button" data-language="zh" disabled>Chinese</button></li>
           </ul>
         </div>
       </div>
@@ -488,6 +488,12 @@ function initLanguageSelector(button) {
   }
 
   function renderSelectedLanguage(languageCode) {
+    var requestedOption = menu.querySelector('[data-language="' + languageCode + '"]');
+
+    if (requestedOption && requestedOption.disabled) {
+      languageCode = "en";
+    }
+
     var label = LANGUAGE_LABELS[languageCode];
     if (!label) {
       return;
@@ -503,7 +509,7 @@ function initLanguageSelector(button) {
 
   function handleLanguageSelect(event) {
     var option = event.target.closest("[data-language]");
-    if (!option) {
+    if (!option || option.disabled) {
       return;
     }
     var languageCode = option.getAttribute("data-language");
@@ -909,8 +915,10 @@ function getFooterMarkup(assetPath) {
     '<div class="footer_service">' +
     '<h2 class="footer_service_title">customer service</h2>' +
     /* TODO: FAQ / Contact Us 페이지가 확정되면 실제 주소로 교체합니다. */
+    '<div class="footer_service_btn_wrap">' +
     '<a class="footer_service_btn" href="#top">FAQ</a>' +
     '<a class="footer_service_btn" href="#top">Contact Us</a>' +
+    '</div>' +
     "</div>" +
     "</div>" +
 

@@ -109,9 +109,9 @@
           </button>
           <ul class="language_menu" id="language_menu" data-language-menu hidden>
             <li><button class="language_option" type="button" data-language="en" aria-current="true">English</button></li>
-            <li><button class="language_option" type="button" data-language="ko">Korean</button></li>
-            <li><button class="language_option" type="button" data-language="ja">Japanese</button></li>
-            <li><button class="language_option" type="button" data-language="zh">Chinese</button></li>
+            <li><button class="language_option" type="button" data-language="ko" disabled>Korean</button></li>
+            <li><button class="language_option" type="button" data-language="ja" disabled>Japanese</button></li>
+            <li><button class="language_option" type="button" data-language="zh" disabled>Chinese</button></li>
           </ul>
         </div>
         <!-- 닫기 버튼은 헤더의 menu_toggle 이 그대로 X 로 변형되어 겸합니다.
@@ -174,8 +174,9 @@
 
       <!-- ===================== 1. hero (main_visual) ===================== -->
       <section class="main_visual" id="hero_section" aria-labelledby="hero_title">
+        <!-- Figma 의 hero_vid 레이어. 마스크(main_visual_photo.svg)는 CSS 에서 씌웁니다. -->
         <div class="main_visual_photo" aria-hidden="true">
-          <img src="./assets/main_visual_photo.png" alt="" width="1276" height="922" fetchpriority="high">
+          <img src="./assets/hero_img.png" >
         </div>
 
         <div class="main_visual_copy">
@@ -184,14 +185,16 @@
             <span>Tower</span>
           </h1>
           <img class="main_visual_title_line" src="./assets/main_visual_line.svg" alt="" width="520" height="1" aria-hidden="true">
-          <p class="main_visual_tagline">a special moment in the heart<br>of seoul</p>
+          <p class="main_visual_tagline">a special moment in the heart of seoul</p>
         </div>
 
         <div class="main_visual_ticket">
           <img class="main_visual_ticket_shape" src="./assets/main_visual_ticket.png" alt="" width="1000" height="1000" aria-hidden="true">
           <div class="main_visual_ticket_content">
-            <p class="main_visual_label">Ticket Price</p>
-            <p class="main_visual_ticket_price">29,000<span>KRW</span></p>
+            <div class="main_visual_ticket_text">
+              <p class="main_visual_label">Ticket Price</p>
+              <p class="main_visual_ticket_price">29,000<span>KRW</span></p>
+            </div>
             <a class="btn_stroke main_visual_book" href="https://naver.me/x0UEXKKZ" target="_blank" rel="noopener noreferrer">BOOKING</a>
           </div>
         </div>
@@ -204,7 +207,7 @@
               <p>Sunny</p>
               <p>Sunset Time 07:25 PM</p>
             </div>
-            <img class="main_visual_weather_icon" src="./assets/main_visual_weather.png" alt="Sunny with some clouds" width="96" height="60">
+            <img class="main_visual_weather_icon" src="./assets/icon/weather/sunny.svg" alt="Sunny" width="74" height="74">
           </div>
 
           <img class="main_visual_divider" src="./assets/main_visual_divider.svg" alt="" width="1" height="68" aria-hidden="true">
@@ -212,7 +215,7 @@
           <div class="main_visual_info_item">
             <p class="main_visual_label">Visiting Hours</p>
             <p class="main_visual_info_value">
-              10:00<span>AM</span><b>-</b>10:30<span>PM(KST)</span>
+              10:00<span>AM</span><b>-</b>10:30<span>PM<span class="main_visual_kst">(KST)</span></span>
             </p>
           </div>
 

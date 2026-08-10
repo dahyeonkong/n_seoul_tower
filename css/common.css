@@ -1016,6 +1016,16 @@ html .course_page .course_description {
   color: var(--color_point_400);
 }
 
+.language_option:disabled {
+  color: rgba(255, 255, 255, 0.42);
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.language_option:disabled:hover {
+  color: rgba(255, 255, 255, 0.42);
+}
+
 .language_option[aria-current="true"] {
   font-weight: 700;
   text-decoration: underline;
@@ -2213,7 +2223,10 @@ html .course_page .course_description {
   text-transform: capitalize;
   color: var(--color_text_white);
 }
-
+.footer_service_btn_wrap{
+  display: flex;
+  gap:12px;
+}
 .footer_service_btn {
   display: flex;
   align-items: center;
@@ -2252,7 +2265,7 @@ html .course_page .course_description {
 /* 360 에서 14px 을 유지하다가 1280 부근에서 상한 18px 에 닿습니다. */
 .footer_copyright {
   padding: 4px 8px;
-  font-size: clamp(var(--fs_sm), 1.4vw, 18px);
+  font-size: clamp(12px, 1.4vw, 14px);
   line-height: 1.4;
   color: rgba(249, 249, 249, 0.6);
 }
@@ -2312,16 +2325,16 @@ html .course_page .course_description {
   }
 
   .footer_info_row {
-    font-size: 18px;
+    font-size: 14px;
   }
 
   .footer_service_title {
-    font-size: 24px;
+    font-size: 14px;
   }
 
   .footer_service_btn,
   .family_site_button {
-    font-size: 18px;
+    font-size: 14px;
   }
 
   /* .footer_copyright 는 위쪽 clamp 로 처리합니다. */
