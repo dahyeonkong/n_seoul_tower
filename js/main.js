@@ -250,10 +250,9 @@ var PASS_FLIGHT_RANGE = 0.9;
    가로 배율과 같아지는 지점(약 0.217)이 에셋에 그려진 원래 각도이고, 그보다 낮추면 더 완만해집니다. */
 var EVENT_CURVE_STEEPNESS = 0.217;
 
-/* 카드 한 장이 맡는 구간 중, 카드를 감춘 채 다음 카드를 기다리는 비율입니다.
-   0 이면 카드가 끊김 없이 이어지고, 0.4 면 구간의 뒤 40% 동안 곤돌라만 남아
-   다음 카드가 빈 곤돌라에서 새로 등장합니다.
-   곤돌라는 이 구간에도 계속 움직이므로 스크롤이 멈춘 것처럼 보이지 않습니다.
+/* 카드 한 장이 맡는 구간 중, 카드만 감춘 채 다음 카드를 기다리는 비율입니다.
+   0 이면 카드가 끊김 없이 이어지고, 0.4 면 구간의 뒤 40% 동안 곰돌이는 유지하면서
+   이전 카드가 완전히 사라진 뒤 다음 카드가 등장합니다.
    1 미만이어야 합니다. */
 var EVENT_CARD_GAP = 0.4;
 
@@ -403,8 +402,8 @@ function initEventPathMotion() {
     var point = pathElement.getPointAtLength(pathLength);
     var pathX = point.x * curveWidth / pathViewBoxWidth;
     var pathY = point.y * curveHeight / pathViewBoxHeight;
-    /* 카드 교체는 구간 경계에서 일어납니다. 카드가 감춰진 뒤 바뀌므로 전환이 겹치지 않습니다. */
-    var activeIndex = cardCount - 1 - segmentIndex;
+    /* 표시 순서는 slot 1 → 2 → 3이며, 교체 전에는 활성 그룹이 없는 구간을 둡니다. */
+    var nextActiveIndex = cardCount - 1 - segmentIndex;
 
     /* 곤돌라는 path 를 타고 내려가되, 화면에서의 세로 이동은 뷰포트 중앙을 기준으로
        EVENT_GONDOLA_BAND 폭 안으로 압축합니다. 나머지 하강은 페이지 스크롤이 흡수합니다.
@@ -423,17 +422,17 @@ function initEventPathMotion() {
     list.style.setProperty("--event_path_y", gondolaY.toFixed(2) + "px");
     sticky.style.setProperty("--event_curve_y", (gondolaY - pathY).toFixed(2) + "px");
 
-    /* 구간의 뒤쪽 EVENT_CARD_GAP 만큼은 카드를 감춰, 다음 카드가 빈 곤돌라에서
-       새로 등장하게 합니다. 마지막 구간은 뒤에 나올 카드가 없어 감추지 않습니다. */
-    var isResting =
+    /* 마지막 카드를 제외한 각 구간의 뒤쪽에는 카드만 감추고 곰돌이 곤돌라는 유지합니다. */
+    var isBetweenCards =
       segmentLocal >= 1 - EVENT_CARD_GAP && segmentIndex < cardCount - 1;
+    var activeIndex = nextActiveIndex;
 
     items.forEach(function (item, index) {
       var isActive = index === activeIndex;
       item.classList.toggle("is_active", isActive);
-      item.classList.toggle("is_resting", isResting);
-      item.setAttribute("aria-hidden", String(!isActive));
-      item.inert = !isActive;
+      item.classList.toggle("is_resting", isBetweenCards);
+      item.setAttribute("aria-hidden", String(!isActive || isBetweenCards));
+      item.inert = !isActive || isBetweenCards;
     });
   }
 
@@ -626,7 +625,7 @@ var BLEED_FADE_PROGRESS = 0.78;
    가장 좁은 방향까지 화면 모서리를 덮으려면 대각선 길이의 4.5 배는 되어야 합니다. */
 var BLEED_COVER_MARGIN = 4.5;
 
-/* 히어로에서 아래로 스크롤하면 티켓 뒤에서 물감이 번져 화면을 덮고,
+/* 히어로에서 아래로 스크롤하면 티켓 위치에서 물감이 콘텐츠 위로 번져 화면을 덮고,
    다 덮은 뒤 걷히면서 events 섹션이 시작됩니다.
    스크롤 위치만 보고 그리므로 휠, 드래그, 키보드 어느 쪽이든 같게 동작합니다. */
 function initHeroVisualBleed() {

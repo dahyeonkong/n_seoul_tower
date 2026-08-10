@@ -580,12 +580,6 @@ html .course_page .course_description {
   backdrop-filter: blur(0px);
 }
 
-.site_header_sub.is_scrolled {
-  background-color: transparent;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
-
 .site_header_inner > * {
   pointer-events: auto;
 }

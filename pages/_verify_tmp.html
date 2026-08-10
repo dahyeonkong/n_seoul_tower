@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 기본 SEO (default.html 구조 준용) -->
+  <title>Brand Story | N서울타워</title>
+  <meta name="description"
+    content="A romantic island in the heart of the city. How N Seoul Tower became Seoul's landmark, and the tower data behind it." />
+  <meta name="keywords" content="N SEOUL TOWER, brand story, Namsan tower, Seoul landmark, tower data, observatory" />
+  <meta name="author" content="Kbrand N SEOUL TOWER Renewal Team" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <link rel="canonical" href="https://dahyeonkong.github.io/n_seoul_tower/pages/brand_story.html" />
+  <meta name="theme-color" content="#56780c" />
+
+  <!-- 파비콘 세트 -->
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon/favicon.svg" />
+  <link rel="icon" href="../assets/favicon/favicon.ico" sizes="48x48" />
+  <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32.png" />
+  <link rel="apple-touch-icon" href="../assets/favicon/apple-touch-icon.png" />
+  <link rel="manifest" href="../assets/favicon/site.webmanifest" />
+
+  <!-- 오픈그래프 -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="N서울타워" />
+  <meta property="og:title" content="Brand Story | N서울타워" />
+  <meta property="og:description"
+    content="A romantic island in the heart of the city. How N Seoul Tower became Seoul's landmark, and the tower data behind it." />
+  <meta property="og:url" content="https://dahyeonkong.github.io/n_seoul_tower/pages/brand_story.html" />
+  <meta property="og:image" content="https://dahyeonkong.github.io/n_seoul_tower/assets/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- 트위터(X) 카드 -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Brand Story | N서울타워" />
+  <meta name="twitter:description"
+    content="A romantic island in the heart of the city. How N Seoul Tower became Seoul's landmark, and the tower data behind it." />
+  <meta name="twitter:image" content="https://dahyeonkong.github.io/n_seoul_tower/assets/og-image.png" />
+
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/common.css?v=1786361783">
+  <link rel="stylesheet" href="../css/brand_story.css?v=1786361783">
+</head>
+
+<body>
+  <div class="site_wrapper" id="top">
+    <a class="skip_link" href="#main_content">Skip to main content</a>
+
+    <!-- ===================== global header (공통 컴포넌트 재사용) ===================== -->
+    <div data-sub-header></div>
+
+    <main class="sub_content brand_story" id="main_content">
+
+      <!-- ===================== 1. hero (1095:14675) ===================== -->
+      <section class="subpage_hero has_scroll_indicator" aria-labelledby="brand_hero_title">
+        <img class="subpage_hero_image" src="../assets/brand_story/visual_img.png"
+          alt="Illustrated 3D scene of N Seoul Tower on Namsan with visitors, a picnic and media art arches"
+          width="1244" height="626" fetchpriority="high">
+        <h1 class="subpage_hero_title" id="brand_hero_title">Brand Story</h1>
+
+        <span class="subpage_scroll_indicator" aria-hidden="true">
+          <img src="../assets/icon/icon_chevron_down.svg" alt="" width="120" height="120">
+        </span>
+      </section>
+
+      <!-- ===================== 2. section tabs (1095:14678) ===================== -->
+      <nav class="subpage_tabs brand_tabs" aria-label="Brand story sections">
+        <ul class="subpage_tabs_list">
+          <li><a class="subpage_tab" href="./brand_story.html" aria-current="page">Overview</a></li>
+          <!-- TODO: Brand Identity 는 시안만 있고 구현 대상이 아니라 비활성으로 둡니다. -->
+          <li><button class="subpage_tab" type="button" data-pending-link aria-disabled="true">Brand Identity</button>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- ===================== 3. about (1058:11721) =====================
+           1280 이상에서는 .about_viewport 를 sticky 로 고정하고, 스크롤 진행에 따라
+           패널 5개를 교체합니다 (이미지는 위에서 아래로, 텍스트는 아래에서 위로).
+           1280 미만과 prefers-reduced-motion 에서는 그냥 5개가 세로로 쌓입니다. -->
+      <section class="brand_about" id="brand_about" aria-labelledby="brand_about_title" data-about-section>
+        <h2 class="visually_hidden" id="brand_about_title">About N Seoul Tower</h2>
+
+        <div class="about_viewport" data-about-viewport>
+          <article class="about_panel is_active" data-about-panel="1">
+            <div class="about_image_box">
+              <img class="about_image" src="../assets/brand_story/about_img01.png"
+                alt="N Seoul Tower rising above a sea of clouds over Namsan at sunrise" width="920" height="1080"
+                loading="lazy">
+            </div>
+            <p class="about_number" aria-hidden="true">01</p>
+            <div class="about_text">
+              <div class="about_title_box">
+                <p class="about_eyebrow">About</p>
+                <p class="about_title">N Seoul Tower</p>
+                <p class="about_subtitle">: A Romantic Island in the Heart of the City</p>
+              </div>
+              <div class="about_body">
+                <h3 class="about_lead">Where the sky meets the clouds</h3>
+                <p class="about_desc">N Seoul Tower is a multifunctional cultural space in Seoul that offers a perfect
+                  harmony of Namsan's natural beauty and 21st-century cutting-edge technology, along with leisurely
+                  relaxation and a diverse array of cultural experiences.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="about_panel" data-about-panel="2">
+            <div class="about_image_box">
+              <img class="about_image" src="../assets/brand_story/about_img02.png"
+                alt="N Seoul Tower lit up at night above the Seoul city skyline" width="920" height="1080"
+                loading="lazy">
+            </div>
+            <p class="about_number" aria-hidden="true">02</p>
+            <div class="about_text">
+              <div class="about_title_box">
+                <p class="about_eyebrow">About</p>
+                <p class="about_title">N Seoul Tower</p>
+                <p class="about_subtitle">: A Romantic Island in the Heart of the City</p>
+              </div>
+              <div class="about_body">
+                <h3 class="about_lead">Located in the heart of Seoul</h3>
+                <p class="about_desc">N Seoul Tower is a symbol of the city and the highest vantage point from which to
+                  take in Seoul's most beautiful views at a glance. It was built in 1969 as Korea's first comprehensive
+                  broadcast tower to transmit TV and radio signals to the Seoul metropolitan area.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="about_panel" data-about-panel="3">
+            <div class="about_image_box">
+              <img class="about_image" src="../assets/brand_story/about_img03.png"
+                alt="Close-up of the N Seoul Tower observatory and broadcast antennas at sunset" width="920"
+                height="1080" loading="lazy">
+            </div>
+            <p class="about_number" aria-hidden="true">03</p>
+            <div class="about_text">
+              <div class="about_title_box">
+                <p class="about_eyebrow">About</p>
+                <p class="about_title">N Seoul Tower</p>
+                <p class="about_subtitle">: A Romantic Island in the Heart of the City</p>
+              </div>
+              <div class="about_body">
+                <h3 class="about_lead">48% of radio listeners nationwide receive broadcasts through N Seoul Tower.</h3>
+                <p class="about_desc">This tower is equipped not only with transmission antennas for KBS, MBC, and SBS
+                  TV and FM, but also with antennas for PBC, TBS, CBS, and BBS FM.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="about_panel" data-about-panel="4">
+            <div class="about_image_box">
+              <img class="about_image" src="../assets/brand_story/about_img04.png"
+                alt="Visitors walking a tree-lined Namsan trail with N Seoul Tower beyond the leaves" width="920"
+                height="1080" loading="lazy">
+            </div>
+            <p class="about_number" aria-hidden="true">04</p>
+            <div class="about_text">
+              <div class="about_title_box">
+                <p class="about_eyebrow">About</p>
+                <p class="about_title">N Seoul Tower</p>
+                <p class="about_subtitle">: A Romantic Island in the Heart of the City</p>
+              </div>
+              <div class="about_body">
+                <h3 class="about_lead">Since opening to the public in 1980</h3>
+                <p class="about_desc">N Seoul Tower has established itself as a place of relaxation for Seoul citizens
+                  and a tourist attraction for foreigners, harmonizing with the vibrant natural surroundings of Namsan
+                  Mountain.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="about_panel" data-about-panel="5">
+            <div class="about_image_box">
+              <img class="about_image" src="../assets/brand_story/about_img05.png"
+                alt="N Seoul Tower glowing at night beside illuminated media art installations" width="920"
+                height="1080" loading="lazy">
+            </div>
+            <p class="about_number" aria-hidden="true">05</p>
+            <div class="about_text">
+              <div class="about_title_box">
+                <p class="about_eyebrow">About</p>
+                <p class="about_title">N Seoul Tower</p>
+                <p class="about_subtitle">: A Romantic Island in the Heart of the City</p>
+              </div>
+              <div class="about_body">
+                <h3 class="about_lead">A place that shines beautifully at any time</h3>
+                <p class="about_desc">In an "Art of Light" environment where colors and patterns change moment by moment
+                  thanks to state-of-the-art LED lighting you can experience unique cultural and artistic expressions
+                  alongside diverse media art installations.</p>
+                <p class="about_desc">Reborn as Seoul's premier multifunctional cultural space, N Seoul Tower is set to
+                  become a proud landmark of Seoul.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 대각선 진행 표시. 데스크톱에서는 스크롤 진행을 나타내는 장식이고,
+               모바일에서는 눌러서 해당 슬라이드로 넘어가는 버튼입니다.
+               버튼은 흐름에 끼어들지 않도록 각 단계 위에 겹쳐 둡니다
+               (.about_step 의 flex 배치와 :nth-child 위치 계산을 건드리지 않으려고). -->
+          <ol class="about_rail" data-about-rail aria-label="About slides">
+            <li class="about_step is_active">
+              <button class="about_step_button" type="button" data-about-step="0" aria-label="Slide 1"></button>
+              <span class="about_step_dot"></span><span class="about_step_num">01</span>
+            </li>
+            <li class="about_step">
+              <button class="about_step_button" type="button" data-about-step="1" aria-label="Slide 2"></button>
+              <span class="about_step_dot"></span><span class="about_step_num">02</span>
+            </li>
+            <li class="about_step">
+              <button class="about_step_button" type="button" data-about-step="2" aria-label="Slide 3"></button>
+              <span class="about_step_dot"></span><span class="about_step_num">03</span>
+            </li>
+            <li class="about_step">
+              <button class="about_step_button" type="button" data-about-step="3" aria-label="Slide 4"></button>
+              <span class="about_step_dot"></span><span class="about_step_num">04</span>
+            </li>
+            <li class="about_step">
+              <button class="about_step_button" type="button" data-about-step="4" aria-label="Slide 5"></button>
+              <span class="about_step_dot"></span><span class="about_step_num">05</span>
+            </li>
+          </ol>
+
+          <!-- 태블릿(834~1279) 전용 페이저 (1132:2612).
+               데스크톱은 스크롤로, 모바일은 세로 스택으로 보므로 그 구간에서는 숨깁니다. -->
+          <nav class="about_pager" aria-label="About slides" data-about-pager>
+            <button class="about_pager_button" type="button" data-about-prev aria-label="Previous slide">
+              <span class="about_pager_icon" aria-hidden="true"></span>
+            </button>
+            <!-- 시안은 현재 번호만 강조하고 전체 수는 흐리게 둡니다. -->
+            <p class="about_pager_count" aria-live="polite"><span class="about_pager_current"
+                data-about-current>01</span><span class="about_pager_total" data-about-total>/05</span></p>
+            <button class="about_pager_button" type="button" data-about-next aria-label="Next slide">
+              <span class="about_pager_icon" aria-hidden="true"></span>
+            </button>
+          </nav>
+        </div>
+      </section>
+
+      <!-- ===================== 4. tower data (1095:14723) ===================== -->
+      <section class="tower_data" id="tower_data" aria-labelledby="tower_data_title">
+        <div class="tower_data_inner">
+          <div class="tower_data_head">
+            <p class="tower_data_eyebrow">Design Tower</p>
+            <h2 class="tower_data_title" id="tower_data_title">Tower Data</h2>
+          </div>
+
+          <div class="tower_data_columns">
+            <!-- 좌측 — 구조 제원 -->
+            <div class="tower_data_column tower_data_column_left">
+              <dl class="tower_data_group">
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Elevation</dt>
+                  <dd class="tower_data_value">506.7m/1.662ft</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Namsan</dt>
+                  <dd class="tower_data_value">270.0m/885ft<br>(to the foundation of N SEOUL TOWER)</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">N SEOUL TOWER</dt>
+                  <dd class="tower_data_value">236.7m / 777ft<br>(tower body 135.7m/445ft + steel tower 101m/332ft)</dd>
+                </div>
+              </dl>
+
+              <dl class="tower_data_group tower_data_group_narrow">
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Site</dt>
+                  <dd class="tower_data_value">8,456m&sup2;</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Floor space</dt>
+                  <dd class="tower_data_value">3,986m&sup2;</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Total floor space</dt>
+                  <dd class="tower_data_value">15,378m&sup2;</dd>
+                </div>
+              </dl>
+
+              <dl class="tower_data_group">
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Safe wind speed</dt>
+                  <dd class="tower_data_value">Safe even in strong winds of about 56m/s</dd>
+                </div>
+              </dl>
+            </div>
+
+            <!-- 가운데 — 타워 실루엣(Vector_15.svg)으로 마스킹한 영상 (1095:14757).
+                 모바일(1137:3648)에서는 타워가 왼쪽에서 sticky 로 따라 내려오고,
+                 초록 띠가 타워 배경으로 함께 움직입니다.
+                 CSS mask 는 가상 요소까지 같이 오려내서 띠를 .tower_data_media 에
+                 직접 붙일 수 없습니다. 그래서 마스크 밖에 래퍼를 하나 둡니다.
+                 834 이상에서는 display: contents 로 래퍼를 지워 기존 배치를 그대로 씁니다. -->
+            <div class="tower_data_stage" aria-hidden="true">
+              <div class="tower_data_media">
+                <video class="tower_data_video" src="../assets/brand_story/video.mp4" muted loop playsinline autoplay
+                  preload="metadata" data-tower-video></video>
+              </div>
+            </div>
+
+            <!-- 우측 — 전망대 제원 -->
+            <div class="tower_data_column tower_data_column_right">
+              <dl class="tower_data_group">
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Total extent of Observatory</dt>
+                  <dd class="tower_data_value">2,403m&sup2;</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">View 1st Floor</dt>
+                  <dd class="tower_data_value">450m&sup2;</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">View 2nd Floor</dt>
+                  <dd class="tower_data_value">460m&sup2;</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Observatory 3rd Floor</dt>
+                  <dd class="tower_data_value">466m&sup2;</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">View 5th Floor</dt>
+                  <dd class="tower_data_value">271m&sup2; (Rotating area 149m&sup2;)</dd>
+                </div>
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Rotating time</dt>
+                  <dd class="tower_data_value">1 hour and 40 minutes</dd>
+                </div>
+              </dl>
+
+              <dl class="tower_data_group">
+                <div class="tower_data_item">
+                  <dt class="tower_data_label">Safety inspections</dt>
+                  <dd class="tower_data_value">Public recognition of its safety was granted following an inspection by
+                    an international accreditation body on May 21, 1973.</dd>
+                  <dd class="tower_data_value">Safety inspections are conducted more than once every year</dd>
+                  <dd class="tower_data_value">Safety was confirmed following an inspection in January 2005</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===================== footer (공통 컴포넌트 재사용) ===================== -->
+    <!-- 공통 푸터: 마크업은 js/common.js 에서 생성합니다. -->
+    <div data-common-footer></div>
+
+    <!-- 공통 퀵 메뉴: 페이지별 섹션 목록은 common.js 설정에서 관리합니다. -->
+    <div data-quick-menu-mount></div>
+
+    <p class="link_status" data-link-status role="status" aria-live="polite"></p>
+  </div>
+
+  <script src="../js/common.js"></script>
+  <script src="../js/brand_story.js"></script>
+</body>
+
+</html>
