@@ -632,12 +632,14 @@ function initHeroVisualBleed() {
     return;
   }
 
+  var mobileMedia = window.matchMedia("(max-width: 833px)");
   var isFrameRequested = false;
+  var isBleedListening = false;
 
   function renderBleed() {
     isFrameRequested = false;
 
-    if (isReducedMotion()) {
+    if (mobileMedia.matches || isReducedMotion()) {
       bleed.style.opacity = "0";
       return;
     }
@@ -690,9 +692,38 @@ function initHeroVisualBleed() {
     window.requestAnimationFrame(renderBleed);
   }
 
-  window.addEventListener("scroll", requestBleedRender, { passive: true });
-  window.addEventListener("resize", requestBleedRender);
-  requestBleedRender();
+  function renderBleedMode() {
+    if (mobileMedia.matches) {
+      if (isBleedListening) {
+        window.removeEventListener("scroll", requestBleedRender);
+        window.removeEventListener("resize", requestBleedRender);
+        isBleedListening = false;
+      }
+
+      bleed.style.opacity = "0";
+      bleed.classList.remove("is_full");
+      bleed.style.removeProperty("--bleed_size");
+      bleed.style.removeProperty("--bleed_x");
+      bleed.style.removeProperty("--bleed_y");
+      return;
+    }
+
+    if (!isBleedListening) {
+      window.addEventListener("scroll", requestBleedRender, { passive: true });
+      window.addEventListener("resize", requestBleedRender);
+      isBleedListening = true;
+    }
+
+    requestBleedRender();
+  }
+
+  if (typeof mobileMedia.addEventListener === "function") {
+    mobileMedia.addEventListener("change", renderBleedMode);
+  } else if (typeof mobileMedia.addListener === "function") {
+    mobileMedia.addListener(renderBleedMode);
+  }
+
+  renderBleedMode();
 }
 
 /* 히어로 영상은 autoplay 로 돌지만, reduced motion 에서는 첫 프레임만 남깁니다.

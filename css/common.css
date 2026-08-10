@@ -940,6 +940,10 @@ html .course_page .course_description {
   visibility: visible;
 }
 
+.mobile_global_menu {
+  display: none;
+}
+
 .global_menu_head {
   display: flex;
   align-items: center;
@@ -1158,7 +1162,15 @@ html .course_page .course_description {
 }
 
 @media (max-width: 833px) {
+  html:has(.global_menu.is_open) {
+    scrollbar-gutter: auto;
+  }
+
   .global_menu {
+    right: auto;
+    z-index: 110;
+    width: 100vw;
+    padding-right: 0;
     overflow-y: auto;
     overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
@@ -1170,30 +1182,207 @@ html .course_page .course_description {
     display: none;
   }
 
-  .menu_brand {
-    align-self: center;
-    align-items: center;
-    width: 200px;
+  .global_menu_head,
+  .global_menu_body {
+    display: none;
   }
 
-  .menu_brand_logo img {
-    width: 120px;
+  .mobile_global_menu {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 30px var(--page_pad) 42px;
+    flex-direction: column;
   }
 
-  .book_btn {
+  .mobile_menu_brand {
+    position: relative;
+    z-index: 1;
+    align-self: flex-start;
     min-height: 44px;
-    padding: 10px 18px;
+    display: inline-flex;
+    align-items: center;
+    color: var(--color_gray_200);
+    font-family: var(--font_logo);
     font-size: 18px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .mobile_menu_nav {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    width: 100%;
+    padding: 52px 0 20px;
+  }
+
+  .mobile_menu_list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: clamp(24px, 5.5svh, 46px);
+  }
+
+  .mobile_menu_item {
+    width: 100%;
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  .global_menu.is_open .mobile_menu_item {
+    animation: mobile_menu_item_reveal 480ms var(--ease_out) both;
+  }
+
+  .global_menu.is_open .mobile_menu_item:nth-child(1) {
+    animation-delay: 80ms;
+  }
+
+  .global_menu.is_open .mobile_menu_item:nth-child(2) {
+    animation-delay: 130ms;
+  }
+
+  .global_menu.is_open .mobile_menu_item:nth-child(3) {
+    animation-delay: 180ms;
+  }
+
+  .global_menu.is_open .mobile_menu_item:nth-child(4) {
+    animation-delay: 230ms;
+  }
+
+  .global_menu.is_open .mobile_menu_item:nth-child(5) {
+    animation-delay: 280ms;
+  }
+
+  .mobile_menu_link {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr) 24px;
+    align-items: center;
+    width: 100%;
+    min-height: 56px;
+    color: var(--color_gray_200);
+  }
+
+  .mobile_menu_number {
+    font-family: var(--font_title);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1;
+    opacity: 0.62;
+  }
+
+  .mobile_menu_label {
+    min-width: 0;
+    font-family: var(--font_title);
+    font-size: clamp(22px, 7vw, 28px);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+  }
+
+  .mobile_menu_arrow {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    justify-self: end;
+    transition: transform var(--duration) var(--ease_out), color var(--duration) var(--ease_out);
+  }
+
+  .mobile_menu_arrow::before {
+    content: "";
+    position: absolute;
+    right: 1px;
+    bottom: 3px;
+    width: 15px;
+    height: 1px;
+    background-color: currentColor;
+    transform: rotate(-45deg);
+    transform-origin: right center;
+  }
+
+  .mobile_menu_arrow::after {
+    content: "";
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: 8px;
+    height: 8px;
+    border-top: 1px solid currentColor;
+    border-right: 1px solid currentColor;
+  }
+
+  .mobile_menu_link:hover,
+  .mobile_menu_link:focus-visible {
+    color: var(--color_point_400);
+  }
+
+  .mobile_menu_link:hover .mobile_menu_arrow,
+  .mobile_menu_link:focus-visible .mobile_menu_arrow {
+    transform: translate(2px, -2px);
+  }
+
+  @keyframes mobile_menu_item_reveal {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@media (max-width: 833px) and (prefers-reduced-motion: reduce) {
+  .global_menu.is_open .mobile_menu_item {
+    opacity: 1;
+    transform: none;
+    animation: none;
   }
 }
 
 @media (min-width: 834px) and (max-width: 1279px) {
   .global_menu .global_menu_body {
-    gap: 48px;
+    width: 100%;
+    padding: 64px 36px;
+    flex-direction: row;
+    align-items: center;
+    gap: clamp(24px, 3.75vw, 48px);
+  }
+
+  .global_menu .menu_brand {
+    width: clamp(150px, 15.64vw, 200px);
+    flex: 0 0 clamp(150px, 15.64vw, 200px);
+  }
+
+  .global_menu .book_btn {
+    min-height: 44px;
+    padding-block: 10px;
+    font-size: 16px;
+  }
+
+  .global_menu .book_btn img {
+    width: 19.2px;
+    height: 19.2px;
+  }
+
+  .global_menu .gnb {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: clamp(8px, 1.88vw, 24px);
   }
 
   .global_menu .gnb_title {
-    font-size: 24px;
+    font-size: clamp(16px, 1.88vw, 24px);
+    white-space: nowrap;
+  }
+
+  .global_menu .gnb_link {
+    padding-inline: clamp(4px, 0.78vw, 10px);
+    font-size: clamp(11px, 1.1vw, 14px);
+    white-space: nowrap;
   }
 }
 
@@ -1879,11 +2068,13 @@ html .course_page .course_description {
   text-transform: capitalize;
 }
 
+/* 첫 화면은 히어로가 온전히 다 씁니다. 탭 바는 그 아래에 놓여 처음에는 보이지 않고,
+   스크롤을 내려 화면 하단에 닿는 순간부터 .subpage_tabs 의 sticky 가 붙잡습니다. */
 .sub_content > .subpage_hero.has_scroll_indicator {
-  height: calc(100vh - var(--subpage_tabs_height));
-  height: calc(100dvh - var(--subpage_tabs_height));
-  min-height: calc(100vh - var(--subpage_tabs_height));
-  min-height: calc(100dvh - var(--subpage_tabs_height));
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
   max-height: none;
 }
 

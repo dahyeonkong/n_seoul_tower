@@ -1090,3 +1090,87 @@ Figma `main_visual` 3종(1373:1769 = 1440x1080 / 1373:1827 = 834x1080 / 1373:188
 - `.events_section` — `::before` 의 grass_img / `opacity 0.3` / `isolation: isolate` 유지 확인
 - goods 섹션 화면 캡처 — 잔디 없이 크림 배경, 상품 카드 4개 정상 노출
 - `css/main.css` 에 남은 `grass_img` 참조는 events 쪽 1건뿐
+
+### events 배경 이미지 교체 (2026-08-10)
+
+`.events_section::before` 의 배경을 `grass_img.png` → `grass_back_img.png` 로 바꿨습니다.
+파일명만 교체했고 position / size / opacity 등 나머지 값은 그대로입니다.
+
+- 저장소에 두 파일이 모두 있어 경로 확인 후 교체했습니다.
+- 교체 후 `grass_img` 참조는 css / js / index.html 어디에도 남아 있지 않습니다.
+
+**검증 결과** (캐시 무력화 임시 사본으로 확인 후 삭제)
+
+- `::before` 배경이 `grass_back_img.png` 로 바뀌고 `fetch` 응답 200 (404 아님)
+- opacity 0.3 / position 50% 0% / size 130% / attachment fixed 유지 확인
+- events 섹션 화면 캡처 — 새 잔디 이미지가 흐리게 깔리고 제목·곤돌라·카드 정상 노출
+
+### visitor_guide 코스 카드 모바일 세로 배치 (2026-08-10)
+
+Recommended Courses 탭의 코스 카드가 모바일에서도 좌우 2단(이미지 43% / 텍스트 57%)이라
+둘 다 좁았습니다. 833 이하에서 이미지 → 텍스트 → 경로 순으로 쌓도록 바꿨습니다.
+
+**변경 파일**
+
+- `css/course.css` — `@media (max-width: 833px)` 블록만 수정
+
+**구현**
+
+- `.course_section` 을 1 컬럼 3 행 그리드로 바꾸고 `align-items: start`
+- `.course_visual` → row 1, `.course_text` → row 2, `.course_route` → row 3 으로 명시
+  (기본 규칙이 각각 col 1 / col 2 / row 2 를 지정하고 있어 모바일에서 다시 잡아야 합니다)
+- 이미지가 한 줄을 다 쓰게 되어 높이를 `clamp(150px, 43vw, 230px)` →
+  `clamp(180px, 52vw, 300px)` 로 키우고, `img` 의 `max-width/height` 를 92% → 100%
+  (speed 코스만 84% → 92%) 로 올렸습니다.
+- 마크업(`pages/visitor_guide.html`)은 손대지 않았습니다.
+  DOM 순서가 이미 visual → text → route 라 CSS 로만 해결됩니다.
+
+**검증 결과** (캐시 무력화 임시 사본으로 확인 후 삭제)
+
+- 360 — 그리드 1 컬럼(312px) 3 행, visual(row 1, y 422) → text(row 2, y 621) →
+  route(row 3, y 717) 순으로 쌓임, 가로 스크롤 없음
+- 360 화면 캡처 — 이미지가 위, 그 아래 01 SPEED COURSE / 부제 / 설명 / 정보 칩,
+  맨 아래 ROUTE 바 순으로 정상 노출
+- 834 — 기존 2단 유지 확인 (visual col 1 x 68, text col 2 x 396, route row 2), 가로 스크롤 없음
+- **미검증**: 1280 이상, 420 이하(`@media (max-width: 420px)` 구간), 나머지 6개 코스 카드
+
+### 서브페이지 첫 화면에서 탭 바 제외 (2026-08-10)
+
+`.subpage_hero.has_scroll_indicator` 가 `100vh - 탭 높이` 였습니다.
+탭 바까지 합쳐 첫 화면이 100vh 라, 진입하자마자 탭이 하단에 보였습니다.
+첫 화면은 히어로가 온전히 다 쓰고, 스크롤해서 내려갈 때부터 탭이 하단에 붙게 바꿨습니다.
+
+**변경 파일**
+
+- `css/common.css` — `.sub_content > .subpage_hero.has_scroll_indicator` 의 높이만 수정
+
+```css
+.sub_content > .subpage_hero.has_scroll_indicator {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
+  max-height: none;
+}
+```
+
+**주요 판단**
+
+- **`.subpage_tabs` 규칙은 손대지 않았습니다.** 이미
+  `position: sticky; top: calc(100dvh - var(--subpage_tabs_height))` 이라,
+  히어로가 100dvh 가 되면 탭의 원래 자리가 화면 아래로 내려가 처음엔 안 보이고,
+  스크롤로 올라와 화면 하단에 닿는 순간부터 그 자리에 붙잡힙니다.
+  `bottom: 0` 으로 바꾸면 오히려 첫 화면에서 위로 끌어올려져 계속 보이게 됩니다.
+- 적용 대상은 `has_scroll_indicator` 가 붙은 3개 페이지입니다
+  (brand_story / restaurant_n_burger / visitor_guide).
+
+**검증 결과** (캐시 무력화 임시 사본으로 확인 후 삭제)
+
+- brand_story 1440 x 900 — 스크롤 0 에서 히어로 900(= 뷰포트 전체), 탭 top 900 →
+  **첫 화면에 안 보임**. 스크롤 300 / 1500 / 4000 에서 탭 top 832 / bottom 900,
+  뷰포트 하단과의 간격 0 → 하단 고정 확인
+- brand_story 화면 캡처 2장 — 첫 화면에는 히어로만, 스크롤 후에는 하단에 탭 바 노출
+- visitor_guide 360 x 800 — 스크롤 0 에서 히어로 800, 탭 top 800 → 안 보임,
+  스크롤 후 하단 간격 0, 가로 스크롤 없음
+- **미검증**: restaurant_n_burger 실측, 834 / 1280 실측,
+  brand_story.css 의 `--brand_tab_h` 로 잡아둔 섹션 하단 여백이 여전히 맞는지

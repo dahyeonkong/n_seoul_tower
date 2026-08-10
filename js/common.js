@@ -223,6 +223,49 @@ function getSubHeaderMarkup() {
 
     <!-- Mobile and tablet global menu -->
     <div class="global_menu" id="global_menu" data-menu-panel hidden>
+      <div class="mobile_global_menu">
+        <a class="mobile_menu_brand" href="../index.html">N SEOUL TOWER</a>
+        <nav class="mobile_menu_nav" aria-label="Mobile main menu">
+          <ol class="mobile_menu_list">
+            <li class="mobile_menu_item">
+              <a class="mobile_menu_link" href="./brand_story.html">
+                <span class="mobile_menu_number">01</span>
+                <span class="mobile_menu_label">BRAND STORY</span>
+                <span class="mobile_menu_arrow" aria-hidden="true"></span>
+              </a>
+            </li>
+            <li class="mobile_menu_item">
+              <a class="mobile_menu_link" href="./restaurant_n_burger.html">
+                <span class="mobile_menu_number">02</span>
+                <span class="mobile_menu_label">RESTAURANT</span>
+                <span class="mobile_menu_arrow" aria-hidden="true"></span>
+              </a>
+            </li>
+            <li class="mobile_menu_item">
+              <a class="mobile_menu_link" href="./n_gift_shop.html">
+                <span class="mobile_menu_number">03</span>
+                <span class="mobile_menu_label">N GIFT SHOP</span>
+                <span class="mobile_menu_arrow" aria-hidden="true"></span>
+              </a>
+            </li>
+            <li class="mobile_menu_item">
+              <a class="mobile_menu_link" href="./floor_guide.html">
+                <span class="mobile_menu_number">04</span>
+                <span class="mobile_menu_label">FLOW GUIDE</span>
+                <span class="mobile_menu_arrow" aria-hidden="true"></span>
+              </a>
+            </li>
+            <li class="mobile_menu_item">
+              <a class="mobile_menu_link" href="./visitor_guide.html">
+                <span class="mobile_menu_number">05</span>
+                <span class="mobile_menu_label">VISITOR GUIDE</span>
+                <span class="mobile_menu_arrow" aria-hidden="true"></span>
+              </a>
+            </li>
+          </ol>
+        </nav>
+      </div>
+
       <div class="page_container global_menu_head">
         <div class="language_selector">
           <button class="language_button" type="button" data-language-button aria-expanded="false"
