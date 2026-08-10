@@ -226,43 +226,56 @@ function getSubHeaderMarkup() {
       <div class="mobile_global_menu">
         <a class="mobile_menu_brand" href="../index.html">N SEOUL TOWER</a>
         <nav class="mobile_menu_nav" aria-label="Mobile main menu">
-          <ol class="mobile_menu_list">
+          <ul class="mobile_menu_list">
             <li class="mobile_menu_item">
-              <a class="mobile_menu_link" href="./brand_story.html">
-                <span class="mobile_menu_number">01</span>
-                <span class="mobile_menu_label">BRAND STORY</span>
+              <button class="mobile_menu_toggle" type="button" data-mobile-menu-toggle aria-expanded="false" aria-controls="mobile_menu_tower_story">
+                <span class="mobile_menu_label">tower story</span>
                 <span class="mobile_menu_arrow" aria-hidden="true"></span>
-              </a>
+              </button>
+              <ul class="mobile_menu_submenu" id="mobile_menu_tower_story" hidden>
+                <li><a class="mobile_menu_sublink" href="./brand_story.html">brand story</a></li>
+                <li><button class="mobile_menu_sublink" type="button" disabled>history</button></li>
+              </ul>
             </li>
             <li class="mobile_menu_item">
-              <a class="mobile_menu_link" href="./restaurant_n_burger.html">
-                <span class="mobile_menu_number">02</span>
-                <span class="mobile_menu_label">RESTAURANT</span>
+              <button class="mobile_menu_toggle" type="button" data-mobile-menu-toggle aria-expanded="false" aria-controls="mobile_menu_explore">
+                <span class="mobile_menu_label">explore</span>
                 <span class="mobile_menu_arrow" aria-hidden="true"></span>
-              </a>
+              </button>
+              <ul class="mobile_menu_submenu" id="mobile_menu_explore" hidden>
+                <li><a class="mobile_menu_sublink" href="./restaurant_n_burger.html">restaurants</a></li>
+                <li><a class="mobile_menu_sublink" href="./n_gift_shop.html">N gift shop</a></li>
+                <li><button class="mobile_menu_sublink" type="button" disabled>amenities</button></li>
+                <li><a class="mobile_menu_sublink" href="./floor_guide.html">floor guide</a></li>
+              </ul>
             </li>
             <li class="mobile_menu_item">
-              <a class="mobile_menu_link" href="./n_gift_shop.html">
-                <span class="mobile_menu_number">03</span>
-                <span class="mobile_menu_label">N GIFT SHOP</span>
+              <button class="mobile_menu_toggle" type="button" data-mobile-menu-toggle aria-expanded="false" aria-controls="mobile_menu_visit">
+                <span class="mobile_menu_label">visit</span>
                 <span class="mobile_menu_arrow" aria-hidden="true"></span>
-              </a>
+              </button>
+              <ul class="mobile_menu_submenu" id="mobile_menu_visit" hidden>
+                <li><button class="mobile_menu_sublink" type="button" disabled>Hours &amp; Tickets</button></li>
+                <li><a class="mobile_menu_sublink" href="./visitor_guide.html">visitor guide</a></li>
+              </ul>
             </li>
             <li class="mobile_menu_item">
-              <a class="mobile_menu_link" href="./floor_guide.html">
-                <span class="mobile_menu_number">04</span>
-                <span class="mobile_menu_label">FLOW GUIDE</span>
+              <button class="mobile_menu_toggle" type="button" disabled aria-disabled="true">
+                <span class="mobile_menu_label">events</span>
                 <span class="mobile_menu_arrow" aria-hidden="true"></span>
-              </a>
+              </button>
             </li>
             <li class="mobile_menu_item">
-              <a class="mobile_menu_link" href="./visitor_guide.html">
-                <span class="mobile_menu_number">05</span>
-                <span class="mobile_menu_label">VISITOR GUIDE</span>
+              <button class="mobile_menu_toggle" type="button" data-mobile-menu-toggle aria-expanded="false" aria-controls="mobile_menu_support">
+                <span class="mobile_menu_label">support</span>
                 <span class="mobile_menu_arrow" aria-hidden="true"></span>
-              </a>
+              </button>
+              <ul class="mobile_menu_submenu" id="mobile_menu_support" hidden>
+                <li><button class="mobile_menu_sublink" type="button" disabled>notice &amp; news</button></li>
+                <li><button class="mobile_menu_sublink" type="button" disabled>FAQ / contact us</button></li>
+              </ul>
             </li>
-          </ol>
+          </ul>
         </nav>
       </div>
 
@@ -656,6 +669,39 @@ function initGlobalMenu() {
 
   var isMenuOpen = false;
   var previousBodyOverflow = "";
+  var mobileMenuToggles = Array.prototype.slice.call(
+    panel.querySelectorAll("[data-mobile-menu-toggle]")
+  );
+
+  function closeMobileMenuGroups(exceptButton) {
+    mobileMenuToggles.forEach(function (button) {
+      if (button === exceptButton) {
+        return;
+      }
+
+      var submenuId = button.getAttribute("aria-controls");
+      var submenu = submenuId ? document.getElementById(submenuId) : null;
+      button.setAttribute("aria-expanded", "false");
+      if (submenu) {
+        submenu.hidden = true;
+      }
+    });
+  }
+
+  function handleMobileMenuToggle(event) {
+    var button = event.currentTarget;
+    var submenuId = button.getAttribute("aria-controls");
+    var submenu = submenuId ? document.getElementById(submenuId) : null;
+
+    if (!submenu) {
+      return;
+    }
+
+    var willOpen = button.getAttribute("aria-expanded") !== "true";
+    closeMobileMenuGroups(willOpen ? button : null);
+    button.setAttribute("aria-expanded", String(willOpen));
+    submenu.hidden = !willOpen;
+  }
 
   /* 스크롤 잠금.
      overflow: hidden 으로 스크롤바가 사라지면 뷰포트 폭이 넓어져
@@ -758,6 +804,7 @@ function initGlobalMenu() {
     }
     isMenuOpen = false;
     closeAllLanguageMenus();
+    closeMobileMenuGroups();
     renderMenuState();
     unlockBodyScroll();
 
@@ -809,6 +856,10 @@ function initGlobalMenu() {
   }
 
   toggleButton.addEventListener("click", handleMenuToggle);
+
+  mobileMenuToggles.forEach(function (button) {
+    button.addEventListener("click", handleMobileMenuToggle);
+  });
 
   panel.addEventListener("keydown", handleMenuKeydown);
   toggleButton.addEventListener("keydown", handleMenuKeydown);

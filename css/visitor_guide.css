@@ -26,8 +26,7 @@
   /* 원형 배경: 흰 바탕 위 rgba(27, 92, 78, 0.4) 를 미리 합성한 값 */
   --color_guide_media_bg: #a4beb8;
 
-  /* 데스크톱 섹션 상하 여백 120, 이미지 400, 본문 620, 사이 간격 64 */
-  --guide_section_pad: 72px;
+  /* 데스크톱 이미지 400, 본문 620, 사이 간격 64 */
   --guide_media_size: min(76vw, 320px);
   --guide_stack_gap: 20px;
 
@@ -37,7 +36,6 @@
 
 @media (min-width: 834px) {
   :root {
-    --guide_section_pad: 100px;
     --guide_media_size: 360px;
     --guide_stack_gap: 24px;
 
@@ -48,7 +46,6 @@
 
 @media (min-width: 1280px) {
   :root {
-    --guide_section_pad: 120px;
     --guide_media_size: 400px;
 
     --fs_guide_lead: 18px;
@@ -76,6 +73,10 @@
 /* 두 탭 패널의 인트로 시작선을 동일하게 맞춥니다. */
 #panel_getting_here {
   padding-top: 76px;
+}
+
+#panel_recommended_courses .course_sections {
+  padding-inline: 0;
 }
 
 @media (min-width: 1280px) {
@@ -269,7 +270,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   flex-direction: column;
   align-items: flex-start;
   gap: var(--guide_stack_gap);
-  padding-block: var(--guide_section_pad);
+  padding: 14px 14px 43px;
 }
 
 .guide_feature {
@@ -817,6 +818,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 @media (min-width: 834px) and (max-width: 1279px) {
   .guide_section {
     gap: 36px;
+    padding: 22px 28px 48px;
   }
 
   .guide_feature {
@@ -908,8 +910,8 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 }
 
 /* --------------------------------------------------------------------------
-   데스크톱 — Figma 배치 (이미지 400 + gap 64 + 본문 620 = 1084)
-   bus·citytour 는 오른쪽 끝, cable car·cars 는 왼쪽 끝에 붙습니다.
+   데스크톱 — 이미지 400 + gap 64 + 본문 620 = 1084
+   교통수단별 좌우 순서는 유지하고 콘텐츠는 섹션 상단에서 시작합니다.
    -------------------------------------------------------------------------- */
 @media (min-width: 1280px) {
   .guide_section {
@@ -917,6 +919,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
     align-content: center;
     column-gap: 64px;
     row-gap: 24px;
+    padding: 22px 28px 48px;
     /* 본문 행 수를 명시해야 이미지의 grid-row: 1 / -1 이 전체를 세로로 덮습니다.
        기본 3행(제목·설명·상세) + 안내 칩이 있는 섹션만 4행 */
     grid-template-rows: repeat(3, auto);
@@ -929,12 +932,12 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 
   .guide_section_media_first {
     grid-template-columns: var(--guide_media_size) minmax(0, 620px);
-    justify-content: flex-end;
+    justify-content: center;
   }
 
   .guide_section_text_first {
     grid-template-columns: minmax(0, 620px) var(--guide_media_size);
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   .guide_section_media_first > .guide_feature > .guide_media_wrap {

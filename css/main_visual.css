@@ -1,0 +1,261 @@
+/* ==========================================================================
+   main_visual pop interaction
+   --------------------------------------------------------------------------
+   레이아웃 속성(left/top/width/height)은 JS 가 처음 한 번만 심어두고,
+   재생 중에는 transform / filter / opacity 만 바뀝니다. 합성 단계에서만
+   처리되니 풀페이지 크기에서도 프레임이 떨어지지 않습니다.
+
+   상태
+   - 기본        : 01(닫힘). 오브젝트가 봉투 안에 숨어 있습니다.
+   - .is_open    : 02(열림). 밖으로 팡 터집니다.
+   - .is_closing : 다시 01 로. 나갔던 순서의 역순으로 빨려 들어갑니다.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   인터랙션은 데스크톱(1280 이상) 전용입니다.
+   태블릿과 모바일은 기존 히어로 이미지를 그대로 씁니다.
+   -------------------------------------------------------------------------- */
+.mv_stage {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .mv_visual {
+    position: relative;
+    display: block;
+    padding: 0;
+    overflow: hidden;
+    /* 시안 배경 color/light/bg = #F7F4E8. common.css 의 --color_bg 와 같은 값입니다. */
+    background-color: var(--mv_bg, var(--color_bg, #f7f4e8));
+  }
+
+  .mv_stage {
+    display: block;
+  }
+
+  /* 데스크톱에서는 대체 이미지를 숨깁니다. */
+  .mv_visual > img.mv_fallback {
+    display: none;
+  }
+
+  /* 제목은 스테이지 안의 .mv_title 이 대신 그립니다.
+     다만 h1 까지 display:none 으로 지우면 데스크톱 문서에 h1 이 하나도 남지 않습니다.
+     (.mv_title 은 aria-hidden 인 스테이지 안의 장식용 p 입니다.)
+     그래서 화면에서만 감추고 접근성 트리에는 남깁니다.
+     값은 common.css 의 .visually_hidden 과 동일합니다. */
+  .mv_visual > h1.mv_fallback {
+    position: absolute;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    white-space: nowrap;
+  }
+}
+
+/* Figma 아트보드(1920x1080)를 통째로 스케일해서 화면을 꽉 채웁니다.
+   --mv_scale 은 JS 가 cover 비율로 계산해서 넣어줍니다. */
+.mv_stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  transform: translate(-50%, -50%) scale(var(--mv_scale, 1));
+  transform-origin: center;
+  isolation: isolate;
+}
+
+.mv_layer {
+  position: absolute;
+  inset: 0;
+}
+
+.mv_envelope {
+  position: absolute;
+  /* JS 가 Figma 이미지 필에서 역산한 박스를 그대로 심어줍니다.
+     봉투 뒷면은 원본 정사각을 세로로 눌러 쓰는 비균등 스케일이라 fill 이어야 합니다.
+     (cover 로 두면 좌우가 잘려 안감 폭이 좁아집니다.) */
+  object-fit: fill;
+  pointer-events: none;
+}
+
+/* 봉투 뒷면(.mv_envelope_back) / 앞주머니(.mv_envelope_front) 의 z 는
+   페이지마다 레이어 순서가 달라서 JS 가 씬 배열 순서로 심어줍니다.
+   (레스토랑은 뒷면이 4번, 브랜드스토리는 1번입니다.) */
+
+.mv_object {
+  position: absolute;
+  z-index: var(--mv_z, 1);
+  transform-origin: center;
+  pointer-events: none;
+  will-change: transform, filter;
+}
+
+/* 포물선의 세로 성분. 바깥(.mv_object)이 가로, 안쪽(.mv_object_inner)이 세로를
+   맡고 서로 다른 이징으로 움직이기 때문에 합성 궤적이 곡선이 됩니다.
+   회전과 크기도 세로와 같은 타이밍으로 묶어둡니다. */
+.mv_object_inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  /* Figma 노드가 이미지 필을 잘라내는 것과 같습니다. 원본을 확대해서 일부만 쓰는
+     오브젝트(인물, 벤치, 타워 클러스터)는 이 상자 밖으로 삐져나오면 안 됩니다. */
+  overflow: hidden;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.mv_object_inner.is_flip_y img {
+  transform: scaleY(-1);
+}
+
+.mv_object img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* 기본은 Figma 의 "꽉 채우기". 정사각 에셋을 정사각 박스에 넣을 땐 잘림이 없고,
+     타워처럼 세로로 긴 박스에서만 좌우가 잘립니다. */
+  object-fit: cover;
+  user-select: none;
+}
+
+/* 씬 데이터에 fill 이 적힌 오브젝트. 이미지 사각형을 직접 지정하므로
+   cover 로 다시 맞추면 안 되고, 지정한 크기 그대로 늘려야 합니다.
+
+   max-width 를 반드시 풀어야 합니다. reset.css 가 img 에 max-width: 100% 를 걸어두는데,
+   이 이미지들은 폭이 193% ~ 378% 라서 그대로 두면 100% 로 잘려 일부만 보입니다.
+   Figma 가 내보내는 코드에 max-w-none 이 붙어 있는 것도 같은 이유입니다. */
+.mv_object img.is_cropped {
+  position: absolute;
+  max-width: none;
+  max-height: none;
+  object-fit: fill;
+}
+
+/* --------------------------------------------------------------------------
+   이징
+   --------------------------------------------------------------------------
+   나갈 때: 세로가 먼저 솟고(_y) 가로가 뒤따라 퍼집니다(_x). 봉투 입구에서 위로
+   쏘아올려진 뒤 좌우로 벌어지는 궤적이라 직선이 아니라 포물선을 그립니다.
+   들어갈 때는 역할을 맞바꿔서, 바깥에서 안쪽으로 모인 뒤 아래로 빨려 들어갑니다.
+   두 축의 위상 차가 클수록 곡률이 커집니다. 지금은 중간 지점에서
+   세로 약 0.72 / 가로 약 0.42 진행되도록 잡았습니다.
+   -------------------------------------------------------------------------- */
+.mv_visual {
+  --mv_out_y: cubic-bezier(0.2, 0.72, 0.3, 1.04);
+  --mv_out_x: cubic-bezier(0.5, 0.03, 0.32, 1);
+  --mv_in_x: cubic-bezier(0.2, 0.7, 0.35, 1);
+  --mv_in_y: cubic-bezier(0.55, 0, 0.75, 0.9);
+  --mv_dur_out: 1.15s;
+  --mv_dur_in: 0.85s;
+}
+
+/* --------------------------------------------------------------------------
+   01 (닫힘) : 열린 위치 기준에서 봉투 안쪽으로 되돌려 놓은 상태
+   -------------------------------------------------------------------------- */
+.mv_object {
+  transform: translateX(var(--mv_dx));
+  filter: blur(0);
+  opacity: 1;
+
+  transition:
+    transform var(--mv_dur_in) var(--mv_in_x) var(--mv_delay_in),
+    filter 0.5s ease-out var(--mv_delay_in),
+    opacity 0.4s ease-out var(--mv_delay_in);
+}
+
+.mv_object_inner {
+  transform: translateY(var(--mv_dy)) rotate(var(--mv_rot_closed))
+    scale(var(--mv_sc));
+  transition: transform var(--mv_dur_in) var(--mv_in_y) var(--mv_delay_in);
+}
+
+/* --------------------------------------------------------------------------
+   02 (열림) : Figma 좌표 그대로. transform 이 없는 상태가 정답 위치입니다.
+   -------------------------------------------------------------------------- */
+.is_open .mv_object {
+  transform: translateX(0);
+  filter: blur(var(--mv_blur));
+  opacity: var(--mv_opacity);
+
+  transition:
+    transform var(--mv_dur_out) var(--mv_out_x) var(--mv_delay_out),
+    filter 0.8s ease-out var(--mv_delay_out),
+    opacity 0.5s ease-out var(--mv_delay_out);
+}
+
+/* 세로 성분에만 살짝 오버슈트를 줘서 끝에서 "팡" 하고 튕기는 느낌을 냅니다. */
+.is_open .mv_object_inner {
+  transform: translateY(0) rotate(var(--mv_rot_open)) scale(1);
+  transition: transform var(--mv_dur_out) var(--mv_out_y) var(--mv_delay_out);
+}
+
+/* --------------------------------------------------------------------------
+   착지 후 둥실거림
+   --------------------------------------------------------------------------
+   translate 프로퍼티로 흔듭니다. transform 과 별개 축이라 포물선 transition 과
+   서로 덮어쓰지 않고 겹쳐집니다. 비행이 끝난 뒤에 시작되도록 딜레이를 줍니다.
+   주기와 폭은 오브젝트마다 조금씩 달라서 한 덩어리로 움직이지 않습니다.
+   -------------------------------------------------------------------------- */
+.is_open .mv_object_inner {
+  animation: mv_float var(--mv_float_dur, 4s) ease-in-out
+    calc(var(--mv_delay_out) + var(--mv_dur_out)) infinite alternate;
+}
+
+@keyframes mv_float {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 calc(var(--mv_float_y, -10px));
+  }
+}
+
+/* 닫히는 중에는 둥실거림을 끕니다. */
+.is_closing .mv_object_inner {
+  animation: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   타이틀 / 스크롤 인디케이터
+   -------------------------------------------------------------------------- */
+/* 글자 스펙은 Dev Mode 값 그대로입니다: Poppins SemiBold 190px / 자간 +7.6px.
+   세 페이지가 같습니다.
+   z 와 left 는 페이지마다 달라서 JS 가 씬의 layers 순서 / titleLeft 로 심어줍니다.
+   (레스토랑은 타워가 타이틀 위로 지나가고, 브랜드스토리는 앤고미가 지나갑니다.) */
+.mv_title {
+  position: absolute;
+  top: 161px;
+  margin: 0;
+  color: var(--mv_title_color, #1e4c43);
+  font-family: var(--mv_title_font, "Poppins", sans-serif);
+  font-size: 190px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 7.6px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   모션 최소화 요청 시에는 02 를 정지 화면으로 보여줍니다.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .mv_object,
+  .mv_object_inner,
+  .is_open .mv_object,
+  .is_open .mv_object_inner {
+    transition: none;
+  }
+}
+
+.is_static .mv_object,
+.is_static .mv_object_inner {
+  transition: none;
+}
