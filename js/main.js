@@ -233,12 +233,12 @@ var EVENT_PATH_EDGE_INSET = 0.08;
    path 를 타고 내려가는 형상은 남기되 화면 밖으로는 나가지 않는 값입니다. */
 var EVENT_GONDOLA_BAND = 0.36;
 
-/* 코스 스크롤이 이 진행률을 넘으면 "끝난 것"으로 보고 티켓 건네는 곰으로 전환합니다. */
+/* 코스 스크롤이 이 진행률을 넘으면 캐릭터를 감추고 다음 섹션으로 전환합니다. */
 var COURSE_END_PROGRESS = 0.97;
 
-/* 티켓이 곰에게서 날아오는 구간의 길이(뷰포트 높이 배수).
-   티켓 중심이 화면 중앙에 닿는 순간 비행이 끝나고 제자리에 놓입니다. */
+/* iframe 곰 위치에서 N Pass 제자리까지 티켓이 이동하는 스크롤 범위입니다. */
 var PASS_FLIGHT_RANGE = 0.9;
+
 
 /* 곡선을 세로로 얼마나 늘릴지. 1 이면 곡선이 페이지와 1:1 로 흘러가지만 경사가 매우 가팔라집니다.
    가로 배율과 같아지는 지점(약 0.217)이 에셋에 그려진 원래 각도이고, 그보다 낮추면 더 완만해집니다. */
@@ -709,8 +709,7 @@ function initCourseScrollScene() {
     var stageRect = stage.getBoundingClientRect();
     var progress = Math.min(1, Math.max(0, -stageRect.top / scrollTravel));
     list.style.transform = "translate3d(0, " + -progress * maxListOffset + "px, 0)";
-    /* 코스 카드를 다 지나가면 영상과 걷는 마스코트를 감추고
-       walk_bg 위에 티켓을 건네는 곰을 보여 줍니다. */
+    /* 코스 카드를 다 지나가면 영상과 걷는 마스코트를 감춥니다. */
     scene.classList.toggle("is_course_end", progress >= COURSE_END_PROGRESS);
     isFrameRequested = false;
   }
@@ -852,7 +851,7 @@ function initTowerReveal() {
 /* 스크롤에 맞춰 양초가 한 단씩 쌓이는 3D 조립 (yul_tower_3d/scroll-stack-3d.js).
    데스크톱에서만 켜고, 그 외에는 기존 이미지 스택을 그대로 씁니다.
    모듈·three·gsap 이 없으면 초기화가 null 을 돌려주므로 이미지 스택이 남습니다. */
-/* 코스 구간이 끝나고 N Pass 섹션에 들어오면 티켓이 떨어져 내려와 뒤집힙니다.
+/* N Pass 섹션에 들어오면 티켓이 나타나 뒤집힙니다.
    섹션을 완전히 벗어날 때만 되돌려(threshold 0) 재진입하면 다시 재생하고,
    TOP 버튼처럼 위로 빠르게 지나갈 때는 회전 없이 결과만 보여 줍니다. */
 function initPassTicketFlip() {
@@ -902,29 +901,29 @@ function initPassTicketFlip() {
     });
   }
 
-  /* --- 데스크톱: 곰에게서 티켓이 날아와 커지며 뒤집힙니다 ---
+  /* --- 데스크톱: iframe 곰 위치에서 티켓이 날아와 커지며 뒤집힙니다 ---
      .pass_flip 은 변형이 없으므로 그 rect 가 곧 티켓의 "제자리"입니다.
      매 프레임 곰 위치와 제자리 사이를 보간해 하나의 transform 으로 넣습니다. */
   function renderPassFlight() {
-    var bear = document.querySelector("[data-course-bear]");
+    var flightOrigin = document.querySelector("[data-course-flight-origin]");
     var scene = document.querySelector("[data-course-scene]");
     var restRect = flip.getBoundingClientRect();
     var viewportHeight = window.innerHeight;
 
-    /* 코스 스크롤이 끝나 곰이 티켓을 건네는 순간부터 티켓을 보여 줍니다. */
+    /* 코스 스크롤이 끝나 코스가 끝나는 순간부터 티켓을 보여 줍니다. */
     flip.classList.toggle(
       "is_pass_flight_ready",
       !scene || scene.classList.contains("is_course_end")
     );
 
-    if (!bear || restRect.width === 0) {
-      flip.classList.remove("is_pass_flight");
+    if (!flightOrigin || restRect.width === 0) {
+      flip.classList.remove("is_pass_flight", "is_pass_back_visible");
       revealPassTicket(false);
       isFlightFrameRequested = false;
       return;
     }
 
-    var startRect = bear.getBoundingClientRect();
+    var startRect = flightOrigin.getBoundingClientRect();
     var restCenterY = restRect.top + restRect.height / 2;
     var flightDistance = Math.max(1, viewportHeight * PASS_FLIGHT_RANGE);
     var progress = Math.min(
@@ -940,6 +939,8 @@ function initPassTicketFlip() {
     var startScale = startRect.width / restRect.width;
     var scale = startScale + (1 - startScale) * progress;
     var angle = 180 * (1 - progress);
+
+    flip.classList.toggle("is_pass_back_visible", angle > 90);
 
     flip.style.setProperty(
       "--pass_flight_transform",
@@ -962,7 +963,7 @@ function initPassTicketFlip() {
   function stopPassFlight() {
     window.removeEventListener("scroll", requestPassFlightRender);
     window.removeEventListener("resize", requestPassFlightRender);
-    flip.classList.remove("is_pass_flight");
+    flip.classList.remove("is_pass_flight", "is_pass_back_visible");
     flip.style.removeProperty("--pass_flight_transform");
     isFlightActive = false;
   }
