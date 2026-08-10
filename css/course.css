@@ -431,18 +431,36 @@
 }
 
 @media (max-width: 833px) {
+  /* 모바일에서는 좌우 2단을 풀고 이미지 → 텍스트 → 경로 순으로 세로로 쌓습니다. */
   .course_page .course_section {
-    min-height: 190px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    min-height: 0;
     padding: 14px 14px 43px;
-    gap: 10px;
+    align-items: start;
+    gap: 12px;
     border-radius: 16px;
   }
 
   .course_page .course_visual {
-    height: clamp(150px, 43vw, 230px);
+    grid-column: 1;
+    grid-row: 1;
+    height: clamp(180px, 52vw, 300px);
+  }
+
+  .course_page .course_visual img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .course_page #speed_course .course_visual img {
+    max-width: 92%;
+    max-height: 92%;
   }
 
   .course_page .course_text {
+    grid-column: 1;
+    grid-row: 2;
     gap: 8px;
   }
 
@@ -494,6 +512,8 @@
   }
 
   .course_page .course_route {
+    grid-column: 1;
+    grid-row: 3;
     margin: 0 -14px -43px;
     padding: 8px 10px;
     flex-wrap: wrap;

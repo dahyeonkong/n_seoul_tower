@@ -940,6 +940,10 @@ html .course_page .course_description {
   visibility: visible;
 }
 
+.mobile_global_menu {
+  display: none;
+}
+
 .global_menu_head {
   display: flex;
   align-items: center;
@@ -1164,12 +1168,16 @@ html .course_page .course_description {
    화면이 짧아지면 같이 줄고, 최소값 아래로는 내려가지 않습니다.
    -------------------------------------------------------------------------- */
 @media (max-width: 833px) {
+  html:has(.global_menu.is_open) {
+    scrollbar-gutter: auto;
+  }
+
   .global_menu {
-    /* dvh 미지원 브라우저용 폴백 → 지원하면 아래 줄이 이깁니다. */
-    height: 100vh;
-    height: 100dvh;
-    /* 한 화면에 다 들어가므로 내부 스크롤을 없앱니다. */
-    overflow: hidden;
+    right: auto;
+    z-index: 110;
+    width: 100vw;
+    padding-right: 0;
+    overflow-y: auto;
     overscroll-behavior-y: contain;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -1184,94 +1192,207 @@ html .course_page .course_description {
     display: none;
   }
 
-  .global_menu_head {
-    margin-top: clamp(8px, 1.6dvh, 20px);
-  }
-
-  /* 언어 바를 뺀 나머지 높이를 전부 차지합니다. */
+  .global_menu_head,
   .global_menu_body {
-    flex: 1 1 auto;
-    min-height: 0;
-    justify-content: center;
-    gap: clamp(12px, 2.5dvh, 24px);
-    padding: clamp(8px, 2dvh, 20px) 0;
-    margin: 0;
+    display: none;
   }
 
-  .menu_brand {
-    align-self: center;
+  .mobile_global_menu {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 30px var(--page_pad) 42px;
+    flex-direction: column;
+  }
+
+  .mobile_menu_brand {
+    position: relative;
+    z-index: 1;
+    align-self: flex-start;
+    min-height: 44px;
+    display: inline-flex;
     align-items: center;
-    width: min(200px, 60%);
-    gap: clamp(10px, 2dvh, 20px);
+    color: var(--color_gray_200);
+    font-family: var(--font_logo);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
   }
 
-  .menu_brand_logo {
-    gap: clamp(6px, 1.2dvh, 12px);
+  .mobile_menu_nav {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    width: 100%;
+    padding: 52px 0 20px;
   }
 
-  .menu_brand_logo img {
-    width: clamp(64px, 11dvh, 120px);
+  .mobile_menu_list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: clamp(24px, 5.5svh, 46px);
   }
 
-  .menu_brand_name {
-    font-size: clamp(15px, 2.4dvh, 20px);
+  .mobile_menu_item {
+    width: 100%;
+    opacity: 0;
+    transform: translateY(14px);
   }
 
-  .book_btn {
-    min-height: clamp(40px, 5.5dvh, 48px);
-    padding: 8px 16px;
-    font-size: clamp(15px, 2.2dvh, 18px);
+  .global_menu.is_open .mobile_menu_item {
+    animation: mobile_menu_item_reveal 480ms var(--ease_out) both;
   }
 
-  /* 메뉴 항목 2열 배치 — 세로로 길게 늘어지지 않게 합니다. */
-  .gnb {
+  .global_menu.is_open .mobile_menu_item:nth-child(1) {
+    animation-delay: 80ms;
+  }
+
+  .global_menu.is_open .mobile_menu_item:nth-child(2) {
+    animation-delay: 130ms;
+  }
+
+  .global_menu.is_open .mobile_menu_item:nth-child(3) {
+    animation-delay: 180ms;
+  }
+
+  .global_menu.is_open .mobile_menu_item:nth-child(4) {
+    animation-delay: 230ms;
+  }
+
+  .global_menu.is_open .mobile_menu_item:nth-child(5) {
+    animation-delay: 280ms;
+  }
+
+  .mobile_menu_link {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-content: start;
-    align-items: start;
-    gap: clamp(10px, 2dvh, 24px) 12px;
+    grid-template-columns: 38px minmax(0, 1fr) 24px;
+    align-items: center;
     width: 100%;
+    min-height: 56px;
+    color: var(--color_gray_200);
   }
 
-  .gnb_group {
-    gap: clamp(4px, 0.8dvh, 10px);
+  .mobile_menu_number {
+    font-family: var(--font_title);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1;
+    opacity: 0.62;
   }
 
-  .gnb_title {
-    font-size: clamp(15px, 2.4dvh, 20px);
+  .mobile_menu_label {
+    min-width: 0;
+    font-family: var(--font_title);
+    font-size: clamp(22px, 7vw, 28px);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
   }
 
-  .gnb_lnb {
-    gap: 2px;
-    width: 100%;
+  .mobile_menu_arrow {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    justify-self: end;
+    transition: transform var(--duration) var(--ease_out), color var(--duration) var(--ease_out);
   }
 
-  .gnb_link {
-    /* 터치 영역 확보 — 화면이 아주 짧을 때만 38px 까지 내려갑니다. */
-    min-height: clamp(38px, 5.4dvh, 44px);
-    width: 100%;
-    padding: 4px 6px;
-    font-size: clamp(13px, 1.9dvh, 15px);
+  .mobile_menu_arrow::before {
+    content: "";
+    position: absolute;
+    right: 1px;
+    bottom: 3px;
+    width: 15px;
+    height: 1px;
+    background-color: currentColor;
+    transform: rotate(-45deg);
+    transform-origin: right center;
+  }
+
+  .mobile_menu_arrow::after {
+    content: "";
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: 8px;
+    height: 8px;
+    border-top: 1px solid currentColor;
+    border-right: 1px solid currentColor;
+  }
+
+  .mobile_menu_link:hover,
+  .mobile_menu_link:focus-visible {
+    color: var(--color_point_400);
+  }
+
+  .mobile_menu_link:hover .mobile_menu_arrow,
+  .mobile_menu_link:focus-visible .mobile_menu_arrow {
+    transform: translate(2px, -2px);
+  }
+
+  @keyframes mobile_menu_item_reveal {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 
-/* 세로 640px 미만(구형 소형 단말, 가로 모드)에서는 위 크기로도 다 담기지 않습니다.
-   overflow: hidden 을 유지하면 마지막 그룹이 잘려 아예 접근할 수 없으므로,
-   이 구간에서만 스크롤을 되살립니다. */
-@media (max-width: 833px) and (max-height: 639px) {
-  .global_menu {
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+@media (max-width: 833px) and (prefers-reduced-motion: reduce) {
+  .global_menu.is_open .mobile_menu_item {
+    opacity: 1;
+    transform: none;
+    animation: none;
   }
 }
 
 @media (min-width: 834px) and (max-width: 1279px) {
   .global_menu .global_menu_body {
-    gap: 48px;
+    width: 100%;
+    padding: 64px 36px;
+    flex-direction: row;
+    align-items: center;
+    gap: clamp(24px, 3.75vw, 48px);
+  }
+
+  .global_menu .menu_brand {
+    width: clamp(150px, 15.64vw, 200px);
+    flex: 0 0 clamp(150px, 15.64vw, 200px);
+  }
+
+  .global_menu .book_btn {
+    min-height: 44px;
+    padding-block: 10px;
+    font-size: 16px;
+  }
+
+  .global_menu .book_btn img {
+    width: 19.2px;
+    height: 19.2px;
+  }
+
+  .global_menu .gnb {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: clamp(8px, 1.88vw, 24px);
   }
 
   .global_menu .gnb_title {
-    font-size: 24px;
+    font-size: clamp(16px, 1.88vw, 24px);
+    white-space: nowrap;
+  }
+
+  .global_menu .gnb_link {
+    padding-inline: clamp(4px, 0.78vw, 10px);
+    font-size: clamp(11px, 1.1vw, 14px);
+    white-space: nowrap;
   }
 }
 
@@ -1957,11 +2078,13 @@ html .course_page .course_description {
   text-transform: capitalize;
 }
 
+/* 첫 화면은 히어로가 온전히 다 씁니다. 탭 바는 그 아래에 놓여 처음에는 보이지 않고,
+   스크롤을 내려 화면 하단에 닿는 순간부터 .subpage_tabs 의 sticky 가 붙잡습니다. */
 .sub_content > .subpage_hero.has_scroll_indicator {
-  height: calc(100vh - var(--subpage_tabs_height));
-  height: calc(100dvh - var(--subpage_tabs_height));
-  min-height: calc(100vh - var(--subpage_tabs_height));
-  min-height: calc(100dvh - var(--subpage_tabs_height));
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
   max-height: none;
 }
 

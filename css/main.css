@@ -1049,6 +1049,12 @@
   mask-image: none;
 }
 
+@media (max-width: 833px) {
+  .visual_bleed {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .visual_bleed {
     display: none;
@@ -1394,9 +1400,9 @@
   position: absolute;
   z-index: -1;
   inset: 0;
-  background-image: url("../assets/grass_img.png");
+  background-image: url("../assets/grass_back_img.png");
   background-position: center top;
-  background-size: 130% auto;
+  background-size: 100% auto;
   background-repeat: no-repeat;
   background-attachment: fixed;
   opacity: 0.3;
