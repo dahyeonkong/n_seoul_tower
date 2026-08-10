@@ -25,17 +25,34 @@
     display: block;
     padding: 0;
     overflow: hidden;
-    background-color: var(--mv_bg, #f7f4e8);
+    /* 시안 배경 color/light/bg = #F7F4E8. common.css 의 --color_bg 와 같은 값입니다. */
+    background-color: var(--mv_bg, var(--color_bg, #f7f4e8));
   }
 
   .mv_stage {
     display: block;
   }
 
-  /* 데스크톱에서는 대체 이미지와 기존 제목을 숨깁니다.
-     제목은 스테이지 안의 .mv_title 이 대신합니다. */
-  .mv_visual > .mv_fallback {
+  /* 데스크톱에서는 대체 이미지를 숨깁니다. */
+  .mv_visual > img.mv_fallback {
     display: none;
+  }
+
+  /* 제목은 스테이지 안의 .mv_title 이 대신 그립니다.
+     다만 h1 까지 display:none 으로 지우면 데스크톱 문서에 h1 이 하나도 남지 않습니다.
+     (.mv_title 은 aria-hidden 인 스테이지 안의 장식용 p 입니다.)
+     그래서 화면에서만 감추고 접근성 트리에는 남깁니다.
+     값은 common.css 의 .visually_hidden 과 동일합니다. */
+  .mv_visual > h1.mv_fallback {
+    position: absolute;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    white-space: nowrap;
   }
 }
 
@@ -60,20 +77,16 @@
 
 .mv_envelope {
   position: absolute;
-  /* Figma 의 이미지 필과 동일합니다. 정사각 에셋을 정사각 박스에 넣을 땐 잘림이 없고,
-     타워처럼 세로로 긴 박스에서만 좌우가 잘립니다. */
-  object-fit: cover;
+  /* JS 가 Figma 이미지 필에서 역산한 박스를 그대로 심어줍니다.
+     봉투 뒷면은 원본 정사각을 세로로 눌러 쓰는 비균등 스케일이라 fill 이어야 합니다.
+     (cover 로 두면 좌우가 잘려 안감 폭이 좁아집니다.) */
+  object-fit: fill;
   pointer-events: none;
 }
 
-.mv_envelope_inner {
-  z-index: 4;
-}
-
-/* 겉편지. 오브젝트 대부분이 이 뒤에 숨습니다. */
-.mv_envelope_outer {
-  z-index: 22;
-}
+/* 봉투 뒷면(.mv_envelope_back) / 앞주머니(.mv_envelope_front) 의 z 는
+   페이지마다 레이어 순서가 달라서 JS 가 씬 배열 순서로 심어줍니다.
+   (레스토랑은 뒷면이 4번, 브랜드스토리는 1번입니다.) */
 
 .mv_object {
   position: absolute;
@@ -87,8 +100,12 @@
    맡고 서로 다른 이징으로 움직이기 때문에 합성 궤적이 곡선이 됩니다.
    회전과 크기도 세로와 같은 타이밍으로 묶어둡니다. */
 .mv_object_inner {
+  position: relative;
   width: 100%;
   height: 100%;
+  /* Figma 노드가 이미지 필을 잘라내는 것과 같습니다. 원본을 확대해서 일부만 쓰는
+     오브젝트(인물, 벤치, 타워 클러스터)는 이 상자 밖으로 삐져나오면 안 됩니다. */
+  overflow: hidden;
   transform-origin: center;
   will-change: transform;
 }
@@ -101,10 +118,23 @@
   display: block;
   width: 100%;
   height: 100%;
-  /* Figma 의 이미지 필과 동일합니다. 정사각 에셋을 정사각 박스에 넣을 땐 잘림이 없고,
+  /* 기본은 Figma 의 "꽉 채우기". 정사각 에셋을 정사각 박스에 넣을 땐 잘림이 없고,
      타워처럼 세로로 긴 박스에서만 좌우가 잘립니다. */
   object-fit: cover;
   user-select: none;
+}
+
+/* 씬 데이터에 fill 이 적힌 오브젝트. 이미지 사각형을 직접 지정하므로
+   cover 로 다시 맞추면 안 되고, 지정한 크기 그대로 늘려야 합니다.
+
+   max-width 를 반드시 풀어야 합니다. reset.css 가 img 에 max-width: 100% 를 걸어두는데,
+   이 이미지들은 폭이 193% ~ 378% 라서 그대로 두면 100% 로 잘려 일부만 보입니다.
+   Figma 가 내보내는 코드에 max-w-none 이 붙어 있는 것도 같은 이유입니다. */
+.mv_object img.is_cropped {
+  position: absolute;
+  max-width: none;
+  max-height: none;
+  object-fit: fill;
 }
 
 /* --------------------------------------------------------------------------
@@ -136,21 +166,13 @@
   transition:
     transform var(--mv_dur_in) var(--mv_in_x) var(--mv_delay_in),
     filter 0.5s ease-out var(--mv_delay_in),
-    opacity 0.4s ease-out var(--mv_delay_in),
-    z-index 0s linear var(--mv_delay_in);
+    opacity 0.4s ease-out var(--mv_delay_in);
 }
 
 .mv_object_inner {
   transform: translateY(var(--mv_dy)) rotate(var(--mv_rot_closed))
     scale(var(--mv_sc));
   transition: transform var(--mv_dur_in) var(--mv_in_y) var(--mv_delay_in);
-}
-
-/* 겉편지보다 앞에 서는 전경 오브젝트.
-   닫힌 상태에서는 봉투 뒤(z 낮음)에 숨어 있다가, 튀어나오는 도중에 앞으로
-   넘어옵니다. z-index 는 이산 속성이라 transition 구간의 절반에서 딱 바뀝니다. */
-.mv_object.is_front {
-  z-index: var(--mv_z, 1);
 }
 
 /* --------------------------------------------------------------------------
@@ -164,21 +186,13 @@
   transition:
     transform var(--mv_dur_out) var(--mv_out_x) var(--mv_delay_out),
     filter 0.8s ease-out var(--mv_delay_out),
-    opacity 0.5s ease-out var(--mv_delay_out),
-    /* z 전환은 비행이 거의 끝난 뒤에 일어납니다. 중간에 바꾸면 봉투 앞면 흰 종이
-       위에서 튀어나오는 것처럼 보여서, 종이를 뚫고 지나가는 느낌이 납니다.
-       끝까지 봉투 뒤에 있다가 제자리에 앉을 때 앞으로 넘어옵니다. */
-    z-index 0s linear calc(var(--mv_delay_out) + var(--mv_dur_out) * 0.92);
+    opacity 0.5s ease-out var(--mv_delay_out);
 }
 
 /* 세로 성분에만 살짝 오버슈트를 줘서 끝에서 "팡" 하고 튕기는 느낌을 냅니다. */
 .is_open .mv_object_inner {
   transform: translateY(0) rotate(var(--mv_rot_open)) scale(1);
   transition: transform var(--mv_dur_out) var(--mv_out_y) var(--mv_delay_out);
-}
-
-.is_open .mv_object.is_front {
-  z-index: calc(200 + var(--mv_z, 1));
 }
 
 /* --------------------------------------------------------------------------
@@ -207,30 +221,17 @@
   animation: none;
 }
 
-/* --------------------------------------------------------------------------
-   .is_closing : 되돌아가는 동안만 붙습니다. 기본 상태와 값은 같지만,
-   전경 오브젝트를 봉투 뒤로 먼저 넘겨야 하므로 z 타이밍을 따로 잡습니다.
-   -------------------------------------------------------------------------- */
-.is_closing .mv_object.is_front {
-  transition:
-    transform var(--mv_dur_in) var(--mv_in_x) var(--mv_delay_in),
-    filter 0.5s ease-out var(--mv_delay_in),
-    opacity 0.4s ease-out var(--mv_delay_in),
-    /* 들어갈 때는 반대로, 움직이기 전에 곧바로 봉투 뒤로 넘어갑니다. */
-    z-index 0s linear var(--mv_delay_in);
-}
 
 /* --------------------------------------------------------------------------
    타이틀 / 스크롤 인디케이터
    -------------------------------------------------------------------------- */
-/* 타워가 타이틀 위로 지나갑니다. Figma 레이어 순서 그대로 z 3.
-   글자 스펙은 Dev Mode 값 그대로입니다: Poppins SemiBold 190px / 자간 +7.6px.
-   좌우 중앙이 아니라 화면 중앙에서 646px 왼쪽에서 시작합니다. */
+/* 글자 스펙은 Dev Mode 값 그대로입니다: Poppins SemiBold 190px / 자간 +7.6px.
+   세 페이지가 같습니다.
+   z 와 left 는 페이지마다 달라서 JS 가 씬의 layers 순서 / titleLeft 로 심어줍니다.
+   (레스토랑은 타워가 타이틀 위로 지나가고, 브랜드스토리는 앤고미가 지나갑니다.) */
 .mv_title {
   position: absolute;
-  z-index: 3;
   top: 161px;
-  left: calc(50% - 646px);
   margin: 0;
   color: var(--mv_title_color, #1e4c43);
   font-family: var(--mv_title_font, "Poppins", sans-serif);
@@ -249,8 +250,7 @@
   .mv_object,
   .mv_object_inner,
   .is_open .mv_object,
-  .is_open .mv_object_inner,
-  .is_closing .mv_object.is_front {
+  .is_open .mv_object_inner {
     transition: none;
   }
 }
