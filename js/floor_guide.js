@@ -5,6 +5,8 @@
   const floorSections = Array.from(document.querySelectorAll("[data-floor-section]"));
   const towerImages = Array.from(document.querySelectorAll("[data-tower-floor]"));
   const activeFloorStatus = document.querySelector("[data-active-floor-status]");
+  const floorTabs = Array.from(document.querySelectorAll("[data-floor-tab]"));
+  const mobileFloorQuery = window.matchMedia("(max-width: 833px)");
 
   if (!floorStage || floorSections.length === 0 || towerImages.length === 0) {
     return;
@@ -20,8 +22,8 @@
     return floorName.toUpperCase();
   }
 
-  function renderActiveFloor(floorName) {
-    if (!floorName || floorName === activeFloor) {
+  function renderActiveFloor(floorName, shouldFocusTab = false) {
+    if (!floorName) {
       return;
     }
 
@@ -32,11 +34,58 @@
       towerImage.classList.toggle("is_active", towerImage.dataset.towerFloor === floorName);
     });
 
+    floorSections.forEach((floorSection) => {
+      const isActiveSection = floorSection.dataset.floorSection === floorName;
+      floorSection.classList.toggle("is_active", isActiveSection);
+      floorSection.toggleAttribute("inert", mobileFloorQuery.matches && !isActiveSection);
+    });
+
+    floorTabs.forEach((floorTab) => {
+      const isActiveTab = floorTab.dataset.floorTab === floorName;
+      floorTab.classList.toggle("is_active", isActiveTab);
+      floorTab.setAttribute("aria-selected", String(isActiveTab));
+      floorTab.tabIndex = isActiveTab ? 0 : -1;
+
+      if (isActiveTab && shouldFocusTab) {
+        floorTab.focus();
+      }
+    });
+
     if (activeFloorStatus) {
       activeFloorStatus.textContent = `Current floor: ${formatFloorName(floorName)}`;
     }
   }
 
+  function handleFloorTabClick(event) {
+    renderActiveFloor(event.currentTarget.dataset.floorTab);
+  }
+
+  function handleFloorTabKeydown(event) {
+    const currentIndex = floorTabs.indexOf(event.currentTarget);
+    let nextIndex = currentIndex;
+
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      nextIndex = (currentIndex + 1) % floorTabs.length;
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      nextIndex = (currentIndex - 1 + floorTabs.length) % floorTabs.length;
+    } else if (event.key === "Home") {
+      nextIndex = 0;
+    } else if (event.key === "End") {
+      nextIndex = floorTabs.length - 1;
+    } else {
+      return;
+    }
+
+    event.preventDefault();
+    renderActiveFloor(floorTabs[nextIndex].dataset.floorTab, true);
+  }
+
+  function initFloorTabs() {
+    floorTabs.forEach((floorTab) => {
+      floorTab.addEventListener("click", handleFloorTabClick);
+      floorTab.addEventListener("keydown", handleFloorTabKeydown);
+    });
+  }
   function findSectionAtViewportCenter() {
     const viewportCenter = window.innerHeight / 2;
     let closestSection = floorSections[0];
@@ -64,6 +113,10 @@
 
   function updateFloorFromViewport() {
     scrollFrame = 0;
+
+    if (mobileFloorQuery.matches) {
+      return;
+    }
     const currentSection = findSectionAtViewportCenter();
 
     if (currentSection) {
@@ -180,10 +233,16 @@
   }
 
   function initFloorGuide() {
-    floorStage.dataset.activeFloor = activeFloor;
+    initFloorTabs();
+    renderActiveFloor(activeFloor);
     initFloorObserver();
     initRevealMotion();
     updateFloorFromViewport();
+
+    mobileFloorQuery.addEventListener("change", () => {
+      renderActiveFloor(activeFloor);
+      updateFloorFromViewport();
+    });
   }
 
   initFloorGuide();
