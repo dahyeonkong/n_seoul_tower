@@ -1006,7 +1006,7 @@ function initTowerStack3D() {
   var section = document.querySelector("#tower_section");
   var mount = document.querySelector("[data-tower-3d]");
   var goodsSection = document.querySelector("#goods_section");
-  var goodsHeroImage = goodsSection ? goodsSection.querySelector(".goods_hero_img") : null;
+  var goodsHeroSlot = goodsSection ? goodsSection.querySelector("[data-goods-hero-slot]") : null;
 
   if (!section || !mount || !window.ScrollStack3D) {
     return;
@@ -1023,6 +1023,16 @@ function initTowerStack3D() {
   var isTowerTransitionSyncRequested = false;
   var isSynchronizingTowerTransition = false;
   var isRefreshingTowerBounds = false;
+  var dockedTowerObserver = null;
+
+  /* 조립이 끝난 상태에서 캔버스 높이 대비 타워가 실제로 그려지는 높이 비율과,
+     캔버스 중앙보다 아래로 치우친 정도입니다(브라우저에서 픽셀로 실측).
+     카메라 화각과 모델 높이가 고정이라 뷰포트가 바뀌어도 이 비율은 그대로입니다. */
+  var TOWER_RENDER_HEIGHT_RATIO = 0.788;
+  var TOWER_RENDER_CENTER_RATIO = 0.063;
+  /* 예전 hero 이미지에서 타워가 차지하던 세로 비율(goods1.png 실측 928 / 1000).
+     안착한 3D 타워를 그 이미지와 같은 크기로 맞추는 기준입니다. */
+  var TOWER_SLOT_FILL_RATIO = 0.928;
 
   function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
@@ -1045,27 +1055,56 @@ function initTowerStack3D() {
     return transitionLayer;
   }
 
+  /* 캔버스 중심을 hero 자리의 중심에 맞추는 오프셋입니다.
+     전환 중에는 100vw x 100vh 고정 레이어, 안착 뒤에는 섹션 좌상단 기준의 같은 크기 상자를
+     쓰기 때문에 두 상태에서 같은 값이 나옵니다. 그래서 옮겨 붙일 때 튀지 않습니다. */
+  /* 캔버스를 얼마나 줄여야 타워가 예전 hero 이미지와 같은 크기가 되는지 계산합니다. */
+  function getTowerDockScale() {
+    var canvasHeight = towerCanvas.offsetHeight || window.innerHeight;
+    var renderedHeight = canvasHeight * TOWER_RENDER_HEIGHT_RATIO;
+
+    if (!renderedHeight || !goodsHeroSlot) {
+      return 1;
+    }
+
+    var targetHeight = goodsHeroSlot.getBoundingClientRect().height * TOWER_SLOT_FILL_RATIO;
+    return clamp(targetHeight / renderedHeight, 0.05, 1);
+  }
+
+  function getTowerSlotOffset(scale) {
+    var goodsRect = goodsSection.getBoundingClientRect();
+    var slotRect = goodsHeroSlot.getBoundingClientRect();
+    /* 100vw 는 스크롤바를 포함해 window.innerWidth 와 어긋날 수 있어 캔버스 실제 배치 크기로 잽니다. */
+    var canvasWidth = towerCanvas.offsetWidth || window.innerWidth;
+    var canvasHeight = towerCanvas.offsetHeight || window.innerHeight;
+
+    return {
+      x: slotRect.left - goodsRect.left + slotRect.width / 2 - canvasWidth / 2,
+      /* 타워는 캔버스 중앙보다 아래에 그려지므로, 줄인 배율만큼 되올려 자리 중앙에 맞춥니다. */
+      y: slotRect.top - goodsRect.top + slotRect.height / 2 - canvasHeight / 2 -
+        canvasHeight * TOWER_RENDER_CENTER_RATIO * scale
+    };
+  }
+
   function renderTowerTransition(progress) {
-    if (!towerCanvas || !goodsSection || !goodsHeroImage || !window.gsap) {
+    if (!towerCanvas || !goodsSection || !goodsHeroSlot || !window.gsap) {
       return;
     }
 
     var normalizedProgress = clamp(progress, 0, 1);
-    var goodsRect = goodsSection.getBoundingClientRect();
-    var heroRect = goodsHeroImage.getBoundingClientRect();
+    var dockScale = getTowerDockScale();
+    var offset = getTowerSlotOffset(dockScale);
     var startX = window.innerWidth * 0.16;
-    var targetX = heroRect.left + heroRect.width / 2 - window.innerWidth / 2;
-    var targetY = heroRect.top - goodsRect.top + heroRect.height / 2 - window.innerHeight / 2;
     var motionProgress = normalizedProgress * normalizedProgress * (3 - 2 * normalizedProgress);
-    var imageProgress = clamp((normalizedProgress - 0.84) / 0.16, 0, 1);
 
+    /* 예전에는 마지막 구간에서 실사 이미지로 교대했지만, 이제 3D 타워가 그대로 자리를
+       지키므로 캔버스를 끝까지 보여 줍니다. */
     window.gsap.set(towerCanvas, {
-      x: interpolate(startX, targetX, motionProgress),
-      y: interpolate(0, targetY, motionProgress),
-      scale: interpolate(1, 0.72, motionProgress),
-      autoAlpha: 1 - imageProgress
+      x: interpolate(startX, offset.x, motionProgress),
+      y: interpolate(0, offset.y, motionProgress),
+      scale: interpolate(1, dockScale, motionProgress),
+      autoAlpha: 1
     });
-    window.gsap.set(goodsHeroImage, { autoAlpha: imageProgress });
   }
 
   function activateTowerTransition(progress) {
@@ -1082,9 +1121,69 @@ function initTowerStack3D() {
     renderTowerTransition(progress);
   }
 
+  /* 모듈의 렌더 루프는 조립 트리거가 활성일 때만 돕니다. 안착한 뒤에는 비활성이라
+     창 크기가 바뀌어 WebGL 버퍼가 새로 잡히면 타워가 사라진 채로 남습니다.
+     모듈이 등록해 둔 onToggle 을 그대로 불러 렌더 루프만 다시 켭니다. */
+  function setTowerRenderActive(isActive) {
+    if (
+      !assemblyTrigger ||
+      !assemblyTrigger.vars ||
+      typeof assemblyTrigger.vars.onToggle !== "function"
+    ) {
+      return;
+    }
+
+    assemblyTrigger.vars.onToggle({ isActive: isActive });
+  }
+
+  /* 안착한 타워가 화면에 있을 때만 렌더 루프를 돌려 불필요한 GPU 사용을 막습니다. */
+  function observeDockedTowerVisibility() {
+    if (dockedTowerObserver || !goodsHeroSlot || !("IntersectionObserver" in window)) {
+      return;
+    }
+
+    dockedTowerObserver = new IntersectionObserver(
+      function handleDockedTowerIntersect(entries) {
+        entries.forEach(function (entry) {
+          setTowerRenderActive(entry.isIntersecting || Boolean(assemblyTrigger.isActive));
+        });
+      },
+      { rootMargin: "20% 0px" }
+    );
+    dockedTowerObserver.observe(goodsHeroSlot);
+  }
+
+  /* 조립이 끝나면 캔버스를 Custom Goods 섹션 안으로 옮겨 hero 자리에 앉힙니다.
+     고정 레이어에 두면 섹션을 지나쳐도 화면에 붙어 남기 때문에 문서 흐름으로 넘깁니다. */
+  function dockTowerCanvasToGoods() {
+    if (!towerCanvas || !goodsSection || !goodsHeroSlot || !window.gsap) {
+      return;
+    }
+
+    if (towerCanvas.parentNode !== goodsSection) {
+      goodsSection.appendChild(towerCanvas);
+    }
+    if (transitionLayer) {
+      transitionLayer.hidden = true;
+    }
+
+    /* 도킹 상자는 스크롤과 무관하게 섹션 좌상단에 고정되므로 오프셋을 다시 계산해 둡니다. */
+    var scale = getTowerDockScale();
+    var offset = getTowerSlotOffset(scale);
+    window.gsap.set(towerCanvas, {
+      x: offset.x,
+      y: offset.y,
+      scale: scale,
+      autoAlpha: 1
+    });
+
+    observeDockedTowerVisibility();
+    setTowerRenderActive(true);
+  }
+
   function completeTowerTransition() {
     renderTowerTransition(1);
-    attachTowerCanvasToStage();
+    dockTowerCanvasToGoods();
   }
 
   function attachTowerCanvasToStage() {
@@ -1198,9 +1297,6 @@ function initTowerStack3D() {
         autoAlpha: shouldShowCanvas ? 1 : 0
       });
     }
-    if (goodsHeroImage && window.gsap) {
-      window.gsap.set(goodsHeroImage, { autoAlpha: 0 });
-    }
   }
 
   function syncTowerTransitionState() {
@@ -1270,9 +1366,10 @@ function initTowerStack3D() {
         return;
       }
 
+      /* 안착 상태에서는 캔버스가 Custom Goods 섹션에 들어가 있어야 합니다. */
       if (
         towerTransitionState !== "complete" ||
-        towerCanvas.parentNode !== towerStage ||
+        towerCanvas.parentNode !== goodsSection ||
         (transitionLayer && !transitionLayer.hidden)
       ) {
         completeTowerTransition();
@@ -1304,6 +1401,11 @@ function initTowerStack3D() {
     window.removeEventListener("pageshow", requestTowerTransitionSync);
     window.removeEventListener("load", requestTowerTransitionSync);
 
+    if (dockedTowerObserver) {
+      dockedTowerObserver.disconnect();
+      dockedTowerObserver = null;
+    }
+
     prepareTowerAssembly(false);
     towerTransitionState = "";
     isTowerTransitionSyncRequested = false;
@@ -1313,12 +1415,6 @@ function initTowerStack3D() {
     if (transitionLayer) {
       transitionLayer.remove();
       transitionLayer = null;
-    }
-    if (goodsSection) {
-      goodsSection.classList.remove("has_tower_transition");
-    }
-    if (goodsHeroImage && window.gsap) {
-      window.gsap.set(goodsHeroImage, { clearProps: "opacity,visibility" });
     }
   }
 
@@ -1368,10 +1464,7 @@ function initTowerStack3D() {
         ease: "sine.inOut"
       }, assemblyDuration * 0.48);
 
-    if (towerStage && goodsSection && goodsHeroImage && window.ScrollTrigger && assemblyTrigger) {
-      goodsSection.classList.add("has_tower_transition");
-      window.gsap.set(goodsHeroImage, { autoAlpha: 0 });
-
+    if (towerStage && goodsSection && goodsHeroSlot && window.ScrollTrigger && assemblyTrigger) {
       transitionTrigger = window.ScrollTrigger.create({
         trigger: goodsSection,
         /* 조립 핀이 풀리는 정확한 스크롤 좌표에서 핸드오프를 시작합니다. */
@@ -1466,19 +1559,8 @@ function renderCustomGoods(items) {
 
   var fragment = document.createDocumentFragment();
 
-  items.forEach(function (item, index) {
+  items.forEach(function (item) {
     var card = createElement("li", "goods_card");
-
-    if (index === 0) {
-      var arc = createElement("img", "goods_card_arc");
-      arc.src = ASSET_PATH + "custom_goods/goods_card_arc.svg";
-      arc.alt = "";
-      arc.width = 695;
-      arc.height = 695;
-      arc.loading = "lazy";
-      arc.setAttribute("aria-hidden", "true");
-      card.appendChild(arc);
-    }
 
     card.appendChild(createMedia("goods_card_media", item.image, item.imageAlt, 280, 317, true));
 
