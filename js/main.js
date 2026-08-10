@@ -608,6 +608,93 @@ function renderCourses(courses) {
   list.appendChild(fragment);
 }
 
+/* 물감이 배어 나오는 구간입니다. 반투명 블롭에서 진한 색으로 자연스럽게 넘어갑니다. */
+var BLEED_APPEAR_PROGRESS = 0.08;
+/* 물감이 다 번져 화면을 덮는 진행률입니다. 여기서 크기가 멈추고 마스크도 벗겨집니다.
+   값을 키울수록 번지는 구간이 길어져 천천히 퍼집니다. */
+var BLEED_COVER_PROGRESS = 0.5;
+/* 이 진행률부터 물감이 걷히면서 events 섹션이 드러납니다.
+   BLEED_COVER_PROGRESS 와의 사이가 꽉 찬 색으로 멈춰 있는 시간입니다. */
+var BLEED_FADE_PROGRESS = 0.78;
+/* 블롭은 원이 아니라 오목한 데가 있어 실제 반지름이 상자의 절반보다 훨씬 짧습니다.
+   가장 좁은 방향까지 화면 모서리를 덮으려면 대각선 길이의 4.5 배는 되어야 합니다. */
+var BLEED_COVER_MARGIN = 4.5;
+
+/* 히어로에서 아래로 스크롤하면 티켓 뒤에서 물감이 번져 화면을 덮고,
+   다 덮은 뒤 걷히면서 events 섹션이 시작됩니다.
+   스크롤 위치만 보고 그리므로 휠, 드래그, 키보드 어느 쪽이든 같게 동작합니다. */
+function initHeroVisualBleed() {
+  var hero = document.getElementById("hero_section");
+  var bleed = document.querySelector("[data-visual-bleed]");
+  var ticket = document.querySelector(".main_visual_ticket");
+
+  if (!hero || !bleed || !ticket) {
+    return;
+  }
+
+  var isFrameRequested = false;
+
+  function renderBleed() {
+    isFrameRequested = false;
+
+    if (isReducedMotion()) {
+      bleed.style.opacity = "0";
+      return;
+    }
+
+    var heroRect = hero.getBoundingClientRect();
+    var exitDistance = Math.max(1, heroRect.height);
+    var progress = Math.min(1, Math.max(0, -heroRect.top / exitDistance));
+
+    /* 히어로가 제자리에 있거나 이미 다 지나갔으면 그릴 것이 없습니다. */
+    if (progress <= 0 || progress >= 1) {
+      bleed.style.opacity = "0";
+      return;
+    }
+
+    var ticketRect = ticket.getBoundingClientRect();
+    var originX = ticketRect.left + ticketRect.width / 2;
+    var originY = ticketRect.top + ticketRect.height / 2;
+
+    /* 번지는 시작점에서 가장 먼 화면 모서리까지 닿아야 빈틈이 없습니다. */
+    var farX = Math.max(originX, window.innerWidth - originX);
+    var farY = Math.max(originY, window.innerHeight - originY);
+    var coverSize = Math.sqrt(farX * farX + farY * farY) * BLEED_COVER_MARGIN;
+
+    var growth = Math.min(1, progress / BLEED_COVER_PROGRESS);
+    /* 거의 등속으로 번집니다. 지수를 키우면 초반에 확 퍼져 순식간에 덮여 버립니다. */
+    var easedGrowth = 1 - Math.pow(1 - growth, 1.2);
+    var size = ticketRect.width + (coverSize - ticketRect.width) * easedGrowth;
+
+    /* 시작 순간 반투명 블롭 위로 진한 색이 튀어 보이지 않게 살짝 배어들게 합니다. */
+    var appear = Math.min(1, progress / BLEED_APPEAR_PROGRESS);
+    var fade =
+      progress <= BLEED_FADE_PROGRESS
+        ? 1
+        : 1 - (progress - BLEED_FADE_PROGRESS) / (1 - BLEED_FADE_PROGRESS);
+
+    bleed.style.setProperty("--bleed_size", size.toFixed(1) + "px");
+    bleed.style.setProperty("--bleed_x", originX.toFixed(1) + "px");
+    bleed.style.setProperty("--bleed_y", originY.toFixed(1) + "px");
+    bleed.style.opacity = Math.max(0, Math.min(appear, fade)).toFixed(3);
+    /* 다 번진 뒤에는 마스크를 벗겨 모서리에 블롭의 오목한 부분이 남지 않게 합니다. */
+    bleed.classList.toggle("is_full", growth >= 1);
+  }
+
+  function requestBleedRender() {
+    if (isFrameRequested) {
+      return;
+    }
+
+    isFrameRequested = true;
+    window.requestAnimationFrame(renderBleed);
+  }
+
+  window.addEventListener("scroll", requestBleedRender, { passive: true });
+  window.addEventListener("resize", requestBleedRender);
+  requestBleedRender();
+}
+
 /* 히어로 영상은 autoplay 로 돌지만, reduced motion 에서는 첫 프레임만 남깁니다.
    설정을 도중에 바꿔도 따라가도록 변경 이벤트까지 듣습니다 (AGENTS 10.7). */
 function initHeroVisualVideo() {
@@ -1046,6 +1133,7 @@ function initTowerStack3D() {
   var isSynchronizingTowerTransition = false;
   var isRefreshingTowerBounds = false;
   var dockedTowerObserver = null;
+  var hasTowerExperienceCompleted = false;
 
   /* 조립이 끝난 상태에서 캔버스 높이 대비 타워가 실제로 그려지는 높이 비율과,
      캔버스 중앙보다 아래로 치우친 정도입니다(브라우저에서 픽셀로 실측).
@@ -1218,6 +1306,49 @@ function initTowerStack3D() {
     dockTowerCanvasToGoods();
   }
 
+  function completeTowerExperience() {
+    if (hasTowerExperienceCompleted) {
+      return;
+    }
+
+    hasTowerExperienceCompleted = true;
+    var goodsViewportTop = goodsSection.getBoundingClientRect().top;
+
+    completeTowerTransition();
+    towerTransitionState = "complete";
+
+    window.removeEventListener("scroll", handleTowerScrollSync);
+    window.removeEventListener("scroll", requestTowerTransitionSync);
+    window.removeEventListener("pageshow", requestTowerTransitionSync);
+    window.removeEventListener("load", requestTowerTransitionSync);
+
+    if (window.ScrollTrigger && typeof window.ScrollTrigger.removeEventListener === "function") {
+      window.ScrollTrigger.removeEventListener("refresh", syncTowerAssemblyToTrigger);
+    }
+    if (transitionTrigger) {
+      transitionTrigger.kill(false);
+      transitionTrigger = null;
+    }
+    if (assemblyTrigger) {
+      assemblyTrigger.kill(false);
+    }
+    if (transitionLayer) {
+      transitionLayer.remove();
+      transitionLayer = null;
+    }
+
+    section.remove();
+
+    window.requestAnimationFrame(function settleGoodsAfterTowerRemoval() {
+      if (window.ScrollTrigger) {
+        window.ScrollTrigger.refresh();
+      }
+
+      var goodsTopDelta = goodsSection.getBoundingClientRect().top - goodsViewportTop;
+      setTowerScrollPosition(Math.max(0, window.scrollY + goodsTopDelta));
+    });
+  }
+
   function attachTowerCanvasToStage() {
     if (!towerCanvas || !towerStage || !window.gsap) {
       return;
@@ -1334,7 +1465,12 @@ function initTowerStack3D() {
   function syncTowerTransitionState() {
     isTowerTransitionSyncRequested = false;
 
-    if (!assemblyTrigger || !transitionTrigger || !towerCanvas) {
+    if (
+      hasTowerExperienceCompleted ||
+      !assemblyTrigger ||
+      !transitionTrigger ||
+      !towerCanvas
+    ) {
       return;
     }
 
@@ -1399,21 +1535,18 @@ function initTowerStack3D() {
       }
 
       /* 안착 상태에서는 캔버스가 Custom Goods 섹션에 들어가 있어야 합니다. */
-      if (
-        towerTransitionState !== "complete" ||
-        towerCanvas.parentNode !== goodsSection ||
-        (transitionLayer && !transitionLayer.hidden)
-      ) {
-        completeTowerTransition();
-      }
-      towerTransitionState = "complete";
+      completeTowerExperience();
     } finally {
       isSynchronizingTowerTransition = false;
     }
   }
 
   function requestTowerTransitionSync() {
-    if (isSynchronizingTowerTransition || isTowerTransitionSyncRequested) {
+    if (
+      hasTowerExperienceCompleted ||
+      isSynchronizingTowerTransition ||
+      isTowerTransitionSyncRequested
+    ) {
       return;
     }
 
@@ -1544,6 +1677,24 @@ function initTowerStack3D() {
   }
 
   function renderTowerStackMode() {
+    if (hasTowerExperienceCompleted) {
+      if (!desktopQuery.matches && stack) {
+        if (dockedTowerObserver) {
+          dockedTowerObserver.disconnect();
+          dockedTowerObserver = null;
+        }
+        if (towerCanvas) {
+          towerCanvas.remove();
+        }
+        stack.destroy();
+        stack = null;
+        towerCanvas = null;
+        towerStage = null;
+        assemblyTrigger = null;
+      }
+      return;
+    }
+
     if (desktopQuery.matches && !stack) {
       stack = window.ScrollStack3D.init({
         mount: mount,
@@ -1552,6 +1703,16 @@ function initTowerStack3D() {
         /* 모듈 기본 오버레이(라벨·단계 목록·진행 레일)는 시안에 없어 끕니다. */
         ui: false
       });
+
+      if (stack && !stack.timeline) {
+        hasTowerExperienceCompleted = true;
+        stack.destroy();
+        stack = null;
+        section.remove();
+        window.ScrollTrigger.refresh();
+        return;
+      }
+
       section.classList.toggle("is_tower_3d", Boolean(stack));
 
       if (stack) {
@@ -1651,7 +1812,7 @@ function initRestaurantStackState() {
   /* 확대 전환(640ms)이 끝난 뒤 타이핑을 시작합니다. */
   var TYPING_START_DELAY = 560;
   /* 글자 하나가 찍히는 시간입니다. 값을 키울수록 천천히 타이핑됩니다. */
-  var TYPING_CHAR_DURATION = 100;
+  var TYPING_CHAR_DURATION = 55;
 
   var titleText = restaurantTitle.textContent;
   var stickyMedia = window.matchMedia("(min-width: 834px)");
@@ -1661,6 +1822,79 @@ function initRestaurantStackState() {
   var typingStartTimer = 0;
   var typingFrame = 0;
   var typingStartTime = 0;
+  var isTypingScrollLocked = false;
+  var typingLockedScrollY = 0;
+
+  function preventTypingScroll(event) {
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+  }
+
+  function handleTypingScrollKey(event) {
+    var target = event.target;
+    var isEditable = target && (
+      target.isContentEditable ||
+      /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)
+    );
+    var scrollKeys = ["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "];
+
+    if (!isEditable && scrollKeys.indexOf(event.key) !== -1) {
+      event.preventDefault();
+    }
+  }
+
+  function maintainTypingScrollPosition() {
+    if (!isTypingScrollLocked || Math.abs(window.scrollY - typingLockedScrollY) < 1) {
+      return;
+    }
+
+    if (window.lenisInstance && typeof window.lenisInstance.scrollTo === "function") {
+      window.lenisInstance.scrollTo(typingLockedScrollY, { immediate: true, force: true });
+      return;
+    }
+
+    window.scrollTo(0, typingLockedScrollY);
+  }
+
+  function lockTypingScroll() {
+    if (isTypingScrollLocked) {
+      return;
+    }
+
+    isTypingScrollLocked = true;
+    typingLockedScrollY = window.scrollY;
+
+    if (window.lenisInstance && typeof window.lenisInstance.stop === "function") {
+      window.lenisInstance.stop();
+    }
+
+    window.addEventListener("wheel", preventTypingScroll, { passive: false });
+    window.addEventListener("touchmove", preventTypingScroll, { passive: false });
+    window.addEventListener("keydown", handleTypingScrollKey);
+    window.addEventListener("scroll", maintainTypingScrollPosition, { passive: true });
+  }
+
+  function unlockTypingScroll() {
+    if (!isTypingScrollLocked) {
+      return;
+    }
+
+    isTypingScrollLocked = false;
+    window.removeEventListener("wheel", preventTypingScroll);
+    window.removeEventListener("touchmove", preventTypingScroll);
+    window.removeEventListener("keydown", handleTypingScrollKey);
+    window.removeEventListener("scroll", maintainTypingScrollPosition);
+
+    if (
+      document.body.style.overflow !== "hidden" &&
+      window.lenisInstance &&
+      typeof window.lenisInstance.start === "function" &&
+      !isReducedMotion()
+    ) {
+      window.lenisInstance.start();
+    }
+  }
 
   function stopTyping() {
     window.clearTimeout(typingStartTimer);
@@ -1672,6 +1906,7 @@ function initRestaurantStackState() {
     }
 
     typingStartTime = 0;
+    unlockTypingScroll();
   }
 
   function renderTypingStep(now) {
@@ -1692,6 +1927,7 @@ function initRestaurantStackState() {
     }
 
     typingFrame = 0;
+    unlockTypingScroll();
     restaurantAll.classList.remove("is_typing");
     restaurantMore.classList.add("is_revealed");
   }
@@ -1701,8 +1937,10 @@ function initRestaurantStackState() {
     restaurantTitle.textContent = "";
     restaurantMore.classList.remove("is_revealed");
     restaurantAll.classList.add("is_typing");
+    lockTypingScroll();
 
     typingStartTimer = window.setTimeout(function () {
+
       typingFrame = window.requestAnimationFrame(renderTypingStep);
     }, TYPING_START_DELAY);
   }
@@ -1800,8 +2038,11 @@ function initHeroSectionJump() {
     return;
   }
 
+  /* events 까지 내려가는 데 걸리는 시간(초)입니다. 이 사이에 물감 전환이 재생됩니다.
+     번지기 → 꽉 찬 채로 멈춤 → 걷히기 세 구간이 모두 이 시간 안에 들어갑니다. */
+  var JUMP_DURATION = 2.6;
   /* 이동이 끝나기 전에 다음 스크롤이 다시 발동하지 않도록 잠그는 시간입니다. */
-  var JUMP_LOCK_TIME = 900;
+  var JUMP_LOCK_TIME = JUMP_DURATION * 1000 + 200;
   /* 터치에서 스크롤 의도로 볼 최소 이동 거리입니다. */
   var SWIPE_THRESHOLD = 24;
 
@@ -1828,9 +2069,15 @@ function initHeroSectionJump() {
     unlockTimer = window.setTimeout(unlockJump, JUMP_LOCK_TIME);
 
     /* Lenis 가 살아 있으면 Lenis 로 옮겨야 관성 스크롤과 충돌하지 않습니다.
-       lock 옵션이 이동하는 동안 사용자 입력을 막아 줍니다. */
+       lock 옵션이 이동하는 동안 사용자 입력을 막아 줍니다.
+       이동하는 사이에 물감 전환(initHeroVisualBleed)이 재생되므로,
+       기본값(약 1.2 초)보다 길게 잡아 번지는 과정이 보이게 합니다. */
     if (window.lenisInstance && typeof window.lenisInstance.scrollTo === "function") {
-      window.lenisInstance.scrollTo(events, { lock: true, onComplete: unlockJump });
+      window.lenisInstance.scrollTo(events, {
+        lock: true,
+        duration: JUMP_DURATION,
+        onComplete: unlockJump
+      });
       return;
     }
 
@@ -1885,6 +2132,7 @@ function initMain() {
 
   initHeroSectionJump();
   initHeroVisualVideo();
+  initHeroVisualBleed();
   initCourseSceneVideo();
   initCourseScrollScene();
   initPassTicketFlip();
