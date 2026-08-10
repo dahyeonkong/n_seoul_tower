@@ -614,6 +614,134 @@ function renderCourses(courses) {
 }
 
 /* 물감이 배어 나오는 구간입니다. 반투명 블롭에서 진한 색으로 자연스럽게 넘어갑니다. */
+function initCourseMobileCarousel() {
+  var list = document.querySelector("[data-course-list]");
+  var pagination = document.querySelector("[data-course-pagination]");
+
+  if (!list || !pagination) {
+    return;
+  }
+
+  var slides = Array.prototype.slice.call(list.querySelectorAll(".course_slide"));
+  if (slides.length === 0) {
+    return;
+  }
+
+  var mobileMedia = window.matchMedia("(max-width: 833px)");
+  var AUTO_SLIDE_DELAY = 4500;
+  var autoSlideTimer = 0;
+  var scrollFrame = 0;
+  var scrollEndTimer = 0;
+  var activeSlideIndex = 0;
+  var paginationButtons = [];
+
+  function renderCoursePagination(index) {
+    activeSlideIndex = Math.max(0, Math.min(slides.length - 1, index));
+
+    paginationButtons.forEach(function (button, buttonIndex) {
+      var isActive = buttonIndex === activeSlideIndex;
+      button.classList.toggle("is_active", isActive);
+      if (isActive) {
+        button.setAttribute("aria-current", "true");
+      } else {
+        button.removeAttribute("aria-current");
+      }
+    });
+  }
+
+  function stopCourseAutoSlide() {
+    window.clearTimeout(autoSlideTimer);
+    autoSlideTimer = 0;
+  }
+
+  function scrollToCourseSlide(index, isSmooth) {
+    var nextIndex = Math.max(0, Math.min(slides.length - 1, index));
+    renderCoursePagination(nextIndex);
+    list.scrollTo({
+      left: slides[nextIndex].offsetLeft,
+      behavior: isSmooth && !isReducedMotion() ? "smooth" : "auto"
+    });
+  }
+
+  function scheduleCourseAutoSlide() {
+    stopCourseAutoSlide();
+    if (!mobileMedia.matches || isReducedMotion() || document.hidden) {
+      return;
+    }
+
+    autoSlideTimer = window.setTimeout(function () {
+      scrollToCourseSlide((activeSlideIndex + 1) % slides.length, true);
+      scheduleCourseAutoSlide();
+    }, AUTO_SLIDE_DELAY);
+  }
+
+  function updateCoursePaginationFromScroll() {
+    scrollFrame = 0;
+    if (!mobileMedia.matches || list.clientWidth === 0) {
+      return;
+    }
+
+    renderCoursePagination(Math.round(list.scrollLeft / list.clientWidth));
+  }
+
+  function handleCourseCarouselScroll() {
+    if (!scrollFrame) {
+      scrollFrame = window.requestAnimationFrame(updateCoursePaginationFromScroll);
+    }
+
+    window.clearTimeout(scrollEndTimer);
+    scrollEndTimer = window.setTimeout(scheduleCourseAutoSlide, 900);
+  }
+
+  function handleCourseCarouselMediaChange() {
+    stopCourseAutoSlide();
+    window.clearTimeout(scrollEndTimer);
+    list.scrollTo({ left: 0, behavior: "auto" });
+    renderCoursePagination(0);
+    if (mobileMedia.matches) {
+      scheduleCourseAutoSlide();
+    }
+  }
+
+  function handleCourseCarouselVisibility() {
+    if (document.hidden) {
+      stopCourseAutoSlide();
+    } else {
+      scheduleCourseAutoSlide();
+    }
+  }
+
+  slides.forEach(function (slide, index) {
+    var button = document.createElement("button");
+    var title = slide.querySelector(".course_card_title");
+    button.className = "course_pagination_button";
+    button.type = "button";
+    button.setAttribute("aria-controls", "course_list");
+    button.setAttribute("aria-label", "Go to course " + (index + 1) + (title ? ": " + title.textContent : ""));
+    button.addEventListener("click", function () {
+      scrollToCourseSlide(index, true);
+      scheduleCourseAutoSlide();
+    });
+    paginationButtons.push(button);
+    pagination.appendChild(button);
+  });
+
+  list.addEventListener("scroll", handleCourseCarouselScroll, { passive: true });
+  list.addEventListener("pointerdown", stopCourseAutoSlide, { passive: true });
+  list.addEventListener("focusin", stopCourseAutoSlide);
+  list.addEventListener("focusout", scheduleCourseAutoSlide);
+  pagination.addEventListener("focusin", stopCourseAutoSlide);
+  pagination.addEventListener("focusout", scheduleCourseAutoSlide);
+  document.addEventListener("visibilitychange", handleCourseCarouselVisibility);
+
+  if (typeof mobileMedia.addEventListener === "function") {
+    mobileMedia.addEventListener("change", handleCourseCarouselMediaChange);
+  } else if (typeof mobileMedia.addListener === "function") {
+    mobileMedia.addListener(handleCourseCarouselMediaChange);
+  }
+
+  handleCourseCarouselMediaChange();
+}
 var BLEED_APPEAR_PROGRESS = 0.08;
 /* 물감이 다 번져 화면을 덮는 진행률입니다. 여기서 크기가 멈추고 마스크도 벗겨집니다.
    값을 키울수록 번지는 구간이 길어져 천천히 퍼집니다. */
@@ -824,6 +952,7 @@ function initCourseScrollScene() {
   var list = document.querySelector("[data-course-list]");
   var video = document.querySelector("[data-course-video]");
   var character = scene ? scene.querySelector(".course_scene_char") : null;
+  var courseScrollMedia = window.matchMedia("(min-width: 834px)");
 
   if (!section || !stage || !sticky || !scene || !list) {
     return;
@@ -842,6 +971,7 @@ function initCourseScrollScene() {
   var hasCourseEnded = false;
   var courseWaveRetryCount = 0;
   var courseWaveRetryTimer = 0;
+  var isCourseScrollEnabled = false;
 
   function triggerCourseCharacterWave() {
     if (!character || !character.contentWindow) {
@@ -889,6 +1019,11 @@ function initCourseScrollScene() {
   }
 
   function renderCourseScroll() {
+    if (!isCourseScrollEnabled) {
+      isFrameRequested = false;
+      return;
+    }
+
     var stageRect = stage.getBoundingClientRect();
     var progress = Math.min(1, Math.max(0, -stageRect.top / scrollTravel));
     list.style.transform = "translate3d(0, " + -progress * maxListOffset + "px, 0)";
@@ -908,6 +1043,10 @@ function initCourseScrollScene() {
   }
 
   function updateCourseMeasurements() {
+    if (!isCourseScrollEnabled) {
+      return;
+    }
+
     sceneHeight = scene.clientHeight;
     section.style.setProperty("--course_scene_height", sceneHeight + "px");
     var lastSlide = slides[slides.length - 1];
@@ -917,9 +1056,39 @@ function initCourseScrollScene() {
     requestCourseScrollRender();
   }
 
-  window.addEventListener("scroll", requestCourseScrollRender, { passive: true });
-  window.addEventListener("resize", updateCourseMeasurements);
-  updateCourseMeasurements();
+  function setCourseScrollEnabled(isEnabled) {
+    if (isCourseScrollEnabled === isEnabled) {
+      return;
+    }
+
+    isCourseScrollEnabled = isEnabled;
+
+    if (isCourseScrollEnabled) {
+      window.addEventListener("scroll", requestCourseScrollRender, { passive: true });
+      window.addEventListener("resize", updateCourseMeasurements);
+      updateCourseMeasurements();
+      return;
+    }
+
+    window.removeEventListener("scroll", requestCourseScrollRender);
+    window.removeEventListener("resize", updateCourseMeasurements);
+    isFrameRequested = false;
+    stage.style.removeProperty("height");
+    list.style.removeProperty("transform");
+    section.style.removeProperty("--course_scene_height");
+  }
+
+  function handleCourseScrollMediaChange() {
+    setCourseScrollEnabled(courseScrollMedia.matches);
+  }
+
+  if (typeof courseScrollMedia.addEventListener === "function") {
+    courseScrollMedia.addEventListener("change", handleCourseScrollMediaChange);
+  } else if (typeof courseScrollMedia.addListener === "function") {
+    courseScrollMedia.addListener(handleCourseScrollMediaChange);
+  }
+
+  handleCourseScrollMediaChange();
 }
 
 /* --------------------------------------------------------------------------
@@ -972,6 +1141,41 @@ function renderGiftItems(items) {
 /* --------------------------------------------------------------------------
    custom tower visual
    -------------------------------------------------------------------------- */
+function initGiftTrackCursor() {
+  var wrap = document.querySelector("[data-gift-wrap]");
+  var cursor = document.querySelector("[data-gift-cursor]");
+
+  if (!wrap || !cursor) {
+    return;
+  }
+
+  function handleGiftPointerMove(event) {
+    cursor.style.transform = "translate3d(" + (event.clientX - 50) + "px, " + (event.clientY - 50) + "px, 0)";
+  }
+
+  function handleGiftPointerEnter(event) {
+    handleGiftPointerMove(event);
+    cursor.classList.add("is_visible");
+  }
+
+  function handleGiftPointerLeave() {
+    cursor.classList.remove("is_visible");
+  }
+
+  function handleGiftWrapClick(event) {
+    if (event.target.closest(".gift_card_link")) {
+      return;
+    }
+
+    window.location.href = "./pages/n_gift_shop.html";
+  }
+
+  wrap.addEventListener("pointerenter", handleGiftPointerEnter);
+  wrap.addEventListener("pointermove", handleGiftPointerMove);
+  wrap.addEventListener("pointerleave", handleGiftPointerLeave);
+  wrap.addEventListener("click", handleGiftWrapClick);
+}
+
 function renderTowerStacks(parts) {
   var list = document.querySelector("[data-tower-list]");
   if (!list || !Array.isArray(parts) || parts.length === 0) {
@@ -2232,7 +2436,9 @@ function initMain() {
   initHeroVisualVideo();
   initHeroVisualBleed();
   initCourseSceneVideo();
+  initCourseMobileCarousel();
   initCourseScrollScene();
+  initGiftTrackCursor();
   initPassTicketFlip();
   initTowerReveal();
   initTowerStack3D();
