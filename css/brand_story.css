@@ -78,12 +78,17 @@
   object-fit: contain;
 }
 
-/* 1280 이상에서는 히어로가 편지봉투 팝 인터랙션으로 바뀌고 배경이 크림색이 됩니다.
+/* 834 이상에서는 히어로가 새 편지봉투 비주얼로 바뀌고 배경이 크림색이 됩니다.
    이 변수는 히어로 아래 빈 띠(.brand_about::before)도 같이 쓰기 때문에, 여기서
    함께 바꿔주지 않으면 크림색 히어로 밑에 연두색 띠가 한 줄 남습니다. */
-@media (min-width: 1280px) {
+@media (min-width: 834px) {
   .brand_story {
     --subpage_hero_bg: var(--color_bg, #f7f4e8);
+  }
+
+  /* 타블렛 비주얼의 자간만 시안이 다릅니다 (2.79px @834, 다른 페이지는 3.72px). */
+  .brand_story .mv_tablet_title {
+    --mv_tablet_track: 0.33453cqw;
   }
 }
 

@@ -30,7 +30,9 @@
      rot            열린 상태 회전각(도)
      rotClosed      닫힌 상태 회전각 — 열린 상태와 다를 때만 적습니다
      flipY          Figma 의 상하 반전
-     opacity        전경 심도 표현
+     opacity        열린 상태의 투명도. 전경 심도 표현에 씁니다
+     opacityClosed  닫힌 상태의 투명도. 기본 1 이고, 봉투에서 나오면서 서서히
+                    나타나야 하는 오브젝트만 0 같은 낮은 값을 적습니다
 
      전경 흐림(Figma 의 layer blur)은 CSS filter 로 걸지 않고 에셋에 미리 구워둡니다.
      파일명이 *_blur.webp 인 것들이 그렇습니다. filter: blur() 는 매 프레임 재계산이라
@@ -40,6 +42,9 @@
      fill           [left%, top%, width%, height%] — Figma 의 이미지 필이 단순
                     "꽉 채우기"가 아닐 때만 적습니다. 생략하면 object-fit: cover.
      delay          팡 터질 때의 순서(초). 되돌아갈 때는 자동으로 역순입니다.
+     floatDur       착지 후 둥실거림 주기(초). 생략하면 자동으로 흩어집니다
+     floatY         둥실거림 폭(px, 음수). 생략하면 크기에서 자동 계산합니다
+                    두 값과 delay 를 같게 맞추면 여러 조각이 한 몸처럼 움직입니다
    ========================================================================== */
 
 (function (global) {
@@ -214,14 +219,19 @@
       el.style.setProperty('--mv_rot_open', `${rotOpen}deg`);
       el.style.setProperty('--mv_rot_closed', `${rotClosed}deg`);
       el.style.setProperty('--mv_opacity', `${item.opacity ?? 1}`);
+      el.style.setProperty('--mv_opacity_closed', `${item.opacityClosed ?? 1}`);
       el.style.setProperty('--mv_z', `${z}`);
 
       /* 착지 후 둥실거림. 오브젝트마다 주기와 폭을 조금씩 흩어 놓아야
          한 덩어리로 같이 출렁이지 않고 자연스럽게 보입니다.
-         큰 오브젝트는 느리고 얕게, 작은 오브젝트는 빠르고 깊게 움직입니다. */
+         큰 오브젝트는 느리고 얕게, 작은 오브젝트는 빠르고 깊게 움직입니다.
+
+         다만 원래 한 덩어리인 것들(케이블카 칸과 그 위 케이블·기둥)은 따로 흔들리면
+         분리돼 보입니다. 그런 오브젝트는 씬에서 floatDur / floatY 를 같은 값으로
+         지정하고 delay 도 맞춰서 한 몸처럼 움직이게 합니다. */
       const floatScale = Math.min(1, 320 / ow);
-      el.style.setProperty('--mv_float_dur', `${(3.4 + (z % 5) * 0.42).toFixed(2)}s`);
-      el.style.setProperty('--mv_float_y', `${(-6 - floatScale * 7).toFixed(1)}px`);
+      el.style.setProperty('--mv_float_dur', `${(item.floatDur ?? 3.4 + (z % 5) * 0.42).toFixed(2)}s`);
+      el.style.setProperty('--mv_float_y', `${(item.floatY ?? -6 - floatScale * 7).toFixed(1)}px`);
 
       /* 나갈 때 순서 / 들어올 때는 그 역순 */
       const delay = item.delay || 0;

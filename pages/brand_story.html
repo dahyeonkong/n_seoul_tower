@@ -40,7 +40,8 @@
     content="A romantic island in the heart of the city. How N Seoul Tower became Seoul's landmark, and the tower data behind it." />
   <meta name="twitter:image" content="https://dahyeonkong.github.io/n_seoul_tower/assets/og-image.png" />
 
-  <link rel="preload" as="image" href="../assets/main_visual/envelope_front.webp">
+  <!-- 봉투는 1280 이상에서만 쓰이므로 그 폭에서만 미리 받습니다. -->
+  <link rel="preload" as="image" media="(min-width: 1280px)" href="../assets/main_visual/envelope_front.webp">
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/common.css">
   <link rel="stylesheet" href="../css/main_visual.css">
@@ -63,11 +64,25 @@
            스크롤로 화면을 벗어나면 역순으로 봉투 안에 되돌아갔다가 다시 재생됩니다. -->
       <section class="subpage_hero has_scroll_indicator mv_visual" aria-labelledby="brand_hero_title"
         data-mv-root data-mv-scene="brand_story">
-        <!-- 1280 미만(태블릿/모바일)은 인터랙션 없이 기존 이미지만 보여줍니다. -->
-        <img class="subpage_hero_image mv_fallback" src="../assets/brand_story/visual_img.png"
-          alt="Illustrated 3D scene of N Seoul Tower on Namsan with visitors, a picnic and media art arches"
-          width="1244" height="626" fetchpriority="high">
-        <h1 class="subpage_hero_title mv_fallback" id="brand_hero_title">Brand Story</h1>
+        <!-- 화면에 보이는 제목은 아래 비주얼들이 직접 그립니다. 이 h1 은 접근성 트리용으로만 남습니다. -->
+        <h1 class="subpage_hero_title" id="brand_hero_title">Brand Story</h1>
+
+        <!-- ~833(모바일). 움직임 없이 배경 한 장 + 제목이고, 제목이 항상 맨 앞입니다. -->
+        <div class="mv_mobile" aria-hidden="true">
+          <span class="mv_mobile_skirt"></span>
+          <img class="mv_mobile_scene" src="../assets/main_visual/mobile/brand_story.webp" alt="" width="720"
+            height="971">
+          <p class="mv_mobile_title">Brand Story</p>
+        </div>
+
+        <!-- 834~1279(타블렛). 장면이 텍스트 위를 지나가도록 DOM 순서를 구름 → 제목 → 장면 으로 둡니다. -->
+        <div class="mv_tablet" aria-hidden="true">
+          <img class="mv_tablet_cloud" src="../assets/main_visual/tablet/cloud.webp" alt="" width="182"
+            height="182">
+          <p class="mv_tablet_title">Brand Story</p>
+          <img class="mv_tablet_scene" src="../assets/main_visual/tablet/brand_story.webp" alt="" width="1920"
+            height="1080">
+        </div>
 
         <div class="mv_stage" data-mv-stage aria-hidden="true">
           <p class="mv_title">Brand Story</p>
