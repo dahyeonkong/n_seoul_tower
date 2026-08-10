@@ -1161,6 +1161,12 @@ html .course_page .course_description {
   align-items: center;
 }
 
+/* --------------------------------------------------------------------------
+   모바일 메뉴 — 스크롤 없이 한 화면 (max-width: 833px)
+   메뉴 전체를 100dvh 안에 담고, 언어 바 / 로고 / buy ticket 을 뺀 나머지 높이에
+   GNB 를 2열 그리드로 채웁니다. 크기는 전부 dvh 기준 clamp 라서
+   화면이 짧아지면 같이 줄고, 최소값 아래로는 내려가지 않습니다.
+   -------------------------------------------------------------------------- */
 @media (max-width: 833px) {
   html:has(.global_menu.is_open) {
     scrollbar-gutter: auto;
@@ -1173,9 +1179,13 @@ html .course_page .course_description {
     padding-right: 0;
     overflow-y: auto;
     overscroll-behavior-y: contain;
-    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    /* 노치 / 홈 인디케이터 영역 확보 */
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: max(var(--scrollbar_gap), env(safe-area-inset-right, 0px));
   }
 
   .global_menu::-webkit-scrollbar {
