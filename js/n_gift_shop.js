@@ -70,24 +70,13 @@ function initGiftShopFilter() {
       typeof lenisInstance.scrollTo === "function";
 
     if (hasLenis) {
-      lenisInstance.stop();
       lenisInstance.scrollTo(0, { immediate: true, force: true });
+      return;
     }
 
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
     window.scrollTo(0, 0);
-
-    window.requestAnimationFrame(function () {
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-      window.scrollTo(0, 0);
-
-      if (hasLenis) {
-        lenisInstance.scrollTo(0, { immediate: true, force: true });
-        lenisInstance.start();
-      }
-    });
   }
 
   function handleCategoryClick(event) {
