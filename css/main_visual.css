@@ -1,0 +1,261 @@
+/* ==========================================================================
+   main_visual pop interaction
+   --------------------------------------------------------------------------
+   레이아웃 속성(left/top/width/height)은 JS 가 처음 한 번만 심어두고,
+   재생 중에는 transform / filter / opacity 만 바뀝니다. 합성 단계에서만
+   처리되니 풀페이지 크기에서도 프레임이 떨어지지 않습니다.
+
+   상태
+   - 기본        : 01(닫힘). 오브젝트가 봉투 안에 숨어 있습니다.
+   - .is_open    : 02(열림). 밖으로 팡 터집니다.
+   - .is_closing : 다시 01 로. 나갔던 순서의 역순으로 빨려 들어갑니다.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   인터랙션은 데스크톱(1280 이상) 전용입니다.
+   태블릿과 모바일은 기존 히어로 이미지를 그대로 씁니다.
+   -------------------------------------------------------------------------- */
+.mv_stage {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .mv_visual {
+    position: relative;
+    display: block;
+    padding: 0;
+    overflow: hidden;
+    background-color: var(--mv_bg, #f7f4e8);
+  }
+
+  .mv_stage {
+    display: block;
+  }
+
+  /* 데스크톱에서는 대체 이미지와 기존 제목을 숨깁니다.
+     제목은 스테이지 안의 .mv_title 이 대신합니다. */
+  .mv_visual > .mv_fallback {
+    display: none;
+  }
+}
+
+/* Figma 아트보드(1920x1080)를 통째로 스케일해서 화면을 꽉 채웁니다.
+   --mv_scale 은 JS 가 cover 비율로 계산해서 넣어줍니다. */
+.mv_stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  transform: translate(-50%, -50%) scale(var(--mv_scale, 1));
+  transform-origin: center;
+  isolation: isolate;
+}
+
+.mv_layer {
+  position: absolute;
+  inset: 0;
+}
+
+.mv_envelope {
+  position: absolute;
+  /* Figma 의 이미지 필과 동일합니다. 정사각 에셋을 정사각 박스에 넣을 땐 잘림이 없고,
+     타워처럼 세로로 긴 박스에서만 좌우가 잘립니다. */
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.mv_envelope_inner {
+  z-index: 4;
+}
+
+/* 겉편지. 오브젝트 대부분이 이 뒤에 숨습니다. */
+.mv_envelope_outer {
+  z-index: 22;
+}
+
+.mv_object {
+  position: absolute;
+  z-index: var(--mv_z, 1);
+  transform-origin: center;
+  pointer-events: none;
+  will-change: transform, filter;
+}
+
+/* 포물선의 세로 성분. 바깥(.mv_object)이 가로, 안쪽(.mv_object_inner)이 세로를
+   맡고 서로 다른 이징으로 움직이기 때문에 합성 궤적이 곡선이 됩니다.
+   회전과 크기도 세로와 같은 타이밍으로 묶어둡니다. */
+.mv_object_inner {
+  width: 100%;
+  height: 100%;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.mv_object_inner.is_flip_y img {
+  transform: scaleY(-1);
+}
+
+.mv_object img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Figma 의 이미지 필과 동일합니다. 정사각 에셋을 정사각 박스에 넣을 땐 잘림이 없고,
+     타워처럼 세로로 긴 박스에서만 좌우가 잘립니다. */
+  object-fit: cover;
+  user-select: none;
+}
+
+/* --------------------------------------------------------------------------
+   이징
+   --------------------------------------------------------------------------
+   나갈 때: 세로가 먼저 솟고(_y) 가로가 뒤따라 퍼집니다(_x). 봉투 입구에서 위로
+   쏘아올려진 뒤 좌우로 벌어지는 궤적이라 직선이 아니라 포물선을 그립니다.
+   들어갈 때는 역할을 맞바꿔서, 바깥에서 안쪽으로 모인 뒤 아래로 빨려 들어갑니다.
+   두 축의 위상 차가 클수록 곡률이 커집니다. 지금은 중간 지점에서
+   세로 약 0.72 / 가로 약 0.42 진행되도록 잡았습니다.
+   -------------------------------------------------------------------------- */
+.mv_visual {
+  --mv_out_y: cubic-bezier(0.2, 0.72, 0.3, 1.04);
+  --mv_out_x: cubic-bezier(0.5, 0.03, 0.32, 1);
+  --mv_in_x: cubic-bezier(0.2, 0.7, 0.35, 1);
+  --mv_in_y: cubic-bezier(0.55, 0, 0.75, 0.9);
+  --mv_dur_out: 1.15s;
+  --mv_dur_in: 0.85s;
+}
+
+/* --------------------------------------------------------------------------
+   01 (닫힘) : 열린 위치 기준에서 봉투 안쪽으로 되돌려 놓은 상태
+   -------------------------------------------------------------------------- */
+.mv_object {
+  transform: translateX(var(--mv_dx));
+  filter: blur(0);
+  opacity: 1;
+
+  transition:
+    transform var(--mv_dur_in) var(--mv_in_x) var(--mv_delay_in),
+    filter 0.5s ease-out var(--mv_delay_in),
+    opacity 0.4s ease-out var(--mv_delay_in),
+    z-index 0s linear var(--mv_delay_in);
+}
+
+.mv_object_inner {
+  transform: translateY(var(--mv_dy)) rotate(var(--mv_rot_closed))
+    scale(var(--mv_sc));
+  transition: transform var(--mv_dur_in) var(--mv_in_y) var(--mv_delay_in);
+}
+
+/* 겉편지보다 앞에 서는 전경 오브젝트.
+   닫힌 상태에서는 봉투 뒤(z 낮음)에 숨어 있다가, 튀어나오는 도중에 앞으로
+   넘어옵니다. z-index 는 이산 속성이라 transition 구간의 절반에서 딱 바뀝니다. */
+.mv_object.is_front {
+  z-index: var(--mv_z, 1);
+}
+
+/* --------------------------------------------------------------------------
+   02 (열림) : Figma 좌표 그대로. transform 이 없는 상태가 정답 위치입니다.
+   -------------------------------------------------------------------------- */
+.is_open .mv_object {
+  transform: translateX(0);
+  filter: blur(var(--mv_blur));
+  opacity: var(--mv_opacity);
+
+  transition:
+    transform var(--mv_dur_out) var(--mv_out_x) var(--mv_delay_out),
+    filter 0.8s ease-out var(--mv_delay_out),
+    opacity 0.5s ease-out var(--mv_delay_out),
+    /* z 전환은 비행이 거의 끝난 뒤에 일어납니다. 중간에 바꾸면 봉투 앞면 흰 종이
+       위에서 튀어나오는 것처럼 보여서, 종이를 뚫고 지나가는 느낌이 납니다.
+       끝까지 봉투 뒤에 있다가 제자리에 앉을 때 앞으로 넘어옵니다. */
+    z-index 0s linear calc(var(--mv_delay_out) + var(--mv_dur_out) * 0.92);
+}
+
+/* 세로 성분에만 살짝 오버슈트를 줘서 끝에서 "팡" 하고 튕기는 느낌을 냅니다. */
+.is_open .mv_object_inner {
+  transform: translateY(0) rotate(var(--mv_rot_open)) scale(1);
+  transition: transform var(--mv_dur_out) var(--mv_out_y) var(--mv_delay_out);
+}
+
+.is_open .mv_object.is_front {
+  z-index: calc(200 + var(--mv_z, 1));
+}
+
+/* --------------------------------------------------------------------------
+   착지 후 둥실거림
+   --------------------------------------------------------------------------
+   translate 프로퍼티로 흔듭니다. transform 과 별개 축이라 포물선 transition 과
+   서로 덮어쓰지 않고 겹쳐집니다. 비행이 끝난 뒤에 시작되도록 딜레이를 줍니다.
+   주기와 폭은 오브젝트마다 조금씩 달라서 한 덩어리로 움직이지 않습니다.
+   -------------------------------------------------------------------------- */
+.is_open .mv_object_inner {
+  animation: mv_float var(--mv_float_dur, 4s) ease-in-out
+    calc(var(--mv_delay_out) + var(--mv_dur_out)) infinite alternate;
+}
+
+@keyframes mv_float {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 calc(var(--mv_float_y, -10px));
+  }
+}
+
+/* 닫히는 중에는 둥실거림을 끕니다. */
+.is_closing .mv_object_inner {
+  animation: none;
+}
+
+/* --------------------------------------------------------------------------
+   .is_closing : 되돌아가는 동안만 붙습니다. 기본 상태와 값은 같지만,
+   전경 오브젝트를 봉투 뒤로 먼저 넘겨야 하므로 z 타이밍을 따로 잡습니다.
+   -------------------------------------------------------------------------- */
+.is_closing .mv_object.is_front {
+  transition:
+    transform var(--mv_dur_in) var(--mv_in_x) var(--mv_delay_in),
+    filter 0.5s ease-out var(--mv_delay_in),
+    opacity 0.4s ease-out var(--mv_delay_in),
+    /* 들어갈 때는 반대로, 움직이기 전에 곧바로 봉투 뒤로 넘어갑니다. */
+    z-index 0s linear var(--mv_delay_in);
+}
+
+/* --------------------------------------------------------------------------
+   타이틀 / 스크롤 인디케이터
+   -------------------------------------------------------------------------- */
+/* 타워가 타이틀 위로 지나갑니다. Figma 레이어 순서 그대로 z 3.
+   글자 스펙은 Dev Mode 값 그대로입니다: Poppins SemiBold 190px / 자간 +7.6px.
+   좌우 중앙이 아니라 화면 중앙에서 646px 왼쪽에서 시작합니다. */
+.mv_title {
+  position: absolute;
+  z-index: 3;
+  top: 161px;
+  left: calc(50% - 646px);
+  margin: 0;
+  color: var(--mv_title_color, #1e4c43);
+  font-family: var(--mv_title_font, "Poppins", sans-serif);
+  font-size: 190px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 7.6px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   모션 최소화 요청 시에는 02 를 정지 화면으로 보여줍니다.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .mv_object,
+  .mv_object_inner,
+  .is_open .mv_object,
+  .is_open .mv_object_inner,
+  .is_closing .mv_object.is_front {
+    transition: none;
+  }
+}
+
+.is_static .mv_object,
+.is_static .mv_object_inner {
+  transition: none;
+}
