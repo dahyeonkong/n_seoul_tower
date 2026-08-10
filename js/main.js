@@ -2136,6 +2136,9 @@ function initHeroSectionJump() {
     return;
   }
 
+  /* 모바일에서는 히어로 점프를 사용하지 않고 사용자의 기본 연속 스크롤을 유지합니다. */
+  var mobileMedia = window.matchMedia("(max-width: 833px)");
+
   /* events 까지 내려가는 데 걸리는 시간(초)입니다. 이 사이에 물감 전환이 재생됩니다.
      번지기 → 꽉 찬 채로 멈춤 → 걷히기 세 구간이 모두 이 시간 안에 들어갑니다. */
   var JUMP_DURATION = 2.6;
@@ -2154,7 +2157,12 @@ function initHeroSectionJump() {
 
   function canJump() {
     /* 메뉴 오버레이로 스크롤이 잠긴 동안에는 동작하지 않습니다. */
-    return !isJumping && document.body.style.overflow !== "hidden" && isHeroFillingView();
+    return (
+      !mobileMedia.matches &&
+      !isJumping &&
+      document.body.style.overflow !== "hidden" &&
+      isHeroFillingView()
+    );
   }
 
   function unlockJump() {

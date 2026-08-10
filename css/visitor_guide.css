@@ -78,6 +78,10 @@
   padding-top: 76px;
 }
 
+#panel_recommended_courses .course_sections {
+  padding-inline: 0;
+}
+
 @media (min-width: 1280px) {
   #panel_getting_here {
     padding-top: 120px;
@@ -908,8 +912,8 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 }
 
 /* --------------------------------------------------------------------------
-   데스크톱 — Figma 배치 (이미지 400 + gap 64 + 본문 620 = 1084)
-   bus·citytour 는 오른쪽 끝, cable car·cars 는 왼쪽 끝에 붙습니다.
+   데스크톱 — 이미지 400 + gap 64 + 본문 620 = 1084
+   교통수단별 좌우 순서는 유지하고 섹션 묶음은 가운데 정렬합니다.
    -------------------------------------------------------------------------- */
 @media (min-width: 1280px) {
   .guide_section {
@@ -929,12 +933,12 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 
   .guide_section_media_first {
     grid-template-columns: var(--guide_media_size) minmax(0, 620px);
-    justify-content: flex-end;
+    justify-content: center;
   }
 
   .guide_section_text_first {
     grid-template-columns: minmax(0, 620px) var(--guide_media_size);
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   .guide_section_media_first > .guide_feature > .guide_media_wrap {
