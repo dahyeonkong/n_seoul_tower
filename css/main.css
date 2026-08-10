@@ -2296,13 +2296,53 @@
   margin-top: 10px;
 }
 
-/* N Pass CTA — 디자인의 노란 배경(#f8ac22)은 유지하고 흰 글자만 교체합니다.
-   원본 #ffffff on #f8ac22 = 1.92:1 (미달) */
+/* N Pass CTA — 기존 노란색을 유지하면서 행동 문구와 누름 피드백을 강화합니다. */
 .pass_inner .btn_yellow {
+  min-height: 56px;
+  gap: 12px;
+  padding: 14px 32px;
+  border: 1px solid var(--color_primary_800);
+  background-color: var(--color_secondary_500);
+  box-shadow: 2px 4px 0 rgba(0, 0, 0, 0.3);
   color: var(--color_primary_800);
-  /* 8.41:1, hover(#e09512) 6.53:1 */
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transform: translateY(0);
+  transition: background-color var(--duration) var(--ease_out),
+    box-shadow var(--duration) var(--ease_out),
+    transform var(--duration) var(--ease_out);
 }
 
+.pass_btn_icon {
+  width: 20px;
+  height: 20px;
+  background-color: currentColor;
+  -webkit-mask: url("../assets/icon/icon_arrow_right.svg") center / contain no-repeat;
+  mask: url("../assets/icon/icon_arrow_right.svg") center / contain no-repeat;
+}
+
+@media (hover: hover) {
+  .pass_inner .btn_yellow:hover {
+    box-shadow: 0 6px 0 var(--color_primary_800);
+    transform: translateY(-2px);
+  }
+
+  .pass_inner .btn_yellow:hover .pass_btn_icon {
+    transform: translateX(5px);
+  }
+}
+
+.pass_inner .btn_yellow:active {
+  box-shadow: 0 1px 0 var(--color_primary_800);
+  transform: translateY(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pass_inner .btn_yellow,
+  .pass_inner .btn_yellow .pass_btn_icon {
+    transition: none;
+  }
+}
 @media (min-width: 834px) {
   .pass_ticket {
     aspect-ratio: 1440 / 710;
