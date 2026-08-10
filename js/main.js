@@ -1033,6 +1033,8 @@ function initTowerStack3D() {
   /* 예전 hero 이미지에서 타워가 차지하던 세로 비율(goods1.png 실측 928 / 1000).
      안착한 3D 타워를 그 이미지와 같은 크기로 맞추는 기준입니다. */
   var TOWER_SLOT_FILL_RATIO = 0.928;
+  var towerScrollLength = "480%";
+  var towerScrollScrub = 0.5;
 
   function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
@@ -1472,7 +1474,7 @@ function initTowerStack3D() {
           return assemblyTrigger.end;
         },
         end: "top top",
-        scrub: 0.6,
+        scrub: towerScrollScrub,
         invalidateOnRefresh: true,
         onEnter: requestTowerTransitionSync,
         onUpdate: requestTowerTransitionSync,
@@ -1511,6 +1513,8 @@ function initTowerStack3D() {
     if (desktopQuery.matches && !stack) {
       stack = window.ScrollStack3D.init({
         mount: mount,
+        scrollLength: towerScrollLength,
+        scrub: towerScrollScrub,
         /* 모듈 기본 오버레이(라벨·단계 목록·진행 레일)는 시안에 없어 끕니다. */
         ui: false
       });
