@@ -1407,6 +1407,7 @@
   background-attachment: fixed;
   opacity: 0.3;
   pointer-events: none;
+   transform-origin: center;
 }
 
 
