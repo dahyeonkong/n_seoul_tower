@@ -3,9 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <script>
-    if (!new URLSearchParams(window.location.search).has("intro")) {
-      window.location.replace("./intro.html");
-    }
+    (function handleIntroEntry() {
+      var INTRO_SESSION_KEY = "hasSeenIntro";
+      var isIntroReturn = new URLSearchParams(window.location.search).has("intro");
+      var hasSeenIntro = false;
+
+      try {
+        hasSeenIntro = sessionStorage.getItem(INTRO_SESSION_KEY) === "true";
+
+        if (isIntroReturn) {
+          sessionStorage.setItem(INTRO_SESSION_KEY, "true");
+          hasSeenIntro = true;
+        }
+      } catch (error) {
+        /* sessionStorage를 사용할 수 없는 환경에서는 기존 쿼리 기반 진입 방식을 유지합니다. */
+      }
+
+      if (!hasSeenIntro && !isIntroReturn) {
+        window.location.replace("./intro.html");
+      }
+    }());
   </script>
   <!-- 기본 SEO -->
   <title>N Seoul Tower | Seoul's Landmark Observatory</title>
@@ -182,10 +199,10 @@
       <div class="page_container global_menu_body">
         <div class="menu_brand">
           <div class="menu_brand_logo">
-            <a href="./index.html">
-              <img src="./assets/nst_logo_gray.svg" alt="N Seoul Tower" width="219" height="136">
+            <a class="menu_brand_home" href="./index.html">
+              <img src="./assets/nst_logo_gray.svg" alt="" width="219" height="136">
+              <p class="menu_brand_name"><span>N</span> SEOUL TOWER</p>
             </a>
-            <p class="menu_brand_name"><span>N</span> SEOUL TOWER</p>
           </div>
           <a class="book_btn" href="https://naver.me/x0UEXKKZ" target="_blank" rel="noopener noreferrer">
             <img src="./assets/icon/icon_ticket.svg" alt="" width="24" height="24">
