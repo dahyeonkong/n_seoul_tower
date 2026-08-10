@@ -2052,6 +2052,10 @@
   will-change: transform;
 }
 
+.course_pagination {
+  display: none;
+}
+
 .course_slide {
   display: flex;
   flex: 0 0 var(--course_scene_height, 620px);
@@ -2119,6 +2123,118 @@
   border-radius: var(--radius_lg);
 }
 
+@media (max-width: 833px) {
+  .course_scroll_stage {
+    height: auto !important;
+  }
+
+  .course_sticky {
+    position: relative;
+    top: auto;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .course_scene {
+    display: grid;
+    grid-template-rows: auto auto;
+    align-content: center;
+    row-gap: 16px;
+  }
+
+  .course_list {
+    position: relative;
+    inset: auto;
+    flex-direction: row;
+    align-items: stretch;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    transform: none !important;
+    will-change: auto;
+  }
+
+  .course_list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .course_slide,
+  .course_slide:nth-child(odd),
+  .course_slide:nth-child(even) {
+    flex: 0 0 100%;
+    justify-content: center;
+    min-width: 100%;
+    height: auto;
+    padding: 0 var(--page_pad);
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .course_card:hover,
+  .course_card:focus-within {
+    transform: none;
+  }
+
+  .course_pagination {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    justify-self: center;
+    transform: none;
+  }
+
+  .course_pagination_button {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .course_pagination_button::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border: 0;
+    border-radius: 50%;
+    background-color: rgba(242, 240, 238, 0.58);
+    transform: translate(-50%, -50%);
+    transition: width var(--duration) var(--ease_out),
+      border-radius var(--duration) var(--ease_out),
+      background-color var(--duration) var(--ease_out);
+  }
+
+  .course_pagination_button.is_active::before {
+    width: 16px;
+    border-radius: var(--radius_round);
+    background-color: rgba(242, 240, 238, 0.9);
+  }
+
+  .course_pagination_button:focus-visible {
+    outline: 2px solid var(--color_primary_800);
+    outline-offset: -2px;
+    border-radius: var(--radius_round);
+  }
+}
+
+@media (max-width: 833px) and (prefers-reduced-motion: reduce) {
+  .course_list {
+    scroll-behavior: auto;
+  }
+}
 @media (min-width: 834px) {
   .course_sticky {
     gap: 48px;
@@ -2169,7 +2285,7 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (min-width: 834px) and (prefers-reduced-motion: reduce) {
   .course_scroll_stage {
     height: auto !important;
   }
@@ -2327,10 +2443,6 @@
 .pass_desc strong {
   font-weight: 500;
   color: var(--color_primary_600);
-}
-
-.pass_desc p+p {
-  margin-top: 10px;
 }
 
 /* N Pass CTA — 기존 노란색을 유지하면서 행동 문구와 누름 피드백을 강화합니다. */
@@ -2550,7 +2662,7 @@
   align-self: flex-start;
   min-height: 44px;
   padding: 12px 20px;
-  border: 1px solid var(--color_new_primary_600);
+  /* border: 1px solid var(--color_new_primary_600); */
   border-radius: var(--radius_round);
   background-color: rgba(228, 228, 228, 0.2);
   backdrop-filter: blur(10px);
@@ -2571,7 +2683,7 @@
    버튼이 원래 색(딥그린)을 그대로 유지해야 합니다. */
 .restaurant_all.is_stacked .restaurant_more,
 .restaurant_all.is_fullscreen .restaurant_more {
-  border-color: var(--color_primary_800);
+  /* border-color: var(--color_primary_800); */
   background-color: var(--color_primary_800);
   color: var(--color_bg);
 }
@@ -2691,6 +2803,17 @@
   animation: restaurant_more_reveal 1080ms var(--ease_out) both;
 }
 
+.restaurant_all .restaurant_more.is_revealed {
+  background-image: linear-gradient(#809875, #809875);
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 0 100%;
+  transition: background-size 420ms var(--ease_out),
+    background-color var(--duration) var(--ease_out),
+    border-color var(--duration) var(--ease_out),
+    color var(--duration) var(--ease_out);
+}
+
 @keyframes restaurant_caret_blink {
   0%,
   49% {
@@ -2732,33 +2855,14 @@
   }
 }
 
-@keyframes restaurant_more_shake {
-  0%,
-  28% {
-    transform: rotate(0deg);
-  }
-
-  48% {
-    transform: rotate(-6deg);
-  }
-
-  68% {
-    transform: rotate(4deg);
-  }
-
-  85% {
-    transform: rotate(-2deg);
-  }
-
-  100% {
-    transform: rotate(0deg);
+@media (hover: hover) {
+  .restaurant_all .restaurant_more.is_revealed:hover {
+    background-size: 100% 100%;
   }
 }
 
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .restaurant_all .restaurant_more.is_revealed:hover {
-    animation: restaurant_more_shake 1080ms var(--ease_out) both;
-  }
+.restaurant_all .restaurant_more.is_revealed:focus-visible {
+  background-size: 100% 100%;
 }
 @media (min-width: 834px) {
   .restaurant_section {
@@ -2936,17 +3040,29 @@
 }
 
 .gift_track_wrap {
+  position: relative;
   width: 100%;
+  overflow: hidden;
+}
+
+.gift_cursor {
+  display: none;
 }
 
 .gift_track {
   display: flex;
   align-items: center;
   gap: 28px;
-  padding: 5px var(--page_pad);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  overscroll-behavior-x: contain;
+  width: max-content;
+  padding: 5px 0;
+  overflow-x: hidden;
+  animation: gift_marquee 48s linear infinite;
+}
+
+.gift_track_wrap:hover .gift_track,
+.gift_track_wrap:focus-within .gift_track,
+.gift_track.is_paused {
+  animation-play-state: paused;
 }
 
 .gift_card {
@@ -2996,22 +3112,9 @@
     gap: 30px;
   }
 
-  .gift_track_wrap {
-    overflow: hidden;
-  }
-
   .gift_track {
     gap: 28px;
     padding: 40px 0;
-    overflow-x: hidden;
-    width: max-content;
-    animation: gift_marquee 48s linear infinite;
-  }
-
-  .gift_track_wrap:hover .gift_track,
-  .gift_track_wrap:focus-within .gift_track,
-  .gift_track.is_paused {
-    animation-play-state: paused;
   }
 
   .gift_card {
@@ -3061,6 +3164,51 @@
   }
 }
 
+@media (min-width: 1280px) and (hover: hover) and (pointer: fine) {
+  .gift_track_wrap,
+  .gift_track_wrap * {
+    cursor: none;
+  }
+
+  .gift_cursor {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    width: 100px;
+    height: 100px;
+    border: 1px solid #262626;
+    border-radius: 50px;
+    background: rgba(190, 190, 190, 0.2);
+    color: #262626;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    backdrop-filter: blur(4.4px);
+    -webkit-backdrop-filter: blur(4.4px);
+    transition: opacity 160ms ease, visibility 160ms ease;
+  }
+
+  .gift_cursor.is_visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .gift_cursor svg {
+    width: 56px;
+    height: 40px;
+  }
+
+  .gift_cursor path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
 @keyframes gift_marquee {
   from {
     transform: translateX(0);
@@ -3072,15 +3220,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gift_track {
-    animation: none !important;
+  .gift_track_wrap {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
   }
 
-  @media (min-width: 1280px) {
-    .gift_track {
-      width: 100%;
-      overflow-x: auto;
-    }
+  .gift_track {
+    padding-inline: var(--page_pad);
+    overflow-x: visible;
+    animation: none !important;
   }
 }
 
@@ -3547,5 +3696,104 @@
     right: -4%;
     bottom: -8%;
     width: 25.83%;
+  }
+}
+
+/* N Pass responsive containment */
+@media (max-width: 833px) {
+  .pass_flip_back {
+    display: none;
+  }
+
+  .pass_ticket {
+    min-height: 0;
+    padding: 0;
+    border-radius: 0;
+    background-image: none;
+    overflow: visible;
+  }
+
+  .pass_inner,
+  .pass_texts,
+  .pass_desc {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pass_inner {
+    gap: 24px;
+  }
+
+  .pass_texts {
+    gap: 16px;
+  }
+
+  .pass_title {
+    text-wrap: balance;
+    overflow-wrap: break-word;
+  }
+
+  .pass_inner .btn_yellow {
+    width: 100%;
+    min-height: 52px;
+    padding: 12px 18px;
+  }
+}
+
+@media (min-width: 834px) and (max-width: 1279px) {
+  .pass_ticket {
+    padding: 0;
+  }
+
+  .pass_inner {
+    position: absolute;
+    top: 50%;
+    left: 9%;
+    width: 64%;
+    min-width: 0;
+    gap: clamp(18px, 2.4vw, 28px);
+    transform: translateY(-50%);
+  }
+
+  .pass_texts,
+  .pass_desc {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pass_texts {
+    gap: clamp(12px, 1.8vw, 20px);
+  }
+
+  .pass_title {
+    font-size: clamp(30px, 3.8vw, 40px);
+    text-wrap: balance;
+    overflow-wrap: break-word;
+  }
+
+  .pass_desc {
+    font-size: clamp(14px, 1.65vw, 16px);
+  }
+
+  .pass_inner .btn_yellow {
+    min-height: 48px;
+    padding: 10px 24px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .pass_inner {
+    width: 64%;
+    min-width: 0;
+  }
+
+  .pass_texts,
+  .pass_desc {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pass_title {
+    text-wrap: balance;
   }
 }
