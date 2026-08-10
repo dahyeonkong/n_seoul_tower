@@ -846,7 +846,7 @@
 }
 
 /* 360 에서 티켓은 블롭이 아니라 가로로 긴 초록 바입니다 (1373:1934).
-   z-index 는 .visual_bleed(4) 보다 위여야 물감이 티켓 "뒤에서" 번져 나옵니다. */
+   모바일에서는 물감 전환을 사용하지 않으므로 기존 콘텐츠 레이어를 유지합니다. */
 .main_visual_ticket {
   position: relative;
   z-index: 5;
@@ -1019,16 +1019,19 @@
 
 /* --------------------------------------------------------------------------
    히어로 → events 물감 전환
-   아래로 스크롤하면 티켓 뒤에서 블롭이 번져 화면을 덮고, 다 덮으면 걷히면서
+   아래로 스크롤하면 티켓 위치에서 블롭이 히어로 콘텐츠 위로 번지고, 다 덮으면 걷히면서
    events 섹션이 드러납니다. 크기와 위치는 main.js 가 스크롤에 맞춰 넣습니다.
    원형이 아니라 티켓 블롭 에셋을 마스크로 써서 물감이 번지는 모양을 만듭니다.
    -------------------------------------------------------------------------- */
 .visual_bleed {
   position: fixed;
   inset: 0;
-  z-index: 4;
+  /* 티켓을 포함한 히어로 콘텐츠 위에서 물감이 번지도록 최상단에 둡니다. */
+  z-index: 6;
   background-color: #809975;
   opacity: 0;
+  /* 마스크 외곽의 알파값을 부드럽게 퍼뜨려 가장자리로 갈수록 옅어집니다. */
+  filter: blur(clamp(12px, 1.25vw, 24px));
   pointer-events: none;
   -webkit-mask-image: url("../assets/main_visual_ticket.png");
   mask-image: url("../assets/main_visual_ticket.png");
@@ -1040,13 +1043,14 @@
     calc(var(--bleed_y, 50%) - var(--bleed_size, 0px) / 2);
   mask-position: calc(var(--bleed_x, 50%) - var(--bleed_size, 0px) / 2)
     calc(var(--bleed_y, 50%) - var(--bleed_size, 0px) / 2);
-  will-change: mask-size, opacity;
+  will-change: mask-size, opacity, filter;
 }
 
 /* 다 번진 뒤에는 마스크를 벗겨 화면을 빈틈없이 채웁니다. */
 .visual_bleed.is_full {
   -webkit-mask-image: none;
   mask-image: none;
+  filter: none;
 }
 
 @media (max-width: 833px) {
@@ -1698,7 +1702,7 @@
        곡선이 세로로 늘어나 가팔라지지 않습니다. */
     --events_curve_travel: 300svh;
     /* 카드 사이에 빈 구간(main.js 의 EVENT_CARD_GAP)이 들어가므로 스크롤을 길게 잡습니다.
-       카드당 166.7svh — 앞 100svh 는 카드가 보이고, 뒤 66.7svh 는 곤돌라만 흐릅니다. */
+       카드당 166.7svh — 앞 100svh 는 카드가 보이고, 뒤 66.7svh 는 곰돌이만 유지합니다. */
     --events_scroll_travel: 500svh;
     height: calc(100svh + var(--events_scroll_travel));
     min-height: 0;
@@ -1758,8 +1762,7 @@
        (가로 중심은 이미지 중심과 0.5px 차이라 보정하지 않습니다.) */
     --event_gondola_hook: -3.41%;
     transform: translate3d(var(--event_path_x, 0), var(--event_path_y, 0), 0) translate(-50%, var(--event_gondola_hook));
-    transition: opacity 240ms var(--ease_out);
-    will-change: transform, opacity;
+    will-change: transform;
   }
 
   .event_item.is_active {
@@ -1768,8 +1771,7 @@
     pointer-events: auto;
   }
 
-  /* 곤돌라가 멈춰 쉬는 동안에는 카드를 감춥니다.
-     다음 카드가 빈 곤돌라에서 새로 등장해 전환이 분명해집니다. */
+  /* 곰돌이 곤돌라는 유지하고 카드만 먼저 완전히 사라진 뒤 다음 카드가 나타납니다. */
   .event_item .event_card {
     transition: opacity 240ms var(--ease_out),
       box-shadow var(--duration) var(--ease_out),

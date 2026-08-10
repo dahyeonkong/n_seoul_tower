@@ -26,7 +26,7 @@
   /* 원형 배경: 흰 바탕 위 rgba(27, 92, 78, 0.4) 를 미리 합성한 값 */
   --color_guide_media_bg: #a4beb8;
 
-  /* Figma 데스크톱 값 (1920): 섹션 상하 여백 180, 이미지 400, 본문 620, 사이 간격 64 */
+  /* 데스크톱 섹션 상하 여백 120, 이미지 400, 본문 620, 사이 간격 64 */
   --guide_section_pad: 72px;
   --guide_media_size: min(76vw, 320px);
   --guide_stack_gap: 20px;
@@ -48,7 +48,7 @@
 
 @media (min-width: 1280px) {
   :root {
-    --guide_section_pad: 180px;
+    --guide_section_pad: 120px;
     --guide_media_size: 400px;
 
     --fs_guide_lead: 18px;
@@ -337,9 +337,9 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 }
 
 .guide_media_car img {
-  left: 0;
-  width: 177.7%;
-  transform: translate(0, -50%) scaleX(-1);
+    left: 0;
+    width: 154.7%;
+    transform: translate(-34%, -50%) scaleX(-1);
 }
 
 
@@ -350,6 +350,17 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
     height: auto;
     max-width: 100%;
     max-height: 80%;
+    object-fit: contain;
+  }
+
+  .guide_media_car img {
+    top: 50%;
+    left: 50%;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    transform: translate(-50%, -50%) scaleX(-1);
     object-fit: contain;
   }
 }
