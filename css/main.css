@@ -2695,6 +2695,34 @@
   }
 }
 
+@keyframes restaurant_more_shake {
+  0%,
+  28% {
+    transform: rotate(0deg);
+  }
+
+  48% {
+    transform: rotate(-6deg);
+  }
+
+  68% {
+    transform: rotate(4deg);
+  }
+
+  85% {
+    transform: rotate(-2deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .restaurant_all .restaurant_more.is_revealed:hover {
+    animation: restaurant_more_shake 1080ms var(--ease_out) both;
+  }
+}
 @media (min-width: 834px) {
   .restaurant_section {
     padding: 120px 0;

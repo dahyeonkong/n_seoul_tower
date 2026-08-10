@@ -1132,6 +1132,7 @@ function initTowerStack3D() {
   var isSynchronizingTowerTransition = false;
   var isRefreshingTowerBounds = false;
   var dockedTowerObserver = null;
+  var hasTowerExperienceCompleted = false;
 
   /* 조립이 끝난 상태에서 캔버스 높이 대비 타워가 실제로 그려지는 높이 비율과,
      캔버스 중앙보다 아래로 치우친 정도입니다(브라우저에서 픽셀로 실측).
@@ -1304,6 +1305,49 @@ function initTowerStack3D() {
     dockTowerCanvasToGoods();
   }
 
+  function completeTowerExperience() {
+    if (hasTowerExperienceCompleted) {
+      return;
+    }
+
+    hasTowerExperienceCompleted = true;
+    var goodsViewportTop = goodsSection.getBoundingClientRect().top;
+
+    completeTowerTransition();
+    towerTransitionState = "complete";
+
+    window.removeEventListener("scroll", handleTowerScrollSync);
+    window.removeEventListener("scroll", requestTowerTransitionSync);
+    window.removeEventListener("pageshow", requestTowerTransitionSync);
+    window.removeEventListener("load", requestTowerTransitionSync);
+
+    if (window.ScrollTrigger && typeof window.ScrollTrigger.removeEventListener === "function") {
+      window.ScrollTrigger.removeEventListener("refresh", syncTowerAssemblyToTrigger);
+    }
+    if (transitionTrigger) {
+      transitionTrigger.kill(false);
+      transitionTrigger = null;
+    }
+    if (assemblyTrigger) {
+      assemblyTrigger.kill(false);
+    }
+    if (transitionLayer) {
+      transitionLayer.remove();
+      transitionLayer = null;
+    }
+
+    section.remove();
+
+    window.requestAnimationFrame(function settleGoodsAfterTowerRemoval() {
+      if (window.ScrollTrigger) {
+        window.ScrollTrigger.refresh();
+      }
+
+      var goodsTopDelta = goodsSection.getBoundingClientRect().top - goodsViewportTop;
+      setTowerScrollPosition(Math.max(0, window.scrollY + goodsTopDelta));
+    });
+  }
+
   function attachTowerCanvasToStage() {
     if (!towerCanvas || !towerStage || !window.gsap) {
       return;
@@ -1420,7 +1464,12 @@ function initTowerStack3D() {
   function syncTowerTransitionState() {
     isTowerTransitionSyncRequested = false;
 
-    if (!assemblyTrigger || !transitionTrigger || !towerCanvas) {
+    if (
+      hasTowerExperienceCompleted ||
+      !assemblyTrigger ||
+      !transitionTrigger ||
+      !towerCanvas
+    ) {
       return;
     }
 
@@ -1485,21 +1534,18 @@ function initTowerStack3D() {
       }
 
       /* 안착 상태에서는 캔버스가 Custom Goods 섹션에 들어가 있어야 합니다. */
-      if (
-        towerTransitionState !== "complete" ||
-        towerCanvas.parentNode !== goodsSection ||
-        (transitionLayer && !transitionLayer.hidden)
-      ) {
-        completeTowerTransition();
-      }
-      towerTransitionState = "complete";
+      completeTowerExperience();
     } finally {
       isSynchronizingTowerTransition = false;
     }
   }
 
   function requestTowerTransitionSync() {
-    if (isSynchronizingTowerTransition || isTowerTransitionSyncRequested) {
+    if (
+      hasTowerExperienceCompleted ||
+      isSynchronizingTowerTransition ||
+      isTowerTransitionSyncRequested
+    ) {
       return;
     }
 
@@ -1630,6 +1676,24 @@ function initTowerStack3D() {
   }
 
   function renderTowerStackMode() {
+    if (hasTowerExperienceCompleted) {
+      if (!desktopQuery.matches && stack) {
+        if (dockedTowerObserver) {
+          dockedTowerObserver.disconnect();
+          dockedTowerObserver = null;
+        }
+        if (towerCanvas) {
+          towerCanvas.remove();
+        }
+        stack.destroy();
+        stack = null;
+        towerCanvas = null;
+        towerStage = null;
+        assemblyTrigger = null;
+      }
+      return;
+    }
+
     if (desktopQuery.matches && !stack) {
       stack = window.ScrollStack3D.init({
         mount: mount,
@@ -1638,6 +1702,16 @@ function initTowerStack3D() {
         /* 모듈 기본 오버레이(라벨·단계 목록·진행 레일)는 시안에 없어 끕니다. */
         ui: false
       });
+
+      if (stack && !stack.timeline) {
+        hasTowerExperienceCompleted = true;
+        stack.destroy();
+        stack = null;
+        section.remove();
+        window.ScrollTrigger.refresh();
+        return;
+      }
+
       section.classList.toggle("is_tower_3d", Boolean(stack));
 
       if (stack) {
@@ -1737,7 +1811,7 @@ function initRestaurantStackState() {
   /* 확대 전환(640ms)이 끝난 뒤 타이핑을 시작합니다. */
   var TYPING_START_DELAY = 560;
   /* 글자 하나가 찍히는 시간입니다. 값을 키울수록 천천히 타이핑됩니다. */
-  var TYPING_CHAR_DURATION = 100;
+  var TYPING_CHAR_DURATION = 55;
 
   var titleText = restaurantTitle.textContent;
   var stickyMedia = window.matchMedia("(min-width: 834px)");
@@ -1747,6 +1821,79 @@ function initRestaurantStackState() {
   var typingStartTimer = 0;
   var typingFrame = 0;
   var typingStartTime = 0;
+  var isTypingScrollLocked = false;
+  var typingLockedScrollY = 0;
+
+  function preventTypingScroll(event) {
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+  }
+
+  function handleTypingScrollKey(event) {
+    var target = event.target;
+    var isEditable = target && (
+      target.isContentEditable ||
+      /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)
+    );
+    var scrollKeys = ["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "];
+
+    if (!isEditable && scrollKeys.indexOf(event.key) !== -1) {
+      event.preventDefault();
+    }
+  }
+
+  function maintainTypingScrollPosition() {
+    if (!isTypingScrollLocked || Math.abs(window.scrollY - typingLockedScrollY) < 1) {
+      return;
+    }
+
+    if (window.lenisInstance && typeof window.lenisInstance.scrollTo === "function") {
+      window.lenisInstance.scrollTo(typingLockedScrollY, { immediate: true, force: true });
+      return;
+    }
+
+    window.scrollTo(0, typingLockedScrollY);
+  }
+
+  function lockTypingScroll() {
+    if (isTypingScrollLocked) {
+      return;
+    }
+
+    isTypingScrollLocked = true;
+    typingLockedScrollY = window.scrollY;
+
+    if (window.lenisInstance && typeof window.lenisInstance.stop === "function") {
+      window.lenisInstance.stop();
+    }
+
+    window.addEventListener("wheel", preventTypingScroll, { passive: false });
+    window.addEventListener("touchmove", preventTypingScroll, { passive: false });
+    window.addEventListener("keydown", handleTypingScrollKey);
+    window.addEventListener("scroll", maintainTypingScrollPosition, { passive: true });
+  }
+
+  function unlockTypingScroll() {
+    if (!isTypingScrollLocked) {
+      return;
+    }
+
+    isTypingScrollLocked = false;
+    window.removeEventListener("wheel", preventTypingScroll);
+    window.removeEventListener("touchmove", preventTypingScroll);
+    window.removeEventListener("keydown", handleTypingScrollKey);
+    window.removeEventListener("scroll", maintainTypingScrollPosition);
+
+    if (
+      document.body.style.overflow !== "hidden" &&
+      window.lenisInstance &&
+      typeof window.lenisInstance.start === "function" &&
+      !isReducedMotion()
+    ) {
+      window.lenisInstance.start();
+    }
+  }
 
   function stopTyping() {
     window.clearTimeout(typingStartTimer);
@@ -1758,6 +1905,7 @@ function initRestaurantStackState() {
     }
 
     typingStartTime = 0;
+    unlockTypingScroll();
   }
 
   function renderTypingStep(now) {
@@ -1778,6 +1926,7 @@ function initRestaurantStackState() {
     }
 
     typingFrame = 0;
+    unlockTypingScroll();
     restaurantAll.classList.remove("is_typing");
     restaurantMore.classList.add("is_revealed");
   }
@@ -1787,8 +1936,10 @@ function initRestaurantStackState() {
     restaurantTitle.textContent = "";
     restaurantMore.classList.remove("is_revealed");
     restaurantAll.classList.add("is_typing");
+    lockTypingScroll();
 
     typingStartTimer = window.setTimeout(function () {
+
       typingFrame = window.requestAnimationFrame(renderTypingStep);
     }, TYPING_START_DELAY);
   }
