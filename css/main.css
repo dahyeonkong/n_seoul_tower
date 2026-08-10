@@ -1701,6 +1701,7 @@
     /* 곡선 높이의 기준. 스크롤 길이와 분리해 두어야 스크롤을 늘려도
        곡선이 세로로 늘어나 가팔라지지 않습니다. */
     --events_curve_travel: 300svh;
+    --events_head_top: 13.56svh;
     /* 카드 사이에 빈 구간(main.js 의 EVENT_CARD_GAP)이 들어가므로 스크롤을 길게 잡습니다.
        카드당 166.7svh — 앞 100svh 는 카드가 보이고, 뒤 66.7svh 는 곰돌이만 유지합니다. */
     --events_scroll_travel: 500svh;
@@ -1714,8 +1715,10 @@
     align-items: flex-start;
     justify-content: flex-start;
     gap: 16px;
-    /* sticky 무대 밖에서도 기존 첫 화면 위치를 유지합니다. */
-    top: 13.56svh;
+    /* 두 이벤트 뷰가 같은 컨테이너와 첫 화면 위치를 공유합니다. */
+    top: var(--events_head_top);
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   .events_view_toggle {
@@ -1863,7 +1866,7 @@
   .events_section.is_card_view {
     height: auto;
     min-height: 100svh;
-    padding: var(--section_space) 0;
+    padding: var(--events_head_top) 0 var(--section_space);
   }
 
   .is_card_view .events_sticky {
@@ -1882,6 +1885,7 @@
     top: auto;
     right: auto;
     left: auto;
+    transform: none;
   }
 
   .is_card_view .events_list {
@@ -2665,7 +2669,7 @@
   align-self: flex-start;
   min-height: 44px;
   padding: 12px 20px;
-  /* border: 1px solid var(--color_new_primary_600); */
+  border: 1px solid var(--color_new_primary_600);
   border-radius: var(--radius_round);
   background-color: rgba(228, 228, 228, 0.2);
   backdrop-filter: blur(10px);
@@ -2686,7 +2690,7 @@
    버튼이 원래 색(딥그린)을 그대로 유지해야 합니다. */
 .restaurant_all.is_stacked .restaurant_more,
 .restaurant_all.is_fullscreen .restaurant_more {
-  /* border-color: var(--color_primary_800); */
+  border-color: var(--color_primary_800);
   background-color: var(--color_primary_800);
   color: var(--color_bg);
 }
@@ -3678,6 +3682,7 @@
   .goods_list {
     position: absolute;
     display: flex;
+    align-items: stretch;
     left: 8.33%;
     top: 39.38%;
     justify-content: space-between;
@@ -3699,7 +3704,7 @@
   }
 
   .goods_card_body {
-    flex: 0 1 auto;
+    flex: 1;
     margin-top: -14%;
     padding: 60px 24px 36px;
     border-radius: 22px;
@@ -3718,6 +3723,13 @@
 
 /* N Pass responsive containment */
 @media (max-width: 833px) {
+  .pass_flip .pass_flip_inner {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+
   .pass_flip_back {
     display: none;
   }
