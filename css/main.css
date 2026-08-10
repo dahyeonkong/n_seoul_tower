@@ -1400,8 +1400,8 @@
   position: absolute;
   z-index: -1;
   inset: 0;
-  background-image: url("../assets/grass_back_img.png");
-  background-position: center top;
+  background-image: url("../assets/yul/01.png");
+  background-position: center bottom;
   background-size: 100% auto;
   background-repeat: no-repeat;
   background-attachment: fixed;
