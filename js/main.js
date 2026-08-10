@@ -1500,25 +1500,144 @@ function renderCustomGoods(items) {
   list.appendChild(fragment);
 }
 
+/* --------------------------------------------------------------------------
+   restaurant — 카드 스택이 끝난 뒤 전체 화면 전환
+   스택이 멈춘 지점에서 한 번 더 스크롤하면 마지막 카드가 화면을 채우고,
+   제목이 한 글자씩 타이핑된 뒤 버튼이 나타나며 중심을 기준으로 살짝 기울었다 돌아옵니다.
+   카드 쌓임이 없는 모바일과 reduced motion 에서는 기존 정적 배치를 그대로 둡니다.
+   -------------------------------------------------------------------------- */
 function initRestaurantStackState() {
   var restaurantAll = document.querySelector("[data-restaurant-all]");
-  if (!restaurantAll) {
+  var restaurantStage = document.querySelector("[data-restaurant-all-stage]");
+  var restaurantLayer = document.querySelector("[data-restaurant-stack-layer]");
+  var restaurantTitle = document.querySelector("[data-restaurant-all-title]");
+  var restaurantMore = document.querySelector("[data-restaurant-all-more]");
+
+  if (
+    !restaurantAll ||
+    !restaurantStage ||
+    !restaurantLayer ||
+    !restaurantTitle ||
+    !restaurantMore
+  ) {
     return;
   }
 
+  /* 스택이 멈춘 뒤 전체 화면으로 펼치기까지 필요한 추가 스크롤 거리입니다. */
+  var EXPAND_OFFSET = 90;
+  /* 되돌릴 때는 더 짧은 거리를 기준으로 삼아 경계에서 상태가 떨리지 않게 합니다. */
+  var COLLAPSE_OFFSET = 40;
+  /* 확대 전환(640ms)이 끝난 뒤 타이핑을 시작합니다. */
+  var TYPING_START_DELAY = 560;
+  /* 글자 하나가 찍히는 시간입니다. 값을 키울수록 천천히 타이핑됩니다. */
+  var TYPING_CHAR_DURATION = 100;
+
+  var titleText = restaurantTitle.textContent;
   var stickyMedia = window.matchMedia("(min-width: 834px)");
   var isFrameRequested = false;
+  var isMotionEnabled = false;
+  var isFullscreen = false;
+  var typingStartTimer = 0;
+  var typingFrame = 0;
+  var typingStartTime = 0;
+
+  function stopTyping() {
+    window.clearTimeout(typingStartTimer);
+    typingStartTimer = 0;
+
+    if (typingFrame) {
+      window.cancelAnimationFrame(typingFrame);
+      typingFrame = 0;
+    }
+
+    typingStartTime = 0;
+  }
+
+  function renderTypingStep(now) {
+    if (!typingStartTime) {
+      typingStartTime = now;
+    }
+
+    var typedLength = Math.min(
+      titleText.length,
+      Math.floor((now - typingStartTime) / TYPING_CHAR_DURATION)
+    );
+
+    restaurantTitle.textContent = titleText.slice(0, typedLength);
+
+    if (typedLength < titleText.length) {
+      typingFrame = window.requestAnimationFrame(renderTypingStep);
+      return;
+    }
+
+    typingFrame = 0;
+    restaurantAll.classList.remove("is_typing");
+    restaurantMore.classList.add("is_revealed");
+  }
+
+  function startTypingSequence() {
+    stopTyping();
+    restaurantTitle.textContent = "";
+    restaurantMore.classList.remove("is_revealed");
+    restaurantAll.classList.add("is_typing");
+
+    typingStartTimer = window.setTimeout(function () {
+      typingFrame = window.requestAnimationFrame(renderTypingStep);
+    }, TYPING_START_DELAY);
+  }
+
+  function resetTypingSequence() {
+    stopTyping();
+    restaurantAll.classList.remove("is_typing");
+    restaurantMore.classList.remove("is_revealed");
+    /* 모션을 쓰지 않는 화면에서는 문구가 사라진 채로 남지 않게 되돌립니다. */
+    restaurantTitle.textContent = isMotionEnabled ? "" : titleText;
+  }
+
+  function setMotionEnabled(isEnabled) {
+    if (isMotionEnabled === isEnabled) {
+      return;
+    }
+
+    isMotionEnabled = isEnabled;
+    restaurantAll.classList.toggle("is_motion_ready", isEnabled);
+
+    if (!isEnabled) {
+      isFullscreen = false;
+      restaurantAll.classList.remove("is_fullscreen");
+    }
+
+    resetTypingSequence();
+  }
 
   function renderRestaurantStackState() {
-    var restaurantRect = restaurantAll.getBoundingClientRect();
-    var stickyTop = parseFloat(window.getComputedStyle(restaurantAll).top) || 0;
-    var isStacked =
-      stickyMedia.matches &&
-      restaurantRect.top <= stickyTop + 1 &&
-      restaurantRect.bottom > stickyTop;
+    isFrameRequested = false;
+
+    /* 스테이지는 sticky 라서 멈춘 뒤에는 좌표가 고정됩니다.
+       추가로 스크롤한 거리는 흐름 위치가 그대로인 부모 레이어로 잽니다. */
+    var stickyTop = parseFloat(window.getComputedStyle(restaurantStage).top) || 0;
+    var stuckOffset = stickyTop - restaurantLayer.getBoundingClientRect().top;
+    var stickyRange = restaurantLayer.offsetHeight - restaurantStage.offsetHeight;
+    var isStacked = stickyMedia.matches && stuckOffset >= 0 && stuckOffset <= stickyRange;
 
     restaurantAll.classList.toggle("is_stacked", isStacked);
-    isFrameRequested = false;
+
+    /* 한 번 펼쳐진 뒤에는 sticky 구간을 벗어나도 접지 않고 그대로 흘러 나갑니다. */
+    var shouldExpand =
+      isMotionEnabled && stuckOffset >= (isFullscreen ? COLLAPSE_OFFSET : EXPAND_OFFSET);
+
+    if (shouldExpand === isFullscreen) {
+      return;
+    }
+
+    isFullscreen = shouldExpand;
+    restaurantAll.classList.toggle("is_fullscreen", isFullscreen);
+
+    if (isFullscreen) {
+      startTypingSequence();
+    } else {
+      resetTypingSequence();
+    }
   }
 
   function requestRestaurantStackRender() {
@@ -1530,16 +1649,21 @@ function initRestaurantStackState() {
     window.requestAnimationFrame(renderRestaurantStackState);
   }
 
-  window.addEventListener("scroll", requestRestaurantStackRender, { passive: true });
-  window.addEventListener("resize", requestRestaurantStackRender);
-
-  if (typeof stickyMedia.addEventListener === "function") {
-    stickyMedia.addEventListener("change", requestRestaurantStackRender);
-  } else if (typeof stickyMedia.addListener === "function") {
-    stickyMedia.addListener(requestRestaurantStackRender);
+  function handleRestaurantLayoutChange() {
+    setMotionEnabled(stickyMedia.matches && !isReducedMotion());
+    requestRestaurantStackRender();
   }
 
-  requestRestaurantStackRender();
+  window.addEventListener("scroll", requestRestaurantStackRender, { passive: true });
+  window.addEventListener("resize", handleRestaurantLayoutChange);
+
+  if (typeof stickyMedia.addEventListener === "function") {
+    stickyMedia.addEventListener("change", handleRestaurantLayoutChange);
+  } else if (typeof stickyMedia.addListener === "function") {
+    stickyMedia.addListener(handleRestaurantLayoutChange);
+  }
+
+  handleRestaurantLayoutChange();
 }
 
 /* --------------------------------------------------------------------------
