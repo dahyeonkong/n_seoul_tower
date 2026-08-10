@@ -37,14 +37,12 @@
     floorSections.forEach((floorSection) => {
       const isActiveSection = floorSection.dataset.floorSection === floorName;
       floorSection.classList.toggle("is_active", isActiveSection);
-      floorSection.toggleAttribute("inert", mobileFloorQuery.matches && !isActiveSection);
     });
 
     floorTabs.forEach((floorTab) => {
       const isActiveTab = floorTab.dataset.floorTab === floorName;
       floorTab.classList.toggle("is_active", isActiveTab);
-      floorTab.setAttribute("aria-selected", String(isActiveTab));
-      floorTab.tabIndex = isActiveTab ? 0 : -1;
+      floorTab.toggleAttribute("aria-current", isActiveTab);
 
       if (isActiveTab && shouldFocusTab) {
         floorTab.focus();
@@ -56,10 +54,25 @@
     }
   }
 
-  function handleFloorTabClick(event) {
-    renderActiveFloor(event.currentTarget.dataset.floorTab);
+  function scrollToFloor(floorName) {
+    const targetSection = floorSections.find((floorSection) => floorSection.dataset.floorSection === floorName);
+
+    if (!targetSection) {
+      return;
+    }
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    targetSection.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "start"
+    });
   }
 
+  function handleFloorTabClick(event) {
+    const floorName = event.currentTarget.dataset.floorTab;
+    renderActiveFloor(floorName);
+    scrollToFloor(floorName);
+  }
   function handleFloorTabKeydown(event) {
     const currentIndex = floorTabs.indexOf(event.currentTarget);
     let nextIndex = currentIndex;
@@ -77,7 +90,9 @@
     }
 
     event.preventDefault();
-    renderActiveFloor(floorTabs[nextIndex].dataset.floorTab, true);
+    const nextFloor = floorTabs[nextIndex].dataset.floorTab;
+    renderActiveFloor(nextFloor, true);
+    scrollToFloor(nextFloor);
   }
 
   function initFloorTabs() {
@@ -114,9 +129,6 @@
   function updateFloorFromViewport() {
     scrollFrame = 0;
 
-    if (mobileFloorQuery.matches) {
-      return;
-    }
     const currentSection = findSectionAtViewportCenter();
 
     if (currentSection) {

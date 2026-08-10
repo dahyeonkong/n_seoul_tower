@@ -53,7 +53,8 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  width: calc(249 * var(--u));
+  /* width: calc(249 * var(--u)); */
+  width: 100%;
   height: 100svh;
   margin-inline: auto;
   pointer-events: none;
@@ -65,7 +66,7 @@
   position: relative;
   width: 100%;
   height: calc(485 * var(--u));
-  overflow: hidden;
+  overflow: visible;
   opacity: 0.34;
 }
 
@@ -75,11 +76,11 @@
   top: calc(var(--light_top) * var(--u));
   left: 50%;
   width: calc(var(--light_size) * var(--u));
-  height: calc(var(--light_size) * var(--u));
-  /* 원본이 181 x 166 이라 정사각 프레임에 맞추면서 비율은 유지합니다. */
-  object-fit: cover;
+  height: auto;
+  /* Preserve the 181 × 166 source ratio so the light is not cropped horizontally. */
+  object-fit: contain;
   transform: translateX(-50%);
-  transition: top 200ms var(--ease_out), width 200ms var(--ease_out), height 200ms var(--ease_out);
+  transition: top 200ms var(--ease_out), width 200ms var(--ease_out);
 }
 
 .tower_state_image {
@@ -476,7 +477,7 @@
   .floor_deco {
     display: block;
     position: absolute;
-    z-index: 2;
+    z-index: 100;
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
@@ -589,7 +590,7 @@
   .floor_card_roof { top: 33.0556%; left: 75.9375%; }
 
   .floor_deco_steak {
-    top: 62.3148%;
+    top: 67.3148%;
     left: 8.3854%;
     width: 20.7292%;
     aspect-ratio: 398 / 341;
@@ -669,7 +670,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Mobile floor tabs
+   Mobile floor TOC
    -------------------------------------------------------------------------- */
 .floor_tabs {
   display: none;
@@ -691,14 +692,14 @@
     z-index: 0;
     width: 100%;
     height: auto;
-    opacity: 0.52;
+    opacity: 1;
     align-items: center;
   }
 
   .floor_tower_visual {
     width: min(74vw, 266px);
     height: min(116vw, 470px);
-    opacity: 0.42;
+    opacity: 0.65;
   }
 
   .tower_state_image {
@@ -713,9 +714,14 @@
 
   .floor_tabs {
     display: block;
-    position: relative;
-    z-index: 5;
-    padding-inline: var(--page_pad);
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+    width: 100%;
+    padding: 8px var(--page_pad) max(12px, env(safe-area-inset-bottom));
+    pointer-events: none;
   }
 
   .floor_tab_list {
@@ -725,12 +731,13 @@
     padding: 5px;
     border: 1px solid rgba(38, 81, 71, 0.2);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.76);
+    background: rgba(255, 255, 255, 0.88);
     box-shadow: 0 8px 24px rgba(49, 50, 50, 0.08);
     grid-template-columns: repeat(7, minmax(44px, 1fr));
     overflow-x: auto;
     scrollbar-width: none;
     backdrop-filter: blur(10px);
+    pointer-events: auto;
   }
 
   .floor_tab_list::-webkit-scrollbar {
@@ -760,16 +767,15 @@
   .floor_scene_list {
     position: relative;
     z-index: 2;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
   }
 
-  .floor_scene {
-    display: none;
-    min-height: calc(100svh - var(--header_height) - 81px);
-    padding-top: 44px;
-  }
-
+  .floor_scene,
   .floor_scene.is_active {
     display: block;
+    min-height: calc(100svh - var(--header_height) - 68px);
+    padding-top: 44px;
+    scroll-margin-top: calc(var(--header_height) + 16px);
   }
 
   .floor_scene_f5 {
@@ -796,5 +802,129 @@
   .floor_tab_list {
     justify-content: start;
     grid-template-columns: repeat(7, 48px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Tablet: desktop-style continuous floors with selected decoration
+   -------------------------------------------------------------------------- */
+@media (min-width: 834px) and (max-width: 1279px) {
+  .floor_scene {
+    min-height: 100svh;
+  }
+
+  .floor_deco_tea,
+  .floor_deco_beef,
+  .floor_deco_ngrill_photo,
+  .floor_deco_ngrill_logo,
+  .floor_deco_hancook_tray,
+  .floor_deco_hancook_photo,
+  .floor_deco_hancook_bibimbap,
+  .floor_deco_hancook_logo,
+  .floor_deco_observatory,
+  .floor_deco_hancook_bowl,
+  .floor_deco_steak,
+  .floor_deco_popcorn {
+    display: block;
+    position: absolute;
+    z-index: 2;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    pointer-events: none;
+  }
+
+  .floor_deco_tea {
+    top: 0;
+    right: 8%;
+    width: 16%;
+    aspect-ratio: 248 / 349;
+    background-image: url("../assets/floorguide/snack03.png");
+  }
+
+  .floor_deco_beef {
+    right: 25%;
+    bottom: 0;
+    width: 22%;
+    aspect-ratio: 263 / 238;
+    background-image: url("../assets/floorguide/food01.png");
+  }
+  .floor_deco_ngrill_photo {
+    top: 36%;
+    right: 1%;
+    width: 30%;
+    aspect-ratio: 433 / 237;
+    background-image: url("../assets/floorguide/ngrill02.png");
+  }
+
+
+  .floor_deco_ngrill_logo {
+    right: 7%;
+    bottom: 10%;
+    width: 15%;
+    aspect-ratio: 164 / 38;
+    background-image: url("../assets/floorguide/ngrill01.png");
+  }
+
+  .floor_deco_hancook_tray {
+    bottom: 0;
+    left: 2%;
+    width: 27%;
+    aspect-ratio: 349 / 201;
+    background-image: url("../assets/floorguide/hancook03.png");
+  }
+
+  .floor_deco_hancook_bibimbap {
+    right: 3%;
+    bottom: 27%;
+    width: 24%;
+    aspect-ratio: 282 / 133;
+    background-image: url("../assets/floorguide/hancook02.png");
+  }
+  .floor_deco_hancook_photo {
+    top: 2%;
+    right: 1%;
+    width: 29%;
+    aspect-ratio: 345 / 189;
+    background-image: url("../assets/floorguide/hancook05.png");
+  }
+
+  .floor_deco_hancook_logo {
+    right: 6%;
+    bottom: 9%;
+    width: 13%;
+    aspect-ratio: 121 / 44;
+    background-image: url("../assets/floorguide/hancook01.png");
+  }
+  .floor_deco_observatory {
+    right: 1%;
+    bottom: 4%;
+    width: 30%;
+    aspect-ratio: 378 / 209;
+    background-image: url("../assets/floorguide/Observatory.png");
+  }
+
+  .floor_deco_hancook_bowl {
+    top: 38%;
+    right: 6%;
+    width: 17%;
+    aspect-ratio: 184 / 179;
+    background-image: url("../assets/floorguide/hancook04.png");
+  }
+
+  .floor_deco_steak {
+    bottom: 2%;
+    left: 1%;
+    width: 28%;
+    aspect-ratio: 398 / 341;
+    background-image: url("../assets/floorguide/food02.png");
+  }
+
+  .floor_deco_popcorn {
+    top: 4%;
+    right: 1%;
+    width: 26%;
+    aspect-ratio: 379 / 347;
+    background-image: url("../assets/floorguide/popcon01.png");
   }
 }

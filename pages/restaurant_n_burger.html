@@ -144,12 +144,12 @@
 
           <div class="burger_info_body">
             <div class="burger_info_head">
-              <p class="burger_info_meta">
+              <h2 class="burger_info_title" id="burger_info_title">N burger</h2>
+               <p class="burger_info_meta">
                 <span>T1 Floor</span>
                 <span class="burger_info_divider" aria-hidden="true">|</span>
                 <span>10:00 ~ 21:00</span>
               </p>
-              <h2 class="burger_info_title" id="burger_info_title">N burger</h2>
               <p class="burger_info_desc">
                 The most Seoul-like handmade burger house<br>
                 met at the top of Namsan, Seoul's landmark
@@ -187,56 +187,76 @@
                   height="673" loading="lazy">
               </figure>
               <figure class="burger_gallery_slide" data-gallery-slide aria-hidden="true">
-                <img src="../assets/restaurant/restaurant_slide_banner.png"
-                  alt="Interior of N Burger with counter seating and a large N BURGER wall graphic" width="1600"
+                <img src="../assets/restaurant/restaurant_slide_banner_2.png"
+                  alt="N Burger open kitchen with copper heat lamps and a preparation counter" width="1600"
+                  height="673" loading="lazy">
+              </figure>
+              <figure class="burger_gallery_slide" data-gallery-slide aria-hidden="true">
+                <img src="../assets/restaurant/restaurant_slide_banner_3.png"
+                  alt="N Burger dining area and service counter with warm interior lighting" width="1600"
                   height="673" loading="lazy">
               </figure>
             </div>
+            <button class="burger_gallery_nav burger_gallery_nav_prev" type="button" data-gallery-prev
+              aria-controls="burger_gallery_track">
+              <img src="../assets/icon/chevron_left.svg" alt="" width="42" height="42">
+              <span class="visually_hidden">Previous photo</span>
+            </button>
+            <button class="burger_gallery_nav burger_gallery_nav_next" type="button" data-gallery-next
+              aria-controls="burger_gallery_track">
+              <img src="../assets/icon/chevron_left.svg" alt="" width="42" height="42">
+              <span class="visually_hidden">Next photo</span>
+            </button>
           </div>
-          <button class="burger_gallery_nav burger_gallery_nav_prev" type="button" data-gallery-prev
-            aria-controls="burger_gallery_track">
-            <img src="../assets/icon/chevron_left.svg" alt="" width="42" height="42">
-            <span class="visually_hidden">Previous photo</span>
-          </button>
-          <button class="burger_gallery_nav burger_gallery_nav_next" type="button" data-gallery-next
-            aria-controls="burger_gallery_track">
-            <img src="../assets/icon/chevron_left.svg" alt="" width="42" height="42">
-            <span class="visually_hidden">Next photo</span>
-          </button>
+          <div class="burger_gallery_pagination" role="group" aria-label="Gallery slide pagination"
+            data-gallery-pagination>
+            <button class="burger_gallery_pagination_button is_active" type="button" data-gallery-pagination-button
+              data-slide-index="0" aria-label="Show photo 1 of 3" aria-current="true"></button>
+            <button class="burger_gallery_pagination_button" type="button" data-gallery-pagination-button
+              data-slide-index="1" aria-label="Show photo 2 of 3"></button>
+            <button class="burger_gallery_pagination_button" type="button" data-gallery-pagination-button
+              data-slide-index="2" aria-label="Show photo 3 of 3"></button>
+          </div>
         </div>
       </section>
 
       <!-- ===================== 5. best menu ===================== -->
       <section class="burger_best" id="burger_best" aria-labelledby="burger_best_title">
         <h2 class="visually_hidden" id="burger_best_title">N Burger best menu</h2>
-        <img class="burger_best_type burger_best_type_top" src="../assets/restaurant/bg_title/top.png" alt=""
-          aria-hidden="true" width="940" height="158" loading="lazy">
-        <img class="burger_best_type burger_best_type_bottom" src="../assets/restaurant/bg_title/bottom.png" alt=""
-          aria-hidden="true" width="1002" height="155" loading="lazy">
+        <div class="burger_best_type_frame">
+          <img class="burger_best_type burger_best_type_top" src="../assets/restaurant/bg_title/top.png" alt=""
+            aria-hidden="true" width="940" height="158" loading="lazy">
+        </div>
 
-        <div class="burger_best_center" role="group" aria-label="Best menu banner">
+        <div class="burger_best_center" role="group" aria-label="Best menu banner" aria-roledescription="carousel"
+          data-burger-best-swiper tabindex="0">
           <ul class="burger_best_list">
-            <li class="burger_best_card">
+            <li class="burger_best_card swiper_slide">
               <img src="../assets/restaurant/burger_image5.png" alt="Seoul Bulgogi Burger" width="396" height="683"
                 loading="lazy">
             </li>
-            <li class="burger_best_card">
+            <li class="burger_best_card swiper_slide">
               <img src="../assets/restaurant/burger_image4.png" alt="Classic Cheese Burger" width="396" height="683"
                 loading="lazy">
             </li>
-            <li class="burger_best_card">
+            <li class="burger_best_card swiper_slide">
               <img src="../assets/restaurant/burger_image3.png" alt="Bacon Deluxe Burger" width="397" height="683"
                 loading="lazy">
             </li>
-            <li class="burger_best_card">
+            <li class="burger_best_card swiper_slide">
               <img src="../assets/restaurant/burger_image2.png" alt="Fresh Craft Beer" width="399" height="683"
                 loading="lazy">
             </li>
-            <li class="burger_best_card">
+            <li class="burger_best_card swiper_slide">
               <img src="../assets/restaurant/burger_image1.png" alt="Namsan Tower Cup, a to-go only beer and chicken set"
                 width="426" height="683" loading="lazy">
             </li>
           </ul>
+        </div>
+
+        <div class="burger_best_type_frame">
+          <img class="burger_best_type burger_best_type_bottom" src="../assets/restaurant/bg_title/bottom.png" alt=""
+            aria-hidden="true" width="1002" height="155" loading="lazy">
         </div>
       </section>
 
@@ -495,122 +515,8 @@
     </main>
 
     <!-- ===================== footer (공통 컴포넌트 재사용) ===================== -->
-    <footer class="site_footer" data-quick-dark>
-      <div class="page_container site_footer_inner">
-        <div class="footer_top">
-          <p class="footer_logo">
-            <img src="../assets/nst_logo_defalut.svg" alt="N Seoul Tower" width="80" height="107" loading="lazy">
-          </p>
-        </div>
-
-        <div class="footer_body">
-          <div class="footer_info">
-            <address class="footer_info_list">
-              <p class="footer_info_row">Business Registration Number: 312-81-42519</p>
-              <p class="footer_info_row">
-                <span>CEO: Lee Geon-il</span>
-                <span class="footer_divider" aria-hidden="true"></span>
-                <span>Chief Privacy Officer: Kim Jae-wan</span>
-              </p>
-              <p class="footer_info_row">Address: N Seoul Tower, 105, Namsangongwon-gil, Yongsan-gu, Seoul</p>
-              <p class="footer_info_row">
-                <a href="tel:+82234559277">Tel : 02) 3455 - 9277, 9288</a>
-                <span class="footer_divider" aria-hidden="true"></span>
-                <a href="mailto:helpmaster@cj.net">Email : helpmaster@cj.net</a>
-              </p>
-            </address>
-
-            <div class="family_site">
-              <button class="family_site_button" type="button" data-family-button aria-expanded="false"
-                aria-controls="family_site_menu">
-                family site
-                <img src="../assets/icon/icon_chevron_down.svg" alt="" width="24" height="24" loading="lazy">
-              </button>
-              <div class="family_site_menu" id="family_site_menu" data-family-menu hidden>
-                <div class="family_site_group">
-                  <p class="family_site_group_title">CJ그룹</p>
-                  <a class="family_site_link" href="https://www.cj.net" target="_blank"
-                    rel="noopener noreferrer">CJ주식회사</a>
-                </div>
-                <div class="family_site_group">
-                  <p class="family_site_group_title">식품&amp;식품서비스</p>
-                  <a class="family_site_link" href="https://www.cj.co.kr" target="_blank"
-                    rel="noopener noreferrer">CJ제일제당</a>
-                  <a class="family_site_link" href="https://www.cjfoodville.co.kr" target="_blank"
-                    rel="noopener noreferrer">CJ푸드빌</a>
-                  <a class="family_site_link" href="https://www.cjfreshway.com" target="_blank"
-                    rel="noopener noreferrer">CJ프레시웨이</a>
-                </div>
-                <div class="family_site_group">
-                  <p class="family_site_group_title">생명공학</p>
-                  <a class="family_site_link" href="https://www.cj.co.kr" target="_blank"
-                    rel="noopener noreferrer">CJ제일제당 BIO사업부문</a>
-                  <a class="family_site_link" href="https://www.cjfeedncare.co.kr" target="_blank"
-                    rel="noopener noreferrer">CJ Feed&amp;Care</a>
-                </div>
-                <div class="family_site_group">
-                  <p class="family_site_group_title">물류 &amp; 신유통</p>
-                  <a class="family_site_link" href="https://www.cjlogistics.com" target="_blank"
-                    rel="noopener noreferrer">CJ대한통운</a>
-                  <a class="family_site_link" href="https://www.cjlogistics.com" target="_blank"
-                    rel="noopener noreferrer">CJ대한통운 건설부문</a>
-                  <a class="family_site_link" href="https://www.oliveyoung.co.kr" target="_blank"
-                    rel="noopener noreferrer">CJ올리브영</a>
-                  <a class="family_site_link" href="https://www.cjolivenetworks.co.kr" target="_blank"
-                    rel="noopener noreferrer">CJ올리브네트웍스</a>
-                  <a class="family_site_link" href="https://www.cjenm.com" target="_blank" rel="noopener noreferrer">CJ
-                    ENM 커머스부문</a>
-                </div>
-                <div class="family_site_group">
-                  <p class="family_site_group_title">엔터테인먼트&amp;미디어</p>
-                  <a class="family_site_link" href="https://www.cjenm.com" target="_blank" rel="noopener noreferrer">CJ
-                    ENM 엔터테인먼트부문</a>
-                  <a class="family_site_link" href="https://www.cgv.co.kr" target="_blank" rel="noopener noreferrer">CJ
-                    CGV</a>
-                  <a class="family_site_link" href="https://www.cjpowercast.com" target="_blank"
-                    rel="noopener noreferrer">CJ파워캐스트</a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="footer_service">
-            <h2 class="footer_service_title">customer service</h2>
-            <a class="footer_service_btn" href="#top">FAQ</a>
-            <a class="footer_service_btn" href="#top">Contact Us</a>
-          </div>
-        </div>
-
-        <div class="footer_bottom">
-          <div class="footer_bottom_row">
-            <p class="footer_copyright">© 2026. ALL RIGHTS RESERVED BY SEOUL TOWER</p>
-            <ul class="footer_sns">
-              <li>
-                <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
-                  <img src="../assets/icon/sns/sns1.png" alt="" width="24" height="24" loading="lazy">
-                  <span class="visually_hidden">Facebook</span>
-                </button>
-              </li>
-              <li>
-                <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
-                  <img src="../assets/icon/sns/sns2.png" alt="" width="24" height="24" loading="lazy">
-                  <span class="visually_hidden">Instagram</span>
-                </button>
-              </li>
-              <li>
-                <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
-                  <img src="../assets/icon/sns/sns3.png" alt="" width="24" height="24" loading="lazy">
-                  <span class="visually_hidden">YouTube</span>
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- <img class="footer_deco" src="../assets/footer_tower.png" alt="" aria-hidden="true" width="418" height="417"
-          loading="lazy"> -->
-      </div>
-    </footer>
+    <!-- 공통 푸터: 마크업은 js/common.js 에서 생성합니다. -->
+    <div data-common-footer></div>
 
     <!-- 공통 퀵 메뉴: 페이지별 섹션 목록은 common.js 설정에서 관리합니다. -->
     <div data-quick-menu-mount></div>

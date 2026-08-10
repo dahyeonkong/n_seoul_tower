@@ -233,16 +233,23 @@ var EVENT_PATH_EDGE_INSET = 0.08;
    path 를 타고 내려가는 형상은 남기되 화면 밖으로는 나가지 않는 값입니다. */
 var EVENT_GONDOLA_BAND = 0.36;
 
-/* 코스 스크롤이 이 진행률을 넘으면 "끝난 것"으로 보고 티켓 건네는 곰으로 전환합니다. */
+/* 코스 스크롤이 이 진행률을 넘으면 캐릭터를 감추고 다음 섹션으로 전환합니다. */
 var COURSE_END_PROGRESS = 0.97;
 
-/* 티켓이 곰에게서 날아오는 구간의 길이(뷰포트 높이 배수).
-   티켓 중심이 화면 중앙에 닿는 순간 비행이 끝나고 제자리에 놓입니다. */
+/* iframe 곰 위치에서 N Pass 제자리까지 티켓이 이동하는 스크롤 범위입니다. */
 var PASS_FLIGHT_RANGE = 0.9;
+
 
 /* 곡선을 세로로 얼마나 늘릴지. 1 이면 곡선이 페이지와 1:1 로 흘러가지만 경사가 매우 가팔라집니다.
    가로 배율과 같아지는 지점(약 0.217)이 에셋에 그려진 원래 각도이고, 그보다 낮추면 더 완만해집니다. */
 var EVENT_CURVE_STEEPNESS = 0.217;
+
+/* 카드 한 장이 맡는 구간 중, 카드를 감춘 채 다음 카드를 기다리는 비율입니다.
+   0 이면 카드가 끊김 없이 이어지고, 0.4 면 구간의 뒤 40% 동안 곤돌라만 남아
+   다음 카드가 빈 곤돌라에서 새로 등장합니다.
+   곤돌라는 이 구간에도 계속 움직이므로 스크롤이 멈춘 것처럼 보이지 않습니다.
+   1 미만이어야 합니다. */
+var EVENT_CARD_GAP = 0.4;
 
 function initEventPathMotion() {
   var section = document.querySelector("#events_section");
@@ -278,6 +285,7 @@ function initEventPathMotion() {
 
     items.forEach(function (item) {
       item.classList.remove("is_active");
+      item.classList.remove("is_resting");
       item.removeAttribute("aria-hidden");
       item.inert = false;
     });
@@ -291,6 +299,7 @@ function initEventPathMotion() {
 
     items.forEach(function (item) {
       item.classList.remove("is_active");
+      item.classList.remove("is_resting");
       item.removeAttribute("aria-hidden");
       item.inert = false;
     });
@@ -377,11 +386,19 @@ function initEventPathMotion() {
     var curveHeight = parseFloat(curveStyle.height);
     var scrollTravel = Math.max(1, section.offsetHeight - stageHeight);
     var progress = Math.min(1, Math.max(0, -sectionRect.top / scrollTravel));
+
+    /* 스크롤을 카드 수만큼 나눠 어느 카드 구간인지, 그 안에서 얼마나 왔는지 구합니다.
+       곤돌라 위치는 원래대로 progress 를 그대로 따라가므로 스크롤 내내 계속 흐릅니다. */
+    var cardCount = items.length;
+    var segmentIndex = Math.min(cardCount - 1, Math.floor(progress * cardCount));
+    var segmentLocal = progress * cardCount - segmentIndex;
+
     var pathLength = visibleEndLength - (visibleEndLength - visibleStartLength) * progress;
     var point = pathElement.getPointAtLength(pathLength);
     var pathX = point.x * curveWidth / pathViewBoxWidth;
     var pathY = point.y * curveHeight / pathViewBoxHeight;
-    var activeIndex = progress < 1 / 3 ? 2 : progress < 2 / 3 ? 1 : 0;
+    /* 카드 교체는 구간 경계에서 일어납니다. 카드가 감춰진 뒤 바뀌므로 전환이 겹치지 않습니다. */
+    var activeIndex = cardCount - 1 - segmentIndex;
 
     /* 곤돌라는 path 를 타고 내려가되, 화면에서의 세로 이동은 뷰포트 중앙을 기준으로
        EVENT_GONDOLA_BAND 폭 안으로 압축합니다. 나머지 하강은 페이지 스크롤이 흡수합니다.
@@ -400,9 +417,15 @@ function initEventPathMotion() {
     list.style.setProperty("--event_path_y", gondolaY.toFixed(2) + "px");
     sticky.style.setProperty("--event_curve_y", (gondolaY - pathY).toFixed(2) + "px");
 
+    /* 구간의 뒤쪽 EVENT_CARD_GAP 만큼은 카드를 감춰, 다음 카드가 빈 곤돌라에서
+       새로 등장하게 합니다. 마지막 구간은 뒤에 나올 카드가 없어 감추지 않습니다. */
+    var isResting =
+      segmentLocal >= 1 - EVENT_CARD_GAP && segmentIndex < cardCount - 1;
+
     items.forEach(function (item, index) {
       var isActive = index === activeIndex;
       item.classList.toggle("is_active", isActive);
+      item.classList.toggle("is_resting", isResting);
       item.setAttribute("aria-hidden", String(!isActive));
       item.inert = !isActive;
     });
@@ -585,6 +608,39 @@ function renderCourses(courses) {
   list.appendChild(fragment);
 }
 
+/* 히어로 영상은 autoplay 로 돌지만, reduced motion 에서는 첫 프레임만 남깁니다.
+   설정을 도중에 바꿔도 따라가도록 변경 이벤트까지 듣습니다 (AGENTS 10.7). */
+function initHeroVisualVideo() {
+  var video = document.querySelector(".main_visual_photo video");
+
+  if (!video) {
+    return;
+  }
+
+  var motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  function renderHeroVideoState() {
+    if (motionQuery.matches) {
+      video.pause();
+      video.currentTime = 0;
+      return;
+    }
+
+    var played = video.play();
+
+    /* 브라우저가 자동재생을 막으면 첫 프레임이 남습니다. 오류로 보지 않습니다. */
+    if (played && typeof played.catch === "function") {
+      played.catch(function () {});
+    }
+  }
+
+  renderHeroVideoState();
+
+  if (typeof motionQuery.addEventListener === "function") {
+    motionQuery.addEventListener("change", renderHeroVideoState);
+  }
+}
+
 /* 코스 배경 영상은 반복하지 않고, 섹션에 들어올 때마다 처음부터 한 번만 재생합니다.
    autoplay 를 쓰면 사용자가 도착하기 전에 이미 끝나 마지막 프레임만 남습니다. */
 function initCourseSceneVideo() {
@@ -653,8 +709,7 @@ function initCourseScrollScene() {
     var stageRect = stage.getBoundingClientRect();
     var progress = Math.min(1, Math.max(0, -stageRect.top / scrollTravel));
     list.style.transform = "translate3d(0, " + -progress * maxListOffset + "px, 0)";
-    /* 코스 카드를 다 지나가면 영상과 걷는 마스코트를 감추고
-       walk_bg 위에 티켓을 건네는 곰을 보여 줍니다. */
+    /* 코스 카드를 다 지나가면 영상과 걷는 마스코트를 감춥니다. */
     scene.classList.toggle("is_course_end", progress >= COURSE_END_PROGRESS);
     isFrameRequested = false;
   }
@@ -730,41 +785,6 @@ function renderGiftItems(items) {
   track.appendChild(fragment);
 }
 
-function initGiftTrackCursor() {
-  var track = document.querySelector("[data-gift-track]");
-  var cursor = document.querySelector("[data-gift-cursor]");
-
-  if (!track || !cursor) {
-    return;
-  }
-
-  function handleGiftPointerMove(event) {
-    cursor.style.transform = "translate3d(" + (event.clientX - 50) + "px, " + (event.clientY - 50) + "px, 0)";
-  }
-
-  function handleGiftPointerEnter(event) {
-    handleGiftPointerMove(event);
-    cursor.classList.add("is_visible");
-  }
-
-  function handleGiftPointerLeave() {
-    cursor.classList.remove("is_visible");
-  }
-
-  function handleGiftTrackClick(event) {
-    if (event.target.closest(".gift_card_link")) {
-      return;
-    }
-
-    window.location.href = "./pages/n_gift_shop.html";
-  }
-
-  track.addEventListener("pointerenter", handleGiftPointerEnter);
-  track.addEventListener("pointermove", handleGiftPointerMove);
-  track.addEventListener("pointerleave", handleGiftPointerLeave);
-  track.addEventListener("click", handleGiftTrackClick);
-}
-
 /* --------------------------------------------------------------------------
    custom tower visual
    -------------------------------------------------------------------------- */
@@ -831,7 +851,7 @@ function initTowerReveal() {
 /* 스크롤에 맞춰 양초가 한 단씩 쌓이는 3D 조립 (yul_tower_3d/scroll-stack-3d.js).
    데스크톱에서만 켜고, 그 외에는 기존 이미지 스택을 그대로 씁니다.
    모듈·three·gsap 이 없으면 초기화가 null 을 돌려주므로 이미지 스택이 남습니다. */
-/* 코스 구간이 끝나고 N Pass 섹션에 들어오면 티켓이 떨어져 내려와 뒤집힙니다.
+/* N Pass 섹션에 들어오면 티켓이 나타나 뒤집힙니다.
    섹션을 완전히 벗어날 때만 되돌려(threshold 0) 재진입하면 다시 재생하고,
    TOP 버튼처럼 위로 빠르게 지나갈 때는 회전 없이 결과만 보여 줍니다. */
 function initPassTicketFlip() {
@@ -881,29 +901,29 @@ function initPassTicketFlip() {
     });
   }
 
-  /* --- 데스크톱: 곰에게서 티켓이 날아와 커지며 뒤집힙니다 ---
+  /* --- 데스크톱: iframe 곰 위치에서 티켓이 날아와 커지며 뒤집힙니다 ---
      .pass_flip 은 변형이 없으므로 그 rect 가 곧 티켓의 "제자리"입니다.
      매 프레임 곰 위치와 제자리 사이를 보간해 하나의 transform 으로 넣습니다. */
   function renderPassFlight() {
-    var bear = document.querySelector("[data-course-bear]");
+    var flightOrigin = document.querySelector("[data-course-flight-origin]");
     var scene = document.querySelector("[data-course-scene]");
     var restRect = flip.getBoundingClientRect();
     var viewportHeight = window.innerHeight;
 
-    /* 코스 스크롤이 끝나 곰이 티켓을 건네는 순간부터 티켓을 보여 줍니다. */
+    /* 코스 스크롤이 끝나 코스가 끝나는 순간부터 티켓을 보여 줍니다. */
     flip.classList.toggle(
       "is_pass_flight_ready",
       !scene || scene.classList.contains("is_course_end")
     );
 
-    if (!bear || restRect.width === 0) {
-      flip.classList.remove("is_pass_flight");
+    if (!flightOrigin || restRect.width === 0) {
+      flip.classList.remove("is_pass_flight", "is_pass_back_visible");
       revealPassTicket(false);
       isFlightFrameRequested = false;
       return;
     }
 
-    var startRect = bear.getBoundingClientRect();
+    var startRect = flightOrigin.getBoundingClientRect();
     var restCenterY = restRect.top + restRect.height / 2;
     var flightDistance = Math.max(1, viewportHeight * PASS_FLIGHT_RANGE);
     var progress = Math.min(
@@ -919,6 +939,8 @@ function initPassTicketFlip() {
     var startScale = startRect.width / restRect.width;
     var scale = startScale + (1 - startScale) * progress;
     var angle = 180 * (1 - progress);
+
+    flip.classList.toggle("is_pass_back_visible", angle > 90);
 
     flip.style.setProperty(
       "--pass_flight_transform",
@@ -941,7 +963,7 @@ function initPassTicketFlip() {
   function stopPassFlight() {
     window.removeEventListener("scroll", requestPassFlightRender);
     window.removeEventListener("resize", requestPassFlightRender);
-    flip.classList.remove("is_pass_flight");
+    flip.classList.remove("is_pass_flight", "is_pass_back_visible");
     flip.style.removeProperty("--pass_flight_transform");
     isFlightActive = false;
   }
@@ -1006,7 +1028,7 @@ function initTowerStack3D() {
   var section = document.querySelector("#tower_section");
   var mount = document.querySelector("[data-tower-3d]");
   var goodsSection = document.querySelector("#goods_section");
-  var goodsHeroImage = goodsSection ? goodsSection.querySelector(".goods_hero_img") : null;
+  var goodsHeroSlot = goodsSection ? goodsSection.querySelector("[data-goods-hero-slot]") : null;
 
   if (!section || !mount || !window.ScrollStack3D) {
     return;
@@ -1022,6 +1044,19 @@ function initTowerStack3D() {
   var towerTransitionState = "";
   var isTowerTransitionSyncRequested = false;
   var isSynchronizingTowerTransition = false;
+  var isRefreshingTowerBounds = false;
+  var dockedTowerObserver = null;
+
+  /* 조립이 끝난 상태에서 캔버스 높이 대비 타워가 실제로 그려지는 높이 비율과,
+     캔버스 중앙보다 아래로 치우친 정도입니다(브라우저에서 픽셀로 실측).
+     카메라 화각과 모델 높이가 고정이라 뷰포트가 바뀌어도 이 비율은 그대로입니다. */
+  var TOWER_RENDER_HEIGHT_RATIO = 0.788;
+  var TOWER_RENDER_CENTER_RATIO = 0.063;
+  /* 예전 hero 이미지에서 타워가 차지하던 세로 비율(goods1.png 실측 928 / 1000).
+     안착한 3D 타워를 그 이미지와 같은 크기로 맞추는 기준입니다. */
+  var TOWER_SLOT_FILL_RATIO = 0.928;
+  var towerScrollLength = "480%";
+  var towerScrollScrub = 0.5;
 
   function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
@@ -1044,27 +1079,64 @@ function initTowerStack3D() {
     return transitionLayer;
   }
 
+  /* 캔버스 중심을 hero 자리의 중심에 맞추는 오프셋입니다.
+     전환 중에는 100vw x 100vh 고정 레이어, 안착 뒤에는 섹션 좌상단 기준의 같은 크기 상자를
+     쓰기 때문에 두 상태에서 같은 값이 나옵니다. 그래서 옮겨 붙일 때 튀지 않습니다. */
+  /* 캔버스를 얼마나 줄여야 타워가 예전 hero 이미지와 같은 크기가 되는지 계산합니다. */
+  function getTowerDockScale() {
+    var canvasHeight = towerCanvas.offsetHeight || window.innerHeight;
+    var renderedHeight = canvasHeight * TOWER_RENDER_HEIGHT_RATIO;
+
+    if (!renderedHeight || !goodsHeroSlot) {
+      return 1;
+    }
+
+    var targetHeight = goodsHeroSlot.getBoundingClientRect().height * TOWER_SLOT_FILL_RATIO;
+    return clamp(targetHeight / renderedHeight, 0.05, 1);
+  }
+
+  /* 전환 중에는 캔버스가 뷰포트 고정 레이어에, 안착 뒤에는 섹션 안에 들어갑니다.
+     두 좌표계의 원점이 다르므로 어느 쪽을 기준으로 잴지 골라야 같은 화면 위치가 나옵니다.
+     예전에는 항상 섹션 기준으로 재서, 섹션 상단이 뷰포트 상단에 정확히 맞물리는
+     한 지점에서만 두 값이 같았습니다. 그래서 전환이 그 지점에서만 끝날 수 있었습니다. */
+  function getTowerSlotOffset(scale, shouldUseViewportOrigin) {
+    var goodsRect = goodsSection.getBoundingClientRect();
+    var slotRect = goodsHeroSlot.getBoundingClientRect();
+    /* 100vw 는 스크롤바를 포함해 window.innerWidth 와 어긋날 수 있어 캔버스 실제 배치 크기로 잽니다. */
+    var canvasWidth = towerCanvas.offsetWidth || window.innerWidth;
+    var canvasHeight = towerCanvas.offsetHeight || window.innerHeight;
+    var originLeft = shouldUseViewportOrigin ? 0 : goodsRect.left;
+    var originTop = shouldUseViewportOrigin ? 0 : goodsRect.top;
+
+    return {
+      x: slotRect.left - originLeft + slotRect.width / 2 - canvasWidth / 2,
+      /* 타워는 캔버스 중앙보다 아래에 그려지므로, 줄인 배율만큼 되올려 자리 중앙에 맞춥니다. */
+      y: slotRect.top - originTop + slotRect.height / 2 - canvasHeight / 2 -
+        canvasHeight * TOWER_RENDER_CENTER_RATIO * scale
+    };
+  }
+
   function renderTowerTransition(progress) {
-    if (!towerCanvas || !goodsSection || !goodsHeroImage || !window.gsap) {
+    if (!towerCanvas || !goodsSection || !goodsHeroSlot || !window.gsap) {
       return;
     }
 
     var normalizedProgress = clamp(progress, 0, 1);
-    var goodsRect = goodsSection.getBoundingClientRect();
-    var heroRect = goodsHeroImage.getBoundingClientRect();
+    var dockScale = getTowerDockScale();
+    /* 고정 레이어 위에서 그리므로 뷰포트 기준으로 잽니다. 자리가 화면 어디에 있든
+       진행률 1 에서 안착 위치와 정확히 겹치므로, 전환이 끝나는 지점을 자유롭게 정할 수 있습니다. */
+    var offset = getTowerSlotOffset(dockScale, true);
     var startX = window.innerWidth * 0.16;
-    var targetX = heroRect.left + heroRect.width / 2 - window.innerWidth / 2;
-    var targetY = heroRect.top - goodsRect.top + heroRect.height / 2 - window.innerHeight / 2;
     var motionProgress = normalizedProgress * normalizedProgress * (3 - 2 * normalizedProgress);
-    var imageProgress = clamp((normalizedProgress - 0.84) / 0.16, 0, 1);
 
+    /* 예전에는 마지막 구간에서 실사 이미지로 교대했지만, 이제 3D 타워가 그대로 자리를
+       지키므로 캔버스를 끝까지 보여 줍니다. */
     window.gsap.set(towerCanvas, {
-      x: interpolate(startX, targetX, motionProgress),
-      y: interpolate(0, targetY, motionProgress),
-      scale: interpolate(1, 0.72, motionProgress),
-      autoAlpha: 1 - imageProgress
+      x: interpolate(startX, offset.x, motionProgress),
+      y: interpolate(0, offset.y, motionProgress),
+      scale: interpolate(1, dockScale, motionProgress),
+      autoAlpha: 1
     });
-    window.gsap.set(goodsHeroImage, { autoAlpha: imageProgress });
   }
 
   function activateTowerTransition(progress) {
@@ -1081,9 +1153,69 @@ function initTowerStack3D() {
     renderTowerTransition(progress);
   }
 
+  /* 모듈의 렌더 루프는 조립 트리거가 활성일 때만 돕니다. 안착한 뒤에는 비활성이라
+     창 크기가 바뀌어 WebGL 버퍼가 새로 잡히면 타워가 사라진 채로 남습니다.
+     모듈이 등록해 둔 onToggle 을 그대로 불러 렌더 루프만 다시 켭니다. */
+  function setTowerRenderActive(isActive) {
+    if (
+      !assemblyTrigger ||
+      !assemblyTrigger.vars ||
+      typeof assemblyTrigger.vars.onToggle !== "function"
+    ) {
+      return;
+    }
+
+    assemblyTrigger.vars.onToggle({ isActive: isActive });
+  }
+
+  /* 안착한 타워가 화면에 있을 때만 렌더 루프를 돌려 불필요한 GPU 사용을 막습니다. */
+  function observeDockedTowerVisibility() {
+    if (dockedTowerObserver || !goodsHeroSlot || !("IntersectionObserver" in window)) {
+      return;
+    }
+
+    dockedTowerObserver = new IntersectionObserver(
+      function handleDockedTowerIntersect(entries) {
+        entries.forEach(function (entry) {
+          setTowerRenderActive(entry.isIntersecting || Boolean(assemblyTrigger.isActive));
+        });
+      },
+      { rootMargin: "20% 0px" }
+    );
+    dockedTowerObserver.observe(goodsHeroSlot);
+  }
+
+  /* 조립이 끝나면 캔버스를 Custom Goods 섹션 안으로 옮겨 hero 자리에 앉힙니다.
+     고정 레이어에 두면 섹션을 지나쳐도 화면에 붙어 남기 때문에 문서 흐름으로 넘깁니다. */
+  function dockTowerCanvasToGoods() {
+    if (!towerCanvas || !goodsSection || !goodsHeroSlot || !window.gsap) {
+      return;
+    }
+
+    if (towerCanvas.parentNode !== goodsSection) {
+      goodsSection.appendChild(towerCanvas);
+    }
+    if (transitionLayer) {
+      transitionLayer.hidden = true;
+    }
+
+    /* 도킹 상자는 스크롤과 무관하게 섹션 좌상단에 고정되므로 오프셋을 다시 계산해 둡니다. */
+    var scale = getTowerDockScale();
+    var offset = getTowerSlotOffset(scale);
+    window.gsap.set(towerCanvas, {
+      x: offset.x,
+      y: offset.y,
+      scale: scale,
+      autoAlpha: 1
+    });
+
+    observeDockedTowerVisibility();
+    setTowerRenderActive(true);
+  }
+
   function completeTowerTransition() {
     renderTowerTransition(1);
-    attachTowerCanvasToStage();
+    dockTowerCanvasToGoods();
   }
 
   function attachTowerCanvasToStage() {
@@ -1099,12 +1231,15 @@ function initTowerStack3D() {
     }
   }
 
-  function settleTowerAssemblyProgress(progress) {
+  function settleTowerAssemblyProgress() {
     if (!stack || !stack.timeline || !assemblyTrigger) {
       return;
     }
 
-    /* 숫자 scrub이 이전 위치를 뒤쫓고 있으면 현재 스크롤 진행률까지 즉시 정착시킵니다. */
+    /* 숫자 scrub이 이전 위치를 뒤쫓고 있으면 현재 스크롤이 가리키는 값까지 즉시 정착시킵니다.
+       timeline.progress()를 직접 쓰면 ScrollTrigger는 그 사실을 알지 못해, 스크롤이 다시
+       움직이기 전까지 트리거 진행률과 타임라인이 어긋난 채로 굳습니다. 조립이 끝나지 않았는데
+       완성으로 보이거나 그 반대가 되는 원인이라 scrub 트윈만 정착시키고 값은 건드리지 않습니다. */
     var scrubTween = typeof assemblyTrigger.getTween === "function"
       ? assemblyTrigger.getTween()
       : null;
@@ -1112,12 +1247,80 @@ function initTowerStack3D() {
     if (scrubTween) {
       scrubTween.progress(1);
     }
-    stack.timeline.progress(clamp(progress, 0, 1), true);
   }
 
-  function prepareTowerAssembly(shouldShowCanvas, progress) {
+  /* ScrollTrigger.refresh() 는 측정 과정에서 타임라인을 끝 상태로 돌려놓고 되돌리지 않는
+     경우가 있습니다. 그러면 진행률은 0인데 조립만 완성된 채로 굳고, 스크롤 진행률이 다시
+     바뀌기 전까지 scrub 이 바로잡지 못합니다. 창 크기 변경처럼 우리가 부르지 않은 refresh
+     뒤에도 같은 일이 생기므로 refresh 마다 트리거가 보고하는 값으로 다시 붙입니다.
+     추측한 값이 아니라 트리거 자신의 진행률이라 둘이 어긋날 여지가 없습니다. */
+  function syncTowerAssemblyToTrigger() {
+    if (!stack || !stack.timeline || !assemblyTrigger) {
+      return;
+    }
+
+    stack.timeline.progress(clamp(assemblyTrigger.progress, 0, 1), true);
+  }
+
+  function setTowerScrollPosition(position) {
+    var lenis = window.lenisInstance;
+
+    /* Lenis 가 살아 있으면 window.scrollTo 는 다음 프레임에 되돌려지므로 Lenis 로 옮깁니다. */
+    if (lenis && typeof lenis.scrollTo === "function") {
+      lenis.scrollTo(position, { immediate: true, force: true });
+      return;
+    }
+    window.scrollTo(0, position);
+  }
+
+  /* 지연 로딩 이미지, 폰트 교체, 코스 스테이지 높이 재계산처럼 타워 위쪽 레이아웃이 초기화
+     이후에 바뀌면 ScrollTrigger가 잡아 둔 픽셀 좌표가 실제 위치와 어긋납니다. 그대로 두면
+     섹션이 화면에 보이기도 전에 조립 구간을 지나쳐 완성된 타워만 남으므로 다시 재게 합니다. */
+  function syncTowerTriggerBounds() {
+    if (!assemblyTrigger || !towerStage || !window.ScrollTrigger || isRefreshingTowerBounds) {
+      return;
+    }
+
+    /* stage 자체는 핀 구간 안팎에서 transform 으로 밀려 있어 위치를 신뢰할 수 없습니다.
+       ScrollTrigger 가 끼워 넣은 pin-spacer 는 문서 흐름에 그대로 남아 있어서
+       어느 스크롤 위치에서든 조립 시작 좌표와 직접 비교할 수 있습니다. */
+    var spacer = towerStage.parentNode;
+    var reference = spacer && spacer.classList && spacer.classList.contains("pin-spacer")
+      ? spacer
+      : towerStage;
+    var referenceTop = reference.getBoundingClientRect().top + window.scrollY;
+
+    if (Math.abs(referenceTop - assemblyTrigger.start) <= 2) {
+      return;
+    }
+
+    /* 핀이 걸린 트리거는 스크롤된 상태에서 refresh 하면 스크롤 양만큼 또 어긋나게 잽니다.
+       최상단으로 되돌린 뒤 재고 곧바로 원래 위치로 복귀시켜 한 프레임 안에 끝냅니다.
+       html 의 scroll-behavior: smooth 가 남아 있으면 이 이동이 애니메이션으로 처리돼
+       측정도 복귀도 실패하므로, 이 구간에서만 즉시 이동으로 바꿉니다. */
+    var restorePosition = window.scrollY;
+    var root = document.documentElement;
+    var previousScrollBehavior = root.style.scrollBehavior;
+
+    isRefreshingTowerBounds = true;
+    root.style.scrollBehavior = "auto";
+    setTowerScrollPosition(0);
+    window.ScrollTrigger.refresh();
+    setTowerScrollPosition(restorePosition);
+    root.style.scrollBehavior = previousScrollBehavior;
+
+    /* 좌표가 바뀌었으니 복귀한 스크롤 위치 기준으로 진행률을 다시 계산시킨 뒤 붙입니다. */
+    window.ScrollTrigger.update();
+    syncTowerAssemblyToTrigger();
+
+    window.requestAnimationFrame(function () {
+      isRefreshingTowerBounds = false;
+    });
+  }
+
+  function prepareTowerAssembly(shouldShowCanvas) {
     attachTowerCanvasToStage();
-    settleTowerAssemblyProgress(progress);
+    settleTowerAssemblyProgress();
     if (towerCanvas && window.gsap) {
       /* x는 조립 timeline이 관리합니다. 핸드오프에서만 쓰는 속성만 초기화합니다. */
       window.gsap.set(towerCanvas, {
@@ -1125,9 +1328,6 @@ function initTowerStack3D() {
         scale: 1,
         autoAlpha: shouldShowCanvas ? 1 : 0
       });
-    }
-    if (goodsHeroImage && window.gsap) {
-      window.gsap.set(goodsHeroImage, { autoAlpha: 0 });
     }
   }
 
@@ -1146,6 +1346,9 @@ function initTowerStack3D() {
         window.ScrollTrigger.update();
       }
 
+      /* 좌표를 읽기 전에 실제 레이아웃과 어긋나 있지 않은지 먼저 확인합니다. */
+      syncTowerTriggerBounds();
+
       var scrollPosition = typeof assemblyTrigger.scroll === "function"
         ? assemblyTrigger.scroll()
         : window.scrollY;
@@ -1160,7 +1363,7 @@ function initTowerStack3D() {
         handoffStart <= assemblyStart ||
         handoffEnd <= handoffStart
       ) {
-        prepareTowerAssembly(false, 0);
+        prepareTowerAssembly(false);
         towerTransitionState = "before";
         return;
       }
@@ -1171,21 +1374,19 @@ function initTowerStack3D() {
           towerCanvas.parentNode !== towerStage ||
           (transitionLayer && !transitionLayer.hidden)
         ) {
-          prepareTowerAssembly(false, 0);
+          prepareTowerAssembly(false);
         }
         towerTransitionState = "before";
         return;
       }
 
       if (scrollPosition < handoffStart) {
-        var assemblyProgress = (scrollPosition - assemblyStart) / (handoffStart - assemblyStart);
-
         if (
           towerTransitionState !== "assembly" ||
           towerCanvas.parentNode !== towerStage ||
           (transitionLayer && !transitionLayer.hidden)
         ) {
-          prepareTowerAssembly(true, assemblyProgress);
+          prepareTowerAssembly(true);
         }
         towerTransitionState = "assembly";
         return;
@@ -1197,9 +1398,10 @@ function initTowerStack3D() {
         return;
       }
 
+      /* 안착 상태에서는 캔버스가 Custom Goods 섹션에 들어가 있어야 합니다. */
       if (
         towerTransitionState !== "complete" ||
-        towerCanvas.parentNode !== towerStage ||
+        towerCanvas.parentNode !== goodsSection ||
         (transitionLayer && !transitionLayer.hidden)
       ) {
         completeTowerTransition();
@@ -1224,23 +1426,27 @@ function initTowerStack3D() {
       transitionTrigger.kill();
       transitionTrigger = null;
     }
+    if (window.ScrollTrigger && typeof window.ScrollTrigger.removeEventListener === "function") {
+      window.ScrollTrigger.removeEventListener("refresh", syncTowerAssemblyToTrigger);
+    }
     window.removeEventListener("scroll", requestTowerTransitionSync);
     window.removeEventListener("pageshow", requestTowerTransitionSync);
+    window.removeEventListener("load", requestTowerTransitionSync);
 
-    prepareTowerAssembly(false, 0);
+    if (dockedTowerObserver) {
+      dockedTowerObserver.disconnect();
+      dockedTowerObserver = null;
+    }
+
+    prepareTowerAssembly(false);
     towerTransitionState = "";
     isTowerTransitionSyncRequested = false;
     isSynchronizingTowerTransition = false;
+    isRefreshingTowerBounds = false;
 
     if (transitionLayer) {
       transitionLayer.remove();
       transitionLayer = null;
-    }
-    if (goodsSection) {
-      goodsSection.classList.remove("has_tower_transition");
-    }
-    if (goodsHeroImage && window.gsap) {
-      window.gsap.set(goodsHeroImage, { clearProps: "opacity,visibility" });
     }
   }
 
@@ -1290,18 +1496,19 @@ function initTowerStack3D() {
         ease: "sine.inOut"
       }, assemblyDuration * 0.48);
 
-    if (towerStage && goodsSection && goodsHeroImage && window.ScrollTrigger && assemblyTrigger) {
-      goodsSection.classList.add("has_tower_transition");
-      window.gsap.set(goodsHeroImage, { autoAlpha: 0 });
-
+    if (towerStage && goodsSection && goodsHeroSlot && window.ScrollTrigger && assemblyTrigger) {
       transitionTrigger = window.ScrollTrigger.create({
         trigger: goodsSection,
         /* 조립 핀이 풀리는 정확한 스크롤 좌표에서 핸드오프를 시작합니다. */
         start: function () {
           return assemblyTrigger.end;
         },
-        end: "top top",
-        scrub: 0.6,
+        /* 섹션 상단이 뷰포트 상단에 닿는 "top top" 에서 끝내면, 안착 지점이 곧 해제 지점이라
+           조금만 위로 스크롤해도 타워가 곧바로 위 섹션으로 되돌아갑니다. 게다가 그 위치에서는
+           자리 윗부분이 고정 헤더에 가립니다. 화면 25% 지점에서 끝내면 헤더를 확실히 비켜나고,
+           그만큼(뷰포트의 25%)이 위로 스크롤해도 안착 상태가 유지되는 여유 구간이 됩니다. */
+        end: "top 25%",
+        scrub: towerScrollScrub,
         invalidateOnRefresh: true,
         onEnter: requestTowerTransitionSync,
         onUpdate: requestTowerTransitionSync,
@@ -1312,9 +1519,14 @@ function initTowerStack3D() {
         onRefresh: requestTowerTransitionSync
       });
 
+      /* 창 크기 변경 등 GSAP 이 스스로 부르는 refresh 뒤에도 조립 상태를 다시 붙입니다. */
+      window.ScrollTrigger.addEventListener("refresh", syncTowerAssemblyToTrigger);
+
       /* Lenis 앵커 이동과 빠른 휠 스크롤도 실제 scroll 위치로 상태를 확정합니다. */
       window.addEventListener("scroll", requestTowerTransitionSync, { passive: true });
       window.addEventListener("pageshow", requestTowerTransitionSync);
+      /* 지연 로딩 이미지까지 다 들어온 뒤 좌표가 밀려 있으면 이때 바로잡습니다. */
+      window.addEventListener("load", requestTowerTransitionSync);
     }
 
     window.ScrollTrigger.refresh();
@@ -1335,6 +1547,8 @@ function initTowerStack3D() {
     if (desktopQuery.matches && !stack) {
       stack = window.ScrollStack3D.init({
         mount: mount,
+        scrollLength: towerScrollLength,
+        scrub: towerScrollScrub,
         /* 모듈 기본 오버레이(라벨·단계 목록·진행 레일)는 시안에 없어 끕니다. */
         ui: false
       });
@@ -1383,19 +1597,8 @@ function renderCustomGoods(items) {
 
   var fragment = document.createDocumentFragment();
 
-  items.forEach(function (item, index) {
+  items.forEach(function (item) {
     var card = createElement("li", "goods_card");
-
-    if (index === 0) {
-      var arc = createElement("img", "goods_card_arc");
-      arc.src = ASSET_PATH + "custom_goods/goods_card_arc.svg";
-      arc.alt = "";
-      arc.width = 695;
-      arc.height = 695;
-      arc.loading = "lazy";
-      arc.setAttribute("aria-hidden", "true");
-      card.appendChild(arc);
-    }
 
     card.appendChild(createMedia("goods_card_media", item.image, item.imageAlt, 280, 317, true));
 
@@ -1417,25 +1620,145 @@ function renderCustomGoods(items) {
   list.appendChild(fragment);
 }
 
+/* --------------------------------------------------------------------------
+   restaurant — 카드 스택이 끝난 뒤 전체 화면 전환
+   마지막 카드가 멈춘 지점에서 한 번 더 스크롤하면 카드가 화면을 채우고,
+   제목이 한 글자씩 타이핑된 뒤 버튼이 나타나며 중심을 기준으로 살짝 기울었다 돌아옵니다.
+   카드가 멈추는 위치는 CSS 의 --restaurant_stage_top (모바일 25svh / 834px 이상 348px)이며,
+   모든 해상도에서 같은 방식으로 동작합니다. reduced motion 에서는 정적 배치를 그대로 둡니다.
+   -------------------------------------------------------------------------- */
 function initRestaurantStackState() {
   var restaurantAll = document.querySelector("[data-restaurant-all]");
-  if (!restaurantAll) {
+  var restaurantStage = document.querySelector("[data-restaurant-all-stage]");
+  var restaurantLayer = document.querySelector("[data-restaurant-stack-layer]");
+  var restaurantTitle = document.querySelector("[data-restaurant-all-title]");
+  var restaurantMore = document.querySelector("[data-restaurant-all-more]");
+
+  if (
+    !restaurantAll ||
+    !restaurantStage ||
+    !restaurantLayer ||
+    !restaurantTitle ||
+    !restaurantMore
+  ) {
     return;
   }
 
+  /* 카드가 멈춘 뒤 전체 화면으로 펼치기까지 필요한 추가 스크롤 거리입니다. */
+  var EXPAND_OFFSET = 90;
+  /* 되돌릴 때는 더 짧은 거리를 기준으로 삼아 경계에서 상태가 떨리지 않게 합니다. */
+  var COLLAPSE_OFFSET = 40;
+  /* 확대 전환(640ms)이 끝난 뒤 타이핑을 시작합니다. */
+  var TYPING_START_DELAY = 560;
+  /* 글자 하나가 찍히는 시간입니다. 값을 키울수록 천천히 타이핑됩니다. */
+  var TYPING_CHAR_DURATION = 100;
+
+  var titleText = restaurantTitle.textContent;
   var stickyMedia = window.matchMedia("(min-width: 834px)");
   var isFrameRequested = false;
+  var isMotionEnabled = false;
+  var isFullscreen = false;
+  var typingStartTimer = 0;
+  var typingFrame = 0;
+  var typingStartTime = 0;
+
+  function stopTyping() {
+    window.clearTimeout(typingStartTimer);
+    typingStartTimer = 0;
+
+    if (typingFrame) {
+      window.cancelAnimationFrame(typingFrame);
+      typingFrame = 0;
+    }
+
+    typingStartTime = 0;
+  }
+
+  function renderTypingStep(now) {
+    if (!typingStartTime) {
+      typingStartTime = now;
+    }
+
+    var typedLength = Math.min(
+      titleText.length,
+      Math.floor((now - typingStartTime) / TYPING_CHAR_DURATION)
+    );
+
+    restaurantTitle.textContent = titleText.slice(0, typedLength);
+
+    if (typedLength < titleText.length) {
+      typingFrame = window.requestAnimationFrame(renderTypingStep);
+      return;
+    }
+
+    typingFrame = 0;
+    restaurantAll.classList.remove("is_typing");
+    restaurantMore.classList.add("is_revealed");
+  }
+
+  function startTypingSequence() {
+    stopTyping();
+    restaurantTitle.textContent = "";
+    restaurantMore.classList.remove("is_revealed");
+    restaurantAll.classList.add("is_typing");
+
+    typingStartTimer = window.setTimeout(function () {
+      typingFrame = window.requestAnimationFrame(renderTypingStep);
+    }, TYPING_START_DELAY);
+  }
+
+  function resetTypingSequence() {
+    stopTyping();
+    restaurantAll.classList.remove("is_typing");
+    restaurantMore.classList.remove("is_revealed");
+    /* 모션을 쓰지 않는 화면에서는 문구가 사라진 채로 남지 않게 되돌립니다. */
+    restaurantTitle.textContent = isMotionEnabled ? "" : titleText;
+  }
+
+  function setMotionEnabled(isEnabled) {
+    if (isMotionEnabled === isEnabled) {
+      return;
+    }
+
+    isMotionEnabled = isEnabled;
+    restaurantAll.classList.toggle("is_motion_ready", isEnabled);
+
+    if (!isEnabled) {
+      isFullscreen = false;
+      restaurantAll.classList.remove("is_fullscreen");
+    }
+
+    resetTypingSequence();
+  }
 
   function renderRestaurantStackState() {
-    var restaurantRect = restaurantAll.getBoundingClientRect();
-    var stickyTop = parseFloat(window.getComputedStyle(restaurantAll).top) || 0;
-    var isStacked =
-      stickyMedia.matches &&
-      restaurantRect.top <= stickyTop + 1 &&
-      restaurantRect.bottom > stickyTop;
+    isFrameRequested = false;
+
+    /* 스테이지는 sticky 라서 멈춘 뒤에는 좌표가 고정됩니다.
+       추가로 스크롤한 거리는 흐름 위치가 그대로인 부모 레이어로 잽니다. */
+    var stickyTop = parseFloat(window.getComputedStyle(restaurantStage).top) || 0;
+    var stuckOffset = stickyTop - restaurantLayer.getBoundingClientRect().top;
+    var stickyRange = restaurantLayer.offsetHeight - restaurantStage.offsetHeight;
+    var isStacked = stickyMedia.matches && stuckOffset >= 0 && stuckOffset <= stickyRange;
 
     restaurantAll.classList.toggle("is_stacked", isStacked);
-    isFrameRequested = false;
+
+    /* 한 번 펼쳐진 뒤에는 sticky 구간을 벗어나도 접지 않고 그대로 흘러 나갑니다. */
+    var shouldExpand =
+      isMotionEnabled && stuckOffset >= (isFullscreen ? COLLAPSE_OFFSET : EXPAND_OFFSET);
+
+    if (shouldExpand === isFullscreen) {
+      return;
+    }
+
+    isFullscreen = shouldExpand;
+    restaurantAll.classList.toggle("is_fullscreen", isFullscreen);
+
+    if (isFullscreen) {
+      startTypingSequence();
+    } else {
+      resetTypingSequence();
+    }
   }
 
   function requestRestaurantStackRender() {
@@ -1447,16 +1770,21 @@ function initRestaurantStackState() {
     window.requestAnimationFrame(renderRestaurantStackState);
   }
 
-  window.addEventListener("scroll", requestRestaurantStackRender, { passive: true });
-  window.addEventListener("resize", requestRestaurantStackRender);
-
-  if (typeof stickyMedia.addEventListener === "function") {
-    stickyMedia.addEventListener("change", requestRestaurantStackRender);
-  } else if (typeof stickyMedia.addListener === "function") {
-    stickyMedia.addListener(requestRestaurantStackRender);
+  function handleRestaurantLayoutChange() {
+    setMotionEnabled(!isReducedMotion());
+    requestRestaurantStackRender();
   }
 
-  requestRestaurantStackRender();
+  window.addEventListener("scroll", requestRestaurantStackRender, { passive: true });
+  window.addEventListener("resize", handleRestaurantLayoutChange);
+
+  if (typeof stickyMedia.addEventListener === "function") {
+    stickyMedia.addEventListener("change", handleRestaurantLayoutChange);
+  } else if (typeof stickyMedia.addListener === "function") {
+    stickyMedia.addListener(handleRestaurantLayoutChange);
+  }
+
+  handleRestaurantLayoutChange();
 }
 
 /* --------------------------------------------------------------------------
@@ -1556,10 +1884,10 @@ function initMain() {
   renderCustomGoods(mainPageData.customGoodsItems);
 
   initHeroSectionJump();
+  initHeroVisualVideo();
   initCourseSceneVideo();
   initCourseScrollScene();
   initPassTicketFlip();
-  initGiftTrackCursor();
   initTowerReveal();
   initTowerStack3D();
   initRestaurantStackState();

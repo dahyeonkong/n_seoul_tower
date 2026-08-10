@@ -109,9 +109,9 @@
           </button>
           <ul class="language_menu" id="language_menu" data-language-menu hidden>
             <li><button class="language_option" type="button" data-language="en" aria-current="true">English</button></li>
-            <li><button class="language_option" type="button" data-language="ko">Korean</button></li>
-            <li><button class="language_option" type="button" data-language="ja">Japanese</button></li>
-            <li><button class="language_option" type="button" data-language="zh">Chinese</button></li>
+            <li><button class="language_option" type="button" data-language="ko" disabled>Korean</button></li>
+            <li><button class="language_option" type="button" data-language="ja" disabled>Japanese</button></li>
+            <li><button class="language_option" type="button" data-language="zh" disabled>Chinese</button></li>
           </ul>
         </div>
         <!-- 닫기 버튼은 헤더의 menu_toggle 이 그대로 X 로 변형되어 겸합니다.
@@ -172,81 +172,58 @@
 
     <main class="main_content" id="main_content">
 
-      <!-- ===================== 1. hero (main_visual) =====================
-           Figma main_visual (1920 x 1080) 기준으로 교체한 히어로입니다.
-           이전 디자인은 아래 .legacy_hero 섹션에 그대로 보존되어 있습니다.
-           되돌리는 방법은 css/main.css 의 "히어로 교체 토글" 주석을 참고하세요.
-           ================================================================= -->
+      <!-- ===================== 1. hero (main_visual) ===================== -->
       <section class="main_visual" id="hero_section" aria-labelledby="hero_title">
-        <!-- 배경 원 (Figma Ellipse 39) -->
-        <span class="main_visual_glow" aria-hidden="true"></span>
+        <!-- Figma 의 hero_vid 레이어. 마스크(main_visual_photo.svg)는 CSS 에서 씌웁니다. -->
+        <div class="main_visual_photo" aria-hidden="true">
+          <img src="./assets/hero_img.png" >
+        </div>
 
-        <h1 class="main_visual_title" id="hero_title">
-          <span class="main_visual_title_stage" aria-hidden="true">
-            <span class="main_visual_title_art main_visual_title_art_left"></span>
-            <span class="main_visual_title_art main_visual_title_art_right"></span>
-          </span>
-          <span class="visually_hidden">N Seoul Tower</span>
-        </h1>
+        <div class="main_visual_copy">
+          <h1 class="main_visual_title" id="hero_title">
+            <span>N Seoul</span>
+            <span>Tower</span>
+          </h1>
+          <img class="main_visual_title_line" src="./assets/main_visual_line.svg" alt="" width="520" height="1" aria-hidden="true">
+          <p class="main_visual_tagline">a special moment in the heart of seoul</p>
+        </div>
 
-        <!-- 회전 타워 — reduced motion 에서는 정지 이미지로 대체합니다. -->
-        <picture class="main_visual_tower">
-          <source media="(prefers-reduced-motion: reduce)" srcset="./assets/main_visual_turntable.png" type="image/png">
-          <img
-            class="main_visual_tower_img"
-            src="./assets/main_visual_turntable.png"
-            alt=""
-            aria-hidden="true"
-            width="1934"
-            height="1934"
-            fetchpriority="high"
-            decoding="async"
-          >
-        </picture>
-
-        <div class="page_container main_visual_inner">
-          <div class="main_visual_bar">
-            <div class="main_visual_group">
-              <div class="main_visual_item main_visual_item_weather">
-                <img class="main_visual_weather_icon" src="./assets/icon/weather/sunny.svg" alt="" aria-hidden="true" width="74" height="74">
-                <div class="main_visual_text">
-                  <p class="main_visual_label">sunny</p>
-                  <p class="main_visual_value">28<span class="main_visual_unit">°C</span></p>
-                </div>
-              </div>
-
-              <span class="main_visual_divider" aria-hidden="true"></span>
-
-              <div class="main_visual_item">
-                <div class="main_visual_text">
-                  <p class="main_visual_label">Hours</p>
-                  <p class="main_visual_value main_visual_value_hours">
-                    <span class="main_visual_value_group">10:00<span class="main_visual_unit">AM</span></span>
-                    <span class="main_visual_value_sep">-</span>
-                    <span class="main_visual_value_group">10:30<span class="main_visual_unit">PM</span></span>
-                  </p>
-                </div>
-              </div>
+        <div class="main_visual_ticket">
+          <img class="main_visual_ticket_shape" src="./assets/main_visual_ticket.png" alt="" width="1000" height="1000" aria-hidden="true">
+          <div class="main_visual_ticket_content">
+            <div class="main_visual_ticket_text">
+              <p class="main_visual_label">Ticket Price</p>
+              <p class="main_visual_ticket_price">29,000<span>KRW</span></p>
             </div>
+            <a class="btn_stroke main_visual_book" href="https://naver.me/x0UEXKKZ" target="_blank" rel="noopener noreferrer">BOOKING</a>
+          </div>
+        </div>
 
-            <div class="main_visual_group">
-              <div class="main_visual_item">
-                <div class="main_visual_text">
-                  <p class="main_visual_label">Observatory wait time</p>
-                  <p class="main_visual_value">45<span class="main_visual_unit">Min</span></p>
-                </div>
-              </div>
-
-              <span class="main_visual_divider" aria-hidden="true"></span>
-
-              <div class="main_visual_item main_visual_item_ticket">
-                <div class="main_visual_text">
-                  <p class="main_visual_label">Ticket Price</p>
-                  <p class="main_visual_value">29,000<span class="main_visual_unit">KRW</span></p>
-                </div>
-                <a class="btn_stroke main_visual_book" href="https://naver.me/x0UEXKKZ" target="_blank" rel="noopener noreferrer">BOOK NOW</a>
-              </div>
+        <div class="main_visual_info" aria-label="Current visitor information">
+          <div class="main_visual_weather">
+            <p class="main_visual_temperature">28<span>°C</span></p>
+            <div class="main_visual_weather_text">
+              <p>Yongsan, Seoul</p>
+              <p>Sunny</p>
+              <p>Sunset Time 07:25 PM</p>
             </div>
+            <img class="main_visual_weather_icon" src="./assets/icon/weather/sunny.svg" alt="Sunny" width="74" height="74">
+          </div>
+
+          <img class="main_visual_divider" src="./assets/main_visual_divider.svg" alt="" width="1" height="68" aria-hidden="true">
+
+          <div class="main_visual_info_item">
+            <p class="main_visual_label">Visiting Hours</p>
+            <p class="main_visual_info_value">
+              10:00<span>AM</span><b>-</b>10:30<span>PM<span class="main_visual_kst">(KST)</span></span>
+            </p>
+          </div>
+
+          <img class="main_visual_divider" src="./assets/main_visual_divider.svg" alt="" width="1" height="68" aria-hidden="true">
+
+          <div class="main_visual_info_item">
+            <p class="main_visual_label">Observatory wait time</p>
+            <p class="main_visual_info_value">45<span>Min</span></p>
           </div>
         </div>
       </section>
@@ -352,7 +329,7 @@
             <div class="course_scene" data-course-scene>
               <img class="course_scene_bg" src="./assets/guide_course/walk_bg.png" alt="" aria-hidden="true" width="2010" height="711" loading="lazy">
               <!-- 코스가 진행되는 동안에는 영상이 walk_bg 를 덮고, 스크롤이 끝나면 사라집니다. -->
-              <video
+              <!-- <video
                 class="course_scene_video"
                 data-course-video
                 width="1280"
@@ -363,9 +340,10 @@
                 aria-hidden="true"
               >
                 <source src="./assets/coures_nbear.mp4" type="video/mp4">
-              </video>
-              <!-- <iframe
+              </video> -->
+              <iframe
                 class="course_scene_char"
+                data-course-flight-origin
                 src="./n_seoul_mascot_3d/embed.html"
                 title="제자리에서 걷는 N서울타워 3D 마스코트"
                 width="262"
@@ -373,18 +351,8 @@
                 loading="lazy"
                 tabindex="-1"
                 aria-hidden="true"
-              ></iframe> -->
-              <!-- 스크롤이 끝났을 때만 보이는, 티켓을 건네는 곰. 걷는 3D 마스코트와 자리를 바꿉니다. -->
-              <img
-                class="course_scene_bear"
-                data-course-bear
-                src="./assets/Angolmi_ticket.gif"
-                alt=""
-                aria-hidden="true"
-                width="608"
-                height="656"
-                loading="lazy"
-              >
+              ></iframe>
+
               <ul class="course_list" data-course-list>
                 <!-- renderCourses() -->
               </ul>
@@ -396,8 +364,8 @@
       <!-- ===================== 4. n pass ===================== -->
       <section class="pass_section" id="pass_section" aria-labelledby="pass_title">
         <div class="page_container">
-          <!-- 코스 구간이 끝나면 티켓이 떨어져 내려와 뒤집히고, 뒷면(ticket.png)이
-               앞면인 N Pass 티켓으로 바뀝니다. 데스크톱에서만 동작합니다. -->
+          <!-- 섹션에 진입하면 티켓 뒷면(ticket.png)이 나타나 뒤집히며
+               앞면인 N Pass 티켓으로 바뀝니다. -->
           <div class="pass_flip" data-pass-flip>
             <div class="pass_flip_inner">
               <div class="pass_ticket">
@@ -481,10 +449,17 @@
               </div>
             </article>
 
-            <div class="restaurant_stack_layer">
-            <div class="restaurant_all restaurant_stack_card restaurant_stack_card_4" data-restaurant-all>
-              <h3 class="restaurant_all_title">Would you like to try more restaurants?</h3>
-              <a class="restaurant_more" href="./pages/restaurant_n_burger.html">View All Restaurants</a>
+            <div class="restaurant_stack_layer" data-restaurant-stack-layer>
+            <!-- 스테이지는 sticky 로 자리를 잡고, 그 안의 카드만 전체 화면으로 펼쳐집니다. -->
+            <div class="restaurant_all_stage restaurant_stack_card restaurant_stack_card_4" data-restaurant-all-stage>
+              <div class="restaurant_all" data-restaurant-all>
+                <h3 class="restaurant_all_title">
+                  <!-- 타이핑 중 제목 상자가 줄어들지 않도록 전체 문구로 자리를 잡아 둡니다. -->
+                  <span class="restaurant_all_title_ghost" aria-hidden="true">Would you like to try more restaurants?</span>
+                  <span class="restaurant_all_title_text" data-restaurant-all-title>Would you like to try more restaurants?</span>
+                </h3>
+                <a class="restaurant_more" href="./pages/restaurant_n_burger.html" data-restaurant-all-more>View All Restaurants</a>
+              </div>
             </div>
             <div class="restaurant_stack_end" aria-hidden="true"></div>
             </div>
@@ -503,6 +478,10 @@
             <h2 class="section_title" id="gift_title">N Gift Shop</h2>
           </div>
           <p class="section_desc">Make your special moments in Seoul last forever.</p>
+          <a class="btn btn_green gift_head_more" href="./pages/n_gift_shop.html">
+            View all products
+            <img class="btn_icon" src="./assets/icon/arrow_right.png" alt="" width="19" height="19">
+          </a>
         </div>
 
         <div class="gift_track_wrap" data-gift-wrap>
@@ -515,15 +494,6 @@
           >
             <!-- renderGiftItems() -->
           </ul>
-          <span class="gift_cursor" data-gift-cursor aria-hidden="true">
-            <svg viewBox="0 0 64 40" aria-hidden="true" focusable="false">
-              <path d="M10 20H50M37 7L51 20L37 33" />
-            </svg>
-          </span>
-          <!-- <button class="btn_circle gift_more" type="button" data-pending-link aria-disabled="true">
-            <img src="./assets/icon/arrow_cursor.png" alt="" width="44" height="39">
-            <span class="visually_hidden">See all gift shop products</span>
-          </button> -->
         </div>
       </section>
 
@@ -548,24 +518,20 @@
             <h2 class="section_title" id="goods_title">Custom Goods</h2>
           </div>
           <p class="section_desc">From candles to love locks, keycaps, and fans, personalize iconic souvenirs inspired by N Seoul Tower.</p>
-          <button class="btn btn_light_olive" type="button" data-pending-link aria-disabled="true">
+          <!-- <button class="btn btn_light_olive" type="button" data-pending-link aria-disabled="true">
             view more
             <img class="btn_icon" src="./assets/icon/arrow_right.png" alt="" width="19" height="19">
-          </button>
+          </button> -->
         </div>
 
         <div class="goods_hero">
           <img class="goods_hero_arc" src="./assets/custom_goods/goods_arc.svg" alt="" aria-hidden="true" width="428" height="214" loading="lazy">
-          <img class="goods_hero_img" src="./assets/custom_goods/goods1.png" alt="Completed Seoul Glow Candle stacked into a tower" width="280" height="317" loading="lazy">
+          <!-- 위에서 조립된 3D 타워가 안착하는 자리입니다. 자리(크기·위치)만 잡고 이미지는 두지 않습니다. -->
+          <div class="goods_hero_slot" data-goods-hero-slot aria-hidden="true"></div>
         </div>
 
-        <ul
-          class="goods_list"
-          data-goods-list
-          tabindex="0"
-          role="group"
-          aria-label="Custom goods, scrollable list"
-        >
+        <!-- 가로 스크롤 목록이 아니라 2 x 2 그리드(모바일·태블릿) / 한 줄 배치(데스크톱)입니다. -->
+        <ul class="goods_list" data-goods-list>
           <!-- renderCustomGoods() -->
         </ul>
 
@@ -575,111 +541,8 @@
     </main>
 
     <!-- ===================== footer ===================== -->
-    <footer class="site_footer" data-quick-dark>
-      <div class="page_container site_footer_inner">
-        <div class="footer_top">
-          <p class="footer_logo">
-            <img src="./assets/nst_logo_defalut.svg" alt="N Seoul Tower" width="80" height="107" loading="lazy">
-          </p>
-        </div>
-
-        <div class="footer_body">
-          <div class="footer_info">
-            <address class="footer_info_list">
-              <p class="footer_info_row">Business Registration Number: 312-81-42519</p>
-              <p class="footer_info_row">
-                <span>CEO: Lee Geon-il</span>
-                <span class="footer_divider" aria-hidden="true"></span>
-                <span>Chief Privacy Officer: Kim Jae-wan</span>
-              </p>
-              <p class="footer_info_row">Address: N Seoul Tower, 105, Namsangongwon-gil, Yongsan-gu, Seoul</p>
-              <p class="footer_info_row">
-                <a href="tel:+82234559277">Tel : 02) 3455 - 9277, 9288</a>
-                <span class="footer_divider" aria-hidden="true"></span>
-                <a href="mailto:helpmaster@cj.net">Email : helpmaster@cj.net</a>
-              </p>
-            </address>
-
-            <div class="family_site">
-              <button
-                class="family_site_button"
-                type="button"
-                data-family-button
-                aria-expanded="false"
-                aria-controls="family_site_menu"
-              >
-                family site
-                <img src="./assets/icon/icon_chevron_down.svg" alt="" width="24" height="24" loading="lazy">
-              </button>
-              <div class="family_site_menu" id="family_site_menu" data-family-menu hidden>
-                <div class="family_site_group">
-                  <p class="family_site_group_title">CJ그룹</p>
-                  <a class="family_site_link" href="https://www.cj.net" target="_blank" rel="noreferrer">CJ주식회사</a>
-                </div>
-                <div class="family_site_group">
-                  <p class="family_site_group_title">식품&amp;식품서비스</p>
-                  <a class="family_site_link" href="https://www.cj.co.kr" target="_blank" rel="noreferrer">CJ제일제당</a>
-                  <a class="family_site_link" href="https://www.cjfoodville.co.kr" target="_blank" rel="noreferrer">CJ푸드빌</a>
-                  <a class="family_site_link" href="https://www.cjfreshway.com" target="_blank" rel="noreferrer">CJ프레시웨이</a>
-                </div>
-                <div class="family_site_group">
-                  <p class="family_site_group_title">생명공학</p>
-                  <a class="family_site_link" href="https://www.cj.co.kr" target="_blank" rel="noreferrer">CJ제일제당 BIO사업부문</a>
-                  <a class="family_site_link" href="https://www.cjfeedncare.co.kr" target="_blank" rel="noreferrer">CJ Feed&amp;Care</a>
-                </div>
-                <div class="family_site_group">
-                  <p class="family_site_group_title">물류 &amp; 신유통</p>
-                  <a class="family_site_link" href="https://www.cjlogistics.com" target="_blank" rel="noreferrer">CJ대한통운</a>
-                  <a class="family_site_link" href="https://www.cjlogistics.com" target="_blank" rel="noreferrer">CJ대한통운 건설부문</a>
-                  <a class="family_site_link" href="https://www.oliveyoung.co.kr" target="_blank" rel="noreferrer">CJ올리브영</a>
-                  <a class="family_site_link" href="https://www.cjolivenetworks.co.kr" target="_blank" rel="noreferrer">CJ올리브네트웍스</a>
-                  <a class="family_site_link" href="https://www.cjenm.com" target="_blank" rel="noreferrer">CJ ENM 커머스부문</a>
-                </div>
-                <div class="family_site_group">
-                  <p class="family_site_group_title">엔터테인먼트&amp;미디어</p>
-                  <a class="family_site_link" href="https://www.cjenm.com" target="_blank" rel="noreferrer">CJ ENM 엔터테인먼트부문</a>
-                  <a class="family_site_link" href="https://www.cgv.co.kr" target="_blank" rel="noreferrer">CJ CGV</a>
-                  <a class="family_site_link" href="https://www.cjpowercast.com" target="_blank" rel="noreferrer">CJ파워캐스트</a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="footer_service">
-            <h2 class="footer_service_title">customer service</h2>
-            <a class="footer_service_btn" href="#top">FAQ</a>
-            <a class="footer_service_btn" href="#top">Contact Us</a>
-          </div>
-        </div>
-
-        <div class="footer_bottom">
-          <div class="footer_bottom_row">
-            <p class="footer_copyright">© 2026. ALL RIGHTS RESERVED BY SEOUL TOWER</p>
-            <ul class="footer_sns">
-              <li>
-                <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
-                  <img src="./assets/icon/sns/sns1.png" alt="" width="24" height="24" loading="lazy">
-                  <span class="visually_hidden">Facebook</span>
-                </button>
-              </li>
-              <li>
-                <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
-                  <img src="./assets/icon/sns/sns2.png" alt="" width="24" height="24" loading="lazy">
-                  <span class="visually_hidden">Instagram</span>
-                </button>
-              </li>
-              <li>
-                <button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">
-                  <img src="./assets/icon/sns/sns3.png" alt="" width="24" height="24" loading="lazy">
-                  <span class="visually_hidden">YouTube</span>
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <!-- <img class="footer_deco" src="./assets/footer_tower.png" alt="" aria-hidden="true" width="418" height="417" loading="lazy"> -->
-      </div>
-    </footer>
+    <!-- 공통 푸터: 마크업은 js/common.js 에서 생성합니다. -->
+    <div data-common-footer></div>
 
     <!-- 공통 퀵 메뉴: 페이지별 섹션 목록은 common.js 설정에서 관리합니다. -->
     <div data-quick-menu-mount></div>
