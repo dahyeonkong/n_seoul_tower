@@ -774,7 +774,7 @@ function initGlobalMenu() {
 /* --------------------------------------------------------------------------
    공통 푸터 (Figma 987:7708 하단)
    모든 페이지가 같은 마크업을 복사해 쓰던 것을 하나로 모았습니다.
-   top 버튼과 타워 실루엣을 포함해 전 페이지가 완전히 같은 푸터를 씁니다.
+   전 페이지가 완전히 같은 푸터를 씁니다. 맨 위로 이동은 퀵 메뉴가 담당합니다.
    -------------------------------------------------------------------------- */
 var FAMILY_SITE_GROUPS = [
   {
@@ -885,10 +885,6 @@ function getFooterMarkup(assetPath) {
     '<p class="footer_logo">' +
     '<img src="' + assetPath + 'nst_logo_defalut.svg" alt="N Seoul Tower" width="80" height="107" loading="lazy">' +
     "</p>" +
-    '<a class="top_button" href="#top">' +
-    '<img src="' + assetPath + 'icon/arrow_up.png" alt="" width="24" height="24" loading="lazy">' +
-    "top" +
-    "</a>" +
     "</div>" +
 
     '<div class="footer_body">' +
@@ -924,9 +920,6 @@ function getFooterMarkup(assetPath) {
     '<ul class="footer_sns">' + getFooterSnsMarkup(assetPath) + "</ul>" +
     "</div>" +
     "</div>" +
-
-    '<img class="footer_deco" src="' + assetPath + 'footer_tower.png" alt="" aria-hidden="true" ' +
-    'width="418" height="417" loading="lazy">' +
     "</div>" +
     "</footer>"
   );
