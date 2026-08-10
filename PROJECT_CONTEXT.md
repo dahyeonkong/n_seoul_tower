@@ -212,6 +212,39 @@ Recommended Courses 패널과 같은 `course_intro` 블록을 추가했습니다
   `restaurant_n_burger.html` / `brand_story.html` 의 `subpage_tab` 은
   링크이거나 `data-pending-link` 비활성 버튼입니다.
 
+## 모바일 메뉴 2열 그리드 (2026-08-11 변경)
+
+모바일(`max-width: 833px`)에서 메뉴 오버레이가 세로로 1200px 넘게 늘어나 스크롤해야
+전체 항목을 볼 수 있었습니다(360 × 800 기준 콘텐츠 1211px, 411px 초과).
+스크롤 없이 한 화면에 담도록 `common.css` 의 모바일 미디어쿼리만 고쳤습니다.
+
+- `.global_menu` 를 `height: 100dvh` + `overflow: hidden` 으로 두고,
+  `100vh` 를 앞줄에 남겨 dvh 미지원 브라우저 폴백으로 씁니다.
+  주소창 변화는 `dvh`, 노치·홈 인디케이터는 `env(safe-area-inset-*)` 로 처리합니다.
+- `.global_menu_body { flex: 1; min-height: 0 }` — 언어 바를 뺀 나머지 높이를 전부 차지합니다.
+- `.gnb` 를 `grid-template-columns: repeat(2, minmax(0, 1fr))` 2열로 바꿨습니다.
+  5개 그룹이 3행(tower story·explore / visit·events / support)으로 들어갑니다.
+  DOM 순서 = 행 우선 시각 순서라 탭 순서가 어긋나지 않습니다.
+- 로고·타이틀·링크 높이는 전부 `clamp(최소, N dvh, 최대)` 라서 화면이 짧아지면 함께 줄고
+  최소값 아래로는 내려가지 않습니다. 링크는 `clamp(38px, 5.4dvh, 44px)` 입니다.
+- **세로 640px 미만에서는 이 크기로도 안 담깁니다.** `overflow: hidden` 을 유지하면
+  마지막 그룹이 잘려 접근 자체가 불가능해지므로,
+  `@media (max-width: 833px) and (max-height: 639px)` 에서만 스크롤을 되살립니다.
+- 834px 이상(태블릿·데스크톱)은 손대지 않았습니다.
+- 메뉴 마크업은 `index.html` 은 인라인, `pages/` 4개는 `common.js` 의
+  `getSubHeaderMarkup()` 주입본이며 내용이 같아 5개 페이지에 동일하게 적용됩니다.
+
+### 실측 (링크 높이 / 스크롤 초과)
+
+| 뷰포트 | 링크 높이 | 초과 | 비고 |
+| --- | --- | --- | --- |
+| 360 × 800 | 43px | 0 | 기준 해상도 |
+| 390 × 844 | 44px | 0 | |
+| 360 × 640 | 38px | 0 | 최소값 도달 |
+| 832 × 700 | 38px | 0 | 모바일 상한 |
+| 320 × 568 | 38px | 14 | 스크롤 폴백 구간 |
+| 834 × 1112 | 44px | — | 기존 태블릿 레이아웃 유지 |
+
 ## 헤더 토글 버튼 (2026-08-05 변경)
 
 `assets/menu_icon.svg` 정적 이미지 대신 **인라인 SVG 1개 path 를 `stroke-dasharray` 구간으로 잘라 햄버거 ↔ X 로 변형**하는 방식으로 교체했습니다. (참고: https://survedaa.com 헤더 토글)
@@ -543,6 +576,11 @@ JS 는 `ASSET_PATH = "./assets/"` 를 접두로 두고 데이터에 하위 경�
     메인 페이지(`index.html`) 기프트숍 섹션 이미지 8장이 404 입니다.** 에셋 파일명이
     `n_gomi_toy` / `n_gomi_mug` / `n_gomi_keyring` / `tumbler` 등으로 바뀌었고
     `gift1` / `gift6` / `gift7` / `gift8` 은 삭제되어 대체 이미지가 없습니다.
+- **브레이크포인트 833 / 834 사이에 틈이 있습니다.** 뷰포트 폭이 833.5px 처럼 소수로 잡히면
+  `max-width: 833px` 와 `min-width: 834px` 가 **둘 다 매칭되지 않아** 모바일·태블릿 스타일이
+  전부 빠지고 기본(데스크톱) 값이 남습니다. 브라우저 창을 833px 로 맞췄을 때 재현했습니다.
+  `common.css` 전반에 걸친 규칙이라 이번에는 손대지 않았고, 정리한다면
+  `max-width: 833.98px` 로 통일하는 방식이 있습니다.
 - 날씨·대기시간·티켓가격은 Figma 표기값을 그대로 넣은 정적 값입니다. 실제 API 미연동.
 - 모바일 360 / 태블릿 834 Figma 프레임이 없어 반응형은 PRD·AGENTS 규칙 기준으로 설계했습니다.
 - **명도 대비**: 디자인 색상을 그대로 사용한 결과 아래 조합이 WCAG AA(일반 텍스트 4.5:1)에 미달합니다. 색상을 임의로 바꾸지 않고 그대로 두었으니 디자인 확인이 필요합니다.
