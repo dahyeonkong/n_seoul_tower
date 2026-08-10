@@ -195,15 +195,46 @@
             </div>
           </article>
 
-          <!-- 대각선 진행 표시. 패널 순서를 나타내는 장식이라 접근성 트리에서 제외합니다. -->
-          <ol class="about_rail" aria-hidden="true" data-about-rail>
-            <li class="about_step is_active"><span class="about_step_dot"></span><span class="about_step_num">01</span>
+          <!-- 대각선 진행 표시. 데스크톱에서는 스크롤 진행을 나타내는 장식이고,
+               모바일에서는 눌러서 해당 슬라이드로 넘어가는 버튼입니다.
+               버튼은 흐름에 끼어들지 않도록 각 단계 위에 겹쳐 둡니다
+               (.about_step 의 flex 배치와 :nth-child 위치 계산을 건드리지 않으려고). -->
+          <ol class="about_rail" data-about-rail aria-label="About slides">
+            <li class="about_step is_active">
+              <button class="about_step_button" type="button" data-about-step="0" aria-label="Slide 1"></button>
+              <span class="about_step_dot"></span><span class="about_step_num">01</span>
             </li>
-            <li class="about_step"><span class="about_step_dot"></span><span class="about_step_num">02</span></li>
-            <li class="about_step"><span class="about_step_dot"></span><span class="about_step_num">03</span></li>
-            <li class="about_step"><span class="about_step_dot"></span><span class="about_step_num">04</span></li>
-            <li class="about_step"><span class="about_step_dot"></span><span class="about_step_num">05</span></li>
+            <li class="about_step">
+              <button class="about_step_button" type="button" data-about-step="1" aria-label="Slide 2"></button>
+              <span class="about_step_dot"></span><span class="about_step_num">02</span>
+            </li>
+            <li class="about_step">
+              <button class="about_step_button" type="button" data-about-step="2" aria-label="Slide 3"></button>
+              <span class="about_step_dot"></span><span class="about_step_num">03</span>
+            </li>
+            <li class="about_step">
+              <button class="about_step_button" type="button" data-about-step="3" aria-label="Slide 4"></button>
+              <span class="about_step_dot"></span><span class="about_step_num">04</span>
+            </li>
+            <li class="about_step">
+              <button class="about_step_button" type="button" data-about-step="4" aria-label="Slide 5"></button>
+              <span class="about_step_dot"></span><span class="about_step_num">05</span>
+            </li>
           </ol>
+
+          <!-- 태블릿(834~1279) 전용 페이저 (1132:2612).
+               데스크톱은 스크롤로, 모바일은 세로 스택으로 보므로 그 구간에서는 숨깁니다. -->
+          <nav class="about_pager" aria-label="About slides" data-about-pager>
+            <button class="about_pager_button" type="button" data-about-prev aria-label="Previous slide">
+              <span class="about_pager_icon" aria-hidden="true"></span>
+            </button>
+            <!-- 시안은 현재 번호만 강조하고 전체 수는 흐리게 둡니다. -->
+            <p class="about_pager_count" aria-live="polite"><span class="about_pager_current"
+                data-about-current>01</span><span class="about_pager_total" data-about-total>/05</span></p>
+            <button class="about_pager_button" type="button" data-about-next aria-label="Next slide">
+              <span class="about_pager_icon" aria-hidden="true"></span>
+            </button>
+          </nav>
         </div>
       </section>
 
@@ -256,10 +287,17 @@
               </dl>
             </div>
 
-            <!-- 가운데 — 타워 실루엣(Vector_15.svg)으로 마스킹한 영상 (1095:14757) -->
-            <div class="tower_data_media" aria-hidden="true">
-              <video class="tower_data_video" src="../assets/brand_story/video.mp4" muted loop playsinline autoplay
-                preload="metadata" data-tower-video></video>
+            <!-- 가운데 — 타워 실루엣(Vector_15.svg)으로 마스킹한 영상 (1095:14757).
+                 모바일(1137:3648)에서는 타워가 왼쪽에서 sticky 로 따라 내려오고,
+                 초록 띠가 타워 배경으로 함께 움직입니다.
+                 CSS mask 는 가상 요소까지 같이 오려내서 띠를 .tower_data_media 에
+                 직접 붙일 수 없습니다. 그래서 마스크 밖에 래퍼를 하나 둡니다.
+                 834 이상에서는 display: contents 로 래퍼를 지워 기존 배치를 그대로 씁니다. -->
+            <div class="tower_data_stage" aria-hidden="true">
+              <div class="tower_data_media">
+                <video class="tower_data_video" src="../assets/brand_story/video.mp4" muted loop playsinline autoplay
+                  preload="metadata" data-tower-video></video>
+              </div>
             </div>
 
             <!-- 우측 — 전망대 제원 -->

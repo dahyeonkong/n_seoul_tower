@@ -48,9 +48,20 @@
           </div>
         </div>
         <p class="visually_hidden" data-active-floor-status aria-live="polite">Current floor: F5</p>
+        <nav class="floor_tabs" aria-label="Select a floor">
+          <div class="floor_tab_list" role="tablist" aria-orientation="horizontal">
+            <button class="floor_tab is_active" type="button" role="tab" id="floor_tab_f5" aria-selected="true" aria-controls="floor_f5" data-floor-tab="f5">F5</button>
+            <button class="floor_tab" type="button" role="tab" id="floor_tab_t1" aria-selected="false" aria-controls="floor_t1" data-floor-tab="t1" tabindex="-1">T1</button>
+            <button class="floor_tab" type="button" role="tab" id="floor_tab_t2" aria-selected="false" aria-controls="floor_t2" data-floor-tab="t2" tabindex="-1">T2</button>
+            <button class="floor_tab" type="button" role="tab" id="floor_tab_t3" aria-selected="false" aria-controls="floor_t3" data-floor-tab="t3" tabindex="-1">T3</button>
+            <button class="floor_tab" type="button" role="tab" id="floor_tab_t4" aria-selected="false" aria-controls="floor_t4" data-floor-tab="t4" tabindex="-1">T4</button>
+            <button class="floor_tab" type="button" role="tab" id="floor_tab_t5" aria-selected="false" aria-controls="floor_t5" data-floor-tab="t5" tabindex="-1">T5</button>
+            <button class="floor_tab" type="button" role="tab" id="floor_tab_t7" aria-selected="false" aria-controls="floor_t7" data-floor-tab="t7" tabindex="-1">T7</button>
+          </div>
+        </nav>
 
         <div class="floor_scene_list">
-          <section class="floor_scene floor_scene_f5" id="floor_f5" data-floor-section="f5"
+          <section class="floor_scene floor_scene_f5 is_active" id="floor_f5" data-floor-section="f5"
             aria-labelledby="floor_guide_title floor_f5_title">
             <div class="floor_scene_inner">
               <div class="floor_guide_heading">
@@ -59,7 +70,7 @@
               </div>
               <h2 class="visually_hidden" id="floor_f5_title">F5</h2>
               <article class="floor_card floor_card_large floor_card_gift">
-                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                <a class="floor_card_link" href="./n_gift_shop.html">
                   <span class="floor_card_media"><img src="../assets/floorguide/f5_gift_card.png"
                       alt="N Gift Shop interior filled with N Seoul Tower souvenirs" width="1536" height="1024"
                       fetchpriority="high" decoding="async"></span>
@@ -72,10 +83,10 @@
                         <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg></span></span>
-                </button>
+                </a>
               </article>
               <article class="floor_card floor_card_sweet">
-                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                <a class="floor_card_link" href="https://www.nseoultower.co.kr/eng/visit/restaurant.asp">
                   <span class="floor_card_media"><img src="../assets/floorguide/f5_sweet_bar_card.png"
                       alt="N Sweet Bar counter with popcorn and drinks" width="1505" height="1045" loading="lazy"
                       decoding="async"></span>
@@ -89,7 +100,7 @@
                         <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg></span></span>
-                </button>
+                </a>
               </article>
               <span class="floor_deco floor_deco_popcorn" aria-hidden="true"></span>
               <span class="floor_deco floor_deco_sweetbar" aria-hidden="true"></span>
@@ -101,7 +112,7 @@
             <div class="floor_scene_inner">
               <h2 class="visually_hidden" id="floor_t1_title">T1</h2>
               <article class="floor_card floor_card_burger">
-                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                <a class="floor_card_link" href="./restaurant_n_burger.html">
                   <!-- 에셋 파일명이 실제 사진과 어긋나 있어, 내용 기준으로 연결합니다. -->
                   <span class="floor_card_media"><img src="../assets/floorguide/t1_gift_card.png"
                       alt="N Burger signature menu poster" width="1254" height="1254" loading="lazy"
@@ -115,10 +126,10 @@
                         <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg></span></span>
-                </button>
+                </a>
               </article>
               <article class="floor_card floor_card_t1_gift">
-                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                <a class="floor_card_link" href="./n_gift_shop.html">
                   <span class="floor_card_media"><img src="../assets/floorguide/t1_n_burger_card.png"
                       alt="N Gift Shop souvenir display" width="1536" height="1024" loading="lazy"
                       decoding="async"></span>
@@ -130,10 +141,10 @@
                         <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg></span></span>
-                </button>
+                </a>
               </article>
               <article class="floor_card floor_card_terrace">
-                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                <a class="floor_card_link" href="https://www.nseoultower.co.kr/eng/visit/restaurant.asp">
                   <span class="floor_card_media"><img src="../assets/floorguide/t1_n_terrace_card.png"
                       alt="N Terrace café overlooking Seoul" width="1536" height="1024" loading="lazy"
                       decoding="async"></span>
@@ -147,10 +158,10 @@
                         <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg></span></span>
-                </button>
+                </a>
               </article>
               <article class="floor_card floor_card_durum">
-                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                <a class="floor_card_link" href="https://www.nseoultower.co.kr/eng/visit/restaurant.asp">
                   <span class="floor_card_media"><img src="../assets/floorguide/t1_durum_card.png"
                       alt="Korean dishes served at Durumi Bunsik" width="1619" height="971" loading="lazy"
                       decoding="async"></span>
@@ -164,7 +175,7 @@
                         <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg></span></span>
-                </button>
+                </a>
               </article>
             </div>
           </section>
@@ -174,7 +185,7 @@
             <div class="floor_scene_inner">
               <h2 class="visually_hidden" id="floor_t2_title">T2</h2>
               <article class="floor_card floor_card_large floor_card_place">
-                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                <a class="floor_card_link" href="https://www.nseoultower.co.kr/eng/visit/restaurant.asp">
                   <!-- 에셋 파일명이 실제 사진과 어긋나 있어, 내용 기준으로 연결합니다. -->
                   <span class="floor_card_media"><img src="../assets/floorguide/t2_telescope_card.png"
                       alt="Italian dishes served at a window table overlooking Seoul" width="2470" height="1422"
@@ -189,10 +200,10 @@
                         <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg></span></span>
-                </button>
+                </a>
               </article>
               <article class="floor_card floor_card_t2_telescope">
-                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                <a class="floor_card_link" href="https://www.nseoultower.co.kr/eng/visit/observatory.asp">
                   <span class="floor_card_media"><img src="../assets/floorguide/t2_the_place_card.png"
                       alt="Digital telescope facing the Seoul skyline" width="1536" height="1024" loading="lazy"
                       decoding="async"></span>
@@ -204,10 +215,10 @@
                         <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg></span></span>
-                </button>
+                </a>
               </article>
               <article class="floor_card floor_card_roof">
-                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                <a class="floor_card_link" href="https://www.nseoultower.co.kr/eng/visit/observatory.asp">
                   <span class="floor_card_media"><img src="../assets/floorguide/t2_roof_card.png"
                       alt="Love padlocks attached to the roof terrace railing" width="1536" height="1024" loading="lazy"
                       decoding="async"></span>
@@ -220,7 +231,7 @@
                         <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg></span></span>
-                </button>
+                </a>
               </article>
               <span class="floor_deco floor_deco_steak" aria-hidden="true"></span>
             </div>
@@ -231,7 +242,7 @@
             <div class="floor_scene_inner">
               <h2 class="visually_hidden" id="floor_t3_title">T3</h2>
               <article class="floor_card floor_card_large floor_card_hancook">
-                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                <a class="floor_card_link" href="https://www.nseoultower.co.kr/eng/visit/restaurant.asp">
                   <span class="floor_card_media"><img src="../assets/floorguide/t3_hancook_card.png"
                       alt="Hancook restaurant dining room with panoramic windows" width="1920" height="1080"
                       loading="lazy" decoding="async"></span>
@@ -244,7 +255,7 @@
                         <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg></span></span>
-                </button>
+                </a>
               </article>
               <span class="floor_deco floor_deco_hancook_tray" aria-hidden="true"></span>
               <span class="floor_deco floor_deco_hancook_photo" aria-hidden="true"></span>
@@ -259,7 +270,7 @@
             <div class="floor_scene_inner">
               <h2 class="visually_hidden" id="floor_t4_title">T4</h2>
               <article class="floor_card floor_card_big floor_card_t4_observatory">
-                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                <a class="floor_card_link" href="https://www.nseoultower.co.kr/eng/visit/observatory.asp">
                   <span class="floor_card_media"><img src="../assets/floorguide/t4_observatory_card.png"
                       alt="N Seoul Tower observatory interior" width="1536" height="1024" loading="lazy"
                       decoding="async"></span>
@@ -272,10 +283,10 @@
                         <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg></span></span>
-                </button>
+                </a>
               </article>
               <article class="floor_card floor_card_t4_telescope">
-                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                <a class="floor_card_link" href="https://www.nseoultower.co.kr/eng/visit/observatory.asp">
                   <span class="floor_card_media"><img src="../assets/floorguide/t4_telescope_card.png"
                       alt="Digital telescope inside the observatory" width="1536" height="1024" loading="lazy"
                       decoding="async"></span>
@@ -287,7 +298,7 @@
                         <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg></span></span>
-                </button>
+                </a>
               </article>
               <span class="floor_deco floor_deco_observatory" aria-hidden="true"></span>
             </div>
@@ -298,7 +309,7 @@
             <div class="floor_scene_inner">
               <h2 class="visually_hidden" id="floor_t5_title">T5</h2>
               <article class="floor_card floor_card_t5_observatory">
-                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                <a class="floor_card_link" href="https://www.nseoultower.co.kr/eng/visit/observatory.asp">
                   <span class="floor_card_media"><img src="../assets/floorguide/t5_observatory_card.png"
                       alt="Visitors looking out over Seoul from the observation deck" width="1536" height="1024"
                       loading="lazy" decoding="async"></span>
@@ -310,10 +321,10 @@
                         <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg></span></span>
-                </button>
+                </a>
               </article>
               <article class="floor_card floor_card_t5_telescope">
-                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                <a class="floor_card_link" href="https://www.nseoultower.co.kr/eng/visit/observatory.asp">
                   <!-- 에셋 파일명이 실제 사진과 어긋나 있어, 내용 기준으로 연결합니다. -->
                   <span class="floor_card_media"><img src="../assets/floorguide/t5_gift_card.png"
                       alt="Digital telescope overlooking Seoul" width="1536" height="1024" loading="lazy"
@@ -326,10 +337,10 @@
                         <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg></span></span>
-                </button>
+                </a>
               </article>
               <article class="floor_card floor_card_panorama">
-                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                <a class="floor_card_link" href="https://www.nseoultower.co.kr/eng/visit/observatory.asp">
                   <span class="floor_card_media"><img src="../assets/floorguide/t5_telescope_card.png"
                       alt="Curved observation hall with floor-to-ceiling windows facing Seoul" width="1536"
                       height="1024" loading="lazy" decoding="async"></span>
@@ -342,10 +353,10 @@
                         <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg></span></span>
-                </button>
+                </a>
               </article>
               <article class="floor_card floor_card_t5_gift">
-                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                <a class="floor_card_link" href="./n_gift_shop.html">
                   <span class="floor_card_media"><img src="../assets/floorguide/t5_panorama_card.png"
                       alt="N Gift Shop display inside N Seoul Tower" width="1536" height="1024" loading="lazy"
                       decoding="async"></span>
@@ -357,7 +368,7 @@
                         <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg></span></span>
-                </button>
+                </a>
               </article>
             </div>
           </section>
@@ -367,7 +378,7 @@
             <div class="floor_scene_inner">
               <h2 class="visually_hidden" id="floor_t7_title">T7</h2>
               <article class="floor_card floor_card_big floor_card_ngrill">
-                <button class="floor_card_link" type="button" data-pending-link aria-disabled="true">
+                <a class="floor_card_link" href="https://www.nseoultower.co.kr/eng/visit/restaurant.asp?os=W">
                   <span class="floor_card_media"><img src="../assets/floorguide/f7_ngrill_card.png"
                       alt="N Grill fine-dining restaurant with night views of Seoul" width="1920" height="1080"
                       loading="lazy" decoding="async"></span>
@@ -379,7 +390,7 @@
                         <path d="M10 4.16663V15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M4.1665 10H15.8332" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg></span></span>
-                </button>
+                </a>
               </article>
               <span class="floor_deco floor_deco_tea" aria-hidden="true"></span>
               <span class="floor_deco floor_deco_beef" aria-hidden="true"></span>
