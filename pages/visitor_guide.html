@@ -47,9 +47,11 @@
     content="https://dahyeonkong.github.io/n_seoul_tower/assets/guide_course/guide/visit_cablecar.png">
   <meta name="twitter:image:alt" content="N서울타워 케이블카 방문 안내">
 
-  <link rel="preload" as="image" href="../assets/guide_course/guide/visit_cablecar.png">
+  <!-- 봉투는 1280 이상에서만 쓰이므로 그 폭에서만 미리 받습니다. -->
+  <link rel="preload" as="image" media="(min-width: 1280px)" href="../assets/main_visual/envelope_front.webp">
   <link rel="stylesheet" href="../css/reset.css">
   <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/main_visual.css">
   <!-- Recommended Courses 탭은 course.css 의 .course_page 스코프 스타일을 그대로 재사용합니다. -->
   <link rel="stylesheet" href="../css/course.css?v=20260809-9">
   <link rel="stylesheet" href="../css/visitor_guide.css?v=20260810-4">
@@ -66,11 +68,36 @@
     <main class="sub_content" id="main_content">
 
       <!-- ===================== 1. visit hero (973:6166) ===================== -->
-      <section class="subpage_hero has_scroll_indicator" aria-labelledby="guide_hero_title">
-        <img class="subpage_hero_image" src="../assets/guide_course/guide/visit_cablecar.png"
-          alt="N Seoul Tower cable car cabin with the tower bear character waving from inside" width="626" height="626"
-          fetchpriority="high">
+      <!-- 편지 봉투에서 오브젝트가 팡 터져 나오는 인터랙션입니다(1280 이상).
+           오브젝트 DOM 은 js/main_visual.js(엔진)가 js/main_visual_visit_guide.js 의
+           좌표 데이터로 만들어 넣습니다. 봉투 배치는 다른 두 페이지와 동일합니다. -->
+      <section class="subpage_hero has_scroll_indicator mv_visual" aria-labelledby="guide_hero_title"
+        data-mv-root data-mv-scene="visit_guide">
+        <!-- 화면에 보이는 제목은 아래 비주얼들이 직접 그립니다. 이 h1 은 접근성 트리용으로만 남습니다. -->
         <h1 class="subpage_hero_title" id="guide_hero_title">visit guide</h1>
+
+        <!-- ~833(모바일). 움직임 없이 배경 한 장 + 제목이고, 제목이 항상 맨 앞입니다. -->
+        <div class="mv_mobile" aria-hidden="true">
+          <span class="mv_mobile_skirt"></span>
+          <img class="mv_mobile_scene" src="../assets/main_visual/mobile/visit_guide.webp" alt="" width="720"
+            height="971">
+          <p class="mv_mobile_title">Visit Guide</p>
+        </div>
+
+        <!-- 834 이상. 이 페이지는 아직 데스크톱 팝 인터랙션이 없어서 1280 이상에서도 이걸 씁니다.
+             레스토랑·브랜드스토리와 달리 시안에서 제목이 맨 앞이라 DOM 순서가 장면 → 구름 → 제목 입니다. -->
+        <div class="mv_tablet" aria-hidden="true">
+          <img class="mv_tablet_scene" src="../assets/main_visual/tablet/visit_guide.webp" alt="" width="1920"
+            height="1080">
+          <img class="mv_tablet_cloud" src="../assets/main_visual/tablet/cloud.webp" alt="" width="182"
+            height="182">
+          <p class="mv_tablet_title">Visit Guide</p>
+        </div>
+
+        <div class="mv_stage" data-mv-stage aria-hidden="true">
+          <p class="mv_title">Visit Guide</p>
+        </div>
+
         <span class="subpage_scroll_indicator" aria-hidden="true">
           <img src="../assets/icon/icon_chevron_down.svg" alt="" width="120" height="120">
         </span>
@@ -826,6 +853,8 @@
   </div>
 
   <script src="../js/common.js"></script>
+  <script src="../js/main_visual.js"></script>
+  <script src="../js/main_visual_visit_guide.js"></script>
   <script src="../js/course.js"></script>
   <script src="../js/visitor_guide.js?v=20260809-1"></script>
 </body>

@@ -12,48 +12,214 @@
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   인터랙션은 데스크톱(1280 이상) 전용입니다.
-   태블릿과 모바일은 기존 히어로 이미지를 그대로 씁니다.
+   화면 폭에 따라 히어로가 셋 중 하나입니다. 셋 다 제목까지 직접 그립니다.
+     ~833     : 모바일 비주얼 (.mv_mobile) — 장면 한 장 + 텍스트
+     834~1279 : 타블렛 비주얼 (.mv_tablet) — 장면 한 장 + 텍스트 + 구름
+     1280~    : 데스크톱 팝 인터랙션 (.mv_stage) — 씬 데이터가 있는 페이지만
    -------------------------------------------------------------------------- */
-.mv_stage {
+.mv_stage,
+.mv_tablet,
+.mv_mobile {
   display: none;
+}
+
+/* 어느 폭에서든 새 비주얼이 화면을 채우므로 히어로 자체 처리는 공통입니다. */
+.mv_visual {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+  /* 시안 배경 color/light/bg = #F7F4E8. common.css 의 --color_bg 와 같은 값입니다. */
+  background-color: var(--mv_bg, var(--color_bg, #f7f4e8));
+}
+
+/* 화면에 보이는 제목은 .mv_mobile_title / .mv_tablet_title / .mv_title 이 그립니다.
+   그것들은 전부 aria-hidden 인 장식 영역 안이라 제목 역할을 못 하므로, 진짜 h1 은
+   지우지 않고 화면에서만 감춰 접근성 트리에 남깁니다.
+   값은 common.css 의 .visually_hidden 과 동일합니다. */
+.mv_visual > .subpage_hero_title {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 833px) {
+  .mv_mobile {
+    display: block;
+  }
+}
+
+@media (min-width: 834px) {
+  .mv_tablet {
+    display: block;
+  }
 }
 
 @media (min-width: 1280px) {
   .mv_visual {
-    position: relative;
     display: block;
-    padding: 0;
-    overflow: hidden;
-    /* 시안 배경 color/light/bg = #F7F4E8. common.css 의 --color_bg 와 같은 값입니다. */
-    background-color: var(--mv_bg, var(--color_bg, #f7f4e8));
   }
 
   .mv_stage {
     display: block;
   }
 
-  /* 데스크톱에서는 대체 이미지를 숨깁니다. */
-  .mv_visual > img.mv_fallback {
+  /* 데스크톱 인터랙션이 있는 페이지에서만 타블렛 비주얼을 내립니다.
+     교통안내처럼 아직 씬 데이터가 없는 페이지는 데스크톱에서도 이걸 그대로 씁니다. */
+  .mv_visual[data-mv-scene] .mv_tablet {
     display: none;
   }
+}
 
-  /* 제목은 스테이지 안의 .mv_title 이 대신 그립니다.
-     다만 h1 까지 display:none 으로 지우면 데스크톱 문서에 h1 이 하나도 남지 않습니다.
-     (.mv_title 은 aria-hidden 인 스테이지 안의 장식용 p 입니다.)
-     그래서 화면에서만 감추고 접근성 트리에는 남깁니다.
-     값은 common.css 의 .visually_hidden 과 동일합니다. */
-  .mv_visual > h1.mv_fallback {
-    position: absolute;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    clip-path: inset(50%);
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    white-space: nowrap;
-  }
+/* --------------------------------------------------------------------------
+   모바일 비주얼 — Figma hero01/02/03 (1506:6686 / 1501:6630 / 1501:6293)
+   프레임 360 x 485.1247
+   --------------------------------------------------------------------------
+   움직임이 없습니다. 배경 한 장 위에 텍스트만 얹습니다.
+   텍스트는 세 페이지 모두 항상 맨 앞이라 DOM 순서가 장면 → 제목 하나뿐입니다.
+   글자 스펙도 세 페이지가 같습니다: Poppins SemiBold 38px / 자간 1.52px / top 76.418.
+   -------------------------------------------------------------------------- */
+.mv_mobile {
+  container-type: inline-size;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  aspect-ratio: 360 / 485.1247;
+  transform: translateY(-50%);
+}
+
+.mv_mobile_scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* 장면 아래로 이어지는 봉투 질감.
+   히어로는 100vh 인데 장면은 16:9 보다 조금 긴 비율뿐이라, 그냥 두면 장면 아래에
+   크림색 빈 띠가 남습니다. 모바일 시안에서 봉투는 좌우로 화면 밖(-61.28 ~ 421.28)까지
+   나가 있어서 장면의 아래쪽 경계가 화면 폭을 꽉 채웁니다. 그래서 그 아래에 같은 가죽
+   질감을 이어 붙이면 경계가 보이지 않고 편지가 바닥까지 이어집니다.
+
+   질감은 한 장을 늘려서 덮습니다. 반복하거나 상하반전으로 이어 붙이면 가죽 결의
+   음영이 뒤집히는 자리가 접힌 선처럼 보입니다. */
+.mv_mobile_skirt {
+  position: absolute;
+  /* 장면 아래에 딱 붙이지 않고 살짝 밀어 올려 겹칩니다.
+     장면 이미지의 맨 아랫줄은 알파가 63(25%) 인 반투명 가장자리라, 크림색 배경 위에
+     얹히면 그 줄만 밝게 떠서 흰 선처럼 보입니다. 같은 색 질감 위에 얹히면 사라집니다.
+     스커트가 .mv_mobile 의 첫 자식이라 장면 뒤에 깔리므로, 겹쳐도 장면을 가리지 않습니다. */
+  top: calc(100% - 8px);
+  right: 0;
+  left: 0;
+  /* 장면 아래부터 히어로 바닥까지의 높이입니다.
+     히어로가 100vh 이고 스테이지는 세로 가운데라, 남는 아래 공간은
+     50vh - 스테이지높이/2 입니다. 여기서 50% 는 .mv_mobile 의 높이를 가리킵니다.
+     cover 가 요소 상자를 기준으로 배율을 잡기 때문에, 100vh 로 크게 잡아두면
+     질감이 터무니없이 확대됩니다. 그래서 필요한 만큼만 정확히 잡습니다. */
+  height: calc(50vh - 50% + 8px);
+  background-image: url("../assets/main_visual/mobile/envelope_skirt.webp");
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: cover;
+  pointer-events: none;
+}
+
+.mv_mobile_title {
+  position: absolute;
+  top: 15.752%;
+  right: 0;
+  left: 0;
+  margin: 0;
+  /* 타블렛과 같은 이유입니다. 자간이 마지막 글자 뒤에도 붙어 글자가 왼쪽으로 밀립니다. */
+  padding-left: 0.42222cqw;
+  color: var(--mv_title_color, #1e4c43);
+  font-family: var(--mv_title_font, "Poppins", sans-serif);
+  font-size: 10.5556cqw;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.42222cqw;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   타블렛 비주얼 — Figma hero (1501:6307 / 6441 / 6445), 834 x 469.125 = 16:9
+   --------------------------------------------------------------------------
+   데스크톱과 달리 오브젝트가 따로 날지 않습니다. 장면 전체가 배경 투명한 한 장이고,
+   그 아래에 실제 텍스트가 깔립니다. 레스토랑·브랜드스토리는 장면이 텍스트 위를 지나가고
+   (타워가 글자를 가로지릅니다), 교통안내는 텍스트가 맨 위입니다.
+   이 순서는 마크업의 DOM 순서로만 정합니다. z-index 를 따로 쓰지 않습니다.
+
+   히어로 높이는 100vh 를 유지하고, 16:9 장면을 가로로 꽉 채워 세로 가운데에 둡니다.
+   위아래 남는 자리는 크림색 배경입니다.
+
+   길이는 전부 스테이지 폭 기준입니다. vw 가 아니라 cqw 를 쓰는 이유는, 스크롤바가
+   있으면 vw 와 실제 스테이지 폭이 어긋나서 글자와 장면의 정렬이 틀어지기 때문입니다.
+   -------------------------------------------------------------------------- */
+.mv_tablet {
+  container-type: inline-size;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  aspect-ratio: 16 / 9;
+  transform: translateY(-50%);
+}
+
+.mv_tablet_scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* 16:9 원본을 16:9 상자에 넣는 것이라 실제로는 잘리는 부분이 없습니다. */
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* Dev Mode 값: 회전 전 81.047px, 중심 (667.13, 264.03), 13.98deg. 834 x 469.125 기준입니다. */
+.mv_tablet_cloud {
+  position: absolute;
+  top: 56.282%;
+  left: 79.992%;
+  width: 9.718%;
+  height: auto;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%) rotate(13.98deg);
+  pointer-events: none;
+}
+
+/* Dev Mode 값: Poppins SemiBold 93px / 자간 3.72px / 행간 1.1 / top 69.32px.
+   세 페이지 모두 글자 중심이 417 로 프레임 정중앙이라 text-align 으로 맞춥니다.
+   자간만 브랜드스토리가 2.79px 로 달라서 --mv_tablet_track 으로 빼두었습니다. */
+.mv_tablet_title {
+  position: absolute;
+  top: 14.777%;
+  right: 0;
+  left: 0;
+  margin: 0;
+  color: var(--mv_title_color, #1e4c43);
+  font-family: var(--mv_title_font, "Poppins", sans-serif);
+  /* 자간은 마지막 글자 뒤에도 붙습니다. text-align: center 는 그 여백까지 포함해서
+     가운데를 잡기 때문에 글자가 자간의 절반만큼 왼쪽으로 밀립니다.
+     왼쪽에 자간만큼 padding 을 줘서 그만큼 되돌립니다. */
+  padding-left: var(--mv_tablet_track, 0.44604cqw);
+  font-size: 11.1511cqw;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: var(--mv_tablet_track, 0.44604cqw);
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 /* Figma 아트보드(1920x1080)를 통째로 스케일해서 화면을 꽉 채웁니다.
@@ -160,7 +326,8 @@
    -------------------------------------------------------------------------- */
 .mv_object {
   transform: translateX(var(--mv_dx));
-  opacity: 1;
+  /* 기본은 1. 봉투에서 나오면서 서서히 나타나야 하는 오브젝트만 씬에서 낮춥니다. */
+  opacity: var(--mv_opacity_closed, 1);
 
   transition:
     transform var(--mv_dur_in) var(--mv_in_x) var(--mv_delay_in),
