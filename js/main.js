@@ -610,10 +610,12 @@ function renderCourses(courses) {
 
 /* 물감이 배어 나오는 구간입니다. 반투명 블롭에서 진한 색으로 자연스럽게 넘어갑니다. */
 var BLEED_APPEAR_PROGRESS = 0.08;
-/* 물감이 화면을 완전히 덮는 진행률입니다. 이 뒤로는 꽉 찬 색만 남습니다. */
-var BLEED_COVER_PROGRESS = 0.65;
-/* 이 진행률부터 물감이 걷히면서 events 섹션이 드러납니다. */
-var BLEED_FADE_PROGRESS = 0.8;
+/* 물감이 다 번져 화면을 덮는 진행률입니다. 여기서 크기가 멈추고 마스크도 벗겨집니다.
+   값을 키울수록 번지는 구간이 길어져 천천히 퍼집니다. */
+var BLEED_COVER_PROGRESS = 0.5;
+/* 이 진행률부터 물감이 걷히면서 events 섹션이 드러납니다.
+   BLEED_COVER_PROGRESS 와의 사이가 꽉 찬 색으로 멈춰 있는 시간입니다. */
+var BLEED_FADE_PROGRESS = 0.78;
 /* 블롭은 원이 아니라 오목한 데가 있어 실제 반지름이 상자의 절반보다 훨씬 짧습니다.
    가장 좁은 방향까지 화면 모서리를 덮으려면 대각선 길이의 4.5 배는 되어야 합니다. */
 var BLEED_COVER_MARGIN = 4.5;
@@ -660,9 +662,8 @@ function initHeroVisualBleed() {
     var coverSize = Math.sqrt(farX * farX + farY * farY) * BLEED_COVER_MARGIN;
 
     var growth = Math.min(1, progress / BLEED_COVER_PROGRESS);
-    /* 번지기 시작할 때 조금 빠르고 끝에서 잦아듭니다.
-       지수를 3 으로 두면 너무 앞쪽에 몰려 순식간에 덮여 버립니다. */
-    var easedGrowth = 1 - Math.pow(1 - growth, 1.8);
+    /* 거의 등속으로 번집니다. 지수를 키우면 초반에 확 퍼져 순식간에 덮여 버립니다. */
+    var easedGrowth = 1 - Math.pow(1 - growth, 1.2);
     var size = ticketRect.width + (coverSize - ticketRect.width) * easedGrowth;
 
     /* 시작 순간 반투명 블롭 위로 진한 색이 튀어 보이지 않게 살짝 배어들게 합니다. */
@@ -2037,8 +2038,11 @@ function initHeroSectionJump() {
     return;
   }
 
+  /* events 까지 내려가는 데 걸리는 시간(초)입니다. 이 사이에 물감 전환이 재생됩니다.
+     번지기 → 꽉 찬 채로 멈춤 → 걷히기 세 구간이 모두 이 시간 안에 들어갑니다. */
+  var JUMP_DURATION = 2.6;
   /* 이동이 끝나기 전에 다음 스크롤이 다시 발동하지 않도록 잠그는 시간입니다. */
-  var JUMP_LOCK_TIME = 900;
+  var JUMP_LOCK_TIME = JUMP_DURATION * 1000 + 200;
   /* 터치에서 스크롤 의도로 볼 최소 이동 거리입니다. */
   var SWIPE_THRESHOLD = 24;
 
@@ -2065,9 +2069,15 @@ function initHeroSectionJump() {
     unlockTimer = window.setTimeout(unlockJump, JUMP_LOCK_TIME);
 
     /* Lenis 가 살아 있으면 Lenis 로 옮겨야 관성 스크롤과 충돌하지 않습니다.
-       lock 옵션이 이동하는 동안 사용자 입력을 막아 줍니다. */
+       lock 옵션이 이동하는 동안 사용자 입력을 막아 줍니다.
+       이동하는 사이에 물감 전환(initHeroVisualBleed)이 재생되므로,
+       기본값(약 1.2 초)보다 길게 잡아 번지는 과정이 보이게 합니다. */
     if (window.lenisInstance && typeof window.lenisInstance.scrollTo === "function") {
-      window.lenisInstance.scrollTo(events, { lock: true, onComplete: unlockJump });
+      window.lenisInstance.scrollTo(events, {
+        lock: true,
+        duration: JUMP_DURATION,
+        onComplete: unlockJump
+      });
       return;
     }
 

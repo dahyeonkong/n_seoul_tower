@@ -1380,8 +1380,27 @@
    ========================================================================== */
 .events_section {
   position: relative;
+  /* 배경 잔디를 ::before 로 깔기 때문에 쌓임 맥락을 만들어 z-index -1 을 가둡니다.
+     이렇게 해야 잔디가 섹션 배경색 위, 콘텐츠 아래에 놓입니다. */
+  isolation: isolate;
   padding: var(--section_space) 0 0;
+  background-color: var(--color_bg);
   overflow: clip;
+}
+
+/* 배경 잔디. 섹션에 직접 넣지 않고 가상 요소로 분리해 흐리게 깝니다. */
+.events_section::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background-image: url("../assets/grass_img.png");
+  background-position: center top;
+  background-size: 130% auto;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  opacity: 0.3;
+  pointer-events: none;
 }
 
 
@@ -3259,6 +3278,7 @@
 .goods_section {
   position: relative;
   padding: 0 0 var(--section_space);
+  background-color: var(--color_bg);
   overflow: hidden;
 }
 
