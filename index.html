@@ -455,10 +455,17 @@
               </div>
             </article>
 
-            <div class="restaurant_stack_layer">
-            <div class="restaurant_all restaurant_stack_card restaurant_stack_card_4" data-restaurant-all>
-              <h3 class="restaurant_all_title">Would you like to try more restaurants?</h3>
-              <a class="restaurant_more" href="./pages/restaurant_n_burger.html">View All Restaurants</a>
+            <div class="restaurant_stack_layer" data-restaurant-stack-layer>
+            <!-- 스테이지는 sticky 로 자리를 잡고, 그 안의 카드만 전체 화면으로 펼쳐집니다. -->
+            <div class="restaurant_all_stage restaurant_stack_card restaurant_stack_card_4" data-restaurant-all-stage>
+              <div class="restaurant_all" data-restaurant-all>
+                <h3 class="restaurant_all_title">
+                  <!-- 타이핑 중 제목 상자가 줄어들지 않도록 전체 문구로 자리를 잡아 둡니다. -->
+                  <span class="restaurant_all_title_ghost" aria-hidden="true">Would you like to try more restaurants?</span>
+                  <span class="restaurant_all_title_text" data-restaurant-all-title>Would you like to try more restaurants?</span>
+                </h3>
+                <a class="restaurant_more" href="./pages/restaurant_n_burger.html" data-restaurant-all-more>View All Restaurants</a>
+              </div>
             </div>
             <div class="restaurant_stack_end" aria-hidden="true"></div>
             </div>
