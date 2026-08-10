@@ -702,3 +702,51 @@ JS 는 `ASSET_PATH = "./assets/"` 를 접두로 두고 데이터에 하위 경�
 - **미검증**: 실제 페이지(`index.html`)에서의 확인, 섹션 패널 ↔ 챗봇 패널 상호 배타 동작
   (임시 페이지에는 섹션 목록이 없어 섹션 버튼이 생성되지 않습니다), 화면 캡처 비교,
   터치 기기 확인
+
+### 공통 푸터 컴포넌트 + brand_story 퀵 메뉴/챗봇 공용화 (2026-08-10)
+
+푸터가 6개 페이지에 각각 복붙돼 있어 내용이 갈라졌고(floor_guide 만 family site 가
+영문 2그룹, index/brand_story 만 일부 요소가 다름), brand_story 만 퀵 메뉴를
+직접 하드코딩해 챗봇 패널이 아예 없었습니다. 둘 다 공통 컴포넌트로 정리했습니다.
+
+**변경 파일**
+
+- `js/common.js` — `getFooterMarkup()` / `renderCommonFooter()` / `FAMILY_SITE_GROUPS` /
+  `FOOTER_SNS_ITEMS` / `escapeHtml()` 추가, `initCommon()` 에 `renderCommonFooter()` 등록,
+  `QUICK_MENU_SECTIONS_BY_PAGE` 에 `brand_story.html` (about / tower data) 추가
+- `index.html`, `pages/*.html` 6개 — 푸터 마크업을 `<div data-common-footer>` 마운트로 교체
+- `pages/brand_story.html` — 하드코딩한 퀵 메뉴를 `<div data-quick-menu-mount>` 로 교체
+
+**주요 판단**
+
+- 푸터 기준은 **brand_story 버전**입니다. `top` 버튼(`assets/icon/arrow_up.png`)과
+  타워 실루엣(`assets/footer_tower.png`)을 포함해 6개 페이지가 완전히 같은 마크업과
+  같은 에셋을 씁니다. 페이지별 옵션 분기는 두지 않았습니다.
+- 그 결과 index 를 포함한 5개 페이지에 **`top` 버튼과 타워 실루엣이 새로 노출됩니다.**
+  기존에는 5개 페이지 모두 `footer_deco` 가 주석 처리돼 있었고 `top` 버튼도 없었습니다.
+- family site 목록은 다수인 한글 5그룹 14링크로 통일했습니다. floor_guide 의 영문
+  2그룹 버전은 항목이 빠진 축약본이라 폐기했습니다 — **floor_guide 푸터에 보이는
+  글자가 바뀝니다.**
+- `.top_button` 은 어느 CSS 에도 스타일이 없어 아이콘 위 `top` 텍스트가 세로로 쌓입니다
+  (기존 brand_story 와 동일한 모양). 시안 확인 후 `common.css` 에 스타일을 넣을지
+  결정이 필요합니다.
+- index 는 `.goods_deco_tower` 와 `.footer_deco` 가 세로로 이어져 타워 이미지가
+  두 번 나옵니다. 실측상 푸터(`z-index: 2`)가 위를 덮어 겹쳐 보이지는 않습니다.
+- 푸터가 JS 렌더링으로 바뀌어 JS 없이는 노출되지 않습니다. 헤더(`data-sub-header`)가
+  이미 같은 방식이라 기존 패턴을 따랐습니다.
+
+**검증 결과** (`file://` 로 6개 페이지 직접 열어 확인)
+
+- lint / test / build: 정적 HTML 프로젝트라 `package.json` 이 없어 미실행
+- 6개 페이지 전부 — 푸터 렌더 성공, 마운트 div 제거됨, `top` 버튼 1개 / 타워 실루엣 1개 /
+  family site 링크 14개 / SNS 3개 동일, 깨진 이미지 0건, 콘솔 오류 없음
+- 에셋 경로 — 루트(`index.html`)와 `pages/` 양쪽에서 `getCommonAssetPath()` 로
+  `assets/icon/arrow_up.png`, `assets/footer_tower.png` 모두 정상 해석
+- family site 드롭다운 — 열기 / 바깥 클릭 닫기 / ESC 닫기 정상
+- brand_story — 챗봇 토글·패널 노출 정상, 퀵 섹션 링크 `#brand_about` / `#tower_data`
+  실제 대상 존재 확인
+- `n_gift_shop` 사이드바의 `.site_footer` 참조 — common.js 가 먼저 DOMContentLoaded 를
+  등록하므로 푸터가 항상 먼저 생성됨, 실제로 `sidebar.style.top` 계산 동작 확인
+- 360 / 1280 — 푸터 렌더 확인, 가로 스크롤 없음
+- **미검증**: 834 / 1920 화면 캡처 비교, 키보드 Tab 순서 재확인, 실기기 터치.
+  브라우저 패널이 프레임을 그리지 않아 최종 상태는 DOM 실측으로만 확인했습니다

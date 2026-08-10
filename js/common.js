@@ -772,6 +772,177 @@ function initGlobalMenu() {
 }
 
 /* --------------------------------------------------------------------------
+   공통 푸터 (Figma 987:7708 하단)
+   모든 페이지가 같은 마크업을 복사해 쓰던 것을 하나로 모았습니다.
+   top 버튼과 타워 실루엣을 포함해 전 페이지가 완전히 같은 푸터를 씁니다.
+   -------------------------------------------------------------------------- */
+var FAMILY_SITE_GROUPS = [
+  {
+    title: "CJ그룹",
+    links: [{ label: "CJ주식회사", href: "https://www.cj.net" }]
+  },
+  {
+    title: "식품&식품서비스",
+    links: [
+      { label: "CJ제일제당", href: "https://www.cj.co.kr" },
+      { label: "CJ푸드빌", href: "https://www.cjfoodville.co.kr" },
+      { label: "CJ프레시웨이", href: "https://www.cjfreshway.com" }
+    ]
+  },
+  {
+    title: "생명공학",
+    links: [
+      { label: "CJ제일제당 BIO사업부문", href: "https://www.cj.co.kr" },
+      { label: "CJ Feed&Care", href: "https://www.cjfeedncare.co.kr" }
+    ]
+  },
+  {
+    title: "물류 & 신유통",
+    links: [
+      { label: "CJ대한통운", href: "https://www.cjlogistics.com" },
+      { label: "CJ대한통운 건설부문", href: "https://www.cjlogistics.com" },
+      { label: "CJ올리브영", href: "https://www.oliveyoung.co.kr" },
+      { label: "CJ올리브네트웍스", href: "https://www.cjolivenetworks.co.kr" },
+      { label: "CJ ENM 커머스부문", href: "https://www.cjenm.com" }
+    ]
+  },
+  {
+    title: "엔터테인먼트&미디어",
+    links: [
+      { label: "CJ ENM 엔터테인먼트부문", href: "https://www.cjenm.com" },
+      { label: "CJ CGV", href: "https://www.cgv.co.kr" },
+      { label: "CJ파워캐스트", href: "https://www.cjpowercast.com" }
+    ]
+  }
+];
+
+var FOOTER_SNS_ITEMS = [
+  { name: "Facebook", icon: "icon/sns/sns1.png" },
+  { name: "Instagram", icon: "icon/sns/sns2.png" },
+  { name: "YouTube", icon: "icon/sns/sns3.png" }
+];
+
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function getFamilySiteMarkup(assetPath) {
+  var groups = FAMILY_SITE_GROUPS.map(function (group) {
+    var links = group.links
+      .map(function (link) {
+        return (
+          '<a class="family_site_link" href="' + link.href + '" target="_blank" ' +
+          'rel="noopener noreferrer">' + escapeHtml(link.label) + "</a>"
+        );
+      })
+      .join("");
+
+    return (
+      '<div class="family_site_group">' +
+      '<p class="family_site_group_title">' + escapeHtml(group.title) + "</p>" +
+      links +
+      "</div>"
+    );
+  }).join("");
+
+  return (
+    '<div class="family_site">' +
+    '<button class="family_site_button" type="button" data-family-button ' +
+    'aria-expanded="false" aria-controls="family_site_menu">' +
+    "family site" +
+    '<img src="' + assetPath + 'icon/icon_chevron_down.svg" alt="" width="24" height="24" loading="lazy">' +
+    "</button>" +
+    '<div class="family_site_menu" id="family_site_menu" data-family-menu hidden>' +
+    groups +
+    "</div>" +
+    "</div>"
+  );
+}
+
+function getFooterSnsMarkup(assetPath) {
+  return FOOTER_SNS_ITEMS.map(function (item) {
+    return (
+      "<li>" +
+      /* TODO: 공식 SNS 채널 주소가 확정되면 button 을 a 로 바꿉니다. */
+      '<button class="footer_sns_link" type="button" data-pending-link aria-disabled="true">' +
+      '<img src="' + assetPath + item.icon + '" alt="" width="24" height="24" loading="lazy">' +
+      '<span class="visually_hidden">' + item.name + "</span>" +
+      "</button>" +
+      "</li>"
+    );
+  }).join("");
+}
+
+function getFooterMarkup(assetPath) {
+  return (
+    '<footer class="site_footer" data-quick-dark>' +
+    '<div class="page_container site_footer_inner">' +
+    '<div class="footer_top">' +
+    '<p class="footer_logo">' +
+    '<img src="' + assetPath + 'nst_logo_defalut.svg" alt="N Seoul Tower" width="80" height="107" loading="lazy">' +
+    "</p>" +
+    '<a class="top_button" href="#top">' +
+    '<img src="' + assetPath + 'icon/arrow_up.png" alt="" width="24" height="24" loading="lazy">' +
+    "top" +
+    "</a>" +
+    "</div>" +
+
+    '<div class="footer_body">' +
+    '<div class="footer_info">' +
+    '<address class="footer_info_list">' +
+    '<p class="footer_info_row">Business Registration Number: 312-81-42519</p>' +
+    '<p class="footer_info_row">' +
+    "<span>CEO: Lee Geon-il</span>" +
+    '<span class="footer_divider" aria-hidden="true"></span>' +
+    "<span>Chief Privacy Officer: Kim Jae-wan</span>" +
+    "</p>" +
+    '<p class="footer_info_row">Address: N Seoul Tower, 105, Namsangongwon-gil, Yongsan-gu, Seoul</p>' +
+    '<p class="footer_info_row">' +
+    '<a href="tel:+82234559277">Tel : 02) 3455 - 9277, 9288</a>' +
+    '<span class="footer_divider" aria-hidden="true"></span>' +
+    '<a href="mailto:helpmaster@cj.net">Email : helpmaster@cj.net</a>' +
+    "</p>" +
+    "</address>" +
+    getFamilySiteMarkup(assetPath) +
+    "</div>" +
+
+    '<div class="footer_service">' +
+    '<h2 class="footer_service_title">customer service</h2>' +
+    /* TODO: FAQ / Contact Us 페이지가 확정되면 실제 주소로 교체합니다. */
+    '<a class="footer_service_btn" href="#top">FAQ</a>' +
+    '<a class="footer_service_btn" href="#top">Contact Us</a>' +
+    "</div>" +
+    "</div>" +
+
+    '<div class="footer_bottom">' +
+    '<div class="footer_bottom_row">' +
+    '<p class="footer_copyright">© 2026. ALL RIGHTS RESERVED BY SEOUL TOWER</p>' +
+    '<ul class="footer_sns">' + getFooterSnsMarkup(assetPath) + "</ul>" +
+    "</div>" +
+    "</div>" +
+
+    '<img class="footer_deco" src="' + assetPath + 'footer_tower.png" alt="" aria-hidden="true" ' +
+    'width="418" height="417" loading="lazy">' +
+    "</div>" +
+    "</footer>"
+  );
+}
+
+function renderCommonFooter() {
+  var mount = document.querySelector("[data-common-footer]");
+  if (!mount) {
+    return;
+  }
+
+  mount.insertAdjacentHTML("beforebegin", getFooterMarkup(getCommonAssetPath()));
+  mount.remove();
+}
+
+/* --------------------------------------------------------------------------
    family site 드롭다운
    -------------------------------------------------------------------------- */
 function initFamilySite() {
@@ -837,6 +1008,10 @@ var QUICK_RING_START = -90;
 
 /* 페이지별로 달라지는 섹션 링크만 이 설정에서 관리합니다. */
 var QUICK_MENU_SECTIONS_BY_PAGE = {
+  "brand_story.html": [
+    { label: "about", href: "#brand_about" },
+    { label: "tower data", href: "#tower_data" }
+  ],
   "index.html": [
     { label: "main", href: "#hero_section" },
     { label: "events", href: "#events_section" },
@@ -920,10 +1095,18 @@ function getQuickSectionMenuMarkup(sections, assetPath) {
 function getQuickChatbotMarkup(assetPath) {
   return (
     '<section class="quick_chatbot" id="quick_chatbot_panel" data-chatbot-panel ' +
-    'aria-label="N Seoul Tower chatbot" hidden>' +
+    'role="dialog" aria-modal="false" aria-labelledby="quick_chatbot_title" hidden>' +
     '<header class="quick_chatbot_header">' +
+    '<div class="quick_chatbot_brand" aria-hidden="true">' +
+    '<span class="quick_chatbot_brand_eyebrow">WELCOME TO</span>' +
+    '<span class="quick_chatbot_brand_name">N SEOUL TOWER</span>' +
+    "</div>" +
+    '<button class="quick_chatbot_close" type="button" data-chatbot-close>' +
+    '<img src="' + assetPath + 'icon/icon_close.svg" alt="" width="36" height="36">' +
+    '<span class="visually_hidden">Close chatbot</span>' +
+    "</button>" +
     '<img class="quick_chatbot_avatar" src="' + assetPath + 'icon/chatbot.png" alt="" width="56" height="56">' +
-    '<p class="quick_chatbot_name">N Seoul Tower</p>' +
+    '<p class="quick_chatbot_name" id="quick_chatbot_title">N Seoul Tower</p>' +
     '<p class="quick_chatbot_status">How can we help you?</p>' +
     "</header>" +
     '<div class="quick_chatbot_body">' +
@@ -1091,12 +1274,14 @@ function initQuickMenu() {
   var chatbotToggle = quickMenu.querySelector("[data-chatbot-toggle]");
   var chatbotPanel = quickMenu.querySelector("[data-chatbot-panel]");
   var chatbotToggleLabel = quickMenu.querySelector("[data-chatbot-toggle-label]");
+  var chatbotClose = quickMenu.querySelector("[data-chatbot-close]");
 
   if (!toggleButton || !actions) {
     return;
   }
 
   var hoverMediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+  var mobileChatbotMediaQuery = window.matchMedia("(max-width: 833px)");
 
   var isQuickMenuOpen = false;
   var isSectionMenuOpen = false;
@@ -1234,6 +1419,15 @@ function initQuickMenu() {
     }
     chatbotToggle.setAttribute("aria-expanded", String(isChatbotOpen));
     chatbotPanel.hidden = !isChatbotOpen;
+    chatbotPanel.setAttribute(
+      "aria-modal",
+      String(isChatbotOpen && mobileChatbotMediaQuery.matches)
+    );
+    quickMenu.classList.toggle("is_chatbot_open", isChatbotOpen);
+    document.body.classList.toggle(
+      "has_mobile_chatbot",
+      isChatbotOpen && mobileChatbotMediaQuery.matches
+    );
     if (chatbotToggleLabel) {
       chatbotToggleLabel.textContent = isChatbotOpen ? "Close chatbot" : "Open chatbot";
     }
@@ -1258,6 +1452,16 @@ function initQuickMenu() {
       closeSectionMenu();
     }
     renderChatbotState();
+
+    if (isChatbotOpen && mobileChatbotMediaQuery.matches && chatbotClose) {
+      chatbotClose.focus();
+    }
+  }
+
+  function handleChatbotViewportChange() {
+    if (isChatbotOpen) {
+      renderChatbotState();
+    }
   }
 
   function renderQuickMenuState() {
@@ -1314,6 +1518,14 @@ function initQuickMenu() {
     chatbotToggle.addEventListener("click", handleChatbotToggle);
   }
 
+  if (chatbotClose) {
+    chatbotClose.addEventListener("click", function handleChatbotClose() {
+      closeChatbot(true);
+    });
+  }
+
+  mobileChatbotMediaQuery.addEventListener("change", handleChatbotViewportChange);
+
   if (sectionButton) {
     sectionButton.addEventListener("click", handleSectionMenuToggle);
 
@@ -1355,6 +1567,23 @@ function initQuickMenu() {
   });
 
   document.addEventListener("keydown", function handleQuickEscape(event) {
+    if (event.key === "Tab" && isChatbotOpen && mobileChatbotMediaQuery.matches) {
+      var focusableItems = chatbotPanel.querySelectorAll(
+        'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+      );
+      var firstItem = focusableItems[0];
+      var lastItem = focusableItems[focusableItems.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstItem) {
+        event.preventDefault();
+        lastItem.focus();
+      } else if (!event.shiftKey && document.activeElement === lastItem) {
+        event.preventDefault();
+        firstItem.focus();
+      }
+      return;
+    }
+
     if (event.key !== "Escape") {
       return;
     }
@@ -1379,6 +1608,7 @@ function initQuickMenu() {
 function initCommon() {
   initMotionPreference();
   renderSubHeader();
+  renderCommonFooter();
   renderCommonQuickMenu();
   initImageFallback();
   initLanguageSelectors();
