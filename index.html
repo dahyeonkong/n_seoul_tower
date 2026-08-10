@@ -2,6 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script>
+    if (!new URLSearchParams(window.location.search).has("intro")) {
+      window.location.replace("./intro.html");
+    }
+  </script>
   <!-- 기본 SEO -->
   <title>N Seoul Tower | Seoul's Landmark Observatory</title>
   <meta name="description" content="Discover N Seoul Tower — events, recommended courses, N Pass, the N Gift Shop and custom goods, all in one place.">
