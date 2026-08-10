@@ -337,6 +337,85 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   transform: translate(0, -50%);
 }
 
+/* By Bus departure micro interaction */
+.guide_media_bus .bus_object {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: visible;
+}
+
+.guide_media_bus .bus_image {
+  z-index: 2;
+  transition: transform 520ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+
+.guide_media_bus .bus_smoke,
+.guide_media_bus .bus_smoke::before,
+.guide_media_bus .bus_smoke::after {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  background-color: rgba(245, 245, 242, 0.72);
+  content: "";
+}
+
+.guide_media_bus .bus_smoke {
+  top: 62%;
+  right: 3%;
+  z-index: 1;
+  width: clamp(14px, 5vw, 24px);
+  aspect-ratio: 1;
+  opacity: 0;
+  transform: translateX(0) scale(0.8);
+  pointer-events: none;
+}
+
+.guide_media_bus .bus_smoke::before {
+  top: -42%;
+  left: -58%;
+  width: 72%;
+  aspect-ratio: 1;
+  opacity: 0.72;
+}
+
+.guide_media_bus .bus_smoke::after {
+  right: -52%;
+  bottom: -18%;
+  width: 58%;
+  aspect-ratio: 1;
+  opacity: 0.55;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .guide_media_bus .bus_object:hover .bus_image {
+    transform: translate(-14px, -50%);
+  }
+
+  .guide_media_bus .bus_object:hover .bus_smoke {
+    animation: bus_smoke_depart 900ms ease-out 1 both;
+  }
+}
+
+@keyframes bus_smoke_depart {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.6); }
+  20% { opacity: 0.5; }
+  60% { opacity: 0.35; transform: translate(14px, -4px) scale(1); }
+  100% { opacity: 0; transform: translate(24px, -8px) scale(1.25); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guide_media_bus .bus_object:hover .bus_image {
+    transform: translate(0, -50%);
+    transition: none;
+  }
+
+  .guide_media_bus .bus_object:hover .bus_smoke {
+    animation: none;
+  }
+}
+
 .guide_media_car img {
     left: 0;
     width: 154.7%;
