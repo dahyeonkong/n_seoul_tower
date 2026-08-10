@@ -300,8 +300,10 @@ function getSubHeaderMarkup() {
       <div class="page_container global_menu_body">
         <div class="menu_brand">
           <div class="menu_brand_logo">
-            <img src="../assets/nst_logo_gray.svg" alt="" width="219" height="136">
-            <p class="menu_brand_name"><span>N</span> SEOUL TOWER</p>
+            <a class="menu_brand_home" href="../index.html">
+              <img src="../assets/nst_logo_gray.svg" alt="" width="219" height="136">
+              <p class="menu_brand_name"><span>N</span> SEOUL TOWER</p>
+            </a>
           </div>
           <a class="book_btn" href="https://naver.me/x0UEXKKZ" target="_blank" rel="noopener noreferrer">
             <img src="../assets/icon/icon_ticket.svg" alt="" width="24" height="24">

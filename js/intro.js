@@ -1,4 +1,5 @@
 (function initIntro() {
+  const INTRO_SESSION_KEY = "hasSeenIntro";
   const introScreen = document.querySelector(".intro_screen");
   const introVideo = document.querySelector("[data-intro-video]");
   const cursorSkip = document.querySelector("[data-intro-cursor]");
@@ -7,6 +8,12 @@
 
   if (!introScreen || !introVideo || !cursorSkip) {
     return;
+  }
+
+  try {
+    sessionStorage.setItem(INTRO_SESSION_KEY, "true");
+  } catch (error) {
+    /* 저장소가 차단된 환경에서도 인트로 재생과 메인 이동은 그대로 동작합니다. */
   }
 
   function goToMain() {
