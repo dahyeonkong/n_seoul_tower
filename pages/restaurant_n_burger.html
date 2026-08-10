@@ -144,12 +144,12 @@
 
           <div class="burger_info_body">
             <div class="burger_info_head">
-              <p class="burger_info_meta">
+              <h2 class="burger_info_title" id="burger_info_title">N burger</h2>
+               <p class="burger_info_meta">
                 <span>T1 Floor</span>
                 <span class="burger_info_divider" aria-hidden="true">|</span>
                 <span>10:00 ~ 21:00</span>
               </p>
-              <h2 class="burger_info_title" id="burger_info_title">N burger</h2>
               <p class="burger_info_desc">
                 The most Seoul-like handmade burger house<br>
                 met at the top of Namsan, Seoul's landmark
@@ -187,56 +187,76 @@
                   height="673" loading="lazy">
               </figure>
               <figure class="burger_gallery_slide" data-gallery-slide aria-hidden="true">
-                <img src="../assets/restaurant/restaurant_slide_banner.png"
-                  alt="Interior of N Burger with counter seating and a large N BURGER wall graphic" width="1600"
+                <img src="../assets/restaurant/restaurant_slide_banner_2.png"
+                  alt="N Burger open kitchen with copper heat lamps and a preparation counter" width="1600"
+                  height="673" loading="lazy">
+              </figure>
+              <figure class="burger_gallery_slide" data-gallery-slide aria-hidden="true">
+                <img src="../assets/restaurant/restaurant_slide_banner_3.png"
+                  alt="N Burger dining area and service counter with warm interior lighting" width="1600"
                   height="673" loading="lazy">
               </figure>
             </div>
+            <button class="burger_gallery_nav burger_gallery_nav_prev" type="button" data-gallery-prev
+              aria-controls="burger_gallery_track">
+              <img src="../assets/icon/chevron_left.svg" alt="" width="42" height="42">
+              <span class="visually_hidden">Previous photo</span>
+            </button>
+            <button class="burger_gallery_nav burger_gallery_nav_next" type="button" data-gallery-next
+              aria-controls="burger_gallery_track">
+              <img src="../assets/icon/chevron_left.svg" alt="" width="42" height="42">
+              <span class="visually_hidden">Next photo</span>
+            </button>
           </div>
-          <button class="burger_gallery_nav burger_gallery_nav_prev" type="button" data-gallery-prev
-            aria-controls="burger_gallery_track">
-            <img src="../assets/icon/chevron_left.svg" alt="" width="42" height="42">
-            <span class="visually_hidden">Previous photo</span>
-          </button>
-          <button class="burger_gallery_nav burger_gallery_nav_next" type="button" data-gallery-next
-            aria-controls="burger_gallery_track">
-            <img src="../assets/icon/chevron_left.svg" alt="" width="42" height="42">
-            <span class="visually_hidden">Next photo</span>
-          </button>
+          <div class="burger_gallery_pagination" role="group" aria-label="Gallery slide pagination"
+            data-gallery-pagination>
+            <button class="burger_gallery_pagination_button is_active" type="button" data-gallery-pagination-button
+              data-slide-index="0" aria-label="Show photo 1 of 3" aria-current="true"></button>
+            <button class="burger_gallery_pagination_button" type="button" data-gallery-pagination-button
+              data-slide-index="1" aria-label="Show photo 2 of 3"></button>
+            <button class="burger_gallery_pagination_button" type="button" data-gallery-pagination-button
+              data-slide-index="2" aria-label="Show photo 3 of 3"></button>
+          </div>
         </div>
       </section>
 
       <!-- ===================== 5. best menu ===================== -->
       <section class="burger_best" id="burger_best" aria-labelledby="burger_best_title">
         <h2 class="visually_hidden" id="burger_best_title">N Burger best menu</h2>
-        <img class="burger_best_type burger_best_type_top" src="../assets/restaurant/bg_title/top.png" alt=""
-          aria-hidden="true" width="940" height="158" loading="lazy">
-        <img class="burger_best_type burger_best_type_bottom" src="../assets/restaurant/bg_title/bottom.png" alt=""
-          aria-hidden="true" width="1002" height="155" loading="lazy">
+        <div class="burger_best_type_frame">
+          <img class="burger_best_type burger_best_type_top" src="../assets/restaurant/bg_title/top.png" alt=""
+            aria-hidden="true" width="940" height="158" loading="lazy">
+        </div>
 
-        <div class="burger_best_center" role="group" aria-label="Best menu banner">
+        <div class="burger_best_center" role="group" aria-label="Best menu banner" aria-roledescription="carousel"
+          data-burger-best-swiper tabindex="0">
           <ul class="burger_best_list">
-            <li class="burger_best_card">
+            <li class="burger_best_card swiper_slide">
               <img src="../assets/restaurant/burger_image5.png" alt="Seoul Bulgogi Burger" width="396" height="683"
                 loading="lazy">
             </li>
-            <li class="burger_best_card">
+            <li class="burger_best_card swiper_slide">
               <img src="../assets/restaurant/burger_image4.png" alt="Classic Cheese Burger" width="396" height="683"
                 loading="lazy">
             </li>
-            <li class="burger_best_card">
+            <li class="burger_best_card swiper_slide">
               <img src="../assets/restaurant/burger_image3.png" alt="Bacon Deluxe Burger" width="397" height="683"
                 loading="lazy">
             </li>
-            <li class="burger_best_card">
+            <li class="burger_best_card swiper_slide">
               <img src="../assets/restaurant/burger_image2.png" alt="Fresh Craft Beer" width="399" height="683"
                 loading="lazy">
             </li>
-            <li class="burger_best_card">
+            <li class="burger_best_card swiper_slide">
               <img src="../assets/restaurant/burger_image1.png" alt="Namsan Tower Cup, a to-go only beer and chicken set"
                 width="426" height="683" loading="lazy">
             </li>
           </ul>
+        </div>
+
+        <div class="burger_best_type_frame">
+          <img class="burger_best_type burger_best_type_bottom" src="../assets/restaurant/bg_title/bottom.png" alt=""
+            aria-hidden="true" width="1002" height="155" loading="lazy">
         </div>
       </section>
 

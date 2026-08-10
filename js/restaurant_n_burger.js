@@ -8,6 +8,7 @@ function initRestaurantScrollAnimations() {
   var isReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   initBurgerGallerySlider(isReducedMotion);
+  initBurgerBestSwiper(isReducedMotion);
 
   if (isReducedMotion || !window.gsap || !window.ScrollTrigger) {
     return;
@@ -46,6 +47,9 @@ function initRestaurantScrollAnimations() {
     var slider = document.querySelector("[data-gallery-slider]");
     var previousButton = document.querySelector("[data-gallery-prev]");
     var nextButton = document.querySelector("[data-gallery-next]");
+    var paginationButtons = Array.prototype.slice.call(
+      document.querySelectorAll("[data-gallery-pagination-button]")
+    );
 
     if (!slider || !previousButton || !nextButton) {
       return;
@@ -66,14 +70,25 @@ function initRestaurantScrollAnimations() {
     var autoPlayTimer = null;
     var SLIDE_INTERVAL = 2000;
 
-    galleryGsap.set(slides, { xPercent: -100, autoAlpha: 0 });
-    galleryGsap.set(slides[currentIndex], { xPercent: 0, autoAlpha: 1 });
+    galleryGsap.set(slides, { autoAlpha: 0, zIndex: 0 });
+    galleryGsap.set(slides[currentIndex], { autoAlpha: 1, zIndex: 1 });
 
     function renderSlideAccessibility() {
       slides.forEach(function renderSlideState(slide, index) {
         var isCurrentSlide = index === currentIndex;
         slide.classList.toggle("is_active", isCurrentSlide);
         slide.setAttribute("aria-hidden", String(!isCurrentSlide));
+      });
+
+      paginationButtons.forEach(function renderPaginationState(button, index) {
+        var isCurrentButton = index === currentIndex;
+        button.classList.toggle("is_active", isCurrentButton);
+
+        if (isCurrentButton) {
+          button.setAttribute("aria-current", "true");
+        } else {
+          button.removeAttribute("aria-current");
+        }
       });
     }
 
@@ -86,13 +101,10 @@ function initRestaurantScrollAnimations() {
       var nextIndex = (currentIndex + direction + slides.length) % slides.length;
       var currentSlide = slides[currentIndex];
       var nextSlide = slides[nextIndex];
-      var incomingPosition = direction > 0 ? -100 : 100;
-      var outgoingPosition = direction > 0 ? 100 : -100;
       var transitionDuration = shouldReduceMotion ? 0 : 0.65;
 
       galleryGsap.set(nextSlide, {
-        xPercent: incomingPosition,
-        autoAlpha: 1,
+        autoAlpha: 0,
         zIndex: 2
       });
       galleryGsap.set(currentSlide, { zIndex: 1 });
@@ -109,8 +121,8 @@ function initRestaurantScrollAnimations() {
           renderSlideAccessibility();
         }
       })
-        .to(currentSlide, { xPercent: outgoingPosition }, 0)
-        .to(nextSlide, { xPercent: 0 }, 0);
+        .to(currentSlide, { autoAlpha: 0 }, 0)
+        .to(nextSlide, { autoAlpha: 1 }, 0);
     }
 
     function startAutoPlay() {
@@ -140,6 +152,16 @@ function initRestaurantScrollAnimations() {
       moveGallery(1);
     }
 
+    function handlePaginationClick(event) {
+      var targetIndex = Number(event.currentTarget.dataset.slideIndex);
+
+      if (!Number.isInteger(targetIndex) || targetIndex === currentIndex) {
+        return;
+      }
+
+      moveGallery(targetIndex - currentIndex);
+    }
+
     function handleVisibilityChange() {
       if (document.hidden) {
         stopAutoPlay();
@@ -150,6 +172,9 @@ function initRestaurantScrollAnimations() {
 
     previousButton.addEventListener("click", handlePreviousClick);
     nextButton.addEventListener("click", handleNextClick);
+    paginationButtons.forEach(function bindPaginationButton(button) {
+      button.addEventListener("click", handlePaginationClick);
+    });
     sliderRegion.addEventListener("pointerenter", stopAutoPlay);
     sliderRegion.addEventListener("pointerleave", startAutoPlay);
     sliderRegion.addEventListener("focusin", stopAutoPlay);
@@ -158,6 +183,256 @@ function initRestaurantScrollAnimations() {
 
     renderSlideAccessibility();
     startAutoPlay();
+  }
+
+  function initBurgerBestSwiper(shouldReduceMotion) {
+    var swiper = document.querySelector("[data-burger-best-swiper]");
+
+    if (!swiper) {
+      return;
+    }
+
+    var mobileQuery = window.matchMedia("(max-width: 833px)");
+    var cards = Array.prototype.slice.call(swiper.querySelectorAll(".swiper_slide"));
+    var isDragging = false;
+    var startPointerX = 0;
+    var lastPointerX = 0;
+    var startScrollLeft = 0;
+    var startCardIndex = 0;
+    var startTouchY = 0;
+    var wheelTimer = null;
+    var wheelDirection = 0;
+    var swiperAutoPlayTimer = null;
+    var SWIPE_THRESHOLD = 24;
+    var SWIPER_INTERVAL = 2000;
+
+    function getNearestCardIndex() {
+      var viewportCenter = swiper.scrollLeft + swiper.clientWidth / 2;
+      var nearestIndex = 0;
+      var nearestDistance = Infinity;
+
+      cards.forEach(function findNearestCard(card, index) {
+        var cardCenter = card.offsetLeft + card.offsetWidth / 2;
+        var distance = Math.abs(cardCenter - viewportCenter);
+
+        if (distance < nearestDistance) {
+          nearestDistance = distance;
+          nearestIndex = index;
+        }
+      });
+
+      return nearestIndex;
+    }
+
+    function scrollToCard(index) {
+      var safeIndex = Math.max(0, Math.min(cards.length - 1, index));
+      var targetCard = cards[safeIndex];
+
+      if (!targetCard) {
+        return;
+      }
+
+      var targetScrollLeft = targetCard.offsetLeft - (swiper.clientWidth - targetCard.offsetWidth) / 2;
+
+      swiper.scrollTo({
+        left: targetScrollLeft,
+        behavior: shouldReduceMotion ? "auto" : "smooth"
+      });
+    }
+
+    function startSwiperAutoPlay() {
+      if (shouldReduceMotion || !mobileQuery.matches || document.hidden || swiperAutoPlayTimer) {
+        return;
+      }
+
+      swiperAutoPlayTimer = window.setInterval(function handleSwiperAutoPlay() {
+        var nextIndex = (getNearestCardIndex() + 1) % cards.length;
+        scrollToCard(nextIndex);
+      }, SWIPER_INTERVAL);
+    }
+
+    function stopSwiperAutoPlay() {
+      if (!swiperAutoPlayTimer) {
+        return;
+      }
+
+      window.clearInterval(swiperAutoPlayTimer);
+      swiperAutoPlayTimer = null;
+    }
+
+    function restartSwiperAutoPlay() {
+      stopSwiperAutoPlay();
+      startSwiperAutoPlay();
+    }
+
+    function handlePointerDown(event) {
+      if (!mobileQuery.matches || (event.pointerType === "mouse" && event.button !== 0)) {
+        return;
+      }
+
+      isDragging = true;
+      stopSwiperAutoPlay();
+      startPointerX = event.clientX;
+      lastPointerX = event.clientX;
+      startScrollLeft = swiper.scrollLeft;
+      startCardIndex = getNearestCardIndex();
+      swiper.classList.add("is_dragging");
+      if (typeof swiper.setPointerCapture === "function") {
+        swiper.setPointerCapture(event.pointerId);
+      }
+    }
+
+    function handlePointerMove(event) {
+      if (!isDragging) {
+        return;
+      }
+
+      lastPointerX = event.clientX;
+      swiper.scrollLeft = startScrollLeft - (event.clientX - startPointerX);
+      event.preventDefault();
+    }
+
+    function endPointerDrag(event) {
+      if (!isDragging) {
+        return;
+      }
+
+      isDragging = false;
+      swiper.classList.remove("is_dragging");
+
+      if (typeof swiper.hasPointerCapture === "function" && swiper.hasPointerCapture(event.pointerId)) {
+        swiper.releasePointerCapture(event.pointerId);
+      }
+
+      var endPointerX = typeof event.clientX === "number" ? event.clientX : lastPointerX;
+      var swipeDistance = startPointerX - endPointerX;
+      var targetIndex = startCardIndex;
+
+      if (Math.abs(swipeDistance) >= SWIPE_THRESHOLD) {
+        targetIndex += swipeDistance > 0 ? 1 : -1;
+      }
+
+      scrollToCard(targetIndex);
+      restartSwiperAutoPlay();
+    }
+
+    function handleTouchStart(event) {
+      if (window.PointerEvent || !mobileQuery.matches || !event.touches[0]) {
+        return;
+      }
+
+      startPointerX = event.touches[0].clientX;
+      stopSwiperAutoPlay();
+      lastPointerX = startPointerX;
+      startTouchY = event.touches[0].clientY;
+      startScrollLeft = swiper.scrollLeft;
+      startCardIndex = getNearestCardIndex();
+    }
+
+    function handleTouchMove(event) {
+      if (window.PointerEvent || !mobileQuery.matches || !event.touches[0]) {
+        return;
+      }
+
+      var currentTouchX = event.touches[0].clientX;
+      var horizontalDistance = currentTouchX - startPointerX;
+      var verticalDistance = event.touches[0].clientY - startTouchY;
+
+      lastPointerX = currentTouchX;
+
+      if (Math.abs(horizontalDistance) <= Math.abs(verticalDistance)) {
+        return;
+      }
+
+      event.preventDefault();
+      swiper.scrollLeft = startScrollLeft - horizontalDistance;
+    }
+
+    function handleTouchEnd(event) {
+      if (window.PointerEvent || !mobileQuery.matches || !event.changedTouches[0]) {
+        return;
+      }
+
+      var swipeDistance = startPointerX - event.changedTouches[0].clientX;
+
+      if (Math.abs(swipeDistance) < SWIPE_THRESHOLD) {
+        scrollToCard(startCardIndex);
+        restartSwiperAutoPlay();
+        return;
+      }
+
+      scrollToCard(startCardIndex + (swipeDistance > 0 ? 1 : -1));
+      restartSwiperAutoPlay();
+    }
+
+    function handleWheel(event) {
+      if (!mobileQuery.matches) {
+        return;
+      }
+
+      var scrollAmount = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+
+      if (scrollAmount === 0) {
+        return;
+      }
+
+      event.preventDefault();
+      stopSwiperAutoPlay();
+      wheelDirection = scrollAmount > 0 ? 1 : -1;
+      window.clearTimeout(wheelTimer);
+      wheelTimer = window.setTimeout(function handleWheelEnd() {
+        scrollToCard(getNearestCardIndex() + wheelDirection);
+        wheelDirection = 0;
+        startSwiperAutoPlay();
+      }, 120);
+    }
+
+    function handleKeyDown(event) {
+      if (!mobileQuery.matches || (event.key !== "ArrowLeft" && event.key !== "ArrowRight")) {
+        return;
+      }
+
+      event.preventDefault();
+      var direction = event.key === "ArrowRight" ? 1 : -1;
+      var nextIndex = Math.max(0, Math.min(cards.length - 1, getNearestCardIndex() + direction));
+      scrollToCard(nextIndex);
+      restartSwiperAutoPlay();
+    }
+
+    function handleSwiperVisibilityChange() {
+      if (document.hidden) {
+        stopSwiperAutoPlay();
+      } else {
+        startSwiperAutoPlay();
+      }
+    }
+
+    function handleSwiperViewportChange() {
+      if (mobileQuery.matches) {
+        startSwiperAutoPlay();
+      } else {
+        stopSwiperAutoPlay();
+      }
+    }
+
+    swiper.addEventListener("pointerdown", handlePointerDown);
+    swiper.addEventListener("pointermove", handlePointerMove);
+    swiper.addEventListener("pointerup", endPointerDrag);
+    swiper.addEventListener("pointercancel", endPointerDrag);
+    swiper.addEventListener("touchstart", handleTouchStart, { passive: true });
+    swiper.addEventListener("touchmove", handleTouchMove, { passive: false });
+    swiper.addEventListener("touchend", handleTouchEnd, { passive: true });
+    swiper.addEventListener("wheel", handleWheel, { passive: false });
+    swiper.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("visibilitychange", handleSwiperVisibilityChange);
+
+    if (typeof mobileQuery.addEventListener === "function") {
+      mobileQuery.addEventListener("change", handleSwiperViewportChange);
+    } else {
+      mobileQuery.addListener(handleSwiperViewportChange);
+    }
+
+    startSwiperAutoPlay();
   }
 
   revealFrom(document.querySelectorAll(".burger_info_thumb"), {
