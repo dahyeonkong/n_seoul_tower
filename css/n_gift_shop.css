@@ -414,6 +414,14 @@
   transition: transform var(--duration) var(--ease_out);
 }
 
+.giftshop_card_link {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: inherit;
+  text-decoration: none;
+}
+
 .giftshop_card[hidden] {
   display: none;
 }
