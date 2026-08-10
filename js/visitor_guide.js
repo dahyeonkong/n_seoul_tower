@@ -260,81 +260,10 @@ function initGuideScrollMotion() {
   renderMotion();
 }
 
-function initPointerTilt() {
-  var pointerMedia = window.matchMedia("(hover: hover) and (pointer: fine)");
-  var reducedMotionMedia = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var targets = Array.prototype.slice.call(
-    document.querySelectorAll(".guide_media, .course_visual")
-  );
-  var maxTilt = 7;
-
-  if (targets.length === 0) return;
-
-  function canTilt() {
-    return pointerMedia.matches && !reducedMotionMedia.matches;
-  }
-
-  function resetTarget(target) {
-    target.classList.remove("is_tilt_active");
-    target.style.setProperty("--pointer_tilt_x", "0deg");
-    target.style.setProperty("--pointer_tilt_y", "0deg");
-  }
-
-  function renderTiltState() {
-    targets.forEach(function (target) {
-      target.classList.toggle("has_pointer_tilt", canTilt());
-      if (!canTilt()) resetTarget(target);
-    });
-  }
-
-  targets.forEach(function (target) {
-    var frameId = 0;
-    var tiltX = 0;
-    var tiltY = 0;
-
-    function renderTargetTilt() {
-      frameId = 0;
-      target.style.setProperty("--pointer_tilt_x", tiltX.toFixed(2) + "deg");
-      target.style.setProperty("--pointer_tilt_y", tiltY.toFixed(2) + "deg");
-    }
-
-    function handlePointerMove(event) {
-      if (!canTilt()) return;
-
-      var rect = target.getBoundingClientRect();
-      var relativeX = (event.clientX - rect.left) / rect.width - 0.5;
-      var relativeY = (event.clientY - rect.top) / rect.height - 0.5;
-
-      tiltX = relativeY * maxTilt * -2;
-      tiltY = relativeX * maxTilt * 2;
-      target.classList.add("is_tilt_active");
-
-      if (!frameId) frameId = window.requestAnimationFrame(renderTargetTilt);
-    }
-
-    function handlePointerLeave() {
-      if (frameId) {
-        window.cancelAnimationFrame(frameId);
-        frameId = 0;
-      }
-      resetTarget(target);
-    }
-
-    target.addEventListener("pointermove", handlePointerMove);
-    target.addEventListener("pointerleave", handlePointerLeave);
-    target.addEventListener("pointercancel", handlePointerLeave);
-  });
-
-  pointerMedia.addEventListener("change", renderTiltState);
-  reducedMotionMedia.addEventListener("change", renderTiltState);
-  renderTiltState();
-}
-
 function initVisitorGuidePage() {
   initGuideTabs();
   initCableCarInformation();
   initGuideScrollMotion();
-  initPointerTilt();
 }
 
 if (document.readyState === "loading") {

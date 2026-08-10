@@ -64,24 +64,6 @@
   height: auto;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .guide_media.has_pointer_tilt,
-  .course_visual.has_pointer_tilt {
-    transform: perspective(900px)
-      rotateX(var(--pointer_tilt_x, 0deg))
-      rotateY(var(--pointer_tilt_y, 0deg));
-    transform-origin: center;
-    transition: transform 260ms var(--ease_out);
-    will-change: transform;
-  }
-
-  .guide_media.has_pointer_tilt.is_tilt_active,
-  .course_visual.has_pointer_tilt.is_tilt_active {
-    transition-duration: 80ms;
-    transition-timing-function: linear;
-  }
-}
-
 .sub_content {
   position: relative;
 }
@@ -134,12 +116,6 @@
     will-change: auto;
   }
 
-  .guide_media.has_pointer_tilt,
-  .course_visual.has_pointer_tilt {
-    transform: none;
-    transition: none;
-    will-change: auto;
-  }
 }
 
 @media (max-width: 1279px) {

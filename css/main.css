@@ -783,7 +783,7 @@
 .main_visual_photo {
   position: absolute;
   left: -58.29vw;
-  top: -0.13svh;
+  bottom: calc(100% - 46.62svh);
   width: 237.81vw;
   height: 46.75svh;
   margin: 0;
@@ -845,10 +845,11 @@
   overflow-wrap: anywhere;
 }
 
-/* 360 에서 티켓은 블롭이 아니라 가로로 긴 초록 바입니다 (1373:1934). */
+/* 360 에서 티켓은 블롭이 아니라 가로로 긴 초록 바입니다 (1373:1934).
+   z-index 는 .visual_bleed(4) 보다 위여야 물감이 티켓 "뒤에서" 번져 나옵니다. */
 .main_visual_ticket {
   position: relative;
-  z-index: 3;
+  z-index: 5;
   width: 100%;
   margin-top: 18px;
   border-radius: 8px;
@@ -1016,20 +1017,64 @@
   display: none;
 }
 
+/* --------------------------------------------------------------------------
+   히어로 → events 물감 전환
+   아래로 스크롤하면 티켓 뒤에서 블롭이 번져 화면을 덮고, 다 덮으면 걷히면서
+   events 섹션이 드러납니다. 크기와 위치는 main.js 가 스크롤에 맞춰 넣습니다.
+   원형이 아니라 티켓 블롭 에셋을 마스크로 써서 물감이 번지는 모양을 만듭니다.
+   -------------------------------------------------------------------------- */
+.visual_bleed {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  background-color: #809975;
+  opacity: 0;
+  pointer-events: none;
+  -webkit-mask-image: url("../assets/main_visual_ticket.png");
+  mask-image: url("../assets/main_visual_ticket.png");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: var(--bleed_size, 0px) var(--bleed_size, 0px);
+  mask-size: var(--bleed_size, 0px) var(--bleed_size, 0px);
+  -webkit-mask-position: calc(var(--bleed_x, 50%) - var(--bleed_size, 0px) / 2)
+    calc(var(--bleed_y, 50%) - var(--bleed_size, 0px) / 2);
+  mask-position: calc(var(--bleed_x, 50%) - var(--bleed_size, 0px) / 2)
+    calc(var(--bleed_y, 50%) - var(--bleed_size, 0px) / 2);
+  will-change: mask-size, opacity;
+}
+
+/* 다 번진 뒤에는 마스크를 벗겨 화면을 빈틈없이 채웁니다. */
+.visual_bleed.is_full {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visual_bleed {
+    display: none;
+  }
+}
+
 /* Figma 1373:1827 — 834 x 1080 기준.
    사진은 좌상단에 깔고 copy / 정보 패널 / 티켓 블롭을 시안 좌표에 맞춰 배치합니다.
    정보 패널은 360 과 같은 세로 1열 구조를 유지하고 크기만 키웁니다. */
 @media (min-width: 834px) {
   .main_visual {
+    --main_visual_info_bottom: 4%;
+    --main_visual_info_height: 355px;
+    --main_visual_media_gap: 24px;
     display: block;
     min-height: 100svh;
     padding: 0;
   }
 
-  /* hero_vid: left -427.46 / top -21.07 / 1218.29 x 685.29 */
+  /* 정보 패널 위에 안전 간격을 두기 위해 하단을 기준으로 배치합니다. */
   .main_visual_photo {
     left: -51.25%;
-    top: -1.95%;
+    bottom: calc(
+      var(--main_visual_info_bottom) + var(--main_visual_info_height) +
+        var(--main_visual_media_gap)
+    );
     width: 146.08%;
     height: 63.45%;
   }
@@ -1107,12 +1152,13 @@
     font-size: 16px;
   }
 
-  /* left 43 / top 658 / weather_wrap 389 + 좌우 패딩 24 */
+  /* 하단 기준으로 고정해 사진 영역과 겹치지 않게 합니다. */
   .main_visual_info {
     position: absolute;
     left: 5.16%;
-    top: 60.93%;
+    bottom: var(--main_visual_info_bottom);
     width: 437px;
+    height: var(--main_visual_info_height);
     margin-top: 0;
     padding: 30px 24px;
   }
@@ -1158,10 +1204,14 @@
    1440 을 기준값으로 두고 1280~1919 구간을 vw 로 이어지게 했습니다. */
 @media (min-width: 1280px) {
 
-  /* hero_vid: left -447.94 / top -16 / 1463.69 x 823.32 */
+  .main_visual {
+    --main_visual_info_bottom: 7.4%;
+    --main_visual_info_height: 134px;
+  }
+
+  /* hero_vid: 하단 기준 배치 */
   .main_visual_photo {
     left: -31.11%;
-    top: -1.48%;
     width: 101.65%;
     height: 76.23%;
     -webkit-mask-position: -277.5% 103.23%;
@@ -1186,10 +1236,9 @@
     width: 23.68%;
   }
 
-  /* left 32 / top 872 — 가로 1행 */
+  /* left 32 / bottom 7.4% — 가로 1행 */
   .main_visual_info {
     left: 32px;
-    top: 80%;
     width: auto;
     flex-direction: row;
     align-items: center;
@@ -1221,6 +1270,9 @@
 
 @media (min-width: 1920px) {
   .main_visual {
+    --main_visual_info_bottom: 5.56%;
+    --main_visual_info_height: 120px;
+    --main_visual_media_gap: 32px;
     display: block;
     height: 100vh;
     min-height: 900px;
@@ -1229,7 +1281,6 @@
 
   .main_visual_photo {
     left: -364px;
-    top: 0;
     width: 1640px;
     height: 922px;
     -webkit-mask: url("../assets/main_visual_photo.svg") -159.841px -589.04px / 1581.956px 1433.967px no-repeat;
@@ -1246,7 +1297,7 @@
     top: 16.2%;
     width: 27.08%;
     max-width: none;
-    gap: 36px;
+    gap: 24px;
   }
 
   .main_visual_title {
@@ -1287,7 +1338,6 @@
   .main_visual_info {
     position: absolute;
     left: 9%;
-    top: 78%;
     width: auto;
     padding: 30px 24px;
     border-radius: 8px;
