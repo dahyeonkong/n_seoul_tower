@@ -1588,9 +1588,10 @@ function renderCustomGoods(items) {
 
 /* --------------------------------------------------------------------------
    restaurant — 카드 스택이 끝난 뒤 전체 화면 전환
-   스택이 멈춘 지점에서 한 번 더 스크롤하면 마지막 카드가 화면을 채우고,
+   마지막 카드가 멈춘 지점에서 한 번 더 스크롤하면 카드가 화면을 채우고,
    제목이 한 글자씩 타이핑된 뒤 버튼이 나타나며 중심을 기준으로 살짝 기울었다 돌아옵니다.
-   카드 쌓임이 없는 모바일과 reduced motion 에서는 기존 정적 배치를 그대로 둡니다.
+   카드가 멈추는 위치는 CSS 의 --restaurant_stage_top (모바일 25svh / 834px 이상 348px)이며,
+   모든 해상도에서 같은 방식으로 동작합니다. reduced motion 에서는 정적 배치를 그대로 둡니다.
    -------------------------------------------------------------------------- */
 function initRestaurantStackState() {
   var restaurantAll = document.querySelector("[data-restaurant-all]");
@@ -1609,7 +1610,7 @@ function initRestaurantStackState() {
     return;
   }
 
-  /* 스택이 멈춘 뒤 전체 화면으로 펼치기까지 필요한 추가 스크롤 거리입니다. */
+  /* 카드가 멈춘 뒤 전체 화면으로 펼치기까지 필요한 추가 스크롤 거리입니다. */
   var EXPAND_OFFSET = 90;
   /* 되돌릴 때는 더 짧은 거리를 기준으로 삼아 경계에서 상태가 떨리지 않게 합니다. */
   var COLLAPSE_OFFSET = 40;
@@ -1736,7 +1737,7 @@ function initRestaurantStackState() {
   }
 
   function handleRestaurantLayoutChange() {
-    setMotionEnabled(stickyMedia.matches && !isReducedMotion());
+    setMotionEnabled(!isReducedMotion());
     requestRestaurantStackRender();
   }
 

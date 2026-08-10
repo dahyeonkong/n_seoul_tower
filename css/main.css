@@ -2282,12 +2282,25 @@
 }
 
 .restaurant_all {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
   align-items: center;
   justify-content: center;
   gap: 32px;
-  min-height: 280px;
+  height: 280px;
   padding: 48px 0;
+  background-color: var(--color_bg);
+  pointer-events: auto;
   text-align: center;
+  transition:
+    top 640ms var(--ease_out),
+    right 640ms var(--ease_out),
+    left 640ms var(--ease_out),
+    height 640ms var(--ease_out),
+    padding 640ms var(--ease_out),
+    border-color 320ms var(--ease_out);
 }
 
 .restaurant_all .restaurant_more {
@@ -2295,10 +2308,45 @@
 }
 
 /* 카드가 전체 화면으로 펼쳐질 때 문서 높이가 흔들리지 않도록
-   자리를 지키는 스테이지와 실제로 커지는 카드를 분리합니다.
-   모바일에서는 스테이지가 아무 일도 하지 않는 평범한 상자입니다. */
+   자리를 지키는 스테이지(sticky)와 실제로 커지는 카드(absolute)를 분리합니다.
+   --restaurant_stage_top 은 카드가 멈추는 화면 위쪽 거리이며,
+   모바일은 25svh, 834px 이상은 쌓인 카드 3장 아래인 348px 입니다.
+   스테이지는 화면을 넓게 덮으므로 아래 요소의 클릭을 막지 않게 합니다. */
 .restaurant_all_stage {
-  position: relative;
+  --restaurant_stage_top: 25svh;
+
+  position: sticky;
+  top: var(--restaurant_stage_top);
+  height: calc(100svh - var(--restaurant_stage_top));
+  pointer-events: none;
+}
+
+/* 스택(모바일은 카드 도착)이 끝난 지점에서 한 번 더 스크롤하면 화면 전체를 채웁니다.
+   좌우는 page_container 를 벗어나 뷰포트 폭까지 넓히고, 본문과 같은 여백을 직접 잡아 줍니다.
+   (site_wrapper 의 overflow-x: clip 이 넘친 폭을 잘라 줍니다.) */
+.restaurant_all.is_fullscreen {
+  top: calc(var(--restaurant_stage_top) * -1);
+  right: calc((100vw - 100%) / -2);
+  left: calc((100vw - 100%) / -2);
+  height: 100svh;
+  padding-right: var(--page_pad);
+  padding-left: var(--page_pad);
+  border-top-color: transparent;
+}
+
+/* 전체 화면에서는 제목을 화면 크기에 맞춰 키웁니다.
+   유령 문구도 같이 커지므로 타이핑 중 상자 크기는 그대로 유지됩니다. */
+.restaurant_all .restaurant_all_title {
+  transition: font-size 640ms var(--ease_out);
+}
+
+.restaurant_all.is_fullscreen .restaurant_all_title {
+  font-size: clamp(28px, 8vw, 40px);
+}
+
+/* 전체 화면 전환과 타이핑이 진행될 여유 스크롤 구간입니다. */
+.restaurant_stack_end {
+  height: 110svh;
 }
 
 /* 제목은 유령 문구가 상자 크기를 잡고, 실제 문구가 그 위에 겹쳐 타이핑됩니다. */
@@ -2398,11 +2446,9 @@
     background-color: var(--color_bg);
   }
 
-  /* 스테이지는 화면 전체를 덮으므로 아래에 깔린 카드의 클릭을 막지 않게 합니다. */
+  /* 카드 3장이 쌓인 아래에서 멈춥니다. top 과 height 는 이 값으로 함께 계산됩니다. */
   .restaurant_all_stage {
-    position: sticky;
-    height: calc(100svh - 348px);
-    pointer-events: none;
+    --restaurant_stage_top: 348px;
   }
 
   .restaurant_stack_card_1 {
@@ -2420,15 +2466,9 @@
     z-index: 3;
   }
 
+  /* 4번째 카드의 top 은 위 --restaurant_stage_top 이 담당합니다. */
   .restaurant_stack_card_4 {
-    top: 348px;
     z-index: 4;
-  }
-
-  /* 스택이 멈춘 뒤 전체 화면 전환과 타이핑이 진행될 여유 스크롤 구간입니다.
-     타이핑이 느려진 만큼 전체 화면이 머무는 구간도 함께 늘렸습니다. */
-  .restaurant_stack_end {
-    height: 110svh;
   }
 
   .restaurant_texts {
@@ -2442,47 +2482,14 @@
   }
 
   .restaurant_all {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
     gap: 40px;
     height: 320px;
     padding: 56px 0;
-    background-color: var(--color_bg);
-    pointer-events: auto;
-    transition:
-      top 640ms var(--ease_out),
-      right 640ms var(--ease_out),
-      bottom 640ms var(--ease_out),
-      left 640ms var(--ease_out),
-      height 640ms var(--ease_out),
-      padding 640ms var(--ease_out),
-      border-color 320ms var(--ease_out);
   }
 
-  /* 스택이 끝난 지점에서 한 번 더 스크롤하면 화면 전체를 채웁니다.
-     좌우는 page_container 를 벗어나 뷰포트 폭까지 넓힙니다.
-     (site_wrapper 의 overflow-x: clip 이 넘친 폭을 잘라 줍니다.) */
-  .restaurant_all.is_fullscreen {
-    top: -348px;
-    right: calc((100vw - 100%) / -2);
-    left: calc((100vw - 100%) / -2);
-    height: 100svh;
-    /* page_container 를 벗어나므로 본문과 같은 좌우 여백을 직접 잡아 줍니다. */
-    padding-right: var(--page_pad);
-    padding-left: var(--page_pad);
-    border-top-color: transparent;
-  }
-
-  /* 전체 화면에서는 제목을 화면 크기에 맞춰 키웁니다.
-     유령 문구도 같이 커지므로 타이핑 중 상자 크기는 그대로 유지됩니다. */
-  .restaurant_all .restaurant_all_title {
-    transition: font-size 640ms var(--ease_out);
-  }
-
+  /* 태블릿(834~1279)은 데스크톱 64px 로 이어지도록 폭에 따라 40 → 56px 로 늘어납니다. */
   .restaurant_all.is_fullscreen .restaurant_all_title {
-    font-size: clamp(32px, 5.2vw, 80px);
+    font-size: clamp(40px, 4.6vw, 56px);
   }
 }
 
@@ -2545,6 +2552,31 @@
 
   .restaurant_all_title {
     padding: 20px 0;
+  }
+
+  /* 데스크톱은 1280px 이상에서 64px 고정입니다. */
+  .restaurant_all.is_fullscreen .restaurant_all_title {
+    font-size: 64px;
+  }
+}
+
+/* reduced motion 에서는 전체 화면 전환이 일어나지 않습니다.
+   834px 이상은 원래 디자인대로 카드가 쌓인 채 멈추면 되지만,
+   카드 쌓임이 없는 모바일은 카드만 멈춰 있게 되므로 흐름 배치로 되돌립니다. */
+@media (prefers-reduced-motion: reduce) and (max-width: 833.98px) {
+  .restaurant_all_stage {
+    position: static;
+    height: auto;
+  }
+
+  .restaurant_all {
+    position: relative;
+    height: auto;
+    min-height: 280px;
+  }
+
+  .restaurant_stack_end {
+    height: 0;
   }
 }
 
