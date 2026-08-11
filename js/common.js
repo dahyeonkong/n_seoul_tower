@@ -980,13 +980,17 @@ function getFooterSnsMarkup(assetPath) {
 }
 
 function getFooterMarkup(assetPath) {
+  var homePath = window.location.pathname.indexOf("/pages/") !== -1
+    ? "../index.html"
+    : "./index.html";
+
   return (
     '<footer class="site_footer" data-quick-dark>' +
     '<div class="page_container site_footer_inner">' +
     '<div class="footer_top">' +
-    '<p class="footer_logo">' +
-    '<img src="' + assetPath + 'nst_logo_defalut.svg" alt="N Seoul Tower" width="80" height="107" loading="lazy">' +
-    "</p>" +
+    '<a class="footer_logo" href="' + homePath + '" aria-label="N Seoul Tower home">' +
+    '<img src="' + assetPath + 'nst_logo_defalut.svg" alt="" width="80" height="107" loading="lazy">' +
+    "</a>" +
     "</div>" +
 
     '<div class="footer_body">' +

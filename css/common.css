@@ -2663,6 +2663,10 @@ html .course_page .course_description {
   gap: 10px;
 }
 
+.footer_logo {
+  display: inline-flex;
+}
+
 .footer_logo img {
   width: 56px;
   height: auto;
