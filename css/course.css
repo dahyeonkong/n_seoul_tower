@@ -320,19 +320,19 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .course_page #speed_course .speed_bus:hover .speed_bus_flag {
+  .course_page #speed_course:is(:hover, :focus-within) .speed_bus_flag {
     animation: speed_bus_flag_wave 760ms ease-in-out infinite alternate;
   }
 
-  .course_page #speed_course .speed_bus:hover .speed_bus_wiper_left {
+  .course_page #speed_course:is(:hover, :focus-within) .speed_bus_wiper_left {
     animation: speed_bus_wiper_left 920ms ease-in-out infinite alternate;
   }
 
-  .course_page #speed_course .speed_bus:hover .speed_bus_wiper_right {
+  .course_page #speed_course:is(:hover, :focus-within) .speed_bus_wiper_right {
     animation: speed_bus_wiper_right 920ms ease-in-out infinite alternate;
   }
 
-  .course_page #speed_course .speed_bus:hover .speed_bus_light {
+  .course_page #speed_course:is(:hover, :focus-within) .speed_bus_light {
     box-shadow: 0 0 12px rgba(255, 226, 136, 0.9), 0 0 28px rgba(255, 196, 64, 0.65);
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
@@ -355,8 +355,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .course_page #speed_course .speed_bus:hover .speed_bus_flag,
-  .course_page #speed_course .speed_bus:hover .speed_bus_wiper {
+  .course_page #speed_course:is(:hover, :focus-within) .speed_bus_flag,
+  .course_page #speed_course:is(:hover, :focus-within) .speed_bus_wiper {
     animation: none;
   }
 
@@ -407,7 +407,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .course_page #date_course .course_date_object:hover .course_date_heart {
+  .course_page #date_course:is(:hover, :focus-within) .course_date_heart {
     animation: course_date_heart_swing 2.6s ease-in-out infinite;
   }
 }
@@ -425,7 +425,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .course_page #date_course .course_date_object:hover .course_date_heart {
+  .course_page #date_course:is(:hover, :focus-within) .course_date_heart {
     animation: none;
   }
 }
@@ -470,7 +470,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .course_page #family_course .course_family_object:hover .course_family_icon {
+  .course_page #family_course:is(:hover, :focus-within) .course_family_icon {
     animation: course_family_walk 2.2s ease-in-out infinite;
   }
 }
@@ -488,7 +488,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .course_page #family_course .course_family_object:hover .course_family_icon {
+  .course_page #family_course:is(:hover, :focus-within) .course_family_icon {
     animation: none;
   }
 }
@@ -572,39 +572,41 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .course_page #food_course .course_food_object:hover .course_food_salt {
-    animation: course_food_salt_tap 850ms ease-in-out 1 both;
+  .course_page #food_course:is(:hover, :focus-within) .course_food_salt {
+    animation: course_food_salt_tap 3s ease-in-out infinite both;
   }
 
-  .course_page #food_course .course_food_object:hover .course_food_grain {
-    animation: course_food_grain_fall 360ms ease-in 1 both;
+  .course_page #food_course:is(:hover, :focus-within) .course_food_grain {
+    animation: course_food_grain_fall 3s ease-in infinite both;
     animation-delay: 180ms;
   }
 
-  .course_page #food_course .course_food_object:hover .course_food_grain:nth-child(n + 4) {
+  .course_page #food_course:is(:hover, :focus-within) .course_food_grain:nth-child(n + 4) {
     animation-delay: 390ms;
   }
 
-  .course_page #food_course .course_food_object:hover .course_food_grain:nth-child(n + 7) {
+  .course_page #food_course:is(:hover, :focus-within) .course_food_grain:nth-child(n + 7) {
     animation-delay: 610ms;
   }
 }
 
 @keyframes course_food_salt_tap {
   0% { opacity: 0; transform: translateY(-5px) rotate(0deg); }
-  12% { opacity: 1; transform: translateY(0) rotate(0deg); }
-  30% { opacity: 1; transform: translateY(3px) rotate(3deg); }
-  45% { opacity: 1; transform: translateY(0) rotate(0deg); }
-  60% { opacity: 1; transform: translateY(3px) rotate(3deg); }
-  75% { opacity: 1; transform: translateY(0) rotate(0deg); }
-  88% { opacity: 1; transform: translateY(2px) rotate(2deg); }
+  4% { opacity: 1; transform: translateY(0) rotate(0deg); }
+  9% { opacity: 1; transform: translateY(3px) rotate(3deg); }
+  14% { opacity: 1; transform: translateY(0) rotate(0deg); }
+  18% { opacity: 1; transform: translateY(3px) rotate(3deg); }
+  23% { opacity: 1; transform: translateY(0) rotate(0deg); }
+  27% { opacity: 1; transform: translateY(2px) rotate(2deg); }
+  39%,
   100% { opacity: 0; transform: translateY(0) rotate(0deg); }
 }
 
 @keyframes course_food_grain_fall {
   0% { opacity: 0; transform: translate(0, -3px) scale(0.7); }
-  18% { opacity: 1; }
-  78% { opacity: 0.9; }
+  2% { opacity: 1; }
+  9% { opacity: 0.9; }
+  12%,
   100% {
     opacity: 0;
     transform: translate(var(--food_grain_x), var(--food_grain_y)) scale(0.45);
@@ -612,8 +614,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .course_page #food_course .course_food_object:hover .course_food_salt,
-  .course_page #food_course .course_food_object:hover .course_food_grain {
+  .course_page #food_course:is(:hover, :focus-within) .course_food_salt,
+  .course_page #food_course:is(:hover, :focus-within) .course_food_grain {
     animation: none;
   }
 }
@@ -687,36 +689,39 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .course_page #history_culture_course .course_history_object:hover .history_page {
-    animation: course_history_page_flip 950ms ease-in-out 1 both;
+  .course_page #history_culture_course:is(:hover, :focus-within) .history_page {
+    animation: course_history_page_flip 3s ease-in-out infinite both;
   }
 
-  .course_page #history_culture_course .course_history_object:hover .history_chick {
-    animation: course_history_chick_pop 780ms ease-out 280ms 1 both;
+  .course_page #history_culture_course:is(:hover, :focus-within) .history_chick {
+    animation: course_history_chick_pop 3s ease-out 280ms infinite both;
   }
 }
 
 @keyframes course_history_page_flip {
   0% { opacity: 0; transform: rotateY(0deg); }
-  15% { opacity: 1; transform: rotateY(-18deg); }
-  30% { opacity: 1; transform: rotateY(-45deg); }
-  55% { opacity: 1; transform: rotateY(-90deg); }
-  75% { opacity: 1; transform: rotateY(-135deg); }
+  5% { opacity: 1; transform: rotateY(-18deg); }
+  10% { opacity: 1; transform: rotateY(-45deg); }
+  18% { opacity: 1; transform: rotateY(-90deg); }
+  24% { opacity: 1; transform: rotateY(-135deg); }
+  32%,
   100% { opacity: 0; transform: rotateY(-170deg); }
 }
 
 @keyframes course_history_chick_pop {
   0% { opacity: 0; transform: translateY(12px) scale(0.8); }
-  20% { opacity: 1; transform: translateY(-10px) scale(1.05); }
-  45% { opacity: 1; transform: translateY(-18px) scale(1.02); }
-  65% { opacity: 1; transform: translateY(-8px) scale(0.98); }
-  85% { opacity: 1; transform: translateY(-13px) scale(1); }
-  100% { opacity: 1; transform: translateY(-10px) scale(1); }
+  6% { opacity: 1; transform: translateY(-10px) scale(1.05); }
+  14% { opacity: 1; transform: translateY(-18px) scale(1.02); }
+  20% { opacity: 1; transform: translateY(-8px) scale(0.98); }
+  26% { opacity: 1; transform: translateY(-13px) scale(1); }
+  30% { opacity: 1; transform: translateY(-10px) scale(1); }
+  33%,
+  100% { opacity: 0; transform: translateY(12px) scale(0.8); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .course_page #history_culture_course .course_history_object:hover .history_page,
-  .course_page #history_culture_course .course_history_object:hover .history_chick {
+  .course_page #history_culture_course:is(:hover, :focus-within) .history_page,
+  .course_page #history_culture_course:is(:hover, :focus-within) .history_chick {
     animation: none;
   }
 }
@@ -767,8 +772,8 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .course_page #photo_spot_course .course_photo_object:hover .course_photo_light {
-    animation: course_photo_flash 850ms ease-out 1 both;
+  .course_page #photo_spot_course:is(:hover, :focus-within) .course_photo_light {
+    animation: course_photo_flash 3s ease-out infinite both;
   }
 }
 
@@ -777,22 +782,23 @@
     opacity: 0;
     transform: translate(var(--photo_light_offset_x), var(--photo_light_offset_y)) scale(0.35);
   }
-  12% {
+  4% {
     opacity: 1;
     transform: translate(var(--photo_light_offset_x), var(--photo_light_offset_y)) scale(0.85);
   }
-  22% {
+  7% {
     opacity: 1;
     transform: translate(var(--photo_light_offset_x), var(--photo_light_offset_y)) scale(1.15);
   }
-  35% {
+  11% {
     opacity: 0.75;
     transform: translate(var(--photo_light_offset_x), var(--photo_light_offset_y)) scale(1);
   }
-  55% {
+  17% {
     opacity: 0.25;
     transform: translate(var(--photo_light_offset_x), var(--photo_light_offset_y)) scale(0.9);
   }
+  29%,
   100% {
     opacity: 0;
     transform: translate(var(--photo_light_offset_x), var(--photo_light_offset_y)) scale(0.75);
@@ -800,7 +806,64 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .course_page #photo_spot_course .course_photo_object:hover .course_photo_light {
+  .course_page #photo_spot_course:is(:hover, :focus-within) .course_photo_light {
+    animation: none;
+  }
+}
+
+@media (max-width: 1279px) {
+  .course_page #food_course.is_in_view .course_food_salt {
+    animation: course_food_salt_tap 3s ease-in-out infinite both;
+  }
+
+  .course_page #food_course.is_in_view .course_food_grain {
+    animation: course_food_grain_fall 3s ease-in infinite both;
+    animation-delay: 180ms;
+  }
+
+  .course_page #food_course.is_in_view .course_food_grain:nth-child(n + 4) {
+    animation-delay: 390ms;
+  }
+
+  .course_page #food_course.is_in_view .course_food_grain:nth-child(n + 7) {
+    animation-delay: 610ms;
+  }
+
+  .course_page #history_culture_course.is_in_view .history_page {
+    animation: course_history_page_flip 3s ease-in-out infinite both;
+  }
+
+  .course_page #history_culture_course.is_in_view .history_chick {
+    animation: course_history_chick_pop 3s ease-out 280ms infinite both;
+  }
+
+  .course_page #photo_spot_course.is_in_view .course_photo_light {
+    animation: course_photo_flash 3s ease-out infinite both;
+  }
+
+  .course_page #running_course.is_in_view .course_run_character_path {
+    opacity: 1;
+    animation: course_run_path_walk 2.8s linear 1 forwards;
+  }
+
+  .course_page #running_course.is_in_view .course_run_character {
+    animation: course_run_step 350ms ease-in-out 8 both;
+  }
+
+  .course_page #running_course.is_in_view .course_run_character_bounce {
+    animation: course_run_finish_bounce 680ms ease-in-out 2.8s infinite alternate both;
+  }
+}
+
+@media (max-width: 1279px) and (prefers-reduced-motion: reduce) {
+  .course_page #food_course.is_in_view .course_food_salt,
+  .course_page #food_course.is_in_view .course_food_grain,
+  .course_page #history_culture_course.is_in_view .history_page,
+  .course_page #history_culture_course.is_in_view .history_chick,
+  .course_page #photo_spot_course.is_in_view .course_photo_light,
+  .course_page #running_course.is_in_view .course_run_character_path,
+  .course_page #running_course.is_in_view .course_run_character,
+  .course_page #running_course.is_in_view .course_run_character_bounce {
     animation: none;
   }
 }
@@ -846,28 +909,42 @@
 }
 
 .course_page #running_course .course_run_character {
+  display: block;
   width: 100%;
   height: auto;
   transform-origin: bottom center;
 }
 
+.course_page #running_course .course_run_character_bounce {
+  display: block;
+  width: 100%;
+  transform: translateY(0);
+  will-change: transform;
+}
+
 @media (hover: hover) and (pointer: fine) {
-  .course_page #running_course .course_run_object:hover .course_run_character_path {
+  .course_page #running_course:is(:hover, :focus-within) .course_run_character_path {
     opacity: 1;
-    animation: course_run_path_walk 2.2s linear 1 forwards;
+    animation: course_run_path_walk 2.8s linear 1 forwards;
   }
 
-  .course_page #running_course .course_run_object:hover .course_run_character {
-    animation: course_run_step 350ms ease-in-out infinite;
+  .course_page #running_course:is(:hover, :focus-within) .course_run_character {
+    animation: course_run_step 350ms ease-in-out 8 both;
+  }
+
+  .course_page #running_course:is(:hover, :focus-within) .course_run_character_bounce {
+    animation: course_run_finish_bounce 680ms ease-in-out 2.8s infinite alternate both;
   }
 }
 
 @keyframes course_run_path_walk {
   0% { transform: translate(33.2cqw, 47.7cqh); }
-  25% { transform: translate(28.6cqw, 51.2cqh); }
-  50% { transform: translate(24cqw, 57.2cqh); }
-  75% { transform: translate(34cqw, 65.5cqh); }
-  100% { transform: translate(43.8cqw, 74.8cqh); }
+  20% { transform: translate(28.6cqw, 51.2cqh); }
+  40% { transform: translate(24cqw, 57.2cqh); }
+  60% { transform: translate(34cqw, 65.5cqh); }
+  78% { transform: translate(43.8cqw, 74.8cqh); }
+  90% { transform: translate(46.5cqw, 80.5cqh); }
+  100% { transform: translate(48cqw, 86.5cqh); }
 }
 
 @keyframes course_run_step {
@@ -875,9 +952,15 @@
   50% { transform: translateY(-2px) rotate(1deg); }
 }
 
+@keyframes course_run_finish_bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(clamp(-8px, -0.65vw, -4px)); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .course_page #running_course .course_run_object:hover .course_run_character_path,
-  .course_page #running_course .course_run_object:hover .course_run_character {
+  .course_page #running_course:is(:hover, :focus-within) .course_run_character_path,
+  .course_page #running_course:is(:hover, :focus-within) .course_run_character,
+  .course_page #running_course:is(:hover, :focus-within) .course_run_character_bounce {
     animation: none;
   }
 
