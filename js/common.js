@@ -1180,6 +1180,10 @@ function getQuickSectionMenuMarkup(sections, assetPath) {
     "</button>" +
     '<nav class="quick_section_menu" id="quick_section_menu" data-quick-section-menu ' +
     'aria-label="Sections on this page" hidden>' +
+    '<button class="quick_section_close" type="button" data-quick-section-close>' +
+    '<img src="' + assetPath + 'icon/icon_close.svg" alt="" width="18" height="18">' +
+    '<span class="visually_hidden">Close section menu</span>' +
+    "</button>" +
     '<p class="quick_section_title">quick menu</p>' +
     '<ul class="quick_section_list">' + links + "</ul>" +
     "</nav>" +
@@ -1189,7 +1193,244 @@ function getQuickSectionMenuMarkup(sections, assetPath) {
 
 /* 챗봇 패널 — 버튼 옆(데스크톱 기준 왼쪽)으로 펼쳐집니다.
    실제 상담 연결이 없으므로 문의 버튼은 비활성 상태로 둡니다 (AGENTS 10.6). */
-function getQuickChatbotMarkup(assetPath) {
+var isChatbotSubPage = window.location.pathname.indexOf("/pages/") !== -1;
+var chatbotLinks = {
+  hours: isChatbotSubPage ? "../index.html#hero_section" : "#hero_section",
+  tickets: "https://naver.me/x0UEXKKZ",
+  restaurants: isChatbotSubPage ? "./restaurant_n_burger.html" : "./pages/restaurant_n_burger.html",
+  giftShop: isChatbotSubPage ? "./n_gift_shop.html" : "./pages/n_gift_shop.html",
+  transport: isChatbotSubPage
+    ? "./visitor_guide.html#panel_getting_here"
+    : "./pages/visitor_guide.html#panel_getting_here"
+};
+
+var chatbotData = {
+  hours: {
+    userMessage: "Hour",
+    descriptions: ["N SEOUL TOWER is open 365 days a year."],
+    sections: [
+      {
+        title: "Observatory Hours",
+        items: [
+          { label: "Weekdays", value: "10:00 AM – 10:30 PM" },
+          { label: "Weekends & Holidays", value: "10:00 AM – 11:00 PM" }
+        ]
+      }
+    ],
+    notes: [
+      "Last admission to the Observatory is 30 minutes before closing.",
+      "Operating hours may change depending on weather conditions or operating schedules."
+    ],
+    buttons: [{ text: "View Hours", url: chatbotLinks.hours }]
+  },
+  tickets: {
+    userMessage: "Tickets",
+    sections: [
+      {
+        title: "Observatory Admission",
+        items: [
+          { label: "Adult (Age 13+)", value: "KRW 29,000" },
+          { label: "Child (Age 3–12)", value: "KRW 23,000" },
+          { label: "Senior (Age 65+)", value: "KRW 23,000" }
+        ]
+      }
+    ],
+    notes: [
+      "Children under 36 months can enter free of charge when accompanied by a guardian, limited to one child per guardian.",
+      "For ticket information and admission details, please check the ticket page."
+    ],
+    buttons: [
+      { text: "Book Tickets", url: chatbotLinks.tickets, isExternal: true }
+    ]
+  },
+  restaurants: {
+    userMessage: "Restaurants",
+    descriptions: ["We have several dining options at N Seoul Tower."],
+    sections: [
+      {
+        title: "Locations",
+        items: [
+          { label: "N Burger", value: "Tower 1F" },
+          { label: "n.Grill", value: "Tower 7F" },
+          { label: "Hancook Korean Grill & Dine", value: "Tower 3F" },
+          { label: "The Place Dining", value: "Tower 2F" },
+          { label: "Durumi Bunsik", value: "Tower 1F" },
+          { label: "N Terrace", value: "Tower 1F" },
+          { label: "N Sweet Bar", value: "Tower 5F" }
+        ]
+      }
+    ],
+    notes: ["For more details, please visit our Restaurants page."],
+    buttons: [{ text: "Go to Restaurants Page", url: chatbotLinks.restaurants }]
+  },
+  giftShop: {
+    userMessage: "N Gift Shop",
+    descriptions: [
+      "Looking for a special souvenir from N SEOUL TOWER?",
+      "Visit the N Gift Shop to discover unique souvenirs and special items inspired by Seoul and N SEOUL TOWER."
+    ],
+    sections: [
+      {
+        title: "Locations & Hours",
+        items: [
+          { label: "PLAZA 5F", value: "10:00 AM – 10:00 PM" },
+          {
+            label: "Tower 1F",
+            value: ["Weekdays: 10:00 AM – 10:30 PM", "Weekends & Holidays: 10:00 AM – 11:00 PM"]
+          },
+          {
+            label: "Tower 5F",
+            value: ["Weekdays: 10:00 AM – 10:30 PM", "Weekends & Holidays: 10:00 AM – 11:00 PM"]
+          }
+        ]
+      }
+    ],
+    buttons: [{ text: "Go to N Gift Shop", url: chatbotLinks.giftShop }]
+  },
+  transport: {
+    userMessage: "Location & Transport",
+    descriptions: ["N SEOUL TOWER is located on Namsan Mountain in the heart of Seoul."],
+    sections: [
+      {
+        title: "Address",
+        items: [{ value: ["105 Namsangongwon-gil,", "Yongsan-gu, Seoul"] }]
+      }
+    ],
+    notes: [
+      "General vehicle access to Namsan has been restricted, so we recommend using public transportation or nearby parking facilities.",
+      "How would you like to get here?"
+    ],
+    options: [
+      { key: "bus", label: "By Bus" },
+      { key: "cableCar", label: "By Cable Car" },
+      { key: "cityTourBus", label: "By Seoul City Tour Bus" },
+      { key: "car", label: "By Car" }
+    ]
+  },
+  bus: {
+    userMessage: "By Bus",
+    sections: [
+      {
+        title: "Namsan Sunhwan Shuttle Bus",
+        groups: [
+          {
+            title: "Bus 01A",
+            items: [
+              { label: "Operating Hours", value: "6:30 AM – 11:00 PM" },
+              { label: "Interval", value: "About every 9 minutes" },
+              { label: "Fare", value: "KRW 1,500" }
+            ]
+          },
+          {
+            title: "Bus 01B",
+            items: [
+              { label: "Operating Hours", value: "6:30 AM – 11:00 PM" },
+              { label: "Interval", value: "About every 14 minutes" },
+              { label: "Fare", value: "KRW 1,500" }
+            ]
+          }
+        ]
+      }
+    ],
+    notes: [
+      "You can board near Chungmuro Station (Lines 3 & 4) or Dongguk University Station (Line 3).",
+      "Transportation card is required."
+    ],
+    buttons: [{ text: "Back to Transport Options", action: "transportOptions" }]
+  },
+  cableCar: {
+    userMessage: "By Cable Car",
+    sections: [
+      {
+        title: "Namsan Cable Car",
+        items: [{ label: "Operating Hours", value: "10:00 AM – 11:00 PM" }],
+        groups: [
+          {
+            title: "Adult",
+            items: [
+              { label: "Round Trip", value: "KRW 15,000" },
+              { label: "One Way", value: "KRW 12,000" }
+            ]
+          },
+          {
+            title: "Child",
+            items: [
+              { label: "Round Trip", value: "KRW 11,500" },
+              { label: "One Way", value: "KRW 9,000" }
+            ]
+          }
+        ]
+      }
+    ],
+    notes: [
+      "From Myeong-dong Station (Line 4), Exit 3, walk about 10–15 minutes toward the cable car boarding area.",
+      "Operating hours may change depending on weather conditions."
+    ],
+    buttons: [{ text: "Back to Transport Options", action: "transportOptions" }]
+  },
+  cityTourBus: {
+    userMessage: "By Seoul City Tour Bus",
+    descriptions: ["Explore Seoul and visit N SEOUL TOWER with the Seoul City Tour Bus."],
+    sections: [
+      {
+        title: "Downtown, Palaces & Namsan Course",
+        items: [
+          { label: "First Bus", value: "9:20 AM" },
+          { label: "Last Bus", value: "4:50 PM" },
+          { label: "Interval", value: "About every 30 minutes" }
+        ]
+      },
+      {
+        title: "Han River & Namsan Night Tour",
+        items: [
+          { label: "Departure", value: "7:00 PM" },
+          { label: "May – August", value: "7:30 PM" },
+          {
+            label: "Departure Point",
+            value: "In front of Donghwa Duty Free near Gwanghwamun Station (Line 5), Exit 6."
+          }
+        ]
+      }
+    ],
+    buttons: [{ text: "Back to Transport Options", action: "transportOptions" }]
+  },
+  car: {
+    userMessage: "By Car",
+    descriptions: [
+      "General vehicle access to Namsan has been restricted since May 1, 2005.",
+      "If you are arriving by car, please use a nearby parking lot and continue to N SEOUL TOWER by shuttle bus or on foot."
+    ],
+    sections: [
+      {
+        title: "Nearby Parking",
+        list: [
+          "Seoul Square Parking Lot",
+          "National Theater of Korea Parking Lot",
+          "Namsan Cable Car Parking Lot",
+          "Namsan Park Parking Lot"
+        ]
+      }
+    ],
+    buttons: [
+      { text: "Back to Transport Options", action: "transportOptions" },
+      { text: "View Getting Here", url: chatbotLinks.transport }
+    ]
+  },
+};
+
+function getQuickChatbotCategoriesMarkup() {
+  return (
+    '<div class="quick_chatbot_categories" data-chatbot-options aria-label="Chatbot question categories">' +
+    '<button class="quick_chatbot_category" type="button" data-chatbot-category="hours">Hour</button>' +
+    '<button class="quick_chatbot_category" type="button" data-chatbot-category="tickets">Tickets</button>' +
+    '<button class="quick_chatbot_category" type="button" data-chatbot-category="restaurants">Restaurants</button>' +
+    '<button class="quick_chatbot_category" type="button" data-chatbot-category="giftShop">N Gift Shop</button>' +
+    '<button class="quick_chatbot_category" type="button" data-chatbot-category="transport">Location &amp; Transport</button>' +
+    "</div>"
+  );
+}
+
+function getQuickChatbotMarkup(assetPath, hasDummyResponses) {
   return (
     '<section class="quick_chatbot" id="quick_chatbot_panel" data-chatbot-panel ' +
     'role="dialog" aria-modal="false" aria-labelledby="quick_chatbot_title" hidden>' +
@@ -1206,14 +1447,18 @@ function getQuickChatbotMarkup(assetPath) {
     '<p class="quick_chatbot_name" id="quick_chatbot_title">N Seoul Tower</p>' +
     '<p class="quick_chatbot_status">How can we help you?</p>' +
     "</header>" +
-    '<div class="quick_chatbot_body">' +
-    '<article class="quick_chatbot_message">' +
+    '<div class="quick_chatbot_body" data-chatbot-messages role="log" aria-live="polite">' +
+    '<article class="quick_chatbot_message quick_chatbot_message_initial">' +
     '<img class="quick_chatbot_message_avatar" src="' + assetPath + 'icon/chatbot.png" alt="" width="32" height="32">' +
     '<div class="quick_chatbot_message_content">' +
+    '<div class="quick_chatbot_greeting_bubble">' +
     '<p class="quick_chatbot_message_name">N Seoul Tower</p>' +
     '<p class="quick_chatbot_message_text">Hello, this is N Seoul Tower.</p>' +
     '<p class="quick_chatbot_message_text">Select the type of your question and our chatbot will guide you.</p>' +
-    '<button class="quick_chatbot_cta" type="button" data-pending-link aria-disabled="true">Ask a question</button>' +
+    "</div>" +
+    (hasDummyResponses
+      ? getQuickChatbotCategoriesMarkup()
+      : '<button class="quick_chatbot_cta" type="button" data-pending-link aria-disabled="true">Ask a question</button>') +
     "</div>" +
     "</article>" +
     "</div>" +
@@ -1221,7 +1466,7 @@ function getQuickChatbotMarkup(assetPath) {
   );
 }
 
-function getQuickMenuMarkup(sections, assetPath) {
+function getQuickMenuMarkup(sections, assetPath, hasDummyResponses) {
   return (
     '<div class="quick_menu" data-quick-menu>' +
     '<div class="quick_menu_actions" id="quick_menu_actions" data-quick-actions hidden>' +
@@ -1234,7 +1479,7 @@ function getQuickMenuMarkup(sections, assetPath) {
     '<span class="visually_hidden" data-chatbot-toggle-label>Open chatbot</span>' +
     '<span class="quick_action_tip" aria-hidden="true">Ask me anything!</span>' +
     "</button>" +
-    getQuickChatbotMarkup(assetPath) +
+    getQuickChatbotMarkup(assetPath, hasDummyResponses) +
     "</div>" +
     getQuickSectionMenuMarkup(sections, assetPath) +
     '<a class="quick_action" href="#top">' +
@@ -1260,7 +1505,10 @@ function renderCommonQuickMenu() {
 
   var pageName = getCurrentPageFileName();
   var sections = QUICK_MENU_SECTIONS_BY_PAGE[pageName] || [];
-  mount.insertAdjacentHTML("beforebegin", getQuickMenuMarkup(sections, getCommonAssetPath()));
+  mount.insertAdjacentHTML(
+    "beforebegin",
+    getQuickMenuMarkup(sections, getCommonAssetPath(), true)
+  );
   mount.remove();
 }
 
@@ -1367,11 +1615,13 @@ function initQuickMenu() {
   var topAction = actions ? actions.querySelector('.quick_action[href="#top"]') : null;
   var sectionButton = quickMenu.querySelector("[data-quick-section-button]");
   var sectionMenu = quickMenu.querySelector("[data-quick-section-menu]");
+  var sectionClose = quickMenu.querySelector("[data-quick-section-close]");
   var sectionItems = [];
   var chatbotToggle = quickMenu.querySelector("[data-chatbot-toggle]");
   var chatbotPanel = quickMenu.querySelector("[data-chatbot-panel]");
   var chatbotToggleLabel = quickMenu.querySelector("[data-chatbot-toggle-label]");
   var chatbotClose = quickMenu.querySelector("[data-chatbot-close]");
+  var chatbotMessages = quickMenu.querySelector("[data-chatbot-messages]");
 
   if (!toggleButton || !actions) {
     return;
@@ -1386,6 +1636,7 @@ function initQuickMenu() {
   var isTopActionVisible = false;
   var isTopActionFrameRequested = false;
   var isQuickSectionFrameRequested = false;
+  var isChatbotReplyPending = false;
 
   /* 맨 위로 이동 버튼은 전체 스크롤 거리의 20%를 넘긴 뒤 노출합니다. */
   if (topAction) {
@@ -1530,6 +1781,271 @@ function initQuickMenu() {
     }
   }
 
+  function scrollChatbotToLatest() {
+    if (!chatbotMessages) {
+      return;
+    }
+
+    window.requestAnimationFrame(function renderLatestChatbotMessage() {
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    });
+  }
+
+  function setChatbotCategoriesDisabled(isDisabled) {
+    if (!chatbotMessages) {
+      return;
+    }
+
+    Array.prototype.forEach.call(
+      chatbotMessages.querySelectorAll("[data-chatbot-category]"),
+      function (button) {
+        var category = button.dataset.chatbotCategory;
+        button.disabled = isDisabled || !chatbotData[category];
+      }
+    );
+  }
+
+  function appendChatbotUserMessage(message) {
+    var article = document.createElement("article");
+    var name = document.createElement("p");
+    var text = document.createElement("p");
+
+    article.className = "quick_chatbot_message quick_chatbot_message_user";
+    name.className = "quick_chatbot_message_name";
+    name.textContent = "User";
+    text.className = "quick_chatbot_message_text";
+    text.textContent = message;
+    article.append(name, text);
+    chatbotMessages.append(article);
+    scrollChatbotToLatest();
+  }
+
+  function appendChatbotValue(parent, value) {
+    var values = Array.isArray(value) ? value : [value];
+
+    values.forEach(function (line) {
+      var span = document.createElement("span");
+      span.textContent = line;
+      parent.append(span);
+    });
+  }
+
+  function appendChatbotItems(parent, items) {
+    if (!items || items.length === 0) {
+      return;
+    }
+
+    var list = document.createElement("dl");
+    list.className = "quick_chatbot_facts";
+
+    items.forEach(function (item) {
+      var row = document.createElement("div");
+      var value = document.createElement("dd");
+
+      row.className = "quick_chatbot_fact";
+      if (item.label) {
+        var label = document.createElement("dt");
+        label.textContent = item.label;
+        row.append(label);
+      } else {
+        row.classList.add("has_no_label");
+      }
+
+      appendChatbotValue(value, item.value);
+      row.append(value);
+      list.append(row);
+    });
+
+    parent.append(list);
+  }
+
+  function appendChatbotSections(parent, sections) {
+    (sections || []).forEach(function (section) {
+      var sectionElement = document.createElement("section");
+      var title = document.createElement("h4");
+
+      sectionElement.className = "quick_chatbot_info_section";
+      title.className = "quick_chatbot_info_title";
+      title.textContent = section.title;
+      sectionElement.append(title);
+      appendChatbotItems(sectionElement, section.items);
+
+      (section.groups || []).forEach(function (group) {
+        var groupElement = document.createElement("div");
+        var groupTitle = document.createElement("h5");
+
+        groupElement.className = "quick_chatbot_info_group";
+        groupTitle.className = "quick_chatbot_info_group_title";
+        groupTitle.textContent = group.title;
+        groupElement.append(groupTitle);
+        appendChatbotItems(groupElement, group.items);
+        sectionElement.append(groupElement);
+      });
+
+      if (section.list) {
+        var bulletList = document.createElement("ul");
+        bulletList.className = "quick_chatbot_info_list";
+        section.list.forEach(function (item) {
+          var listItem = document.createElement("li");
+          listItem.textContent = item;
+          bulletList.append(listItem);
+        });
+        sectionElement.append(bulletList);
+      }
+
+      parent.append(sectionElement);
+    });
+  }
+
+  function createChatbotOptions(options) {
+    var optionList = document.createElement("div");
+    optionList.className = "quick_chatbot_suboptions";
+    optionList.setAttribute("aria-label", "Transport options");
+
+    options.forEach(function (option) {
+      var button = document.createElement("button");
+      button.className = "quick_chatbot_suboption";
+      button.type = "button";
+      button.dataset.chatbotCategory = option.key;
+      button.textContent = option.label;
+      optionList.append(button);
+    });
+
+    return optionList;
+  }
+
+  function appendChatbotActions(parent, buttons) {
+    if (!buttons || buttons.length === 0) {
+      return;
+    }
+
+    var actions = document.createElement("div");
+    actions.className = "quick_chatbot_response_actions";
+
+    buttons.forEach(function (item) {
+      var control;
+      if (item.url) {
+        control = document.createElement("a");
+        control.href = item.url;
+        if (item.isExternal) {
+          control.target = "_blank";
+          control.rel = "noopener noreferrer";
+        }
+      } else {
+        control = document.createElement("button");
+        control.type = "button";
+        control.dataset.chatbotAction = item.action;
+      }
+      control.className = "quick_chatbot_cta";
+      control.textContent = item.text;
+      actions.append(control);
+    });
+
+    parent.append(actions);
+  }
+
+  function appendChatbotTypingIndicator() {
+    var indicator = document.createElement("div");
+    indicator.className = "quick_chatbot_typing";
+    indicator.setAttribute("role", "status");
+    indicator.setAttribute("aria-label", "Chatbot is typing");
+    indicator.innerHTML = "<span></span><span></span><span></span>";
+    chatbotMessages.append(indicator);
+    scrollChatbotToLatest();
+    return indicator;
+  }
+
+  function appendChatbotResponse(response) {
+    var article = document.createElement("article");
+    var avatar = document.createElement("img");
+    var content = document.createElement("div");
+    var name = document.createElement("p");
+    var referenceAvatar = chatbotPanel.querySelector(".quick_chatbot_message_avatar");
+
+    article.className = "quick_chatbot_message quick_chatbot_message_response";
+    avatar.className = "quick_chatbot_message_avatar";
+    avatar.src = referenceAvatar ? referenceAvatar.src : "";
+    avatar.alt = "";
+    avatar.width = 32;
+    avatar.height = 32;
+    content.className = "quick_chatbot_message_content";
+    name.className = "quick_chatbot_message_name";
+    name.textContent = "Chatbot";
+
+    content.append(name);
+    (response.descriptions || []).forEach(function (description) {
+      var text = document.createElement("p");
+      text.className = "quick_chatbot_message_text";
+      text.textContent = description;
+      content.append(text);
+    });
+    appendChatbotSections(content, response.sections);
+    (response.notes || []).forEach(function (note) {
+      var text = document.createElement("p");
+      text.className = "quick_chatbot_message_text quick_chatbot_message_note";
+      text.textContent = note;
+      content.append(text);
+    });
+    if (response.options) {
+      content.append(createChatbotOptions(response.options));
+    }
+    appendChatbotActions(content, response.buttons);
+
+    article.append(avatar, content);
+    chatbotMessages.append(article);
+    scrollChatbotToLatest();
+  }
+
+  function appendTransportOptions() {
+    Array.prototype.forEach.call(
+      chatbotMessages.querySelectorAll(".quick_chatbot_suboptions_return"),
+      function (optionPanel) {
+        optionPanel.remove();
+      }
+    );
+    var optionPanel = createChatbotOptions(chatbotData.transport.options);
+    optionPanel.classList.add("quick_chatbot_suboptions_return", "quick_chatbot_message_response");
+    chatbotMessages.append(optionPanel);
+    scrollChatbotToLatest();
+  }
+
+  function handleChatbotCategoryClick(event) {
+    var button = event.target.closest("[data-chatbot-category]");
+    if (!button || isChatbotReplyPending || !chatbotMessages) {
+      return;
+    }
+
+    var response = chatbotData[button.dataset.chatbotCategory];
+    if (!response) {
+      return;
+    }
+
+    isChatbotReplyPending = true;
+    chatbotMessages.setAttribute("aria-busy", "true");
+    setChatbotCategoriesDisabled(true);
+    appendChatbotUserMessage(response.userMessage);
+    var typingIndicator = appendChatbotTypingIndicator();
+
+    window.setTimeout(function renderChatbotResponse() {
+      typingIndicator.remove();
+      appendChatbotResponse(response);
+      isChatbotReplyPending = false;
+      chatbotMessages.removeAttribute("aria-busy");
+      setChatbotCategoriesDisabled(false);
+    }, 400);
+  }
+
+  function handleChatbotActionClick(event) {
+    var actionButton = event.target.closest("[data-chatbot-action]");
+    if (!actionButton || isChatbotReplyPending) {
+      return;
+    }
+
+    if (actionButton.dataset.chatbotAction === "transportOptions") {
+      appendTransportOptions();
+    }
+  }
+
   function closeChatbot(shouldRestoreFocus) {
     if (!isChatbotOpen) {
       return;
@@ -1621,10 +2137,22 @@ function initQuickMenu() {
     });
   }
 
+  if (chatbotMessages) {
+    chatbotMessages.addEventListener("click", handleChatbotCategoryClick);
+    chatbotMessages.addEventListener("click", handleChatbotActionClick);
+  }
+
   mobileChatbotMediaQuery.addEventListener("change", handleChatbotViewportChange);
 
   if (sectionButton) {
     sectionButton.addEventListener("click", handleSectionMenuToggle);
+
+    if (sectionClose) {
+      sectionClose.addEventListener("click", function handleSectionMenuClose() {
+        closeSectionMenu();
+        sectionButton.focus();
+      });
+    }
 
     /* 마우스 환경에서는 섹션 버튼에 호버만 해도 패널이 열립니다.
        버튼과 패널을 함께 감싸는 .quick_section 에 걸어 패널 위에서는 닫히지 않게 합니다.
@@ -1639,12 +2167,6 @@ function initQuickMenu() {
         openSectionMenu();
       });
 
-      sectionArea.addEventListener("mouseleave", function handleSectionPointerLeave() {
-        if (!hoverMediaQuery.matches) {
-          return;
-        }
-        closeSectionMenu();
-      });
     }
   }
 
