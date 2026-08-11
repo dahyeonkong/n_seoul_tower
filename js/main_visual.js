@@ -77,7 +77,7 @@
   };
 
   /* 첫 진입 후 닫힌 상태를 보여주는 시간. 이후 재진입부터는 REPLAY_HOLD 만 기다립니다. */
-  const FIRST_HOLD = 2000;
+  const FIRST_HOLD = 300;
   const REPLAY_HOLD = 300;
 
   function initMainVisual(root) {
