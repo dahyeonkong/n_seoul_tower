@@ -1110,7 +1110,7 @@ html .course_page .course_description {
 
 .book_btn img {
   width: 24px;
-  height: 24px;
+  height: 17px;
 }
 
 .gnb {
@@ -1439,6 +1439,19 @@ html .course_page .course_description {
 }
 
 @media (min-width: 1280px) {
+  .global_menu.is_open {
+    padding: 0;
+  }
+
+  .gnb_group {
+    align-items: stretch;
+    text-align: start;
+  }
+
+  .gnb_lnb {
+    align-items: stretch;
+  }
+
   .global_menu_head {
     margin-top: 40px;
   }
@@ -1461,7 +1474,7 @@ html .course_page .course_description {
   }
 
   .book_btn {
-    font-size: 20px;
+    font-size: 16px;
   }
 }
 
