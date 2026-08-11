@@ -1978,6 +1978,8 @@
 }
 
 .course_head {
+  position: relative;
+  z-index: 2;
   align-items: center;
   text-align: center;
 }
@@ -1991,6 +1993,7 @@
   position: sticky;
   top: 0;
   display: flex;
+  isolation: isolate;
   flex-direction: column;
   justify-content: center;
   width: 100%;
@@ -2002,6 +2005,7 @@
 
 .course_scene {
   position: relative;
+  z-index: 2;
   width: 100%;
   height: min(160vw, 620px);
   flex: 0 0 auto;
@@ -2011,10 +2015,12 @@
 .course_scene_bg {
   position: absolute;
   inset: 0;
+  z-index: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: 40% bottom;
+  pointer-events: none;
 }
 
 /* 코스가 진행되는 동안 walk_bg 를 덮고, 종료 시 현재 프레임을 유지하는 영상. */
@@ -2022,8 +2028,12 @@
   position: absolute;
   inset: 0;
   z-index: 1;
+  display: block;
   width: 100%;
+  min-width: 100%;
   height: 100%;
+  min-height: 100%;
+  max-width: none;
   object-fit: cover;
   object-position: 40% bottom;
   transition: opacity 420ms var(--ease_out);
@@ -2272,9 +2282,6 @@
     max-height: 676px;
   }
 
-  .course_scroll_stage {
-    width: min(100% - var(--page_pad) * 2, var(--content_max));
-  }
 
   .course_scene_char {
     width: 24%;
