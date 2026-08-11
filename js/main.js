@@ -423,8 +423,11 @@ function initEventPathMotion() {
     sticky.style.setProperty("--event_curve_y", (gondolaY - pathY).toFixed(2) + "px");
 
     /* 마지막 카드를 제외한 각 구간의 뒤쪽에는 카드만 감추고 곰돌이 곤돌라는 유지합니다. */
+    var isFirstCardTransition = segmentIndex === 0;
     var isBetweenCards =
-      segmentLocal >= 1 - EVENT_CARD_GAP && segmentIndex < cardCount - 1;
+      !isFirstCardTransition &&
+      segmentLocal >= 1 - EVENT_CARD_GAP &&
+      segmentIndex < cardCount - 1;
     var activeIndex = nextActiveIndex;
 
     items.forEach(function (item, index) {
