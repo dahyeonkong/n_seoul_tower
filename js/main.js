@@ -2344,108 +2344,6 @@ function initRestaurantStackState() {
 }
 
 /* --------------------------------------------------------------------------
-   히어로 → 이벤트 한 번에 이동
-   히어로가 화면을 채우고 있을 때 아래로 한 번 스크롤하면 이벤트 섹션 상단으로 옮깁니다.
-   히어로를 벗어난 뒤에는 개입하지 않고 평소대로 스크롤됩니다.
-   -------------------------------------------------------------------------- */
-function initHeroSectionJump() {
-  var hero = document.getElementById("hero_section");
-  var events = document.getElementById("events_section");
-
-  if (!hero || !events) {
-    return;
-  }
-
-  /* 모바일에서는 히어로 점프를 사용하지 않고 사용자의 기본 연속 스크롤을 유지합니다. */
-  var mobileMedia = window.matchMedia("(max-width: 833px)");
-
-  /* events 까지 내려가는 데 걸리는 시간(초)입니다. 이 사이에 물감 전환이 재생됩니다.
-     번지기 → 꽉 찬 채로 멈춤 → 걷히기 세 구간이 모두 이 시간 안에 들어갑니다. */
-  var JUMP_DURATION = 2.6;
-  /* 이동이 끝나기 전에 다음 스크롤이 다시 발동하지 않도록 잠그는 시간입니다. */
-  var JUMP_LOCK_TIME = JUMP_DURATION * 1000 + 200;
-  /* 터치에서 스크롤 의도로 볼 최소 이동 거리입니다. */
-  var SWIPE_THRESHOLD = 24;
-
-  var isJumping = false;
-  var unlockTimer = 0;
-  var touchStartY = 0;
-
-  function isHeroFillingView() {
-    return hero.getBoundingClientRect().bottom > window.innerHeight * 0.9;
-  }
-
-  function canJump() {
-    /* 메뉴 오버레이로 스크롤이 잠긴 동안에는 동작하지 않습니다. */
-    return (
-      !mobileMedia.matches &&
-      !isJumping &&
-      document.body.style.overflow !== "hidden" &&
-      isHeroFillingView()
-    );
-  }
-
-  function unlockJump() {
-    isJumping = false;
-  }
-
-  function scrollToEvents() {
-    isJumping = true;
-    window.clearTimeout(unlockTimer);
-    unlockTimer = window.setTimeout(unlockJump, JUMP_LOCK_TIME);
-
-    /* Lenis 가 살아 있으면 Lenis 로 옮겨야 관성 스크롤과 충돌하지 않습니다.
-       lock 옵션이 이동하는 동안 사용자 입력을 막아 줍니다.
-       이동하는 사이에 물감 전환(initHeroVisualBleed)이 재생되므로,
-       기본값(약 1.2 초)보다 길게 잡아 번지는 과정이 보이게 합니다. */
-    if (window.lenisInstance && typeof window.lenisInstance.scrollTo === "function") {
-      window.lenisInstance.scrollTo(events, {
-        lock: true,
-        duration: JUMP_DURATION,
-        onComplete: unlockJump
-      });
-      return;
-    }
-
-    events.scrollIntoView({
-      behavior: isReducedMotion() ? "auto" : "smooth",
-      block: "start"
-    });
-  }
-
-  function handleHeroWheel(event) {
-    /* 확대 축소 제스처(ctrl + 휠)와 위로 올리는 스크롤은 그대로 둡니다. */
-    if (event.ctrlKey || event.deltaY <= 0 || !canJump()) {
-      return;
-    }
-
-    event.preventDefault();
-    scrollToEvents();
-  }
-
-  function handleHeroTouchStart(event) {
-    touchStartY = event.touches[0].clientY;
-  }
-
-  function handleHeroTouchMove(event) {
-    if (!canJump()) {
-      return;
-    }
-
-    /* 손가락을 위로 밀면(=아래로 스크롤) 이동합니다. */
-    if (touchStartY - event.touches[0].clientY < SWIPE_THRESHOLD) {
-      return;
-    }
-
-    scrollToEvents();
-  }
-
-  window.addEventListener("wheel", handleHeroWheel, { passive: false });
-  window.addEventListener("touchstart", handleHeroTouchStart, { passive: true });
-  window.addEventListener("touchmove", handleHeroTouchMove, { passive: true });
-}
-
-/* --------------------------------------------------------------------------
    init
    -------------------------------------------------------------------------- */
 function initMain() {
@@ -2456,7 +2354,6 @@ function initMain() {
   renderTowerStacks(mainPageData.towerParts);
   renderCustomGoods(mainPageData.customGoodsItems);
 
-  initHeroSectionJump();
   initHeroVisualVideo();
   initHeroVisualBleed();
   initCourseSceneVideo();

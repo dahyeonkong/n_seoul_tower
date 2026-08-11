@@ -563,13 +563,19 @@ html .course_page .course_description {
   will-change: transform;
 }
 .site_header.is_scrolled {
-  background-color: rgba(247, 244, 232, 0.7);
+  /* background-color: rgba(247, 244, 232, 0.7); */
   -webkit-backdrop-filter: blur(1px);
   backdrop-filter: blur(1px);
 }
 
-.site_header.is_hidden {
-  transform: translateY(calc(-100% - 1px));
+/* 헤더 숨김은 데스크톱(1280px 이상)에서만 적용합니다.
+   모바일·태블릿에서는 메뉴 버튼 접근성을 위해 헤더가 항상 보이게 둡니다.
+   common.js 의 initStickyHeader 는 두 화면 모두에서 클래스를 계속 토글하므로,
+   화면 폭이 바뀌면 별도 처리 없이 곧바로 각 동작으로 돌아갑니다. */
+@media (min-width: 1280px) {
+  .site_header.is_hidden {
+    transform: translateY(calc(-100% - 1px));
+  }
 }
 
 .site_header.is_menu_open {

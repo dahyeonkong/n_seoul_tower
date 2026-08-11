@@ -501,6 +501,27 @@
   width: 48px;
   height: 48px;
   object-fit: contain;
+  animation: main_visual_weather_sway 2.8s ease-in-out infinite;
+  transform-origin: 50% 70%;
+  will-change: transform;
+}
+
+@keyframes main_visual_weather_sway {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+
+  50% {
+    transform: rotate(4deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .main_visual_weather_icon {
+    animation: none;
+    transform: none;
+  }
 }
 
 .main_visual_text {
@@ -783,18 +804,21 @@
 .main_visual_photo {
   position: absolute;
   left: -58.29vw;
+  top: 0;
   bottom: calc(100% - 46.62svh);
   width: 237.81vw;
-  height: 46.75svh;
+  height: auto;
   margin: 0;
   -webkit-mask: url("../assets/main_visual_photo.svg") -277.5% 115.11% / 96.49% 155.48% no-repeat;
   mask: url("../assets/main_visual_photo.svg") -277.5% 115.11% / 96.49% 155.48% no-repeat;
 }
 
+.main_visual_photo img,
 .main_visual_photo video {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: 43% center;
 }
 
@@ -855,10 +879,39 @@
   border-radius: 8px;
   aspect-ratio: auto;
   background-color: #809975;
+  animation: main_visual_ticket_float 6.4s ease-in-out infinite;
+  transform-origin: center;
+  will-change: transform;
 }
 
 .main_visual_ticket_shape {
   display: none;
+}
+
+@keyframes main_visual_ticket_float {
+  0%,
+  100% {
+    transform: translate3d(-3px, 3px, 0) rotate(-0.35deg) scale(1);
+  }
+
+  25% {
+    transform: translate3d(4px, -4px, 0) rotate(0.25deg) scale(1.008);
+  }
+
+  50% {
+    transform: translate3d(6px, 2px, 0) rotate(0.45deg) scale(1.004);
+  }
+
+  75% {
+    transform: translate3d(-4px, -5px, 0) rotate(-0.2deg) scale(1.01);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .main_visual_ticket {
+    animation: none;
+    transform: none;
+  }
 }
 
 .main_visual_ticket_content {
@@ -1086,7 +1139,7 @@
         var(--main_visual_media_gap)
     );
     width: 146.08%;
-    height: 63.45%;
+    height: auto;
   }
 
   /* left 436 / top 175 / width 346 */
@@ -1211,8 +1264,8 @@
 
 /* Figma 1373:1769 — 1440 x 1080 기준.
    여기서부터 정보 패널이 가로 1행 + 세로 구분선 구조로 바뀝니다.
-   1440 을 기준값으로 두고 1280~1919 구간을 vw 로 이어지게 했습니다. */
-@media (min-width: 1280px) {
+   1440 을 기준값으로 두고 1000~1919 구간을 vw 로 이어지게 했습니다. */
+@media (min-width: 1000px) {
 
   .main_visual {
     --main_visual_info_bottom: 7.4%;
@@ -1223,7 +1276,7 @@
   .main_visual_photo {
     left: -31.11%;
     width: 101.65%;
-    height: 76.23%;
+    height: auto;
     -webkit-mask-position: -277.5% 103.23%;
     mask-position: -277.5% 103.23%;
   }
@@ -1278,6 +1331,17 @@
   }
 }
 
+
+
+/* Keep the SVG mask's wave proportions stable across flexible desktop widths. */
+@media (min-width: 1000px) and (max-width: 1919px) {
+  .main_visual_photo {
+    -webkit-mask-position: 4vw -36vw;
+    mask-position: 4vw -36vw;
+    -webkit-mask-size: 82.3935vw 74.6858vw;
+    mask-size: 82.3935vw 74.6858vw;
+  }
+}
 @media (min-width: 1920px) {
   .main_visual {
     --main_visual_info_bottom: 5.56%;
@@ -1292,11 +1356,12 @@
   .main_visual_photo {
     left: -364px;
     width: 1640px;
-    height: 922px;
+    height: auto;
     -webkit-mask: url("../assets/main_visual_photo.svg") -159.841px -589.04px / 1581.956px 1433.967px no-repeat;
     mask: url("../assets/main_visual_photo.svg") -159.841px -589.04px / 1581.956px 1433.967px no-repeat;
   }
 
+  .main_visual_photo img,
   .main_visual_photo video {
     object-position: center;
   }
