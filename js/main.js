@@ -1248,6 +1248,7 @@ function initTowerReveal() {
    TOP 버튼처럼 위로 빠르게 지나갈 때는 회전 없이 결과만 보여 줍니다. */
 function initPassTicketFlip() {
   var section = document.querySelector("#pass_section");
+  var courseSection = document.querySelector("#course_section");
   var flip = document.querySelector("[data-pass-flip]");
 
   if (!section || !flip) {
@@ -1304,9 +1305,18 @@ function initPassTicketFlip() {
     var viewportHeight = window.innerHeight;
 
     /* 코스 스크롤이 끝나 코스가 끝나는 순간부터 티켓을 보여 줍니다. */
+    handlePassScroll();
+
+    var courseRect = courseSection ? courseSection.getBoundingClientRect() : null;
+    var isCourseInView = courseRect && courseRect.bottom > 0 && courseRect.top < viewportHeight;
+    var hasCourseEnded = !scene || scene.classList.contains("is_course_end");
+    var shouldHideOnCourseReturn = Boolean(isCourseInView && !isScrollingDown);
+
+    /* Preserve the existing flight while scrolling down. Hide it only when
+       the user returns from Pass to Course and continues scrolling upward. */
     flip.classList.toggle(
       "is_pass_flight_ready",
-      !scene || scene.classList.contains("is_course_end")
+      hasCourseEnded && !shouldHideOnCourseReturn
     );
 
     if (!flightOrigin || restRect.width === 0) {
