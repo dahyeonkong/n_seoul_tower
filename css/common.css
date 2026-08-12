@@ -2093,8 +2093,24 @@ html .course_page .course_description {
 }
 
 .quick_chatbot_response_actions .quick_chatbot_cta {
-  flex: 1 1 150px;
+  width: auto;
+  min-width: 0;
   margin-top: 0;
+}
+
+.quick_chatbot_response_actions .quick_chatbot_cta_restart {
+  flex: 0 0 calc(40% - 4px);
+  background-color: var(--color_new_primary_100);
+  color: var(--color_primary_800);
+  font-size: 0.8em;
+  white-space: nowrap;
+}
+
+.quick_chatbot_response_actions .quick_chatbot_cta_response {
+  flex: 0 0 calc(60% - 4px);
+  margin-left: auto;
+  background-color: rgba(164, 180, 101, 0.6);
+  color: var(--color_primary_800);
 }
 
 .quick_chatbot_typing {
@@ -2347,6 +2363,15 @@ html .course_page .course_description {
     color: var(--color_primary_800);
     font-size: 16px;
   }
+
+  .quick_chatbot_response_actions .quick_chatbot_cta {
+    width: auto;
+    margin-top: 0;
+  }
+
+  .quick_chatbot_response_actions .quick_chatbot_cta_restart {
+    background-color: var(--color_new_primary_500);
+  }
 }
 
 /* --- 토글 (987:7706 속성1=off) ---
@@ -2416,7 +2441,7 @@ html .course_page .course_description {
   /* 폭이 확보되면 시안처럼 버튼 옆(왼쪽)으로 펼칩니다. */
   .quick_chatbot {
     position: fixed;
-    right: calc(var(--quick_gap) + var(--quick_btn) + 16px);
+    right: calc(var(--quick_gap) + var(--quick_btn) + 16px + 2vw);
     bottom: 9%;
     width: min(420px, calc(100vw - 160px));
     height: min(720px, calc(91vh - 24px));
@@ -2430,7 +2455,7 @@ html .course_page .course_description {
   .quick_chatbot::after {
     position: absolute;
     right: -13px;
-    bottom: calc(var(--quick_btn) / 2 - 12px);
+    bottom: var(--quick_chatbot_pointer_bottom, calc(var(--quick_btn) / 2 - 12px));
     width: 14px;
     height: 24px;
     background-color: var(--color_surface_goods);
@@ -2975,10 +3000,6 @@ html .course_page .course_description {
 }
 
 @media (min-width: 1280px) {
-  .site_footer {
-    padding: 120px 0;
-  }
-
   .site_footer_inner {
     gap: 90px;
   }
