@@ -880,40 +880,40 @@ function initGlobalMenu() {
    -------------------------------------------------------------------------- */
 var FAMILY_SITE_GROUPS = [
   {
-    title: "CJ그룹",
-    links: [{ label: "CJ주식회사", href: "https://www.cj.net" }]
+    title: "CJ Group",
+    links: [{ label: "CJ Corporation", href: "https://www.cj.net" }]
   },
   {
-    title: "식품&식품서비스",
+    title: "Food & Food Service",
     links: [
-      { label: "CJ제일제당", href: "https://www.cj.co.kr" },
-      { label: "CJ푸드빌", href: "https://www.cjfoodville.co.kr" },
-      { label: "CJ프레시웨이", href: "https://www.cjfreshway.com" }
+      { label: "CJ CheilJedang", href: "https://www.cj.co.kr" },
+      { label: "CJ Foodville", href: "https://www.cjfoodville.co.kr" },
+      { label: "CJ Freshway", href: "https://www.cjfreshway.com" }
     ]
   },
   {
-    title: "생명공학",
+    title: "Bio",
     links: [
-      { label: "CJ제일제당 BIO사업부문", href: "https://www.cj.co.kr" },
-      { label: "CJ Feed&Care", href: "https://www.cjfeedncare.co.kr" }
+      { label: "CJ CheilJedang BIO Division", href: "https://www.cj.co.kr" },
+      { label: "CJ Feed & Care", href: "https://www.cjfeedncare.co.kr" }
     ]
   },
   {
-    title: "물류 & 신유통",
+    title: "Logistics & New Distribution",
     links: [
-      { label: "CJ대한통운", href: "https://www.cjlogistics.com" },
-      { label: "CJ대한통운 건설부문", href: "https://www.cjlogistics.com" },
-      { label: "CJ올리브영", href: "https://www.oliveyoung.co.kr" },
-      { label: "CJ올리브네트웍스", href: "https://www.cjolivenetworks.co.kr" },
-      { label: "CJ ENM 커머스부문", href: "https://www.cjenm.com" }
+      { label: "CJ Logistics", href: "https://www.cjlogistics.com" },
+      { label: "CJ Logistics E&C Division", href: "https://www.cjlogistics.com" },
+      { label: "CJ Olive Young", href: "https://www.oliveyoung.co.kr" },
+      { label: "CJ OliveNetworks", href: "https://www.cjolivenetworks.co.kr" },
+      { label: "CJ ENM Commerce Division", href: "https://www.cjenm.com" }
     ]
   },
   {
-    title: "엔터테인먼트&미디어",
+    title: "Entertainment & Media",
     links: [
-      { label: "CJ ENM 엔터테인먼트부문", href: "https://www.cjenm.com" },
+      { label: "CJ ENM Entertainment Division", href: "https://www.cjenm.com" },
       { label: "CJ CGV", href: "https://www.cgv.co.kr" },
-      { label: "CJ파워캐스트", href: "https://www.cjpowercast.com" }
+      { label: "CJ Powercast", href: "https://www.cjpowercast.com" }
     ]
   }
 ];
@@ -959,7 +959,12 @@ function getFamilySiteMarkup(assetPath) {
     '<img src="' + assetPath + 'icon/icon_chevron_down.svg" alt="" width="24" height="24" loading="lazy">' +
     "</button>" +
     '<div class="family_site_menu" id="family_site_menu" data-family-menu hidden>' +
+    '<div class="family_site_scroller" data-family-scroller>' +
     groups +
+    "</div>" +
+    '<div class="family_site_scrollbar" data-family-scrollbar aria-hidden="true">' +
+    '<span class="family_site_scrollbar_thumb" data-family-scrollbar-thumb></span>' +
+    "</div>" +
     "</div>" +
     "</div>"
   );
@@ -1049,17 +1054,41 @@ function renderCommonFooter() {
 function initFamilySite() {
   var button = document.querySelector("[data-family-button]");
   var menu = document.querySelector("[data-family-menu]");
+  var scroller = document.querySelector("[data-family-scroller]");
+  var scrollbar = document.querySelector("[data-family-scrollbar]");
+  var scrollbarThumb = document.querySelector("[data-family-scrollbar-thumb]");
 
-  if (!button || !menu) {
+  if (!button || !menu || !scroller || !scrollbar || !scrollbarThumb) {
     return;
   }
 
   var isFamilyMenuOpen = false;
+  var isFamilyScrollbarDragging = false;
+  var familyScrollbarStartY = 0;
+  var familyScrollbarStartScrollTop = 0;
+
+  function renderFamilyScrollbar() {
+    var scrollRange = scroller.scrollHeight - scroller.clientHeight;
+    var trackHeight = scrollbar.clientHeight;
+    var thumbHeight = Math.max(
+      36,
+      trackHeight * (scroller.clientHeight / scroller.scrollHeight)
+    );
+    var thumbTravel = Math.max(0, trackHeight - thumbHeight);
+    var thumbOffset = scrollRange > 0
+      ? (scroller.scrollTop / scrollRange) * thumbTravel
+      : 0;
+
+    scrollbar.hidden = scrollRange <= 1;
+    scrollbarThumb.style.height = Math.min(trackHeight, thumbHeight) + "px";
+    scrollbarThumb.style.transform = "translateY(" + thumbOffset + "px)";
+  }
 
   function renderFamilyMenuState() {
     button.setAttribute("aria-expanded", String(isFamilyMenuOpen));
     if (isFamilyMenuOpen) {
       menu.removeAttribute("hidden");
+      window.requestAnimationFrame(renderFamilyScrollbar);
     } else {
       menu.setAttribute("hidden", "");
     }
@@ -1080,6 +1109,47 @@ function initFamilySite() {
     isFamilyMenuOpen = !isFamilyMenuOpen;
     renderFamilyMenuState();
   });
+
+  scroller.addEventListener("scroll", renderFamilyScrollbar, { passive: true });
+  window.addEventListener("resize", renderFamilyScrollbar);
+
+  scrollbarThumb.addEventListener("pointerdown", function handleFamilyScrollbarPointerDown(event) {
+    isFamilyScrollbarDragging = true;
+    familyScrollbarStartY = event.clientY;
+    familyScrollbarStartScrollTop = scroller.scrollTop;
+    scrollbarThumb.classList.add("is_dragging");
+    scrollbarThumb.setPointerCapture(event.pointerId);
+    event.preventDefault();
+  });
+
+  scrollbarThumb.addEventListener("pointermove", function handleFamilyScrollbarPointerMove(event) {
+    if (!isFamilyScrollbarDragging) {
+      return;
+    }
+
+    var scrollRange = scroller.scrollHeight - scroller.clientHeight;
+    var thumbTravel = scrollbar.clientHeight - scrollbarThumb.offsetHeight;
+    if (scrollRange <= 0 || thumbTravel <= 0) {
+      return;
+    }
+
+    scroller.scrollTop = familyScrollbarStartScrollTop +
+      ((event.clientY - familyScrollbarStartY) / thumbTravel) * scrollRange;
+  });
+
+  function handleFamilyScrollbarPointerEnd(event) {
+    if (!isFamilyScrollbarDragging) {
+      return;
+    }
+    isFamilyScrollbarDragging = false;
+    scrollbarThumb.classList.remove("is_dragging");
+    if (scrollbarThumb.hasPointerCapture(event.pointerId)) {
+      scrollbarThumb.releasePointerCapture(event.pointerId);
+    }
+  }
+
+  scrollbarThumb.addEventListener("pointerup", handleFamilyScrollbarPointerEnd);
+  scrollbarThumb.addEventListener("pointercancel", handleFamilyScrollbarPointerEnd);
 
   document.addEventListener("click", function handleFamilyOutsideClick(event) {
     if (!isFamilyMenuOpen) {
@@ -1964,6 +2034,9 @@ function initQuickMenu() {
     var avatar = document.createElement("img");
     var content = document.createElement("div");
     var name = document.createElement("p");
+    var responseButtons = (response.buttons || []).concat([
+      { text: "Back to Start", action: "restartChatbot" }
+    ]);
     var referenceAvatar = chatbotPanel.querySelector(".quick_chatbot_message_avatar");
 
     article.className = "quick_chatbot_message quick_chatbot_message_response";
@@ -1993,7 +2066,7 @@ function initQuickMenu() {
     if (response.options) {
       content.append(createChatbotOptions(response.options));
     }
-    appendChatbotActions(content, response.buttons);
+    appendChatbotActions(content, responseButtons);
 
     article.append(avatar, content);
     chatbotMessages.append(article);
@@ -2011,6 +2084,27 @@ function initQuickMenu() {
     optionPanel.classList.add("quick_chatbot_suboptions_return", "quick_chatbot_message_response");
     chatbotMessages.append(optionPanel);
     scrollChatbotToLatest();
+  }
+
+  function restartChatbotConversation() {
+    Array.prototype.forEach.call(
+      Array.prototype.slice.call(chatbotMessages.children),
+      function (message) {
+        if (!message.classList.contains("quick_chatbot_message_initial")) {
+          message.remove();
+        }
+      }
+    );
+    chatbotMessages.removeAttribute("aria-busy");
+    setChatbotCategoriesDisabled(false);
+    chatbotMessages.scrollTop = 0;
+
+    var firstCategory = chatbotMessages.querySelector("[data-chatbot-category]");
+    if (firstCategory) {
+      window.setTimeout(function focusFirstChatbotCategory() {
+        firstCategory.focus();
+      }, 0);
+    }
   }
 
   function handleChatbotCategoryClick(event) {
@@ -2047,6 +2141,11 @@ function initQuickMenu() {
 
     if (actionButton.dataset.chatbotAction === "transportOptions") {
       appendTransportOptions();
+      return;
+    }
+
+    if (actionButton.dataset.chatbotAction === "restartChatbot") {
+      restartChatbotConversation();
     }
   }
 
