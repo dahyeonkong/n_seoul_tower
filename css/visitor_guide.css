@@ -270,7 +270,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   flex-direction: column;
   align-items: flex-start;
   gap: var(--guide_stack_gap);
-  padding: 14px 14px 43px;
+  padding: 40px 14px;
 }
 
 .guide_feature {
@@ -1133,72 +1133,113 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 @media (min-width: 834px) and (max-width: 1279px) {
   .guide_section {
     gap: 36px;
-    padding: 22px 28px 48px;
+    padding: 40px 28px;
   }
 
   .guide_feature {
+    --guide_tablet_media_width: min(295px, 42%);
     box-sizing: border-box;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(240px, 295px);
-    grid-template-rows: auto auto 1fr;
-    column-gap: 10px;
+    position: relative;
+    display: flex;
+    align-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: wrap;
     width: 100%;
     height: 400px;
     padding: 40px;
     border-radius: var(--radius_2xl);
-    background-color: var(--color_guide_media_bg);
+    color: #212121;
   }
 
   .guide_feature > .guide_title {
-    grid-column: 1;
-    grid-row: 1;
-    align-self: start;
-    color: var(--color_text_white);
+    order: 1;
+    max-width: calc(100% - var(--guide_tablet_media_width) - 44px);
+    flex: 0 0 auto;
+    align-self: center;
+    color: #212121;
     font-size: 28px;
     line-height: normal;
   }
 
   .guide_feature > .guide_info_button {
-    grid-column: 1;
-    grid-row: 2;
-    align-self: start;
-    margin-top: 4px;
+    position: static;
+    order: 2;
+    flex: 0 0 34px;
+    align-self: center;
+    margin: 0 0 0 10px;
+  }
+
+  .guide_feature .cable_info {
+    top: 85px;
+    left: 40px;
+    width: min(620px, calc(100% - 80px));
+    max-width: none;
+  }
+
+  .guide_feature::before {
+    order: 3;
+    height: 0;
+    flex: 0 0 100%;
+    content: "";
   }
 
   .guide_feature .guide_pill {
-    gap: 14px;
-    padding: 8px 18px;
-    font-size: 14px;
+    width: 34px;
+    height: 33px;
+    min-height: 33px;
+    gap: 0;
+    padding: 4px 5px;
+    font-size: 0;
     font-weight: 400;
   }
 
+  .guide_feature .guide_pill::before {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 auto;
+    background-color: #fff;
+    content: "";
+    mask: url("../assets/icon/alert-circle.svg") center / contain no-repeat;
+    -webkit-mask: url("../assets/icon/alert-circle.svg") center / contain no-repeat;
+  }
+
+  .guide_feature .guide_pill img {
+    display: none;
+  }
+
   .guide_feature > .guide_lead {
-    grid-column: 1;
-    grid-row: 3;
-    align-self: end;
-    padding-top: 36px;
-    border-top: 1px solid rgba(255, 255, 255, 0.7);
-    color: var(--color_text_white);
+    order: 4;
+    max-width: calc(100% - var(--guide_tablet_media_width) - 44px);
+    flex: 0 0 auto;
+    align-self: start;
+    padding-top: 0;
+    border-top: 0;
+    color: #212121;
     font-size: 14px;
     line-height: normal;
   }
 
   .guide_feature > .guide_media_wrap {
-    grid-column: 2;
-    grid-row: 1 / -1;
-    align-self: stretch;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    min-width: 0;
+    display: contents;
   }
 
   .guide_feature .guide_media {
-    width: 100%;
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    width: var(--guide_tablet_media_width);
     height: 326px;
     max-height: 100%;
     border-radius: 0;
     background-color: transparent;
+  }
+
+  .guide_feature .guide_media_link {
+    position: absolute;
+    bottom: 40px;
+    left: 40px;
+    z-index: 2;
+    margin-top: 0;
   }
 
 
@@ -1214,7 +1255,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 
   .guide_section .guide_route_title {
     margin-bottom: 24px;
-    font-size: 28px;
+    font-size: 24px;
     line-height: normal;
   }
 
@@ -1234,7 +1275,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
     align-content: center;
     column-gap: 64px;
     row-gap: 24px;
-    padding: 22px 28px 48px;
+    padding: 40px 28px;
     /* 본문 행 수를 명시해야 이미지의 grid-row: 1 / -1 이 전체를 세로로 덮습니다.
        기본 3행(제목·설명·상세) + 안내 칩이 있는 섹션만 4행 */
     grid-template-rows: repeat(3, auto);

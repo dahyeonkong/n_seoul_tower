@@ -1710,6 +1710,7 @@ function initQuickMenu() {
   var isTopActionVisible = false;
   var isTopActionFrameRequested = false;
   var isQuickSectionFrameRequested = false;
+  var isChatbotPointerFrameRequested = false;
   var isChatbotReplyPending = false;
 
   /* 맨 위로 이동 버튼은 전체 스크롤 거리의 20%를 넘긴 뒤 노출합니다. */
@@ -1726,6 +1727,7 @@ function initQuickMenu() {
       if (shouldShowTopAction !== isTopActionVisible) {
         isTopActionVisible = shouldShowTopAction;
         topAction.hidden = !isTopActionVisible;
+        requestChatbotPointerRender();
       }
 
       isTopActionFrameRequested = false;
@@ -1853,6 +1855,33 @@ function initQuickMenu() {
     if (chatbotToggleLabel) {
       chatbotToggleLabel.textContent = isChatbotOpen ? "Close chatbot" : "Open chatbot";
     }
+    requestChatbotPointerRender();
+  }
+
+  function renderChatbotPointerPosition() {
+    isChatbotPointerFrameRequested = false;
+
+    if (!isChatbotOpen || mobileChatbotMediaQuery.matches) {
+      return;
+    }
+
+    var panelRect = chatbotPanel.getBoundingClientRect();
+    var toggleRect = chatbotToggle.getBoundingClientRect();
+    var pointerHeight = 24;
+    var pointerBottom = Math.max(
+      12,
+      panelRect.bottom - (toggleRect.top + toggleRect.height / 2) - pointerHeight / 2
+    );
+
+    chatbotPanel.style.setProperty("--quick_chatbot_pointer_bottom", pointerBottom + "px");
+  }
+
+  function requestChatbotPointerRender() {
+    if (isChatbotPointerFrameRequested) {
+      return;
+    }
+    isChatbotPointerFrameRequested = true;
+    window.requestAnimationFrame(renderChatbotPointerPosition);
   }
 
   function scrollChatbotToLatest() {
@@ -2011,6 +2040,11 @@ function initQuickMenu() {
         control.dataset.chatbotAction = item.action;
       }
       control.className = "quick_chatbot_cta";
+      control.classList.add(
+        item.action === "restartChatbot"
+          ? "quick_chatbot_cta_restart"
+          : "quick_chatbot_cta_response"
+      );
       control.textContent = item.text;
       actions.append(control);
     });
@@ -2034,9 +2068,9 @@ function initQuickMenu() {
     var avatar = document.createElement("img");
     var content = document.createElement("div");
     var name = document.createElement("p");
-    var responseButtons = (response.buttons || []).concat([
+    var responseButtons = [
       { text: "Back to Start", action: "restartChatbot" }
-    ]);
+    ].concat(response.buttons || []);
     var referenceAvatar = chatbotPanel.querySelector(".quick_chatbot_message_avatar");
 
     article.className = "quick_chatbot_message quick_chatbot_message_response";
@@ -2087,6 +2121,7 @@ function initQuickMenu() {
   }
 
   function restartChatbotConversation() {
+    isChatbotReplyPending = false;
     Array.prototype.forEach.call(
       Array.prototype.slice.call(chatbotMessages.children),
       function (message) {
@@ -2098,6 +2133,8 @@ function initQuickMenu() {
     chatbotMessages.removeAttribute("aria-busy");
     setChatbotCategoriesDisabled(false);
     chatbotMessages.scrollTop = 0;
+    isChatbotOpen = true;
+    renderChatbotState();
 
     var firstCategory = chatbotMessages.querySelector("[data-chatbot-category]");
     if (firstCategory) {
@@ -2145,6 +2182,8 @@ function initQuickMenu() {
     }
 
     if (actionButton.dataset.chatbotAction === "restartChatbot") {
+      event.preventDefault();
+      event.stopPropagation();
       restartChatbotConversation();
     }
   }
@@ -2232,6 +2271,8 @@ function initQuickMenu() {
 
   if (chatbotToggle && chatbotPanel) {
     chatbotToggle.addEventListener("click", handleChatbotToggle);
+    chatbotPanel.addEventListener("animationend", requestChatbotPointerRender);
+    window.addEventListener("resize", requestChatbotPointerRender);
   }
 
   if (chatbotClose) {
