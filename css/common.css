@@ -1508,6 +1508,17 @@ html .course_page .course_description {
   gap: calc(var(--quick_btn) * 0.25);
 }
 
+/* 열린 챗봇은 고정 헤더(z-index: 120)와 글로벌 메뉴보다 위에 표시합니다. */
+.quick_menu.is_chatbot_open {
+  z-index: 1000;
+}
+
+/* transform이 fixed 챗봇의 기준 좌표를 바꾸지 않도록 열린 동안 목록 모션을 종료합니다. */
+.quick_menu.is_chatbot_open .quick_menu_actions {
+  animation: none;
+  transform: none;
+}
+
 /* --- 펼침 액션 목록 (987:8606 top_con) --- */
 .quick_menu_actions {
   display: flex;
@@ -1766,8 +1777,11 @@ html .course_page .course_description {
   right: 0;
   bottom: calc(100% + 12px);
   display: flex;
-  width: min(320px, calc(100vw - var(--quick_gap) * 2));
-  max-height: min(560px, calc(100vh - 220px));
+  width: min(400px, calc(100vw - var(--quick_gap) * 2));
+  height: min(720px, calc(100vh - 40px));
+  height: min(720px, calc(100dvh - 40px));
+  max-height: calc(100vh - 40px);
+  max-height: calc(100dvh - 40px);
   flex-direction: column;
   border-radius: var(--radius_xl);
   background-color: var(--color_surface);
@@ -1800,6 +1814,7 @@ html .course_page .course_description {
 .quick_chatbot_header {
   position: relative;
   display: grid;
+  flex: none;
   padding: 24px 24px 20px;
   column-gap: 14px;
   grid-template-columns: 56px 1fr;
@@ -1837,11 +1852,28 @@ html .course_page .course_description {
 .quick_chatbot_body {
   display: flex;
   min-height: 0;
+  flex: 1 1 auto;
   flex-direction: column;
   gap: 12px;
   padding: 16px;
   background-color: var(--color_surface_goods);
+  overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -ms-overflow-style: none;
+  scrollbar-color: transparent transparent;
+  scrollbar-width: none;
+}
+
+.quick_chatbot_body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
+.quick_chatbot_body::-webkit-scrollbar-thumb {
+  background: transparent;
 }
 
 .quick_chatbot_message {
@@ -2176,15 +2208,6 @@ html .course_page .course_description {
     overflow: hidden;
   }
 
-  .quick_menu.is_chatbot_open {
-    z-index: 1000;
-  }
-
-  .quick_menu.is_chatbot_open .quick_menu_actions {
-    animation: none;
-    transform: none;
-  }
-
   .quick_chatbot {
     position: fixed;
     inset: 0;
@@ -2385,7 +2408,9 @@ html .course_page .course_description {
     position: fixed;
     right: calc(var(--quick_gap) + var(--quick_btn) + 16px);
     bottom: 9%;
-    width: min(560px, calc(100vw - 160px));
+    width: min(420px, calc(100vw - 160px));
+    height: min(720px, calc(91vh - 24px));
+    height: min(720px, calc(91dvh - 24px));
     max-height: min(720px, calc(91vh - 24px));
     max-height: min(720px, calc(91dvh - 24px));
     overflow: visible;
@@ -2744,16 +2769,61 @@ html .course_page .course_description {
   bottom: calc(100% + 12px);
   left: 0;
   z-index: 3;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
   width: 213px;
   max-height: 320px;
   padding: 18px 20px;
   border-radius: var(--radius_md);
   background-color: rgba(238, 238, 238, 0.3);
   backdrop-filter: blur(11.7px);
+  overflow: hidden;
+}
+
+.family_site_scroller {
+  display: flex;
+  max-height: 284px;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 8px;
+  overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.family_site_scroller::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.family_site_scrollbar {
+  position: absolute;
+  top: 28px;
+  right: 10px;
+  bottom: 28px;
+  width: 5px;
+}
+
+.family_site_scrollbar[hidden] {
+  display: none;
+}
+
+.family_site_scrollbar_thumb {
+  display: block;
+  width: 100%;
+  min-height: 36px;
+  border-radius: var(--radius_round);
+  background-color: rgba(255, 255, 255, 0.9);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.family_site_scrollbar_thumb:hover,
+.family_site_scrollbar_thumb.is_dragging {
+  background-color: var(--color_surface);
+  cursor: grabbing;
 }
 
 .family_site_menu[hidden] {
@@ -2762,6 +2832,7 @@ html .course_page .course_description {
 
 .family_site_group {
   display: flex;
+  flex: none;
   flex-direction: column;
   gap: 12px;
   padding-bottom: 12px;

@@ -405,11 +405,13 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 @media (hover: hover) and (pointer: fine) {
   #by_bus:is(:hover, :focus-within) .guide_media_bus .base_bus {
     opacity: 0;
+    transition-delay: 1s;
   }
 
   #by_bus:is(:hover, :focus-within) .guide_media_bus .motion_bus {
     opacity: 1;
     transform: translateX(-28px) scale(1.02);
+    transition-delay: 1s;
   }
 }
 
@@ -480,6 +482,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
   #by_cars:is(:hover, :focus-within) .guide_media_car .charac_sit {
     opacity: 1;
     transform: translateX(-50%) translateY(0) scale(1);
+    transition-delay: 1s;
   }
 }
 
@@ -530,8 +533,8 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .guide_media_cablecar:hover .cablecar_image {
-    animation: cablecar_object_sway 1.7s ease-in-out 1 both;
+  #by_cable_car:is(:hover, :focus-within) .guide_media_cablecar .cablecar_image {
+    animation: cablecar_object_sway 1.7s ease-in-out 1s 1 both;
   }
 }
 
@@ -544,7 +547,7 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .guide_media_cablecar:hover .cablecar_image {
+  #by_cable_car:is(:hover, :focus-within) .guide_media_cablecar .cablecar_image {
     animation: none;
     transform: none;
     transition: none;
@@ -625,19 +628,19 @@ body:not(:has(:target)) .guide_tab[href="#by_bus"] .guide_tab_icon {
 
 @media (hover: hover) and (pointer: fine) {
   #by_city_tour_bus:is(:hover, :focus-within) .bus_bear_left {
-    animation: citytour_bear_pop 420ms ease-out 1 both;
+    animation: citytour_bear_pop 420ms ease-out 1s 1 both;
   }
 
   #by_city_tour_bus:is(:hover, :focus-within) .bus_bear_right {
-    animation: citytour_bear_pop 420ms ease-out 180ms 1 both;
+    animation: citytour_bear_pop 420ms ease-out 1.18s 1 both;
   }
 
   #by_city_tour_bus:is(:hover, :focus-within) .bus_bear_left .bus_bear_image {
-    animation: citytour_bear_float 1.2s ease-in-out 420ms infinite alternate both;
+    animation: citytour_bear_float 1.2s ease-in-out 1.42s infinite alternate both;
   }
 
   #by_city_tour_bus:is(:hover, :focus-within) .bus_bear_right .bus_bear_image {
-    animation: citytour_bear_float 1.2s ease-in-out 600ms infinite alternate both;
+    animation: citytour_bear_float 1.2s ease-in-out 1.6s infinite alternate both;
   }
 }
 
