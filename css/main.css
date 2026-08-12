@@ -2105,6 +2105,31 @@
   pointer-events: none;
 }
 
+/* 브라우저 기본 재생 UI 를 숨깁니다. controls 속성은 이미 꺼 두었지만,
+   일시정지·탐색 중 재생 버튼이나 패널을 띄우는 브라우저가 있어 함께 막습니다.
+   UA 그림자 DOM 스타일이라 !important 없이는 덮이지 않습니다. */
+.course_scene_video::-webkit-media-controls,
+.course_scene_video::-webkit-media-controls-enclosure,
+.course_scene_video::-webkit-media-controls-panel,
+.course_scene_video::-webkit-media-controls-panel-container,
+.course_scene_video::-webkit-media-controls-overlay-enclosure,
+.course_scene_video::-webkit-media-controls-overlay-play-button,
+.course_scene_video::-webkit-media-controls-start-playback-button,
+.course_scene_video::-webkit-media-controls-play-button,
+.course_scene_video::-webkit-media-controls-timeline,
+.course_scene_video::-webkit-media-controls-current-time-display,
+.course_scene_video::-webkit-media-controls-time-remaining-display,
+.course_scene_video::-webkit-media-controls-mute-button,
+.course_scene_video::-webkit-media-controls-volume-slider,
+.course_scene_video::-webkit-media-controls-fullscreen-button,
+.course_scene_video::-webkit-media-controls-toggle-closed-captions-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
 
 .course_scene_char {
   position: absolute;
@@ -2121,6 +2146,12 @@
   background: transparent;
   transform: translateX(-50%);
   pointer-events: none;
+}
+
+/* 모바일에서는 가로 스크롤 목록이 그대로 무대의 그리드 아이템이 되어야 하므로
+   레이어를 만들지 않습니다. 마스크는 834px 이상 세로 스크롤 무대에서만 씁니다. */
+.course_list_viewport {
+  display: contents;
 }
 
 .course_list {
@@ -2318,14 +2349,39 @@
   }
 }
 @media (min-width: 834px) {
+  /* 무대 아래쪽을 sticky 영역 바닥에 붙입니다. */
   .course_sticky {
     gap: 48px;
-    padding: 40px 0;
+    padding: 40px 0 0;
   }
 
   .course_scene {
     height: 640px;
     border-radius: var(--radius_xl);
+  }
+
+  /* 위·아래 가장자리에서 카드가 서서히 지워집니다.
+     --course_mask_band 는 main.js 가 카드와 무대 사이 여백을 재서 넣어 주며,
+     정지 상태의 카드가 마스크에 닿지 않는 폭으로 제한됩니다. */
+  .course_list_viewport {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 var(--course_mask_band, 11%),
+      #000 calc(100% - var(--course_mask_band, 11%)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 var(--course_mask_band, 11%),
+      #000 calc(100% - var(--course_mask_band, 11%)),
+      transparent 100%
+    );
   }
 
   .course_slide {
@@ -2372,6 +2428,12 @@
   .course_sticky {
     position: relative;
     height: auto;
+    padding-bottom: 40px;
+  }
+
+  /* 카드가 흐르지 않고 전부 펼쳐지므로 마스크 레이어를 쓰지 않습니다. */
+  .course_list_viewport {
+    display: contents;
   }
 
   .course_scene {

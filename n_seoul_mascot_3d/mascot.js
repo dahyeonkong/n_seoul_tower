@@ -1,4 +1,4 @@
-import * as THREE from "three";
+﻿import * as THREE from "three";
 
 const canvas = document.querySelector("[data-mascot-canvas]");
 const canvasWrap = document.querySelector("[data-canvas-wrap]");
@@ -23,7 +23,6 @@ const CREAM_LIGHT = 0xffe9b9;
 const SHIRT_GREEN = 0xaab968;
 const SHIRT_DARK = 0x98a75b;
 const FACE_BROWN = 0x5b2d1d;
-const PAW_BROWN = 0x563022;
 
 let renderer;
 let camera;
@@ -244,27 +243,6 @@ function createHeartLogo(material) {
   return logo;
 }
 
-function createPawDetails(side, materials) {
-  const details = new THREE.Group();
-  details.name = side < 0 ? "left_paw_details" : "right_paw_details";
-  details.position.set(0, -0.455, 0.06);
-
-  const mainPad = createEllipsoid("main_pad", 0.3, [1.15, 0.15, 0.83], materials.paw, 24);
-  mainPad.castShadow = false;
-  mainPad.position.set(0, 0, 0.12);
-  details.add(mainPad);
-
-  const toeOffsets = [-0.34, -0.17, 0, 0.17, 0.34];
-  toeOffsets.forEach((offset, index) => {
-    const toe = createEllipsoid(`toe_pad_${index + 1}`, 0.095, [1, 0.18, 1.15], materials.paw, 18);
-    toe.castShadow = false;
-    toe.position.set(offset, 0, 0.42 - Math.abs(offset) * 0.25);
-    details.add(toe);
-  });
-
-  return details;
-}
-
 function createArm(side, materials) {
   const pivot = new THREE.Group();
   pivot.name = side < 0 ? "left_shoulder_pivot" : "right_shoulder_pivot";
@@ -313,7 +291,6 @@ function createLeg(side, materials) {
   );
   leg.position.y = -0.35;
   leg.rotation.z = side * -0.025;
-  leg.add(createPawDetails(side, materials));
   pivot.add(leg);
   return pivot;
 }
@@ -332,8 +309,7 @@ function createMascot() {
     shirt: createMaterial(SHIRT_GREEN, { roughness: 0.94, bumpMap: fabricBump, bumpScale: 0.018 }),
     shirtDark: createMaterial(SHIRT_DARK, { roughness: 0.94, bumpMap: fabricBump, bumpScale: 0.012 }),
     earInner: createMaterial(0xf3c97a, { roughness: 0.9, bumpMap: plushBump, bumpScale: 0.006 }),
-    face: createMaterial(FACE_BROWN, { roughness: 0.48 }),
-    paw: createMaterial(PAW_BROWN, { roughness: 0.62 }),
+    face: createMaterial(FACE_BROWN, { roughness: 0.58 }),
     white: createMaterial(0xffffff, { roughness: 0.7 }),
   };
 
@@ -368,12 +344,8 @@ function createMascot() {
   const rightEar = createEar("right_ear", 1, materials);
   const leftEye = createEye("left_eye", -1, materials);
   const rightEye = createEye("right_eye", 1, materials);
-
-  const muzzle = createEllipsoid("muzzle", 0.2, [1.05, 0.55, 0.44], materials.creamLight, 28);
-  muzzle.position.set(0, 0.99, 1.19);
-  muzzle.castShadow = false;
-  const nose = createEllipsoid("nose", 0.12, [1.2, 0.66, 0.68], materials.face, 28);
-  nose.position.set(0, 1.035, 1.29);
+  const nose = createEllipsoid("nose", 0.12, [1.22, 0.7, 0.72], materials.face, 30);
+  nose.position.set(0, 1.045, 1.2);
 
   const leftArmPivot = createArm(-1, materials);
   const rightArmPivot = createArm(1, materials);
@@ -400,7 +372,6 @@ function createMascot() {
     rightEar,
     leftEye,
     rightEye,
-    muzzle,
     nose,
     leftArmPivot,
     rightArmPivot,
@@ -726,7 +697,7 @@ function initScene() {
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.94;
+  renderer.toneMappingExposure = 0.98;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -735,7 +706,7 @@ function initScene() {
   camera.position.set(0, 0.25, 10.8);
   camera.lookAt(0, -0.05, 0);
 
-  scene.add(new THREE.HemisphereLight(0xfff4df, 0x747a58, 1.65));
+  scene.add(new THREE.HemisphereLight(0xfff4df, 0x747a58, 1.72));
 
   const keyLight = new THREE.DirectionalLight(0xffdfa3, 3.4);
   keyLight.position.set(-4, 6.5, 6);
@@ -755,7 +726,7 @@ function initScene() {
   rimLight.position.set(4, 3, -5);
   scene.add(rimLight);
 
-  const fillLight = new THREE.DirectionalLight(0xfff0d2, 0.7);
+  const fillLight = new THREE.DirectionalLight(0xfff0d2, 0.78);
   fillLight.position.set(4, 1.5, 5);
   scene.add(fillLight);
 
