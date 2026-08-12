@@ -69,7 +69,7 @@
   <link rel="stylesheet" href="./css/reset.css">
   <link rel="stylesheet" href="./css/common.css">
   <link rel="stylesheet" href="./yul_tower_3d/scroll-stack-3d.css">
-  <link rel="stylesheet" href="./css/main.css?v=20260811-5">
+  <link rel="stylesheet" href="./css/main.css?v=20260812-1">
 </head>
 <body>
   <div class="site_wrapper" id="top">
@@ -404,17 +404,16 @@
         <div class="course_scroll_stage" data-course-scroll-stage>
           <div class="course_sticky" data-course-sticky>
               <img class="course_scene_bg" src="./assets/guide_course/walk_bg.png" alt="" aria-hidden="true" width="2010" height="711" loading="lazy">
-              <!-- 코스가 진행되는 동안 반복 재생하고, 스크롤이 끝나면 현재 프레임에서 멈춥니다. -->
+              <!-- 코스 구간에서 한 번만 재생하고 마지막 프레임에서 멈춥니다.
+                   재생 속도와 반복 여부는 main.js 의 initCourseSceneVideo() 가 관리합니다. -->
               <video
                 class="course_scene_video"
                 data-course-video
                 width="1280"
                 height="720"
                 muted
-                loop
                 playsinline
                 preload="auto"
-                controlslist="nodownload nofullscreen noremoteplayback"
                 disablepictureinpicture
                 disableremoteplayback
                 aria-hidden="true"
@@ -439,9 +438,15 @@
                 aria-hidden="true"
               ></iframe>
 
-              <ul class="course_list" id="course_list" data-course-list>
-                <!-- renderCourses() -->
-              </ul>
+              <!-- 카드가 무대 밖으로 나갈 때 단면이 그대로 잘려 보이지 않도록
+                   위·아래 가장자리를 지우는 마스크 레이어입니다.
+                   마스크는 스크롤을 따라 움직이면 안 되므로 이동하는 course_list 대신
+                   고정된 이 레이어에 겁니다. (모바일에서는 display: contents 로 비활성) -->
+              <div class="course_list_viewport">
+                <ul class="course_list" id="course_list" data-course-list>
+                  <!-- renderCourses() -->
+                </ul>
+              </div>
               <div
                 class="course_pagination"
                 data-course-pagination
@@ -652,6 +657,6 @@
   <script src="./yul_tower_3d/scroll-stack-3d.js"></script>
 
   <script src="./js/common.js"></script>
-  <script src="./js/main.js?v=20260811-1"></script>
+  <script src="./js/main.js?v=20260812-1"></script>
 </body>
 </html>

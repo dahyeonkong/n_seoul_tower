@@ -1,6 +1,6 @@
-{
+﻿{
   "name": "NSeoulMascot",
-  "version": 3,
+  "version": 5,
   "referenceProfile": "character",
   "intendedUse": "real-time browser mascot with walk and wave animations",
   "proportions": {
@@ -16,11 +16,10 @@
     { "id": "right_ear", "primitive": "torus", "level": "meso", "parent": "body" },
     { "id": "left_arm", "primitive": "capsule", "level": "meso", "parent": "body", "pivot": "left_shoulder_pivot" },
     { "id": "right_arm", "primitive": "capsule", "level": "meso", "parent": "body", "pivot": "right_shoulder_pivot" },
-    { "id": "left_leg", "primitive": "capsule", "level": "meso", "parent": "body", "pivot": "left_hip_pivot" },
-    { "id": "right_leg", "primitive": "capsule", "level": "meso", "parent": "body", "pivot": "right_hip_pivot" },
+    { "id": "left_leg", "primitive": "ellipsoid", "level": "meso", "parent": "body", "pivot": "left_hip_pivot" },
+    { "id": "right_leg", "primitive": "ellipsoid", "level": "meso", "parent": "body", "pivot": "right_hip_pivot" },
     { "id": "tail", "primitive": "sphere", "level": "meso", "parent": "body", "pivot": "tail_pivot" },
-    { "id": "face", "primitive": "ellipsoid", "level": "micro", "parent": "body" },
-    { "id": "paw_details", "primitive": "ellipsoid", "level": "micro", "parent": "left_leg" }
+    { "id": "face", "primitive": "ellipsoid", "level": "micro", "parent": "body" }
   ],
   "animations": {
     "idle": { "loop": true, "duration": 2.8 },
@@ -56,8 +55,8 @@
     "licenseNotice": "./vendor/THREE-LICENSE.txt"
   },
   "optimization": {
-    "measuredMeshCount": 41,
-    "measuredTriangleCount": 58140,
+    "measuredMeshCount": 28,
+    "measuredTriangleCount": 46456,
     "shadowMap": "2048px desktop, 1024px below 834px",
     "microDetailShadows": false,
     "pixelRatioCap": 2,

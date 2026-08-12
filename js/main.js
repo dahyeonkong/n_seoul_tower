@@ -236,6 +236,11 @@ var EVENT_GONDOLA_BAND = 0.36;
 /* 마지막 코스 카드가 정확히 도착한 시점에 영상 정지와 캐릭터 종료 동작을 실행합니다. */
 var COURSE_END_PROGRESS = 1;
 
+/* 코스 배경 영상(road_bg.mp4) 재생 속도. 1 보다 낮추면 걷는 속도가 느려집니다.
+   영상을 실제로 재생하는 834px 미만에서만 쓰입니다.
+   834px 이상은 스크롤 진행률이 프레임을 정하므로 이 값과 무관합니다. */
+var COURSE_VIDEO_PLAYBACK_RATE = 0.9;
+
 /* 손 흔들기 최대 구간에서 측정한 iframe 내부 손바닥 중심 좌표입니다. */
 var COURSE_WAVE_HAND_ANCHOR_X = 0.85;
 var COURSE_WAVE_HAND_ANCHOR_Y = 0.29;
@@ -895,7 +900,9 @@ function initHeroVisualVideo() {
   }
 }
 
-/* 코스 배경 영상은 스크롤이 끝날 때까지 반복하고, 종료 시 현재 프레임에서 멈춥니다. */
+/* 코스 배경 영상 기본 설정과, 스크롤 무대가 없는 화면(모바일)에서의 자동 재생입니다.
+   834px 이상에서는 initCourseScrollScene 이 스크롤 진행률로 프레임을 직접 넘기므로
+   (data-course-video-scrub) 여기서는 재생하지 않습니다. */
 function initCourseSceneVideo() {
   var scene = document.querySelector("[data-course-scene]");
   var video = document.querySelector("[data-course-video]");
@@ -904,15 +911,20 @@ function initCourseSceneVideo() {
     return;
   }
 
-  video.loop = true;
+  video.loop = false;
+  video.removeAttribute("loop");
   video.controls = false;
   video.removeAttribute("controls");
   video.disablePictureInPicture = true;
 
   function playCourseVideo() {
-    if (scene.classList.contains("is_course_end")) {
+    if (scene.classList.contains("is_course_end") || scene.dataset.courseVideoScrub) {
       return;
     }
+
+    /* 재생 속도는 실제로 재생하는 경로에서만 지정합니다.
+       스크럽 구간에서는 진행률이 프레임을 정하므로 쓰이지 않습니다. */
+    video.playbackRate = COURSE_VIDEO_PLAYBACK_RATE;
 
     var played = video.play();
 
@@ -936,7 +948,8 @@ function initCourseSceneVideo() {
 
         video.pause();
 
-        if (!scene.classList.contains("is_course_end")) {
+        /* 스크롤 구동 중에는 진행률이 프레임을 정하므로 되감지 않습니다. */
+        if (!scene.dataset.courseVideoScrub && !scene.classList.contains("is_course_end")) {
           video.currentTime = 0;
         }
       });
@@ -1021,6 +1034,42 @@ function initCourseScrollScene() {
     triggerCourseCharacterWave();
   }
 
+  /* 위로 되돌아와 코스가 다시 진행되면 종료 상태를 풉니다.
+     이 상태를 남겨 두면 다시 내려갈 때 N Pass 티켓이 코스 도중에 나타납니다.
+     프레임은 renderCourseVideoFrame 이 진행률로 되돌리므로 재생은 하지 않습니다. */
+  function resumeCourseScene() {
+    if (!hasCourseEnded) {
+      return;
+    }
+
+    hasCourseEnded = false;
+    scene.classList.remove("is_course_end");
+  }
+
+  /* 코스 스크롤 진행률에 영상 재생 위치를 그대로 맞춥니다.
+     코스 구간 전체를 지나는 동안 영상이 정확히 한 번 재생됩니다. */
+  function renderCourseVideoFrame(progress) {
+    if (!video || video.readyState < 1 || video.seeking) {
+      return;
+    }
+
+    var duration = video.duration;
+
+    if (!duration || !isFinite(duration)) {
+      return;
+    }
+
+    /* 끝에서 ended 로 넘어가 첫 프레임으로 튀지 않도록 한 프레임 남겨 둡니다. */
+    var time = Math.min(duration - 0.05, duration * progress);
+
+    /* 미세한 차이까지 seek 하면 디코더가 밀리므로 건너뜁니다. */
+    if (Math.abs(video.currentTime - time) < 0.03) {
+      return;
+    }
+
+    video.currentTime = time;
+  }
+
   function renderCourseScroll() {
     if (!isCourseScrollEnabled) {
       isFrameRequested = false;
@@ -1030,8 +1079,12 @@ function initCourseScrollScene() {
     var stageRect = stage.getBoundingClientRect();
     var progress = Math.min(1, Math.max(0, -stageRect.top / scrollTravel));
     list.style.transform = "translate3d(0, " + -progress * maxListOffset + "px, 0)";
+    renderCourseVideoFrame(progress);
+
     if (progress >= COURSE_END_PROGRESS) {
       finishCourseScene();
+    } else {
+      resumeCourseScene();
     }
     isFrameRequested = false;
   }
@@ -1045,6 +1098,26 @@ function initCourseScrollScene() {
     window.requestAnimationFrame(renderCourseScroll);
   }
 
+  /* 카드가 무대 밖으로 나갈 때 쓰는 마스크 폭입니다.
+     기본은 무대 높이의 12% 지만, 카드가 가운데 멈춰 있을 때 마스크에 닿지 않도록
+     카드와 무대 사이 여백보다 좁게 줄입니다. 좁은 화면에서 카드가 무대보다 커도
+     최소 24px 은 남겨 잘린 단면이 그대로 드러나지 않게 합니다. */
+  function getCourseMaskBand() {
+    var cardHeight = 0;
+
+    Array.prototype.forEach.call(slides, function (slide) {
+      var card = slide.querySelector(".course_card");
+
+      if (card) {
+        cardHeight = Math.max(cardHeight, card.offsetHeight);
+      }
+    });
+
+    var freeSpace = Math.max(0, (sceneHeight - cardHeight) / 2);
+
+    return Math.round(Math.max(24, Math.min(sceneHeight * 0.11, freeSpace - 8)));
+  }
+
   function updateCourseMeasurements() {
     if (!isCourseScrollEnabled) {
       return;
@@ -1052,6 +1125,7 @@ function initCourseScrollScene() {
 
     sceneHeight = scene.clientHeight;
     section.style.setProperty("--course_scene_height", sceneHeight + "px");
+    section.style.setProperty("--course_mask_band", getCourseMaskBand() + "px");
     var lastSlide = slides[slides.length - 1];
     maxListOffset = Math.max(0, lastSlide.offsetTop);
     stage.style.height = sticky.clientHeight + maxListOffset + "px";
@@ -1067,10 +1141,37 @@ function initCourseScrollScene() {
     isCourseScrollEnabled = isEnabled;
 
     if (isCourseScrollEnabled) {
+      /* initCourseSceneVideo 의 자동 재생을 멈추고 프레임 제어를 넘겨받습니다. */
+      scene.dataset.courseVideoScrub = "true";
+
+      if (video) {
+        video.pause();
+      }
+
       window.addEventListener("scroll", requestCourseScrollRender, { passive: true });
       window.addEventListener("resize", updateCourseMeasurements);
       updateCourseMeasurements();
       return;
+    }
+
+    delete scene.dataset.courseVideoScrub;
+    resumeCourseScene();
+
+    /* 무대가 화면에 남은 채로 폭이 바뀌면 IntersectionObserver 가 다시 불리지 않아
+       영상이 스크럽하던 프레임에 멈춰 있습니다. 이때만 직접 처음부터 재생합니다. */
+    var sceneRect = scene.getBoundingClientRect();
+    var isSceneInView = sceneRect.bottom > 0 && sceneRect.top < window.innerHeight;
+
+    if (video && isSceneInView) {
+      video.currentTime = 0;
+      video.playbackRate = COURSE_VIDEO_PLAYBACK_RATE;
+
+      var played = video.play();
+
+      /* 자동재생이 막히면 첫 프레임이 남습니다. 오류로 처리하지 않습니다. */
+      if (played && typeof played.catch === "function") {
+        played.catch(function () {});
+      }
     }
 
     window.removeEventListener("scroll", requestCourseScrollRender);
@@ -1079,6 +1180,7 @@ function initCourseScrollScene() {
     stage.style.removeProperty("height");
     list.style.removeProperty("transform");
     section.style.removeProperty("--course_scene_height");
+    section.style.removeProperty("--course_mask_band");
   }
 
   function handleCourseScrollMediaChange() {
@@ -1248,7 +1350,6 @@ function initTowerReveal() {
    TOP 버튼처럼 위로 빠르게 지나갈 때는 회전 없이 결과만 보여 줍니다. */
 function initPassTicketFlip() {
   var section = document.querySelector("#pass_section");
-  var courseSection = document.querySelector("#course_section");
   var flip = document.querySelector("[data-pass-flip]");
 
   if (!section || !flip) {
@@ -1304,20 +1405,12 @@ function initPassTicketFlip() {
     var restRect = flip.getBoundingClientRect();
     var viewportHeight = window.innerHeight;
 
-    /* 코스 스크롤이 끝나 코스가 끝나는 순간부터 티켓을 보여 줍니다. */
-    handlePassScroll();
-
-    var courseRect = courseSection ? courseSection.getBoundingClientRect() : null;
-    var isCourseInView = courseRect && courseRect.bottom > 0 && courseRect.top < viewportHeight;
+    /* 코스 스크롤이 끝나 곰이 티켓을 건네는 순간부터 보여 줍니다.
+       위로 되돌아가 코스가 다시 진행되면 initCourseScrollScene 이
+       is_course_end 를 풀어 주므로, 방향을 따로 보지 않고 이 상태만 따릅니다. */
     var hasCourseEnded = !scene || scene.classList.contains("is_course_end");
-    var shouldHideOnCourseReturn = Boolean(isCourseInView && !isScrollingDown);
 
-    /* Preserve the existing flight while scrolling down. Hide it only when
-       the user returns from Pass to Course and continues scrolling upward. */
-    flip.classList.toggle(
-      "is_pass_flight_ready",
-      hasCourseEnded && !shouldHideOnCourseReturn
-    );
+    flip.classList.toggle("is_pass_flight_ready", hasCourseEnded);
 
     if (!flightOrigin || restRect.width === 0) {
       flip.classList.remove("is_pass_flight", "is_pass_back_visible");
