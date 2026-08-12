@@ -600,18 +600,24 @@
     background-image: url("../assets/floorguide/hancook05.png");
   }
 
+  /* hancook02.png(282 x 133), hancook04.png(184 x 179) 은 1920 기준 1배 에셋이라
+     디자인 값(14.6875% / 9.5833%)으로 두면 1920 화면에서 원본과 1:1 이 됩니다.
+     고DPI(예: DPR 1.5) 화면에서는 그대로 1.5 배로 늘어나 가장자리가 뭉개져,
+     두 장식만 20% 줄여 확대율을 약 1.2 배로 낮췄습니다.
+     위치는 확대율만 달라지고 구도는 유지되도록 이미지 중심을 기준으로 다시 잡았습니다.
+     2배 에셋(564 x 266 / 368 x 358)이 준비되면 원래 크기로 되돌릴 수 있습니다. */
   .floor_deco_hancook_bibimbap {
-    top: 45.7407%;
-    left: 72.6042%;
-    width: 14.6875%;
+    top: 46.972%;
+    left: 74.073%;
+    width: 11.75%;
     aspect-ratio: 282 / 133;
     background-image: url("../assets/floorguide/hancook02.png");
   }
 
   .floor_deco_hancook_bowl {
-    top: 59.0741%;
-    left: 64.6354%;
-    width: 9.5833%;
+    top: 60.7315%;
+    left: 65.5937%;
+    width: 7.6667%;
     aspect-ratio: 184 / 179;
     background-image: url("../assets/floorguide/hancook04.png");
   }
